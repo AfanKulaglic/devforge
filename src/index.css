@@ -1,0 +1,1289 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap");
+/* Skeniraj klase SAMO iz src/ (ne iz .md logova/backup/shots — inače Tailwind
+   pukne na Windows-putanjama tipa `\2fa703...` koje izgledaju kao CSS escape). */
+@import "tailwindcss" source(none);
+@source "./**/*.{ts,tsx,js,jsx}";
+
+:root {
+  color-scheme: dark;
+  font-family: "Manrope", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #060606;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Spriječi horizontalni scroll na nivou viewporta (mora i na html, ne samo body) */
+  overflow-x: clip;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #060606;
+  /* Spriječi horizontalni scroll na mobilu (app-like, bez "curenja" sadržaja).
+     clip (umjesto hidden) ne lomi position:sticky i čuva vertikalni scroll. */
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+/* App-like dodir: bez plavog tap highlight-a, glatak scroll na iOS */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a,
+button {
+  touch-action: manipulation;
+}
+
+/* Vidljiv fokus prsten za tastaturu/pristupačnost (ne mijenja izgled pri kliku mišem). */
+:focus-visible {
+  outline: 2px solid #2dd4bf;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Safe-area padding za uređaje sa zarezom/home-indikatorom (0px na običnim ekranima). */
+.pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.px-safe {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Horizontalne trake (TrustBar) — snap + sakriven scrollbar, app-like na dodir. */
+.snap-x-mobile {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.snap-x-mobile::-webkit-scrollbar {
+  display: none;
+}
+.snap-x-mobile > * {
+  scroll-snap-align: start;
+}
+
+@media (max-width: 1023px) {
+  /* iOS ne zumira fokusirano polje ako je font ≥16px. */
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+
+  /* Hero koristi dinamičku visinu da ne poskakuje sa URL-barom na mobilu. */
+  .hero-dvh {
+    min-height: 100svh;
+  }
+}
+
+.hero-copy {
+  animation: hero-rise 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Prijelaz teksta pri promjeni hero slajda (element se re-montira preko key) */
+.hero-slide-in {
+  animation: hero-slide-in 760ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes hero-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hero slike — meka cross-fade + spori "Ken Burns" zoom koji prati smjenu */
+.hero-img {
+  opacity: 0;
+  transform: scale(1.08);
+  transition: opacity 1100ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.hero-img.is-active {
+  opacity: 1;
+  animation: hero-kenburns 7000ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes hero-kenburns {
+  from {
+    transform: scale(1.12);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* Na mobitelu suptilniji zoom i kraći fade (uže slike, da ostane gladko) */
+@media (max-width: 767px) {
+  .hero-img {
+    transition-duration: 900ms;
+    transform: scale(1.05);
+  }
+  .hero-img.is-active {
+    animation: hero-kenburns-m 6000ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .hero-slide-in {
+    animation-duration: 640ms;
+  }
+}
+
+@keyframes hero-kenburns-m {
+  from {
+    transform: scale(1.07);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* ── 3D PNG dekoracija u hero-u podstranica ── */
+.hero-decor-img {
+  animation: hero-decor-float 9s ease-in-out infinite;
+}
+
+@keyframes hero-decor-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-decor-img {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide-in {
+    animation: none;
+  }
+  .hero-img {
+    transition: opacity 400ms ease;
+    transform: none;
+  }
+  .hero-img.is-active {
+    animation: none;
+    transform: none;
+  }
+}
+
+/* ── Preloader (loading ekran pri prvom ulasku, stil kao devgen-react) ── */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  visibility: visible;
+  /* Ostani vidljiv dok zavjese ne odu, pa se ukloni iz toka. */
+  transition: visibility 0s linear 1s;
+}
+
+/* Dvije ploče "zavjese": pri izlasku lijeva klizi lijevo, desna desno → otkrivaju stranicu. */
+.preloader-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50.5%; /* lagani preklop da nema 1px šava na sredini */
+  background: linear-gradient(90deg, #060606 0%, #0b0b0e 100%);
+  z-index: 1;
+  transition: transform 1s cubic-bezier(0.76, 0, 0.24, 1);
+}
+.preloader-panel-left {
+  left: 0;
+}
+.preloader-panel-right {
+  right: 0;
+  background: linear-gradient(270deg, #060606 0%, #0b0b0e 100%);
+}
+/* Tinjajuća teal linija na vertikalnom spoju zavjesa */
+.preloader-panel-left::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(45, 212, 191, 0.85), transparent);
+  box-shadow: 0 0 20px 2px rgba(45, 212, 191, 0.45);
+}
+
+.preloader-hidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+.preloader-hidden .preloader-panel-left {
+  transform: translateX(-100%);
+}
+.preloader-hidden .preloader-panel-right {
+  transform: translateX(100%);
+}
+.preloader-hidden .preloader-inner {
+  opacity: 0;
+  transform: scale(1.08);
+  filter: blur(6px);
+  transition: opacity 0.4s ease, transform 0.55s ease, filter 0.4s ease;
+}
+
+/* Zavjesa pri promjeni stranice (redirect) — reuse .preloader-panel, ali brže i bez
+   logotipa/progress bara. Ploče instant prekriju, pa kliznu van (otvaranje zavjese). */
+.route-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 80; /* iznad headera(50)/menija(60)/modala(70), ispod Preloadera(100) */
+  pointer-events: none;
+}
+.route-curtain .preloader-panel {
+  transition: transform 0.55s cubic-bezier(0.76, 0, 0.24, 1);
+}
+.route-curtain-open .preloader-panel-left {
+  transform: translateX(-100%);
+}
+.route-curtain-open .preloader-panel-right {
+  transform: translateX(100%);
+}
+
+.preloader-inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  animation: preloader-pop 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.preloader-logo {
+  font-size: clamp(2.5rem, 9vw, 5rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  background: linear-gradient(90deg, #14b8a6, #2dd4bf, #0E7490);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 3s linear infinite;
+}
+
+.preloader-bar {
+  position: relative;
+  width: min(280px, 70vw);
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.preloader-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #14b8a6, #0E7490);
+  box-shadow: 0 0 12px rgba(45, 212, 191, 0.6);
+  transition: width 0.15s ease-out;
+}
+
+.preloader-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* Cookie baner — klizne odozdo (na dnu ekrana) */
+@keyframes cookie-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.cookie-banner {
+  animation: cookie-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cookie-banner {
+    animation: none;
+  }
+}
+
+@keyframes preloader-pop {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes shimmer {
+  to {
+    background-position: 200% center;
+  }
+}
+
+.cta-glow {
+  box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.4), 0 18px 50px rgba(8, 145, 178, 0.35);
+  animation: cta-pulse 3.4s ease-in-out infinite;
+}
+
+.logo-track {
+  animation: logo-marquee 28s linear infinite;
+}
+
+.logo-track:hover {
+  animation-play-state: paused;
+}
+
+.logo-item {
+  flex-basis: calc((100% - 4rem) / 5);
+}
+
+.project-slide {
+  flex-basis: var(--project-w);
+}
+
+.project-track {
+  --project-w: calc((100vw - max(2rem, calc((100vw - 80rem) / 2 + 2rem)) - 2rem) / 3.2);
+}
+
+.testimonial-fade,
+.modal-in {
+  animation: soft-in 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── 2026 floating island navbar ── */
+.navbar-island {
+  animation: nav-drop 0.7s cubic-bezier(0.22, 1, 0.36, 1) 2s both;
+}
+
+@keyframes nav-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-120%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar-island {
+    animation: none;
+  }
+}
+
+/* ── Mobilni meni (sidebar) ── */
+.menu-overlay {
+  animation: menu-overlay-in 0.35s ease both;
+}
+
+.menu-panel {
+  animation: menu-panel-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.menu-item {
+  animation: menu-item-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes menu-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes menu-panel-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes menu-item-in {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Scroll-reveal (replika devgen-react framer-motion useInView ponašanja).
+   Element je skriven dok IntersectionObserver ne doda .is-visible. */
+.reveal {
+  opacity: 0;
+  transition-property: opacity, transform;
+  transition-timing-function: cubic-bezier(0.21, 0.47, 0.32, 0.98);
+  transition-duration: 0.8s;
+  will-change: opacity, transform;
+}
+
+.reveal-up {
+  transform: translateY(60px);
+}
+
+.reveal-down {
+  transform: translateY(-60px);
+}
+
+.reveal-left {
+  transform: translateX(-60px);
+}
+
+.reveal-right {
+  transform: translateX(60px);
+}
+
+.reveal-scale {
+  transform: scale(0.85);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── Home-only reveal: oštro klizanje iz smjera + lagani scale + fade (BEZ blura).
+   Meki expo-ease daje premium "doleti i sjedne" osjećaj; re-trigger u JS-u (animira svaki put).
+   Scope-ano na .anim-rich (home + About) da ostale podstranice zadrže mirnu varijantu. ── */
+.anim-rich .reveal {
+  transition-property: opacity, transform;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+.anim-rich .reveal-up {
+  transform: translateY(64px) scale(0.97);
+}
+.anim-rich .reveal-down {
+  transform: translateY(-64px) scale(0.97);
+}
+.anim-rich .reveal-left {
+  transform: translateX(-72px) scale(0.97);
+}
+.anim-rich .reveal-right {
+  transform: translateX(72px) scale(0.97);
+}
+.anim-rich .reveal-scale {
+  transform: scale(0.85);
+}
+.anim-rich .reveal.is-visible {
+  transform: none;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   MOBILNO (≤767px) + HOME: izražen SPRING reveal koji se OKIDA U CIJELOSTI
+   svaki put kad sekcija uđe u ekran. IntersectionObserver na home već
+   toggla .is-visible (enter→true, leave→false), pa se animacija PONOVO
+   pokrene pri svakom prolasku (skrol gore-dolje koliko god puta).
+   Dizajn/boje/layout ostaju identični — mijenja se samo pokret.
+   Čist ulazak (ease-out) BEZ bounce-a/overshoota: uleti i glatko sjedne.
+   Veći pomaci nego desktop da je jasno vidljivo na malom ekranu.
+   ════════════════════════════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  /* Skriveni (resetni) položaj dok sekcija NIJE u ekranu — veći pomak = vidljivije */
+  .anim-rich .reveal-up    { transform: translateY(84px) scale(0.94); }
+  .anim-rich .reveal-down  { transform: translateY(-84px) scale(0.94); }
+  .anim-rich .reveal-left  { transform: translateX(-84px) scale(0.94); }
+  .anim-rich .reveal-right { transform: translateX(84px) scale(0.94); }
+  .anim-rich .reveal-scale { transform: scale(0.78); }
+
+  /* Okidanje: kad sekcija uđe u viewport, odsviraj PUNI spring (i opet pri svakom povratku).
+     Animacija nadjačava statički .is-visible {transform:none}; završetak (fill:both) sjedne na mjesto. */
+  .anim-rich .reveal.is-visible {
+    animation-duration: 0.95s;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+    animation-fill-mode: both;
+  }
+  .anim-rich .reveal-up.is-visible    { animation-name: m-spring-up; }
+  .anim-rich .reveal-down.is-visible  { animation-name: m-spring-down; }
+  .anim-rich .reveal-left.is-visible  { animation-name: m-spring-left; }
+  .anim-rich .reveal-right.is-visible { animation-name: m-spring-right; }
+  .anim-rich .reveal-scale.is-visible { animation-name: m-spring-scale; }
+}
+
+/* Čist ulazak BEZ bounce-a/overshoota — uleti i glatko sjedne (ease-out). */
+@keyframes m-spring-up {
+  0%   { opacity: 0; transform: translateY(84px) scale(0.94); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes m-spring-down {
+  0%   { opacity: 0; transform: translateY(-84px) scale(0.94); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes m-spring-left {
+  0%   { opacity: 0; transform: translateX(-84px) scale(0.94); }
+  100% { opacity: 1; transform: translateX(0) scale(1); }
+}
+@keyframes m-spring-right {
+  0%   { opacity: 0; transform: translateX(84px) scale(0.94); }
+  100% { opacity: 1; transform: translateX(0) scale(1); }
+}
+@keyframes m-spring-scale {
+  0%   { opacity: 0; transform: scale(0.78); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(34px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes soft-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cta-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(45, 212, 191, 0.32), 0 18px 50px rgba(8, 145, 178, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(45, 212, 191, 0), 0 24px 70px rgba(8, 145, 178, 0.5);
+  }
+}
+
+@keyframes logo-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-50% - 0.5rem));
+  }
+}
+
+@media (max-width: 991px) {
+  .logo-item {
+    flex-basis: calc((100% - 3rem) / 4);
+  }
+
+  .project-track {
+    --project-w: calc((100vw - 2rem) / 2.2);
+  }
+}
+
+@media (max-width: 767px) {
+  .logo-item {
+    flex-basis: calc((100% - 2rem) / 3);
+  }
+
+  .project-track {
+    --project-w: calc((100vw - 2rem) / 1.15);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Ugasi i mobilnu scroll-driven spring animaciju */
+  .anim-rich .reveal {
+    animation: none !important;
+  }
+
+  .preloader-panel {
+    transition: none !important;
+  }
+  .preloader-inner {
+    animation: none !important;
+  }
+  .preloader-logo {
+    animation: none !important;
+  }
+}
+
+/* ===== Custom cursor (dot + ring follower, magnetic-style hover) ===== */
+/* Renderira se samo na fine-pointer uređajima; klasa .has-custom-cursor doda JS. */
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform;
+  transition: opacity 0.25s ease;
+}
+
+/* Mali puni dot — prati pointer 1:1 (bez laganja). */
+.cursor-dot {
+  width: 6px;
+  height: 6px;
+  background: #2dd4bf;
+  border-radius: 9999px;
+  box-shadow: 0 0 8px rgba(45, 212, 191, 0.9);
+  transition: opacity 0.25s ease, width 0.2s ease, height 0.2s ease, background 0.2s ease;
+}
+
+/* Prsten — slijedi s laganjem (rAF lerp u JS-u). Oštri kvadrat na hoveru = angular brend. */
+.cursor-ring {
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid rgba(45, 212, 191, 0.6);
+  border-radius: 9999px;
+  transition: opacity 0.25s ease, width 0.22s ease, height 0.22s ease,
+    border-radius 0.22s ease, border-color 0.22s ease, background 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+/* Hover interaktivnog elementa: prsten naraste, postane oštar kvadrat + teal glow; dot se sakrije. */
+.cursor-ring.is-hover {
+  width: 54px;
+  height: 54px;
+  border-radius: 0;
+  border-color: rgba(45, 212, 191, 0.95);
+  background: rgba(45, 212, 191, 0.1);
+  box-shadow: 0 0 22px rgba(45, 212, 191, 0.35);
+}
+.cursor-dot.is-hover {
+  width: 0;
+  height: 0;
+}
+
+/* Klik: prsten se blago skupi (tactile feedback). */
+.cursor-ring.is-down {
+  transform-origin: center;
+  border-color: rgba(45, 212, 191, 1);
+  background: rgba(45, 212, 191, 0.18);
+}
+
+/* Sakrij nativni kursor dok je custom aktivan (samo fine pointer). */
+@media (pointer: fine) {
+  html.has-custom-cursor,
+  html.has-custom-cursor a,
+  html.has-custom-cursor button,
+  html.has-custom-cursor [role="button"],
+  html.has-custom-cursor label,
+  html.has-custom-cursor input,
+  html.has-custom-cursor textarea,
+  html.has-custom-cursor select {
+    cursor: none;
+  }
+}
+
+/* Touch / coarse pointer: custom kursor se nikad ne prikazuje. */
+@media (pointer: coarse) {
+  .cursor-dot,
+  .cursor-ring {
+    display: none !important;
+  }
+}
+
+/* ===== 2026 wow efekti ===== */
+
+/* Scroll-progress traka na vrhu */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 9998;
+  pointer-events: none;
+  background: transparent;
+}
+.scroll-progress-bar {
+  height: 100%;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: linear-gradient(90deg, #2dd4bf, #0891b2);
+  box-shadow: 0 0 10px rgba(45, 212, 191, 0.6);
+  will-change: transform;
+}
+
+/* Spotlight kartice — radijalni teal sjaj prati miš. screen blend → nikad ne zatamnjuje tekst. */
+.spotlight {
+  position: relative;
+}
+.spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(220px circle at var(--spot-x, 50%) var(--spot-y, 50%), rgba(45, 212, 191, 0.18), transparent 62%);
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.spotlight:hover::before {
+  opacity: 1;
+}
+
+/* Grain / film-noise tekstura preko cijelog sajta (premium "hand-made" osjećaj). */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-size: 160px 160px;
+}
+
+/* Kinetic hero naslov — masked rise reveal (re-okida se po slajdu jer se hero-copy remounta key={active}). */
+.hero-headline {
+  animation: headline-rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes headline-rise {
+  from {
+    opacity: 0;
+    transform: translateY(26px);
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+/* Gradient dio naslova "živi" — suptilni shimmer preko teal→cyan teksta. */
+.hero-headline span[class*="bg-clip-text"] {
+  background-size: 220% 100%;
+  animation: text-shimmer 5s linear infinite;
+}
+@keyframes text-shimmer {
+  to {
+    background-position: 220% center;
+  }
+}
+
+/* Hero mouse-parallax sloj — blago smoothanje (transform postavlja JS). */
+.hero-parallax {
+  will-change: transform;
+  transition: transform 0.15s ease-out;
+}
+
+/* Poštuj reduced-motion — ugasi nove animacije/parallax. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-headline,
+  .hero-headline span[class*="bg-clip-text"] {
+    animation: none !important;
+  }
+  .hero-parallax {
+    transition: none !important;
+  }
+  .scroll-progress-bar {
+    transition: none !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   REKLAMA (#/reklama) — 9:16 vertikalni video za Google Ads.
+   Jedan tečan video, teal/cyan paleta (boje stranice), Spacemail-stil.
+   ══════════════════════════════════════════════════════════════════ */
+.ad-stage {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 26px;
+  background: radial-gradient(circle at 50% 28%, #07211e 0%, #061312 52%, #040706 100%);
+  padding: 20px;
+}
+/* Bočni panel (DESNO od okvira) — voice-over teleprompter + kontrole. Ne snima se. */
+.ad-side { width: min(360px, 32vw); max-height: 92vh; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; color: #fff; }
+.ad-side-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.24em; color: rgba(255,255,255,0.5); font-weight: 700; }
+.ad-vo { display: flex; flex-direction: column; gap: 8px; }
+.ad-vo-line { font-size: 14px; line-height: 1.5; color: rgba(255,255,255,0.42); padding: 11px 13px; border-radius: 13px;
+  border: 1px solid transparent; transition: color .35s, background .35s, border-color .35s; }
+.ad-vo-line.is-current { color: #fff; background: rgba(45,212,191,0.1); border-color: rgba(45,212,191,0.3); }
+.ad-vo-num { display: inline-block; min-width: 1.4em; color: #2dd4bf; font-weight: 800; }
+@media (max-width: 820px) {
+  .ad-stage { flex-direction: column; gap: 16px; }
+  .ad-side { width: min(92vw, 440px); max-height: none; }
+}
+/* 9:16 okvir; height vodi, width iz aspecta */
+.ad-reel {
+  position: relative;
+  height: min(90vh, calc(92vw * 16 / 9));
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  border-radius: 0; /* oštri uglovi okvira — angular brend */
+  background: linear-gradient(165deg, #061614 0%, #04100e 60%, #040807 100%);
+  box-shadow: 0 40px 120px -30px rgba(20, 184, 166, 0.45), 0 0 0 1px rgba(45, 212, 191, 0.16);
+  isolation: isolate;
+  container-type: size; /* omogućava cqh/cqw jedinice → tipografija skalira s okvirom */
+}
+
+/* Pozadinski teal/cyan blobovi (kontinuirano lebde kroz cijeli video) */
+.ad-blob { position: absolute; border-radius: 9999px; filter: blur(48px); opacity: 0.5; will-change: transform; }
+.ad-blob-1 { width: 62%; height: 38%; left: -12%; top: 4%;   background: radial-gradient(circle, #14b8a6, transparent 70%); animation: adBlob 15s ease-in-out infinite; }
+.ad-blob-2 { width: 66%; height: 42%; right: -16%; top: 36%; background: radial-gradient(circle, #06b6d4, transparent 70%); animation: adBlob 18s ease-in-out infinite reverse; }
+.ad-blob-3 { width: 56%; height: 36%; left: 6%;   bottom: -10%; background: radial-gradient(circle, #0e7490, transparent 70%); animation: adBlob 20s ease-in-out infinite; }
+@keyframes adBlob {
+  0%,100% { transform: translate3d(0,0,0) scale(1); }
+  33%     { transform: translate3d(7%, -6%, 0) scale(1.12); }
+  66%     { transform: translate3d(-6%, 5%, 0) scale(0.93); }
+}
+.ad-grid {
+  position: absolute; inset: 0;
+  background-image: linear-gradient(rgba(45,212,191,0.06) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(45,212,191,0.06) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(circle at 50% 45%, #000 30%, transparent 80%);
+}
+.ad-scan {
+  position: absolute; left: 0; right: 0; height: 40%;
+  background: linear-gradient(to bottom, transparent, rgba(45,212,191,0.10), transparent);
+  animation: adScan 8s linear infinite;
+}
+@keyframes adScan { 0% { top: -40%; } 100% { top: 100%; } }
+.ad-grain { position: absolute; inset: 0; opacity: 0.045; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+/* Kontinuirana tanka progress linija na dnu (osjećaj videa, ne story-trake) */
+.ad-progress { position: absolute; bottom: 0; left: 0; height: 3px; z-index: 25;
+  background: linear-gradient(90deg, #2dd4bf, #22d3ee); box-shadow: 0 0 12px rgba(45,212,191,0.6); }
+
+.ad-scene { position: absolute; inset: 0; z-index: 10; display: flex; }
+
+/* Ulazne animacije (re-trigger preko key={scene}); izlaz fade radi tečnog prelaza */
+/* Profinjene ulazne animacije: blur + nježan rise/scale, mekano usporenje */
+.ad-rise { animation: adRise 1s cubic-bezier(.16,1,.3,1) both; }
+.ad-pop  { animation: adPop .9s cubic-bezier(.16,1,.3,1) both; }
+.ad-scene-enter { animation: adSceneIn .9s cubic-bezier(.16,1,.3,1) both; }
+@keyframes adRise { from { opacity: 0; transform: translateY(16px) scale(.985); filter: blur(8px); } to { opacity: 1; transform: none; filter: blur(0); } }
+@keyframes adPop  { 0% { opacity: 0; transform: scale(.9); filter: blur(6px); } 100% { opacity: 1; transform: scale(1); filter: blur(0); } }
+@keyframes adSceneIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* Line-by-line reveal za naslove (maska + klizanje odozdo) */
+.ad-line { display: block; overflow: hidden; }
+.ad-line > span { display: block; animation: adLineUp .95s cubic-bezier(.16,1,.3,1) both; animation-delay: var(--d, 0s); }
+@keyframes adLineUp { from { opacity: 0; transform: translateY(115%); } to { opacity: 1; transform: none; } }
+
+/* Sheen sweep preko CTA dugmeta */
+.ad-cta { overflow: hidden; }
+.ad-cta::after { content: ""; position: absolute; inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.55) 50%, transparent 70%);
+  transform: translateX(-130%); animation: adSheen 3.2s ease-in-out infinite 0.8s; }
+@keyframes adSheen { 0% { transform: translateX(-130%); } 55%,100% { transform: translateX(130%); } }
+
+/* Teal gradijent-tekst */
+.ad-grad { background: linear-gradient(100deg, #5eead4, #2dd4bf 50%, #22d3ee); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.ad-grad-warn { background: linear-gradient(100deg, #fb7185, #f43f5e); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+.ad-watermark { position: absolute; top: 26px; left: 20px; z-index: 20; display: flex; align-items: center; gap: 8px; opacity: .92; }
+.ad-handle { position: absolute; bottom: 20px; left: 0; right: 0; z-index: 20; text-align: center;
+  font-size: 12px; letter-spacing: .14em; color: rgba(255,255,255,.42); text-transform: uppercase; }
+
+.ad-glow { animation: adGlow 2.6s ease-in-out infinite; }
+@keyframes adGlow { 0%,100% { opacity: .5; transform: scale(1); } 50% { opacity: .9; transform: scale(1.06); } }
+.ad-float { animation: adFloat 5s ease-in-out infinite; }
+@keyframes adFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+/* ── Mockup proizvoda: mini DevForge landing u telefonu (product shot) ── */
+.ad-phone {
+  position: relative; width: 62%; border-radius: 30px; padding: 8px;
+  background: linear-gradient(160deg, #1c2b29, #0a1412);
+  box-shadow: 0 30px 70px -20px rgba(20,184,166,0.55), 0 0 0 1px rgba(45,212,191,0.22), inset 0 0 0 1px rgba(255,255,255,0.04);
+}
+.ad-phone-screen { position: relative; overflow: hidden; border-radius: 24px; background: #050b0a; aspect-ratio: 9 / 17; }
+.ad-phone-notch { position: absolute; top: 7px; left: 50%; transform: translateX(-50%); width: 32%; height: 16px; border-radius: 9999px; background: #0a1412; z-index: 5; }
+.ad-mini-glow { position: absolute; inset: 0; background: radial-gradient(circle at 50% 22%, rgba(45,212,191,0.22), transparent 60%); }
+.ad-typing { display: inline-block; overflow: hidden; white-space: nowrap; border-right: 2px solid #2dd4bf;
+  animation: adType 2.2s steps(22) .3s both, adCaret .8s step-end infinite; }
+@keyframes adType { from { width: 0; } to { width: 100%; } }
+@keyframes adCaret { 50% { border-color: transparent; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ad-blob, .ad-scan, .ad-glow, .ad-float, .ad-typing { animation: none !important; }
+  .ad-typing { border-right: 0; }
+}
+
+/* Kontinuirana progress traka (cijela dužina videa) */
+.ad-progress { transform-origin: left; transform: scaleX(0); width: 100%;
+  animation: adProgress var(--ad-total, 25200ms) linear infinite; }
+@keyframes adProgress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* ── Proporcionalni raspored/tipografija reklame (cqh = % visine okvira) ── */
+/* Svaka scena puni cijeli okvir i centrira sve i horizontalno i vertikalno. */
+.ad-box {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  width: 100%; height: 100%;
+  text-align: center;
+  padding: 0 11cqh;
+  gap: 3cqh;
+}
+.ad-h1      { font-size: 5.6cqh; font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; }
+.ad-h2      { font-size: 4.7cqh; font-weight: 800; line-height: 1.12; letter-spacing: -0.02em; }
+.ad-h3      { font-size: 4.2cqh; font-weight: 800; line-height: 1.15; letter-spacing: -0.01em; }
+.ad-num     { font-size: 8.5cqh; font-weight: 800; line-height: 1; letter-spacing: -0.02em; }
+.ad-lead    { font-size: 2.4cqh; line-height: 1.55; font-weight: 400; }
+.ad-eyebrow { font-size: 1.7cqh; letter-spacing: 0.32em; text-transform: uppercase; font-weight: 600; }
+.ad-strike  { font-size: 2.4cqh; font-weight: 500; }
+
+.ad-chip { font-size: 1.7cqh; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase;
+  padding: 1.2cqh 2.6cqh; border-radius: 9999px; }
+
+/* mreža usluga 2×2 */
+.ad-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2.4cqh; width: 100%; }
+.ad-card { display: flex; flex-direction: column; align-items: center; gap: 1.8cqh;
+  border-radius: 2.6cqh; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.035); padding: 3.6cqh 2cqh; }
+.ad-card-icon { font-size: 4.4cqh; color: #5eead4; }
+.ad-card-txt  { font-size: 2cqh; font-weight: 600; line-height: 1.2; color: #fff; }
+
+/* lista prednosti */
+.ad-list { display: flex; flex-direction: column; gap: 1.8cqh; width: 100%; }
+.ad-perk { display: flex; align-items: center; gap: 2.4cqh; text-align: left;
+  border-radius: 2cqh; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.035); padding: 2.2cqh 3.2cqh; }
+.ad-perk-icon { flex: none; font-size: 2.8cqh; color: #5eead4; }
+.ad-perk-txt  { font-size: 2.1cqh; font-weight: 500; color: #fff; }
+
+/* CTA dugme — IDENTIČNO navbar dugmetu sajta: OŠTRI uglovi, raketa+tekst, bijeli, teal→duboki cyan, teal shadow */
+.ad-cta { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 1.3cqh;
+  white-space: nowrap; border-radius: 0; font-size: 2.9cqh; font-weight: 800; color: #fff;
+  background: linear-gradient(90deg, #2dd4bf, #0891B2); padding: 2.3cqh 4.6cqh; letter-spacing: -0.01em;
+  box-shadow: 0 1.6cqh 4cqh -1cqh rgba(20,184,166,0.5); }
+.ad-cta svg { width: 1em; height: 1em; flex: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ad-typing { animation: none !important; border-right: 0; }
+}
+
+/* ── Hook benefit-čipovi + product-demo oznake (Spacemail stil) ── */
+.ad-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.6cqh; }
+.ad-chip2 { display: inline-flex; align-items: center; gap: 1cqh; font-size: 2cqh; font-weight: 700; color: #fff;
+  background: rgba(45,212,191,0.1); border: 1px solid rgba(45,212,191,0.32); border-radius: 9999px; padding: 1.3cqh 2.6cqh; }
+.ad-chip2 svg { color: #5eead4; font-size: 2.4cqh; flex: none; }
+
+/* Product-demo: telefon u centru + lebdeće benefit-oznake okolo */
+.ad-demo { position: relative; width: 100%; display: flex; justify-content: center; }
+.ad-demo .ad-phone { width: 52%; }
+.ad-callout { position: absolute; display: inline-flex; align-items: center; gap: 1cqh; white-space: nowrap;
+  font-size: 1.85cqh; font-weight: 700; color: #fff; background: rgba(7,18,16,0.82);
+  border: 1px solid rgba(45,212,191,0.35); border-radius: 9999px; padding: 1.3cqh 2.2cqh;
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); box-shadow: 0 10px 30px rgba(0,0,0,0.45); }
+.ad-callout svg { color: #5eead4; font-size: 2.2cqh; flex: none; }
+
+/* ── Slajd 2: elegantan "browser" prozor sajta (umjesto mobitela) ── */
+.ad-box-wide { padding: 0 5cqh; }
+.ad-browser-wrap { position: relative; width: 100%; display: flex; justify-content: center; perspective: 1100px; }
+.ad-browser-float { animation: adFloat 6s ease-in-out infinite; }
+.ad-orb { position: absolute; top: 6%; left: 50%; width: 52%; aspect-ratio: 1; transform: translateX(-50%);
+  background: radial-gradient(circle at 38% 32%, rgba(94,234,212,0.45), rgba(34,211,238,0.12) 58%, transparent 74%);
+  filter: blur(10px); z-index: 0; pointer-events: none; }
+.ad-browser { position: relative; z-index: 1; width: 90%; border-radius: 2.6cqh; overflow: hidden;
+  background: linear-gradient(162deg, #0c1c1a, #06110f);
+  border: 1px solid rgba(45,212,191,0.18);
+  box-shadow: 0 34px 90px -22px rgba(20,184,166,0.5), 0 0 0 1px rgba(255,255,255,0.03);
+  transform: rotateX(7deg) rotateY(-8deg); transform-style: preserve-3d; }
+.ad-bbar { display: flex; align-items: center; gap: 1.2cqh; padding: 1.6cqh 2.2cqh;
+  background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.06); }
+.ad-bdot { width: 1.5cqh; height: 1.5cqh; border-radius: 9999px; }
+.ad-burl { margin-left: 1.2cqh; flex: 1; font-size: 1.5cqh; color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.05); border-radius: 9999px; padding: 0.7cqh 0; text-align: center; }
+.ad-bbody { position: relative; padding: 3.4cqh 3cqh 3cqh; text-align: center; }
+
+/* lebdeće staklene kartice oko prozora */
+.ad-fcard { position: absolute; z-index: 2; display: inline-flex; align-items: center; gap: 1.2cqh; white-space: nowrap;
+  font-size: 1.7cqh; font-weight: 700; color: #fff; background: rgba(7,18,16,0.9);
+  border: 1px solid rgba(45,212,191,0.3); border-radius: 2cqh; padding: 1.5cqh 2.1cqh;
+  box-shadow: 0 16px 42px rgba(0,0,0,0.5); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.ad-fcard svg { color: #5eead4; font-size: 2.2cqh; flex: none; }
+.ad-fcard-stars { color: #5eead4; letter-spacing: 0.1em; }
+
+/* ══ REKLAMA v2 — Spacemail-stil (čista fold pozadina + frosted-glass ikone) ══ */
+.ad-reel.ad-clean { background: radial-gradient(circle at 50% 36%, #0c2b27 0%, #071714 62%, #040d0c 100%); }
+.ad-fold { position: absolute; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; }
+.ad-fold::before { content: ""; position: absolute; inset: -25%;
+  background: linear-gradient(122deg, transparent 32%, rgba(94,234,212,0.10) 50%, transparent 68%); }
+.ad-fold::after { content: ""; position: absolute; top: -15%; bottom: -15%; left: 44%; width: 2px;
+  transform: rotate(27deg); background: linear-gradient(180deg, transparent, rgba(94,234,212,0.4), transparent); opacity: 0.5; }
+
+/* Frosted-glass ikona (glavni vizual scene) */
+.ad-glass { position: relative; display: flex; align-items: center; justify-content: center;
+  width: var(--s, 34cqh); height: var(--s, 34cqh); border-radius: 22%;
+  background: linear-gradient(150deg, rgba(94,234,212,0.30), rgba(45,212,191,0.05));
+  border: 1px solid rgba(255,255,255,0.16);
+  box-shadow: 0 26px 70px -12px rgba(20,184,166,0.55), inset 0 3px 10px rgba(255,255,255,0.3), inset 0 -12px 26px rgba(0,0,0,0.18);
+  -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); color: #e6fffb; }
+.ad-glass svg { width: 52%; height: 52%; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.3)); }
+.ad-glass-sm { --s: 17cqh; border-radius: 26%; }
+
+.ad-pill { display: inline-flex; align-items: center; gap: 1cqh; border-radius: 9999px;
+  background: rgba(45,212,191,0.14); border: 1px solid rgba(45,212,191,0.34); color: #fff;
+  font-weight: 600; font-size: 2.1cqh; padding: 1.3cqh 3cqh; }
+.ad-iconrow { display: flex; align-items: center; justify-content: center; gap: 2.6cqh; flex-wrap: wrap; }
+
+/* Kursor koji "klikne" CTA */
+.ad-cursor { position: absolute; left: 52%; top: 46%; width: 5cqh; height: 5cqh; z-index: 5;
+  animation: adCursorTap 2.6s ease-in-out infinite; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5)); }
+@keyframes adCursorTap {
+  0% { transform: translate(6cqh, 6cqh); opacity: 0; }
+  30% { transform: translate(0,0); opacity: 1; }
+  46% { transform: translate(0,0) scale(0.82); }
+  60% { transform: translate(0,0) scale(1); }
+  100% { transform: translate(0,0); opacity: 1; }
+}
+.ad-cta-live { animation: adCtaPress 2.6s ease-in-out infinite; }
+@keyframes adCtaPress { 0%,40%,62%,100% { transform: scale(1); } 50% { transform: scale(0.96); } }
+
+/* Wordmark veličine za reklamu (umjesto Tailwind arbitrary cqh) */
+.ad-wm-lg { font-size: 5.5cqh; }
+.ad-wm-xl { font-size: 6.5cqh; }
+
+/* ── Animacije po uzoru na Spacemail video ── */
+/* Naslov: riječ-po-riječ (fade + rise + blur), stagger preko animation-delay */
+.ad-word { display: inline-block; animation: adWordUp .55s cubic-bezier(.2,.85,.25,1) both; }
+@keyframes adWordUp { from { opacity: 0; transform: translateY(0.5em) scale(0.96); filter: blur(5px); } to { opacity: 1; transform: none; filter: blur(0); } }
+
+/* Pill koji se "ukucava" (typing) — širina 0→puna + treptaj kursora */
+.ad-type { display: inline-block; overflow: hidden; white-space: nowrap; vertical-align: bottom;
+  width: 11ch; max-width: 100%; border-right: 0.25em solid #5eead4;
+  animation: adType 1.6s steps(11, end) .25s both, adCaret .7s step-end infinite .25s; }
+@keyframes adType { from { width: 0; } to { width: 11ch; } }
+@keyframes adCaret { 50% { border-color: transparent; } }
+
+/* Pozadinski fold se polako pomjera (živost) */
+.ad-fold::before { animation: adFoldDrift 13s ease-in-out infinite alternate; }
+@keyframes adFoldDrift { from { transform: translateX(-5%) rotate(-1deg); } to { transform: translateX(5%) rotate(1deg); } }
+
+/* Glass ikona: lebdenje + blago "disanje" skale */
+.ad-glass.ad-breathe { animation: adFloat 5s ease-in-out infinite, adBreathe 6s ease-in-out infinite; }
+@keyframes adBreathe { 0%,100% { box-shadow: 0 26px 70px -12px rgba(20,184,166,0.45), inset 0 3px 10px rgba(255,255,255,0.3), inset 0 -12px 26px rgba(0,0,0,0.18); } 50% { box-shadow: 0 30px 90px -10px rgba(20,184,166,0.7), inset 0 3px 12px rgba(255,255,255,0.4), inset 0 -12px 26px rgba(0,0,0,0.18); } }
+
+/* ════ PREMIUM "high-budget" sloj: kamera, čestice, bloom, sheen, grade ════ */
+/* Kino push-in na svaku scenu (spora dolly + blur-in) */
+.ad-scene-enter { animation: adCine 3.8s cubic-bezier(.16,1,.3,1) both; transform-origin: 50% 44%; }
+@keyframes adCine {
+  0%   { opacity: 0; transform: scale(1.09) translateY(1.6%); filter: blur(7px) brightness(1.25); }
+  14%  { opacity: 1; filter: blur(0) brightness(1); }
+  100% { transform: scale(1) translateY(0); filter: blur(0); }
+}
+
+/* Lebdeće čestice (atmosfera/prašina koja svjetluca) */
+.ad-particles { position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; }
+.ad-dot { position: absolute; bottom: -6%; border-radius: 9999px;
+  background: radial-gradient(circle, rgba(120,245,225,0.95), rgba(45,212,191,0) 70%);
+  animation: adDrift linear infinite; }
+@keyframes adDrift {
+  0%   { transform: translateY(0) scale(1); opacity: 0; }
+  12%  { opacity: 0.85; }
+  85%  { opacity: 0.35; }
+  100% { transform: translateY(-118cqh) scale(0.3); opacity: 0; }
+}
+
+/* Halo iza glass ikone: bloom + rotirajuće svjetlosne zrake */
+.ad-glass-wrap { position: relative; display: inline-flex; perspective: 700px; }
+.ad-glass-wrap::before { content: ""; position: absolute; inset: -38%; z-index: 0;
+  background: radial-gradient(circle, rgba(45,212,191,0.42), transparent 62%); animation: adBloom 5s ease-in-out infinite; }
+@keyframes adBloom { 0%,100% { opacity: 0.45; transform: scale(1); } 50% { opacity: 0.9; transform: scale(1.18); } }
+.ad-glass-wrap::after { content: ""; position: absolute; inset: -64%; z-index: 0; border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent, rgba(94,234,212,0.16) 11%, transparent 26%, transparent 57%, rgba(34,211,238,0.13) 71%, transparent 86%);
+  animation: adRays 16s linear infinite; }
+@keyframes adRays { to { transform: rotate(360deg); } }
+
+/* Glass: 3D bob + breathe + specular sheen unutar pločice */
+.ad-glass { position: relative; z-index: 1; overflow: hidden; }
+.ad-glass.ad-breathe { transform-style: preserve-3d; animation: adFloat3d 6s ease-in-out infinite, adBreathe 6s ease-in-out infinite; }
+@keyframes adFloat3d { 0%,100% { transform: translateY(0) rotateX(0deg) rotateZ(0deg); } 50% { transform: translateY(-9px) rotateX(7deg) rotateZ(-1.6deg); } }
+.ad-glass-sheen { position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  background: linear-gradient(118deg, transparent 36%, rgba(255,255,255,0.42) 50%, transparent 64%);
+  transform: translateX(-130%); animation: adSheen2 4.6s ease-in-out infinite 1s; }
+@keyframes adSheen2 { 0% { transform: translateX(-130%); } 45%,100% { transform: translateX(130%); } }
+
+/* Filmski grade: vinjeta + pomjerajući film grain */
+.ad-vignette { position: absolute; inset: 0; z-index: 28; pointer-events: none; border-radius: inherit;
+  box-shadow: inset 0 0 16cqh 5cqh rgba(0,0,0,0.5); }
+.ad-filmgrain { position: absolute; inset: 0; z-index: 29; pointer-events: none; opacity: 0.06; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: adGrainShift 0.7s steps(3) infinite; }
+@keyframes adGrainShift { 0%{transform:translate(0,0);} 33%{transform:translate(-2%,1%);} 66%{transform:translate(1%,-2%);} 100%{transform:translate(0,0);} }
+
+/* Premium tipografija: suptilni teal glow + spring overshoot na riječi */
+.ad-h1, .ad-h2, .ad-h3, .ad-num { text-shadow: 0 2px 34px rgba(45,212,191,0.18); }
+.ad-word { animation: adWordUp .72s cubic-bezier(.2,.9,.25,1.12) both; }
+@keyframes adWordUp { 0% { opacity:0; transform: translateY(.6em) scale(.9); filter: blur(7px); } 60% { opacity:1; } 100% { opacity:1; transform:none; filter:blur(0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ad-scene-enter, .ad-dot, .ad-glass-wrap::before, .ad-glass-wrap::after, .ad-glass.ad-breathe, .ad-glass-sheen, .ad-filmgrain, .ad-word { animation: none !important; }
+  .ad-scene-enter { opacity: 1; transform: none; filter: none; }
+}
+
+/* Slajd "Sve na jednom mjestu" — 2×2 grid (ikona + naziv), umjesto reda koji se lomi */
+.ad-svc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4cqh 5cqh; width: 100%; place-items: center; }
+.ad-svc-cell { display: flex; flex-direction: column; align-items: center; gap: 2cqh; }
+.ad-svc-label { font-size: 2.3cqh; font-weight: 700; color: #fff; line-height: 1.15; text-align: center; }
+
+/* Slajd "Usluge" — 2×2 grid, ćelije se pojavljuju JEDNA PO JEDNA (build-up) */
+.ad-svc-cell { position: relative; }
+/* wrapper točno veličine ikone → pečat se sidri na ugao IKONE (ne ćelije) */
+.ad-svc-iconwrap { position: relative; display: inline-flex; }
+.ad-cell { opacity: 0; }
+.ad-cell.is-in { animation: ad-cell-pop .5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+@keyframes ad-cell-pop {
+  0% { opacity: 0; transform: scale(0.82) translateY(1.4cqh); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Pečat s cijenom — "padne" na uslugu nakon build-upa (konzistentan teal, rubber-stamp slam) */
+.ad-stamp {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.55cqh 1.3cqh;
+  border: 0.32cqh solid #2dd4bf;
+  border-radius: 999px;
+  background: rgba(6, 8, 8, 0.9);
+  color: #2dd4bf;
+  font-weight: 800;
+  font-size: 1.9cqh;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  box-shadow: 0 0 2.2cqh rgba(45, 212, 191, 0.45), inset 0 0 0.6cqh rgba(45, 212, 191, 0.25);
+  /* usidreno u donji desni ugao ikone, blago izvučeno preko ruba (badge) */
+  transform: translate(12%, 28%) rotate(-9deg) scale(0);
+  opacity: 0;
+}
+.ad-stamp.is-in { animation: ad-stamp-slam .5s cubic-bezier(0.3, 1.4, 0.5, 1) forwards; }
+@keyframes ad-stamp-slam {
+  0% { transform: translate(12%, 28%) rotate(-9deg) scale(2.4); opacity: 0; }
+  55% { opacity: 1; }
+  100% { transform: translate(12%, 28%) rotate(-9deg) scale(1); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ad-cell.is-in { animation: none; opacity: 1; }
+  .ad-stamp.is-in { animation: none; opacity: 1; transform: translate(12%, 28%) rotate(-9deg) scale(1); }
+}
+
+/* Problem-slajd: rose varijanta glass ikone (signalizira "loše/rizik") */
+.ad-glass-warn { background: linear-gradient(150deg, rgba(251,113,133,0.30), rgba(244,63,94,0.05)); color: #ffe4e6; }
+.ad-glass-wrap.ad-warn::before { background: radial-gradient(circle, rgba(244,63,94,0.4), transparent 62%); }
+.ad-glass-wrap.ad-warn::after { background: conic-gradient(from 0deg, transparent, rgba(251,113,133,0.16) 11%, transparent 26%, transparent 57%, rgba(244,63,94,0.12) 71%, transparent 86%); }
+
+/* ════════ RAZLIČITA POZADINA PO SCENI (svaka scena drugi ugođaj, teal obitelj) ════════ */
+.ad-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; animation: adBgIn 1.1s ease both; }
+@keyframes adBgIn { from { opacity: 0; } to { opacity: 1; } }
+.ad-bg::before, .ad-bg::after { content: ""; position: absolute; inset: 0; pointer-events: none; }
+
+/* 0 — BRAND: duboki teal glow iz sredine */
+.ad-bg-0 { background: radial-gradient(circle at 50% 34%, #11463f 0%, #08221e 55%, #040d0c 100%); }
+/* 1 — BENEFIT: spotlight odozgo (kao reflektor na sceni) */
+.ad-bg-1 { background: radial-gradient(120% 72% at 50% -8%, rgba(45,212,191,0.30), transparent 58%), linear-gradient(180deg, #06201d, #040c0b); }
+/* 2 — USLUGE: mesh mreža (tehnološki) */
+.ad-bg-2 { background: radial-gradient(circle at 50% 42%, #0b2a25 0%, #050f0e 72%); }
+.ad-bg-2::before { background-image: linear-gradient(rgba(45,212,191,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(45,212,191,0.08) 1px, transparent 1px); background-size: 5cqh 5cqh; -webkit-mask-image: radial-gradient(circle at 50% 44%, #000 34%, transparent 80%); mask-image: radial-gradient(circle at 50% 44%, #000 34%, transparent 80%); }
+/* 3 — CMS/ADMIN: vodoravne "dashboard" linije + dijagonalni nagib */
+.ad-bg-3 { background: linear-gradient(125deg, #082420 0%, #05110f 62%); }
+.ad-bg-3::before { background-image: repeating-linear-gradient(180deg, rgba(45,212,191,0.07) 0 1px, transparent 1px 7cqh); -webkit-mask-image: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent); mask-image: linear-gradient(180deg, transparent, #000 18%, #000 82%, transparent); }
+/* 4 — JEFTINIJE: svjetlosne zrake iz centra (energija) */
+.ad-bg-4 { background: radial-gradient(circle at 50% 44%, #154d44 0%, #07201c 58%, #040c0b 100%); }
+.ad-bg-4::after { inset: -25%; background: conic-gradient(from 0deg at 50% 44%, transparent, rgba(94,234,212,0.16) 8%, transparent 17%, transparent 50%, rgba(34,211,238,0.13) 58%, transparent 67%); animation: adRays 18s linear infinite; }
+/* 5 — CTA: snažan teal glow odozdo (poziv na akciju) */
+.ad-bg-5 { background: radial-gradient(100% 62% at 50% 112%, rgba(45,212,191,0.36), transparent 60%), linear-gradient(180deg, #05140f, #040b0a); }
+/* 6 — END: čist tamni s mekim spotlightom na logo */
+.ad-bg-6 { background: radial-gradient(circle at 50% 42%, #0c3a34 0%, #040d0c 58%, #020706 100%); }
+
+@media (prefers-reduced-motion: reduce) { .ad-bg { animation: none; } .ad-bg-4::after { animation: none; } }
+
+/* ════════ PRIJELAZI MEĐU SCENAMA (zavjesa / iris / wipe / blinds) ════════ */
+.ad-trans { position: absolute; inset: 0; z-index: 22; pointer-events: none; overflow: hidden; }
+.ad-trans > span { position: absolute; }
+.ad-trans-a, .ad-trans-b, .ad-trans-bars { display: none; }
+/* teal panel izgled (boja brenda — #19E3C2 aqua) */
+.ad-trans-a, .ad-trans-b { top: -2%; bottom: -2%; background: linear-gradient(160deg, #19e3c2 0%, #0e9b86 46%, #07433b 100%); }
+
+/* ZAVJESA — dva teal panela se razdvoje iz sredine i otkriju scenu */
+.tr-curtain .ad-trans-a, .tr-curtain .ad-trans-b { display: block; width: 51%; }
+.tr-curtain .ad-trans-a { left: 0; box-shadow: 2cqh 0 7cqh rgba(0,0,0,0.45); animation: adCurtainL 0.9s cubic-bezier(0.76,0,0.24,1) both; }
+.tr-curtain .ad-trans-b { right: 0; box-shadow: -2cqh 0 7cqh rgba(0,0,0,0.45); animation: adCurtainR 0.9s cubic-bezier(0.76,0,0.24,1) both; }
+/* svijetli teal šav na unutarnjem rubu (sjaj pri otvaranju) */
+.tr-curtain .ad-trans-a::after { content: ""; position: absolute; top: 0; bottom: 0; right: 0; width: 0.5cqh; background: linear-gradient(180deg, transparent, #aafbef, transparent); box-shadow: 0 0 3cqh #19e3c2; }
+.tr-curtain .ad-trans-b::after { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 0.5cqh; background: linear-gradient(180deg, transparent, #aafbef, transparent); box-shadow: 0 0 3cqh #19e3c2; }
+@keyframes adCurtainL { 0%,12% { transform: translateX(0); } 100% { transform: translateX(-102%); } }
+@keyframes adCurtainR { 0%,12% { transform: translateX(0); } 100% { transform: translateX(102%); } }
+
+/* SWIPE-UP — teal panel sklizne prema gore (kao swipe na Reels/FB feedu), svijetli rub vodi */
+.tr-swipe .ad-trans-a { display: block; left: 0; right: 0; top: -2%; bottom: -2%; width: auto; background: linear-gradient(180deg, #19e3c2 0%, #0e9b86 50%, #07433b 100%); animation: adSwipeUp 0.8s cubic-bezier(0.76,0,0.24,1) both; }
+.tr-swipe .ad-trans-a::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 0.5cqh; background: linear-gradient(90deg, transparent, #aafbef 50%, transparent); box-shadow: 0 0 3cqh #19e3c2; }
+@keyframes adSwipeUp { 0%,10% { transform: translateY(0); } 100% { transform: translateY(-104%); } }
+
+/* IRIS — teal se skuplja u krug prema sredini i nestane */
+.tr-iris .ad-trans-a { display: block; inset: 0; width: auto; background: radial-gradient(circle at 50% 46%, #19e3c2, #0a5d52 72%); animation: adIris 0.88s cubic-bezier(0.6,0,0.25,1) both; }
+@keyframes adIris { 0%,10% { -webkit-clip-path: circle(150% at 50% 46%); clip-path: circle(150% at 50% 46%); } 100% { -webkit-clip-path: circle(0% at 50% 46%); clip-path: circle(0% at 50% 46%); } }
+
+/* WIPE — jedan teal panel sklizne dijagonalno preko ekrana */
+.tr-wipe .ad-trans-a { display: block; left: -12%; right: -12%; top: -12%; bottom: -12%; width: auto; transform: skewX(-9deg); animation: adWipe 0.82s cubic-bezier(0.76,0,0.24,1) both; }
+@keyframes adWipe { 0%,10% { transform: skewX(-9deg) translateX(0); } 100% { transform: skewX(-9deg) translateX(-135%); } }
+
+/* BLINDS — vertikalne teal trake kliznu prema gore, jedna za drugom */
+.tr-bars .ad-trans-bars { display: flex; inset: 0; }
+.ad-trans-bars { left: 0; right: 0; top: 0; bottom: 0; }
+.ad-trans-bars > i { flex: 1; height: 100%; background: linear-gradient(180deg, #19e3c2, #0a5d52); border-right: 1px solid rgba(4,16,14,0.45); transform: translateY(0); animation: adBlind 0.82s cubic-bezier(0.76,0,0.24,1) both; }
+.ad-trans-bars > i:nth-child(2) { animation-delay: 0.06s; }
+.ad-trans-bars > i:nth-child(3) { animation-delay: 0.12s; }
+.ad-trans-bars > i:nth-child(4) { animation-delay: 0.18s; }
+.ad-trans-bars > i:nth-child(5) { animation-delay: 0.24s; }
+@keyframes adBlind { 0%,10% { transform: translateY(0); } 100% { transform: translateY(-101%); } }
+
+@media (prefers-reduced-motion: reduce) { .ad-trans { display: none !important; } }

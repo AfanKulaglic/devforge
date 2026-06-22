@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Build output (Vercel ga gradi)
+dist/
+
+# Lokalni / dev artefakti
+shots/
+backup-pre-wow-2026/
+devgen-react/
+PROMPTS-LOG.md
+.claude/
+.vercel/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.local
+npm-debug.log*
