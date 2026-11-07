@@ -6,6 +6,7 @@ import {
   HiOutlineCheck,
   HiOutlineChevronDown,
   HiOutlineChevronRight,
+  HiOutlineChevronUp,
   HiOutlineDevicePhoneMobile,
   HiOutlineGlobeAlt,
   HiOutlineLockClosed,
@@ -22,6 +23,7 @@ import {
   getProjects,
   getServerProjects,
   newProjectId,
+  reorderProjects,
   resetProjects,
   saveProject,
   subscribe,
@@ -429,21 +431,61 @@ function ProjectForm({
 // ── Kartica jednog projekta (u listi po kategorijama) ─────────────────────
 function ProjectCard({
   project,
+  position,
+  total,
   confirming,
   onEdit,
+  onMoveUp,
+  onMoveDown,
   onAskDelete,
   onCancelDelete,
   onConfirmDelete,
 }: {
   project: AdminProject;
+  position: number;
+  total: number;
   confirming: boolean;
   onEdit: () => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
   onAskDelete: () => void;
   onCancelDelete: () => void;
   onConfirmDelete: () => void;
 }) {
+  const canUp = position > 1;
+  const canDown = position < total;
   return (
     <div className="group flex flex-col border border-white/10 bg-white/[0.03] transition hover:border-teal-300/40">
+      {/* Redoslijed unutar kategorije */}
+      <div className="flex items-center justify-between gap-2 border-b border-white/10 bg-black/25 px-2 py-1.5">
+        <span className="flex items-center gap-1.5 pl-1 text-[0.6rem] font-black uppercase tracking-[0.16em] text-white/35">
+          <span className="text-teal-300/80">#{position}</span>
+          <span className="hidden sm:inline">po redu</span>
+        </span>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={onMoveUp}
+            disabled={!canUp}
+            title="Pomjeri gore"
+            aria-label={`Pomjeri ${project.title} gore`}
+            className="border border-white/12 px-1.5 py-1 text-white/60 transition hover:border-teal-300 hover:text-white disabled:cursor-not-allowed disabled:opacity-25 disabled:hover:border-white/12 disabled:hover:text-white/60"
+          >
+            <HiOutlineChevronUp className="text-sm" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            onClick={onMoveDown}
+            disabled={!canDown}
+            title="Pomjeri dole"
+            aria-label={`Pomjeri ${project.title} dolje`}
+            className="border border-white/12 px-1.5 py-1 text-white/60 transition hover:border-teal-300 hover:text-white disabled:cursor-not-allowed disabled:opacity-25 disabled:hover:border-white/12 disabled:hover:text-white/60"
+          >
+            <HiOutlineChevronDown className="text-sm" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+
       <div className="relative aspect-[16/9] overflow-hidden bg-[#0A0A0E]">
         <img
           src={project.imageDesktop}
@@ -534,6 +576,19 @@ function ProjectsTab() {
     setClosedGroups((prev) =>
       prev.includes(service) ? prev.filter((s) => s !== service) : [...prev, service],
     );
+
+  // Premjesti projekt gore/dolje SAMO unutar njegove kategorije.
+  const moveWithinGroup = (
+    group: { service: string; items: AdminProject[] },
+    index: number,
+    delta: -1 | 1,
+  ) => {
+    const target = index + delta;
+    if (target < 0 || target >= group.items.length) return;
+    const ids = group.items.map((p) => p.id);
+    [ids[index], ids[target]] = [ids[target], ids[index]];
+    reorderProjects(group.service, ids);
+  };
 
   // Grupisano po kategorijama (SERVICE_OPTIONS odredjuje redoslijed),
   // ukljucujuci i prazne kategorije da se vidi sta nedostaje.
@@ -646,12 +701,16 @@ function ProjectsTab() {
                   </div>
                 ) : (
                   <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                    {group.items.map((p) => (
+                    {group.items.map((p, index) => (
                       <ProjectCard
                         key={p.id}
                         project={p}
+                        position={index + 1}
+                        total={group.items.length}
                         confirming={confirmId === p.id}
                         onEdit={() => setDraft(draftFrom(p))}
+                        onMoveUp={() => moveWithinGroup(group, index, -1)}
+                        onMoveDown={() => moveWithinGroup(group, index, +1)}
                         onAskDelete={() => setConfirmId(p.id)}
                         onCancelDelete={() => setConfirmId(null)}
                         onConfirmDelete={() => {

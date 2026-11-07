@@ -194,6 +194,34 @@ export function deleteProject(id: string) {
   write(getProjects().filter((p) => p.id !== id));
 }
 
+// Promijeni redoslijed projekata unutar jedne kategorije.
+// `orderedIds` je nova lista id-eva SAMO za tu kategoriju — ostali projekti
+// (druge kategorije) zadrzavaju svoj redoslijed.
+// Redoslijed se cuva preko `createdAt`: dodjeljujemo nove, strogo rastuce
+// vrijednosti unutar te kategorije, tako da sortiranje po createdAt radi.
+export function reorderProjects(service: string, orderedIds: string[]) {
+  const list = getProjects();
+  const inGroup = list
+    .filter((p) => p.service === service)
+    .sort((a, b) => a.createdAt - b.createdAt);
+
+  // Osnovica: najmanji createdAt u kategoriji, korak 1.
+  const base =
+    inGroup.length > 0
+      ? Math.min(...inGroup.map((p) => p.createdAt))
+      : 1;
+
+  const newOrder = new Map<string, number>();
+  orderedIds.forEach((id, index) => newOrder.set(id, base + index));
+
+  const next = list.map((p) =>
+    p.service === service && newOrder.has(p.id)
+      ? { ...p, createdAt: newOrder.get(p.id) as number }
+      : p,
+  );
+  write(next);
+}
+
 export function resetProjects() {
   if (isBrowser()) {
     try {
