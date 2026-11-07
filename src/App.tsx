@@ -2703,7 +2703,6 @@ function HomePage() {
       <Services />
       <Pricing />
       <HowItWorks />
-      <Facts />
       <Projects />
       <FAQs />
     </main>
