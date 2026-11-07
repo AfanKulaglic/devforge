@@ -2969,7 +2969,9 @@ function ProjectRow({ group, rowIndex }: { group: { service: string; items: Proj
       const w = el.clientWidth;
       const isSmall = window.innerWidth < 768;
       setViewportWidth(w);
-      setCardWidth(Math.round(w * (isSmall ? 0.82 : 0.7)));
+      // 62% desktop / 78% mobilni → susjed vidljiv ~31% (desktop) / 14% (mobilni).
+      // Dovoljno da se vidi sadrzaj susjedne kartice, a centrirana ostaje glavna.
+      setCardWidth(Math.round(w * (isSmall ? 0.78 : 0.62)));
     };
     measure();
     const observer = new ResizeObserver(measure);
@@ -3099,10 +3101,8 @@ function ProjectRow({ group, rowIndex }: { group: { service: string; items: Proj
         onPointerCancel={onPointerUp}
         style={{ touchAction: "pan-y", cursor: dragging ? "grabbing" : "grab" }}
       >
-        {/* Tanke ivicne maske: samo prvih 16 px, ispod sadrzaja (z-0 preko roditelja),
-            da ne prekriju centriranu karticu. */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-4 bg-gradient-to-r from-[#060606] to-transparent" aria-hidden="true" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-4 bg-gradient-to-l from-[#060606] to-transparent" aria-hidden="true" />
+        {/* Ivice bez maske — susjedne kartice treba da se jasno vide, a ne da
+            se gube u mraku. Zatamnjenje nosi sama kartica (opacity). */}
 
         <div
           className="flex items-start gap-5 md:gap-7"
@@ -3120,9 +3120,24 @@ function ProjectRow({ group, rowIndex }: { group: { service: string; items: Proj
                 style={{ width: cardWidth > 0 ? `${cardWidth}px` : "100%" }}
                 aria-hidden={!active}
               >
+                {/* Klik na susjednu karticu je centrira — tako covjek moze
+                    da predje na ono sto vidi sa strane. */}
                 <div
+                  role={active ? undefined : "button"}
+                  tabIndex={active ? undefined : 0}
+                  onClick={active ? undefined : () => goTo(i)}
+                  onKeyDown={
+                    active
+                      ? undefined
+                      : (event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            goTo(i);
+                          }
+                        }
+                  }
                   className={`relative transition-opacity duration-500 ${
-                    active ? "opacity-100" : "pointer-events-none opacity-30"
+                    active ? "opacity-100" : "cursor-pointer opacity-75 hover:opacity-90"
                   }`}
                 >
                   <DeviceMockup
