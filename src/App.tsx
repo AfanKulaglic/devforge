@@ -2839,16 +2839,16 @@ function ProjectRow({ group, rowIndex }: { group: { service: string; items: Proj
         onPointerCancel={onPointerUp}
         style={{ touchAction: "pan-y", cursor: dragging ? "grabbing" : "grab" }}
       >
-        {/* Blage ivicne maske da susjedne kartice "izlaze" iz mraka */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-10 bg-gradient-to-r from-[#060606] to-transparent md:w-16" aria-hidden="true" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-10 bg-gradient-to-l from-[#060606] to-transparent md:w-16" aria-hidden="true" />
+        {/* Tanke ivicne maske: samo prvih 16 px, ispod sadrzaja (z-0 preko roditelja),
+            da ne prekriju centriranu karticu. */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-4 bg-gradient-to-r from-[#060606] to-transparent" aria-hidden="true" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-4 bg-gradient-to-l from-[#060606] to-transparent" aria-hidden="true" />
 
         <div
           className="flex items-start gap-5 md:gap-7"
           style={{
             transform: `translate3d(${translate}px, 0, 0)`,
             transition: dragging ? "none" : "transform 520ms cubic-bezier(0.22, 1, 0.36, 1)",
-            willChange: "transform",
           }}
         >
           {looped.map((project, i) => {
@@ -2862,8 +2862,8 @@ function ProjectRow({ group, rowIndex }: { group: { service: string; items: Proj
                 aria-hidden={!active}
               >
                 <div
-                  className={`transition duration-500 ${
-                    active ? "opacity-100" : "pointer-events-none opacity-40 blur-[1.5px] saturate-50"
+                  className={`transition-opacity duration-500 ${
+                    active ? "opacity-100" : "pointer-events-none opacity-35"
                   }`}
                 >
                   <DeviceMockup
