@@ -1625,8 +1625,18 @@ function DeviceMockup({ image, imageMobile, title, url, glow = true }: { image: 
             <span className="truncate">{url ?? "www.stranica.ba"}</span>
           </span>
         </div>
-        <div className="aspect-[16/9] overflow-hidden bg-[#0A0A0E]">
-          <img className="h-full w-full object-contain" src={image} alt={title} loading="lazy" draggable={false} />
+        <div className="relative aspect-[16/9] overflow-hidden bg-[#0A0A0E]">
+          {image ? (
+            <img className="h-full w-full object-contain" src={image} alt={title} loading="lazy" draggable={false} />
+          ) : (
+            // Nema slike — neutralan placeholder umjesto slomljene ikone.
+            <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-gradient-to-br from-[#12121A] to-[#0A0A0E]">
+              <HiOutlineRectangleGroup className="text-4xl text-white/15" aria-hidden="true" />
+              <span className="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-white/25">
+                Snimka u pripremi
+              </span>
+            </div>
+          )}
         </div>
       </div>
       {/* Phone — veci prikaz da se odmah vidi da projekt ima i mobilnu verziju.
@@ -1635,7 +1645,13 @@ function DeviceMockup({ image, imageMobile, title, url, glow = true }: { image: 
         <div className="relative overflow-hidden rounded-[1.15rem]">
           <span className="absolute left-1/2 top-1.5 z-10 h-1 w-8 -translate-x-1/2 rounded-full bg-white/30" aria-hidden="true" />
           <div className="aspect-[9/18] overflow-hidden">
-            <img className="h-full w-full object-cover object-top" src={imageMobile || image} alt="" loading="lazy" draggable={false} />
+            {imageMobile || image ? (
+              <img className="h-full w-full object-cover object-top" src={imageMobile || image} alt="" loading="lazy" draggable={false} />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-[#0A0A0E]">
+                <HiOutlineDevicePhoneMobile className="text-xl text-white/15" aria-hidden="true" />
+              </div>
+            )}
           </div>
         </div>
       </div>

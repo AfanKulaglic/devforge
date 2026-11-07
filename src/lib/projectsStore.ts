@@ -91,15 +91,17 @@ const SEED: AdminProject[] = [
     title: "RivalHub — Game Launcher",
     service: "Mobilne aplikacije",
     tag: "React Native",
-    url: "https://github.com/AfanKulaglic/GameLauncher",
+    // Bez linka na GitHub — projekat se prikazuje bez otkrivanja repozitorija.
+    // Kad ga postavis na Vercel/Expo, zamijeni ovo svojom live adresom u /admin.
+    url: "",
     description:
       "Multiplayer launcher za društvene igre na ploči za 2–4 igrača. Pretražiš biblioteku " +
       "(Battleship, Ludo, Slagalica, Runbound Rivals), dodaš prijatelje i pratiš njihov online status, " +
       "pošalješ pozivnicu i čekaš u zajedničkom lobiju — host pokreće partiju i svi igrači ulaze u isti " +
       "ekran. Napravljeno u React Native + Expo, uz Firebase Realtime Database za sinhronizaciju u " +
       "realnom vremenu.",
-    imageDesktop: "https://opengraph.githubassets.com/1/AfanKulaglic/GameLauncher",
-    imageMobile: "https://opengraph.githubassets.com/1/AfanKulaglic/GameLauncher",
+    imageDesktop: "",
+    imageMobile: "",
     createdAt: 5,
   },
   {
@@ -150,7 +152,7 @@ let cache: AdminProject[] | null = null;
 // se poveca i novi seed-ovi se automatski dodaju i u postojecu lokalnu bazu
 // (bez brisanja onoga sto je korisnik sam dodao/uredio).
 const SEED_VERSION_KEY = "devforge-projects-seed-version";
-const SEED_VERSION = "8";
+const SEED_VERSION = "9";
 
 function readRaw(): AdminProject[] {
   if (!isBrowser()) return SEED;
