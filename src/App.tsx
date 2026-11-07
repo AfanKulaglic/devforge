@@ -32,7 +32,6 @@ import {
   HiOutlineMapPin,
   HiOutlinePaperAirplane,
   HiOutlineSwatch,
-  HiOutlineStar,
   HiOutlineChartBar,
   HiOutlineBolt,
   HiOutlinePlay,
@@ -172,7 +171,6 @@ const navItems: { label: string; href: string; icon: IconType }[] = [
 ];
 
 const menuInfoLinks: { label: string; href: string; icon: IconType; desc: string }[] = [
-  { label: "Utisci", href: "/utisci", icon: HiOutlineStar, desc: "Iskustva naših zadovoljnih klijenata." },
   { label: "Česta pitanja", href: "/cesta-pitanja", icon: HiOutlineQuestionMarkCircle, desc: "Odgovori na najčešća pitanja." },
   { label: "Cijene", href: "/cijene", icon: HiOutlineBanknotes, desc: "Transparentni paketi, bez skrivenih troškova." },
 ];
@@ -364,26 +362,6 @@ function useStoredProjects(): { service: string; items: ProjectItem[] }[] {
   );
 }
 
-const testimonials = [
-  {
-    name: "Amir Hadžić",
-    role: "Osnivač, tech startup · Sarajevo",
-    avatar: images.avatar1,
-    text: "Gotovu verziju smo dobili za 5 dana i odmah vidjeli da znaju šta rade. MVP aplikacije isporučen je na vrijeme, a komunikacija je tekla kroz cijeli proces. Predujam nismo platili — račun je stigao tek kad smo bili zadovoljni.",
-  },
-  {
-    name: "Selma Kovačević",
-    role: "Vlasnica, online shop · Mostar",
-    avatar: images.avatar2,
-    text: "Web shop sa preko 150 proizvoda i online plaćanjem radi besprijekorno od prvog dana. Besplatna gotova verzija me uvjerila prije nego što sam išta uplatila, a na pitanja odgovaraju isti dan.",
-  },
-  {
-    name: "Enes Softić",
-    role: "Marketing manager · Tuzla",
-    avatar: images.avatar3,
-    text: "Nakon redizajna stranice osjetno nam je porastao broj upita. Brzo, profesionalno i tačno po dogovoru — iskoristili smo i sve 4 besplatne revizije dok nije bilo savršeno.",
-  },
-];
 
 const faqs = [
   {
@@ -783,7 +761,7 @@ function Header() {
   const isAbout = route.startsWith("/o-nama");
   const isServices = route.startsWith("/usluge");
   const isProjects = route.startsWith("/projekti");
-  const isInfo = route.startsWith("/utisci") || route.startsWith("/cijene") || route.startsWith("/cesta-pitanja");
+  const isInfo = route.startsWith("/cijene") || route.startsWith("/cesta-pitanja");
   const isKontakt = route.startsWith("/kontakt");
 
   useEffect(() => {
@@ -2059,42 +2037,6 @@ function Projects() {
   );
 }
 
-function Testimonials() {
-  const [index, setIndex] = useState(0);
-
-  useEffect(() => {
-    const timer = window.setInterval(() => setIndex((value) => (value + 1) % testimonials.length), 7000);
-    return () => window.clearInterval(timer);
-  }, []);
-
-  const testimonial = testimonials[index];
-
-  return (
-    <section id="testimonials" className="border-y border-black/5 bg-[#F4F5F7] py-20 md:py-28">
-      <div className="mx-auto max-w-5xl px-5 text-center md:px-8">
-        <SectionHeading title="Šta klijenti kažu" subtitle="Povjerenje naših klijenata je naša najveća motivacija" align="center" icon={HiOutlineChatBubbleLeftRight} eyebrow="Utisci" tone="light" />
-        <div className="testimonial-fade mt-14" key={testimonial.name}>
-          <div className="mx-auto h-20 w-20 overflow-hidden rounded-full border border-black/10">
-            <img className="h-full w-full object-cover" src={testimonial.avatar} alt={testimonial.name} loading="lazy" />
-          </div>
-          <p className="mx-auto mt-8 max-w-4xl text-2xl font-semibold leading-10 text-[#0B0B0F] md:text-4xl md:leading-[1.25]">“{testimonial.text}”</p>
-          <div className="mt-6 flex justify-center gap-1 text-amber-400" aria-label="Ocjena 5 od 5">
-            {Array.from({ length: 5 }).map((_, starIndex) => (
-              <HiOutlineStar key={starIndex} className="text-xl" style={{ fill: "currentColor" }} aria-hidden="true" />
-            ))}
-          </div>
-          <p className="mt-5 font-extrabold text-[#0B0B0F]">{testimonial.name}</p>
-          <p className="mt-1 text-sm text-[#5A5D6E]">{testimonial.role}</p>
-        </div>
-        <div className="mt-8 flex justify-center gap-3">
-          {testimonials.map((item, dotIndex) => (
-            <button key={item.name} type="button" aria-label={`Prikaži testimonial ${dotIndex + 1}`} className={`h-2.5 rounded-full transition ${index === dotIndex ? "w-8 bg-[#0B0B0F]" : "w-2.5 bg-black/20 hover:bg-black/40"}`} onClick={() => setIndex(dotIndex)} />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 // Klik na "Pogledajte ostale ponude": zapamti da na ciljnoj podstranici treba skrolati na #pricing.
 function markScrollToPricing() {
@@ -2326,7 +2268,6 @@ const footerColumns: { title: string; links: { label: string; href?: string; soo
       { label: "Početna", href: "/" },
       { label: "O nama", href: "/o-nama" },
       { label: "Projekti", href: "/projekti" },
-      { label: "Utisci", href: "/utisci" },
       { label: "Kontakt", href: "/kontakt" },
     ],
   },
@@ -2899,7 +2840,6 @@ function HomePage() {
       <HowItWorks />
       <Facts />
       <Projects />
-      <Testimonials />
       <FAQs />
     </main>
   );
@@ -3277,62 +3217,6 @@ function InfoHero({ eyebrow, icon: Icon, title, intro }: { eyebrow: string; icon
         </Reveal>
       </div>
     </section>
-  );
-}
-
-// NOVA sekcija — svi utisci odjednom u gridu (distinktno od home Testimonials koji rotira jedan po jedan).
-function TestimonialsGrid() {
-  return (
-    <section className="border-y border-black/5 bg-[#F4F5F7] py-20 md:py-28">
-      <div className="mx-auto max-w-7xl px-5 md:px-8">
-        <SectionHeading
-          title="Svi utisci na jednom mjestu"
-          subtitle="Iskustva klijenata iz cijele BiH — od MVP-a i web shopova do redizajna stranica."
-          icon={HiOutlineChatBubbleLeftRight}
-          eyebrow="Utisci"
-          tone="light"
-        />
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {testimonials.map((item, index) => (
-            <Reveal key={item.name} direction="up" as="div" delay={index * 0.08}>
-              <figure className="flex h-full flex-col border border-black/10 bg-white p-7 shadow-sm">
-                <div className="flex gap-1 text-amber-400" aria-hidden="true">
-                  {Array.from({ length: 5 }).map((_, starIndex) => (
-                    <HiOutlineStar key={starIndex} className="text-lg" />
-                  ))}
-                </div>
-                <blockquote className="mt-4 flex-1 text-base leading-8 text-[#3A3D4A]">“{item.text}”</blockquote>
-                <figcaption className="mt-6 flex items-center gap-3 border-t border-black/10 pt-5">
-                  <img src={item.avatar} alt={item.name} className="h-11 w-11 rounded-full object-cover" loading="lazy" />
-                  <div>
-                    <div className="font-extrabold text-[#0B0B0F]">{item.name}</div>
-                    <div className="text-sm text-[#5A5D6E]">{item.role}</div>
-                  </div>
-                </figcaption>
-              </figure>
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function UtisciPage() {
-  return (
-    <main className="anim-rich">
-      <InfoHero
-        eyebrow="Utisci"
-        icon={HiOutlineChatBubbleLeftRight}
-        title="Šta kažu naši klijenti"
-        intro="Ne vjerujte nama na riječ — pogledajte iskustva klijenata koji su krenuli besplatnom gotovom verzijom i platili tek kad su bili zadovoljni."
-      />
-      <TestimonialsGrid />
-      <ClosingCTA
-        title="Želite biti sljedeća priča?"
-        text="Krenimo s besplatnom gotovom verzijom — vidite rezultat prije nego išta platite."
-      />
-    </main>
   );
 }
 
@@ -4396,7 +4280,6 @@ export default function App() {
     "/usluge/web-stranice": "svc-web",
     "/usluge/2d-igrice": "svc-games",
     "/usluge/mobilne-aplikacije": "svc-mobile",
-    "/utisci": "utisci",
     "/cijene": "cijene",
     "/cesta-pitanja": "faq",
     "/kontakt": "kontakt",
@@ -4486,7 +4369,6 @@ export default function App() {
       "svc-games": "Izrada 2D igara | DevForge",
       "svc-mobile": "Izrada mobilnih aplikacija (Android & iOS) | DevForge",
       projects: "Projekti — naš rad | DevForge",
-      utisci: "Utisci klijenata | DevForge",
       cijene: "Cijene — web od 150 KM, shop od 600 KM | DevForge",
       faq: "Česta pitanja | DevForge",
       kontakt: "Kontakt — zatražite gotovu verziju | DevForge Sarajevo",
@@ -4529,8 +4411,6 @@ export default function App() {
         <ServiceDetailPage detail={serviceDetails.games} />
       ) : route === "svc-mobile" ? (
         <ServiceDetailPage detail={serviceDetails.mobile} />
-      ) : route === "utisci" ? (
-        <UtisciPage />
       ) : route === "cijene" ? (
         <CijenePage />
       ) : route === "faq" ? (

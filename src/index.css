@@ -379,7 +379,6 @@ button {
   --project-w: calc((100vw - max(2rem, calc((100vw - 80rem) / 2 + 2rem)) - 2rem) / 3.2);
 }
 
-.testimonial-fade,
 .modal-in {
   animation: soft-in 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
