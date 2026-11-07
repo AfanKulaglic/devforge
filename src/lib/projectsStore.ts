@@ -33,7 +33,10 @@ const SEED: AdminProject[] = [
     tag: "Web shop",
     url: "https://www.elesonic.ba",
     description:
-      "Online prodavnica elektronike i sigurnosne opreme za BiH — kamere za nadzor, špijunska oprema, noćna optika, dronovi, projektori i pametni gadgeti. Katalog od 30+ proizvoda, korpa, online plaćanje i dostava širom Bosne i Hercegovine. Kontakt: myicon2025@gmail.com",
+      "Online prodavnica elektronike i sigurnosne opreme za tržište Bosne i Hercegovine — nadzorne " +
+      "kamere, noćna optika, dronovi, projektori i pametni uređaji. Katalog od preko 30 proizvoda " +
+      "razvrstanih u 7 kategorija, sa korpom, online plaćanjem i dostavom na cijelom području BiH. " +
+      "Brza pretraga, jasne specifikacije i podrška pri odabiru opreme.",
     imageDesktop: "https://picturetolink.com/i/WgFlob4ttz.png",
     imageMobile: "https://picturetolink.com/i/EjgxGl6Qn0.png",
     createdAt: 1,
@@ -45,7 +48,10 @@ const SEED: AdminProject[] = [
     tag: "Print shop",
     url: "https://www.my-icon.shop",
     description:
-      "Nemački online shop za digitalni i tekstilni print — majice, polo majice, duksevi, kape, flyeri, brošure, vizit karte, plakati i reklamni materijal. Sopstveni online dizajner, ekspres produkcija za 24h, besplatna dostava od 99 €. Kontakt: myicon2025@gmail.com",
+      "Njemački online shop za digitalni i tekstilni print — majice, duksevi, kape, flyeri, brošure, " +
+      "vizit karte i reklamni materijal. Ugrađeni online dizajner dopušta pripremu materijala bez " +
+      "poznavanja grafičkih alata, ekspresna produkcija završava za 24 sata, a dostava je besplatna " +
+      "iznad 99 €. Katalog od 34 proizvoda sa fotografijama i cijenama.",
     imageDesktop: "https://i.ibb.co/Q3tJF0Np/0a2d8fa2d3f5.png",
     imageMobile: "https://i.ibb.co/60ff2bwD/logo-text-1.png",
     createdAt: 2,
@@ -57,7 +63,10 @@ const SEED: AdminProject[] = [
     tag: "Racing igra",
     url: "https://formula1-unbranded.vercel.app/",
     description:
-      "Top-down formula racing igra u browseru — vozi bolid po stazi, savladavaj krivine i obaraj najbolje vrijeme kruga. Radi na računaru i mobitelu, bez instalacije i bez naloga, direktno u pregledniku.",
+      "Arkadna trkaća igra u pregledniku — voziš bolid iz ptičje perspektive, savladavaš krivine i " +
+      "obaraš najbolje vrijeme kruga. Igra je napravljena u Next.js-u na canvas platnu, sa vlastitom " +
+      "fizikom kretanja i kontrolama prilagođenim tipkovnici i ekranu osjetljivom na dodir. Radi na " +
+      "računaru i mobitelu, bez instalacije, bez naloga i bez čekanja — otvoriš i igraš.",
     imageDesktop: "https://image.thum.io/get/width/1200/crop/675/https://formula1-unbranded.vercel.app/",
     imageMobile: "https://image.thum.io/get/width/400/crop/800/https://formula1-unbranded.vercel.app/",
     createdAt: 3,
@@ -69,7 +78,10 @@ const SEED: AdminProject[] = [
     tag: "Web alat",
     url: "https://qiro-tools.vercel.app/",
     description:
-      "Sve-u-jednom studio za kratke linkove, QR kodove i konverziju fajlova. Brendirani short linkovi sa analitikom klikova, instant QR generator, te konverzija slika, videa, audija i GIF-ova — sve u browseru preko WebAssembly, fajlovi se nikad ne šalju na server. Besplatno za početak, bez naloga.",
+      "Sve-u-jednom studio za kratke linkove, QR kodove i konverziju fajlova. Brendirani short " +
+      "linkovi sa analitikom klikova, instant QR generator za linkove i tekst, te konverzija slika, " +
+      "videa, audija i GIF-ova. Obrada se odvija u pregledniku preko WebAssembly tehnologije, pa " +
+      "fajlovi nikada ne napuštaju tvoj računar — privatnost je zajamčena.",
     imageDesktop: "https://qiro-tools.vercel.app/hero-main.png",
     imageMobile: "https://qiro-tools.vercel.app/hero-main.png",
     createdAt: 4,
@@ -81,7 +93,11 @@ const SEED: AdminProject[] = [
     tag: "React Native",
     url: "https://github.com/AfanKulaglic/GameLauncher",
     description:
-      "Multiplayer launcher za igre na ploči i društvene igre za 2–4 igrača. Pretraži biblioteku igara (Battleship, Ludo, Slagalica, Runbound Rivals), dodaj prijatelje i prati njihov online status, pošalji pozivnicu i čekaj u zajedničkom lobiju dok se svi ne okupe — host pokreće partiju i svi igrači ulaze u isti ekran. Napravljeno u React Native + Expo, backend Firebase Realtime Database (lobi i gameState u realnom vremenu), Auth sa email/šifrom i Google prijavom, navigacija stack + bottom tabs i custom SVG ikone.",
+      "Multiplayer launcher za društvene igre na ploči za 2–4 igrača. Pretražiš biblioteku " +
+      "(Battleship, Ludo, Slagalica, Runbound Rivals), dodaš prijatelje i pratiš njihov online status, " +
+      "pošalješ pozivnicu i čekaš u zajedničkom lobiju — host pokreće partiju i svi igrači ulaze u isti " +
+      "ekran. Napravljeno u React Native + Expo, uz Firebase Realtime Database za sinhronizaciju u " +
+      "realnom vremenu.",
     imageDesktop: "https://opengraph.githubassets.com/1/AfanKulaglic/GameLauncher",
     imageMobile: "https://opengraph.githubassets.com/1/AfanKulaglic/GameLauncher",
     createdAt: 5,
@@ -93,7 +109,11 @@ const SEED: AdminProject[] = [
     tag: "Stomatologija",
     url: "https://ljaljevic-dental.vercel.app/",
     description:
-      "Web stranica specijalističke stomatološke ordinacije u Sarajevu — protetika, cirkonske i metalokeramičke krunice, proteze, estetska stomatologija, endodoncija i oralna hirurgija. Sekcije: usluge, o nama, rezultati prije/poslije, tim, tehnologija i zakazivanje. Adresa Bardakčije 23, telefon +387 33 567 890, info@ljaljevic-dental.ba. Napravljeno u React + Vite + Tailwind, animacije Framer Motion, SEO sa schema.org Dentist structured data.",
+      "Web stranica specijalističke stomatološke ordinacije u Sarajevu — protetika, cirkonske i " +
+      "metalokeramičke krunice, proteze, estetska stomatologija, endodoncija i oralna hirurgija. " +
+      "Sekcije za usluge, tim, tehnologiju i rezultate prije i poslije zahvata, uz online zakazivanje. " +
+      "Napravljeno u React + Vite + Tailwind, sa SEO optimizacijom i schema.org podacima za lokalno " +
+      "pretraživanje.",
     imageDesktop: "https://ljaljevic-dental.vercel.app/images/hero/dental-clinic.jpg",
     imageMobile: "https://ljaljevic-dental.vercel.app/images/hero/dental-clinic.jpg",
     createdAt: 6,
@@ -105,13 +125,10 @@ const SEED: AdminProject[] = [
     tag: "Turizam · GPS · 3D",
     url: "https://sarajevo-visit.vercel.app/map",
     description:
-      "Turistička aplikacija koja Sarajevo pretvara u igru otkrivanja. Radi kao web aplikacija (PWA) — " +
-      "instaliraš je na telefon kao pravu aplikaciju, ali bez Play Storea i App Storea. GPS prepozna kad si " +
-      "blizu znamenitosti (50 m), potvrdiš posjetu i otključa ti se priča, fotografije i 3D model koji okrećeš " +
-      "prstom — Sebilj, Vijećnica, Sahat kula, Vječna vatra, Spomenik ubijenoj djeci Sarajeva i Multicultural Man. " +
-      "Koristi: vodi turistu kao digitalni vodič na 9 jezika, daje navigaciju pješice ili autom, a sakupljanje " +
-      "znamenitosti i maskota-vuka drži pažnju — grad se prolazi pješice i pamti, umjesto da se svede na " +
-      "slikanje i odlazak.",
+      "Turistička aplikacija koja Sarajevo pretvara u igru otkrivanja. Radi kao web aplikacija (PWA) " +
+      "— instaliraš je na telefon kao pravu aplikaciju, bez Play Storea i App Storea. GPS prepozna kad " +
+      "si blizu znamenitosti, potvrdiš posjetu i otključa ti se priča, fotografije i 3D model koji " +
+      "okrećeš prstom. Digitalni vodič na 9 jezika, sa navigacijom pješice ili autom.",
     imageDesktop: "https://sarajevo-visit.vercel.app/logos/logo.png",
     imageMobile: "https://sarajevo-visit.vercel.app/icons/icon-512.png",
     createdAt: 7,
@@ -133,7 +150,7 @@ let cache: AdminProject[] | null = null;
 // se poveca i novi seed-ovi se automatski dodaju i u postojecu lokalnu bazu
 // (bez brisanja onoga sto je korisnik sam dodao/uredio).
 const SEED_VERSION_KEY = "devforge-projects-seed-version";
-const SEED_VERSION = "7";
+const SEED_VERSION = "8";
 
 function readRaw(): AdminProject[] {
   if (!isBrowser()) return SEED;
@@ -145,12 +162,35 @@ function readRaw(): AdminProject[] {
     if (!Array.isArray(parsed)) return EMPTY;
     const stored = parsed.filter((p): p is AdminProject => !!p && typeof p.id === "string");
 
-    // Nadogradi lokalnu bazu novim seed projektima (po id-u) kad se verzija promijeni.
+    // Kad se SEED_VERSION promijeni:
+    //  1) dodaj seed projekte kojih nema u lokalnoj bazi,
+    //  2) osvjezi TEKST (opis, tag, kategoriju, URL) postojecih seed projekata,
+    //     ali NE diraj slike — korisnik ih je mozda zamijenio svojim.
+    //  3) projekte koje je korisnik sam dodao (nije seed) ne diraj nikako.
     const seenVersion = window.localStorage.getItem(SEED_VERSION_KEY);
     if (seenVersion !== SEED_VERSION) {
+      const seedById = new Map(SEED.map((p) => [p.id, p]));
       const storedIds = new Set(stored.map((p) => p.id));
+
+      const refreshed = stored.map((p) => {
+        const seed = seedById.get(p.id);
+        if (!seed) return p; // korisnikov vlastiti projekt — ne diraj
+        return {
+          ...p,
+          title: seed.title,
+          service: seed.service,
+          tag: seed.tag,
+          url: seed.url,
+          description: seed.description,
+          // imageDesktop / imageMobile ostaju korisnikove ako ih je mijenjao
+          imageDesktop: p.imageDesktop || seed.imageDesktop,
+          imageMobile: p.imageMobile || seed.imageMobile,
+        };
+      });
+
       const missing = SEED.filter((p) => !storedIds.has(p.id));
-      const merged = missing.length > 0 ? [...stored, ...missing] : stored;
+      const merged = missing.length > 0 ? [...refreshed, ...missing] : refreshed;
+
       try {
         window.localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
         window.localStorage.setItem(SEED_VERSION_KEY, SEED_VERSION);
