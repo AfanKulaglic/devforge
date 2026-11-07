@@ -111,6 +111,12 @@ function isBrowser() {
 // istu referencu dok se podaci ne promijene (inače React uđe u petlju).
 let cache: AdminProject[] | null = null;
 
+// Kljuc do verzije seed-a: kad se u kodu pojavi novi seed projekt, ovaj broj
+// se poveca i novi seed-ovi se automatski dodaju i u postojecu lokalnu bazu
+// (bez brisanja onoga sto je korisnik sam dodao/uredio).
+const SEED_VERSION_KEY = "devforge-projects-seed-version";
+const SEED_VERSION = "6";
+
 function readRaw(): AdminProject[] {
   if (!isBrowser()) return SEED;
   try {
@@ -119,7 +125,24 @@ function readRaw(): AdminProject[] {
     if (raw === null) return SEED;
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return EMPTY;
-    return parsed.filter((p): p is AdminProject => !!p && typeof p.id === "string");
+    const stored = parsed.filter((p): p is AdminProject => !!p && typeof p.id === "string");
+
+    // Nadogradi lokalnu bazu novim seed projektima (po id-u) kad se verzija promijeni.
+    const seenVersion = window.localStorage.getItem(SEED_VERSION_KEY);
+    if (seenVersion !== SEED_VERSION) {
+      const storedIds = new Set(stored.map((p) => p.id));
+      const missing = SEED.filter((p) => !storedIds.has(p.id));
+      const merged = missing.length > 0 ? [...stored, ...missing] : stored;
+      try {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+        window.localStorage.setItem(SEED_VERSION_KEY, SEED_VERSION);
+      } catch {
+        /* localStorage pun — vrati samo procitano */
+      }
+      return merged;
+    }
+
+    return stored;
   } catch {
     return SEED;
   }
@@ -175,6 +198,7 @@ export function resetProjects() {
   if (isBrowser()) {
     try {
       window.localStorage.removeItem(STORAGE_KEY);
+      window.localStorage.removeItem(SEED_VERSION_KEY);
     } catch {
       /* ignore */
     }
