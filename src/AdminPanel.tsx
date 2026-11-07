@@ -4,6 +4,7 @@ import {
   HiOutlineArrowTopRightOnSquare,
   HiOutlineBanknotes,
   HiOutlineCheck,
+  HiOutlineChevronDown,
   HiOutlineChevronRight,
   HiOutlineDevicePhoneMobile,
   HiOutlineGlobeAlt,
@@ -424,16 +425,135 @@ function ProjectForm({
   );
 }
 
+
+// ── Kartica jednog projekta (u listi po kategorijama) ─────────────────────
+function ProjectCard({
+  project,
+  confirming,
+  onEdit,
+  onAskDelete,
+  onCancelDelete,
+  onConfirmDelete,
+}: {
+  project: AdminProject;
+  confirming: boolean;
+  onEdit: () => void;
+  onAskDelete: () => void;
+  onCancelDelete: () => void;
+  onConfirmDelete: () => void;
+}) {
+  return (
+    <div className="group flex flex-col border border-white/10 bg-white/[0.03] transition hover:border-teal-300/40">
+      <div className="relative aspect-[16/9] overflow-hidden bg-[#0A0A0E]">
+        <img
+          src={project.imageDesktop}
+          alt={project.title}
+          className="h-full w-full object-cover"
+          loading="lazy"
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).style.opacity = "0.15";
+          }}
+        />
+        {project.tag && (
+          <span className="absolute right-0 top-0 bg-black/70 px-2 py-1 text-[0.6rem] font-bold uppercase tracking-[0.14em] text-white/70 backdrop-blur-sm">
+            {project.tag}
+          </span>
+        )}
+      </div>
+
+      <div className="flex flex-1 flex-col p-4">
+        <h3 className="text-base font-extrabold tracking-tight text-white">{project.title}</h3>
+        <p className="mt-2 line-clamp-2 text-xs leading-5 text-white/40">
+          {project.description || "Bez opisa"}
+        </p>
+
+        {project.url && (
+          <a
+            href={project.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-flex items-center gap-1.5 truncate text-[0.7rem] font-bold text-white/45 transition hover:text-teal-300"
+          >
+            <HiOutlineArrowTopRightOnSquare className="shrink-0 text-sm" aria-hidden="true" />
+            <span className="truncate">{project.url.replace(/^https?:\/\//, "")}</span>
+          </a>
+        )}
+
+        <div className="mt-auto flex items-center gap-2 pt-4">
+          <button
+            type="button"
+            onClick={onEdit}
+            className="inline-flex flex-1 items-center justify-center gap-1.5 border border-white/15 px-3 py-2 text-xs font-bold text-white/80 transition hover:border-teal-300 hover:text-white"
+          >
+            <HiOutlinePencilSquare className="text-sm" aria-hidden="true" />
+            Uredi
+          </button>
+          {confirming ? (
+            <>
+              <button
+                type="button"
+                onClick={onConfirmDelete}
+                className="inline-flex items-center justify-center gap-1.5 bg-red-500/90 px-3 py-2 text-xs font-bold text-white transition hover:bg-red-500"
+              >
+                Potvrdi
+              </button>
+              <button
+                type="button"
+                onClick={onCancelDelete}
+                className="border border-white/15 px-3 py-2 text-xs font-bold text-white/70 transition hover:text-white"
+              >
+                Ne
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={onAskDelete}
+              aria-label={`Obriši ${project.title}`}
+              className="border border-white/15 px-3 py-2 text-white/60 transition hover:border-red-400 hover:text-red-300"
+            >
+              <HiOutlineTrash className="text-sm" aria-hidden="true" />
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Tab: Projekti ──────────────────────────────────────────────────────────
 function ProjectsTab() {
   const projects = useProjects();
   const [draft, setDraft] = useState<Draft | null>(null);
   const [confirmId, setConfirmId] = useState<string | null>(null);
+  // Koje su kategorije otvorene — po defaultu sve.
+  const [closedGroups, setClosedGroups] = useState<string[]>([]);
 
-  const sorted = useMemo(
-    () => [...projects].sort((a, b) => a.createdAt - b.createdAt),
-    [projects],
-  );
+  const isOpen = (service: string) => !closedGroups.includes(service);
+  const toggleGroup = (service: string) =>
+    setClosedGroups((prev) =>
+      prev.includes(service) ? prev.filter((s) => s !== service) : [...prev, service],
+    );
+
+  // Grupisano po kategorijama (SERVICE_OPTIONS odredjuje redoslijed),
+  // ukljucujuci i prazne kategorije da se vidi sta nedostaje.
+  const grouped = useMemo(() => {
+    const byService = SERVICE_OPTIONS.map((service) => ({
+      service,
+      items: projects
+        .filter((p) => p.service === service)
+        .sort((a, b) => a.createdAt - b.createdAt),
+    }));
+    // Projekti sa nepoznatom kategorijom (npr. stara vrijednost) idu na kraj.
+    const known = new Set<string>(SERVICE_OPTIONS);
+    const orphans = projects
+      .filter((p) => !known.has(p.service))
+      .sort((a, b) => a.createdAt - b.createdAt);
+    if (orphans.length > 0) {
+      byService.push({ service: "Ostalo", items: orphans });
+    }
+    return byService;
+  }, [projects]);
 
   return (
     <div className="space-y-6">
@@ -466,7 +586,7 @@ function ProjectsTab() {
         />
       )}
 
-      {sorted.length === 0 && !draft && (
+      {projects.length === 0 && !draft && (
         <div className="border border-dashed border-white/15 bg-white/[0.02] px-6 py-14 text-center">
           <HiOutlineRectangleGroup className="mx-auto text-3xl text-white/20" aria-hidden="true" />
           <p className="mt-4 text-sm font-semibold text-white/60">Nema projekata</p>
@@ -477,89 +597,73 @@ function ProjectsTab() {
         </div>
       )}
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {sorted.map((p) => (
-          <div
-            key={p.id}
-            className="group flex flex-col border border-white/10 bg-white/[0.03] transition hover:border-teal-300/40"
-          >
-            <div className="relative aspect-[16/9] overflow-hidden bg-[#0A0A0E]">
-              <img
-                src={p.imageDesktop}
-                alt={p.title}
-                className="h-full w-full object-cover"
-                loading="lazy"
-                onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).style.display = "none";
-                }}
-              />
-              <span className="absolute left-0 top-0 bg-black/70 px-2 py-1 text-[0.6rem] font-bold uppercase tracking-[0.14em] text-teal-300 backdrop-blur-sm">
-                {p.service}
+      {/* Projekti grupisani po kategorijama (isti redoslijed kao na /projekti) */}
+      <div className="space-y-4">
+        {grouped.map((group, groupIndex) => (
+          <div key={group.service} className="border border-white/10 bg-white/[0.02]">
+            <button
+              type="button"
+              onClick={() => toggleGroup(group.service)}
+              className="flex w-full items-center justify-between gap-3 px-4 py-3.5 text-left transition hover:bg-white/[0.02]"
+            >
+              <div className="flex items-center gap-3">
+                <HiOutlineChevronDown
+                  className={`shrink-0 text-base text-white/40 transition-transform ${
+                    isOpen(group.service) ? "" : "-rotate-90"
+                  }`}
+                  aria-hidden="true"
+                />
+                <span className="text-[0.62rem] font-black tracking-[0.2em] text-white/25">
+                  0{groupIndex + 1}
+                </span>
+                <div>
+                  <p className="text-base font-extrabold text-white">{group.service}</p>
+                  <p className="text-[0.68rem] text-white/35">
+                    {group.items.length} {group.items.length === 1 ? "projekt" : "projekta"}
+                  </p>
+                </div>
+              </div>
+              <span className="hidden shrink-0 text-[0.62rem] font-bold uppercase tracking-[0.14em] text-teal-300/70 sm:block">
+                {isOpen(group.service) ? "Sakrij" : "Prikaži"}
               </span>
-            </div>
+            </button>
 
-            <div className="flex flex-1 flex-col p-4">
-              <p className="text-[0.62rem] font-bold uppercase tracking-[0.18em] text-teal-300/80">
-                {p.tag || "—"}
-              </p>
-              <h3 className="mt-1 text-base font-extrabold tracking-tight text-white">{p.title}</h3>
-              <p className="mt-2 line-clamp-2 text-xs leading-5 text-white/40">
-                {p.description || "Bez opisa"}
-              </p>
-
-              {p.url && (
-                <a
-                  href={p.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-3 inline-flex items-center gap-1.5 text-[0.7rem] font-bold text-white/45 transition hover:text-teal-300"
-                >
-                  <HiOutlineArrowTopRightOnSquare className="text-sm" aria-hidden="true" />
-                  {p.url.replace(/^https?:\/\//, "")}
-                </a>
-              )}
-
-              <div className="mt-auto flex items-center gap-2 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setDraft(draftFrom(p))}
-                  className="inline-flex flex-1 items-center justify-center gap-1.5 border border-white/15 px-3 py-2 text-xs font-bold text-white/80 transition hover:border-teal-300 hover:text-white"
-                >
-                  <HiOutlinePencilSquare className="text-sm" aria-hidden="true" />
-                  Uredi
-                </button>
-                {confirmId === p.id ? (
-                  <>
+            {isOpen(group.service) && (
+              <div className="border-t border-white/10 p-4">
+                {group.items.length === 0 ? (
+                  <div className="border border-dashed border-white/12 px-4 py-8 text-center">
+                    <p className="text-xs font-semibold text-white/40">
+                      Nema projekata u ovoj kategoriji
+                    </p>
                     <button
                       type="button"
-                      onClick={() => {
-                        deleteProject(p.id);
-                        setConfirmId(null);
-                      }}
-                      className="inline-flex items-center justify-center gap-1.5 bg-red-500/90 px-3 py-2 text-xs font-bold text-white transition hover:bg-red-500"
+                      onClick={() => setDraft({ ...EMPTY_DRAFT, service: group.service })}
+                      className="mt-3 inline-flex items-center gap-1.5 border border-white/15 px-3 py-1.5 text-[0.68rem] font-bold text-white/70 transition hover:border-teal-300 hover:text-white"
                     >
-                      Potvrdi
+                      <HiOutlinePlus className="text-sm" aria-hidden="true" />
+                      Dodaj u „{group.service}"
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => setConfirmId(null)}
-                      className="border border-white/15 px-3 py-2 text-xs font-bold text-white/70 transition hover:text-white"
-                    >
-                      Ne
-                    </button>
-                  </>
+                  </div>
                 ) : (
-                  <button
-                    type="button"
-                    onClick={() => setConfirmId(p.id)}
-                    aria-label={`Obriši ${p.title}`}
-                    className="border border-white/15 px-3 py-2 text-white/60 transition hover:border-red-400 hover:text-red-300"
-                  >
-                    <HiOutlineTrash className="text-sm" aria-hidden="true" />
-                  </button>
+                  <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                    {group.items.map((p) => (
+                      <ProjectCard
+                        key={p.id}
+                        project={p}
+                        confirming={confirmId === p.id}
+                        onEdit={() => setDraft(draftFrom(p))}
+                        onAskDelete={() => setConfirmId(p.id)}
+                        onCancelDelete={() => setConfirmId(null)}
+                        onConfirmDelete={() => {
+                          deleteProject(p.id);
+                          setConfirmId(null);
+                        }}
+                      />
+                    ))}
+                  </div>
                 )}
               </div>
-            </div>
+            )}
           </div>
         ))}
       </div>
