@@ -34,6 +34,8 @@ import {
   HiOutlineSwatch,
   HiOutlineStar,
   HiOutlineChartBar,
+  HiOutlineBolt,
+  HiOutlinePlay,
   HiOutlinePlus,
   HiOutlineMinus,
   HiOutlineHome,
@@ -1601,6 +1603,257 @@ function Facts() {
   );
 }
 
+// ───────────────────────────────────────────────────────────────────────────
+// Dugmad ispod svakog projekta.
+//
+// Marketinski redoslijed (najjaci prvi):
+//   1. "Otvori demo"     → primarna akcija, puna boja. Kupac odmah klikne i
+//                          proba proizvod. Ovo je ono sto prodaje.
+//   2. "Pregled uzivo"   → otvara live preview u MODALU (bez napustanja sajta).
+//                          Covjek ostaje na DevForge-u, vidi kako sajt radi u
+//                          stvarnom browseru na desktopu I mobitelu.
+//   3. "Detalji"         → mali, sekundarni. Za onoga koga zanima tehnologija.
+//
+// Zasto tako: posetilac ne treba da razmislja. Jedno veliko dugme = odluka
+// je laka. "Live preview" je razlika izmedju "pokazi mi" i "vjeruj mi".
+// ───────────────────────────────────────────────────────────────────────────
+
+function LivePreviewModal({
+  project,
+  onClose,
+}: {
+  project: { title: string; url: string; tag: string; description: string };
+  onClose: () => void;
+}) {
+  const [device, setDevice] = useState<"desktop" | "mobile">("desktop");
+  const [loaded, setLoaded] = useState(false);
+  // Neka sajtu zabranjuju ugradnju (X-Frame-Options). Ako se iframe ne
+  // ucita u 4.5s, prikazujemo fallback sa velikim linkom — bolje nego prazan okvir.
+  const [blocked, setBlocked] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setBlocked(true), 4500);
+    return () => window.clearTimeout(timer);
+  }, []);
+  const host = project.url.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+
+  // ESC zatvara + blokiraj skrol tijela dok je modal otvoren
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-[120] flex flex-col bg-[#050506]/97 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Pregled uzivo: ${project.title}`}
+    >
+      {/* Traka gore */}
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-white/10 px-4 py-3 md:px-6">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="h-2 w-2 shrink-0 rounded-full bg-teal-400 shadow-[0_0_10px_2px_rgba(45,212,191,0.6)]" aria-hidden="true" />
+          <div className="min-w-0">
+            <p className="truncate text-sm font-extrabold tracking-tight text-white">{project.title}</p>
+            <p className="truncate text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-teal-300/80">
+              Pregled uzivo · {host}
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {/* Prekidac desktop / mobitel */}
+          <div className="flex border border-white/15">
+            <button
+              type="button"
+              onClick={() => setDevice("desktop")}
+              aria-pressed={device === "desktop"}
+              className={`px-3 py-1.5 text-[0.68rem] font-extrabold uppercase tracking-[0.1em] transition ${
+                device === "desktop" ? "bg-teal-400 text-black" : "text-white/60 hover:text-white"
+              }`}
+            >
+              Desktop
+            </button>
+            <button
+              type="button"
+              onClick={() => setDevice("mobile")}
+              aria-pressed={device === "mobile"}
+              className={`px-3 py-1.5 text-[0.68rem] font-extrabold uppercase tracking-[0.1em] transition ${
+                device === "mobile" ? "bg-teal-400 text-black" : "text-white/60 hover:text-white"
+              }`}
+            >
+              Mobitel
+            </button>
+          </div>
+
+          <a
+            href={project.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden items-center gap-1.5 border border-white/15 px-3 py-1.5 text-[0.68rem] font-extrabold uppercase tracking-[0.1em] text-white/75 transition hover:border-teal-300 hover:text-white sm:inline-flex"
+          >
+            Novi tab
+            <HiOutlineArrowTopRightOnSquare className="text-sm" aria-hidden="true" />
+          </a>
+
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Zatvori pregled"
+            className="border border-white/15 p-1.5 text-white/75 transition hover:border-white/40 hover:text-white"
+          >
+            <HiOutlineXMark className="text-lg" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+
+      {/* Sadrzaj */}
+      <div className="flex min-h-0 flex-1 items-stretch justify-center overflow-auto p-3 md:p-6">
+        <div
+          className={`relative flex flex-col bg-[#0E0E12] shadow-2xl shadow-black/80 ${
+            device === "desktop"
+              ? "w-full max-w-[1400px] border border-white/12"
+              : "w-full max-w-[420px] rounded-[2rem] border-[10px] border-[#1A1A20]"
+          }`}
+        >
+          {/* Browser traka samo na desktop prikazu */}
+          {device === "desktop" && (
+            <div className="flex shrink-0 items-center gap-2 border-b border-white/10 bg-[#141418] px-4 py-2.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+              <span className="ml-3 flex min-w-0 flex-1 items-center gap-1.5 bg-white/[0.05] px-2.5 py-1 text-[11px] text-white/45">
+                <HiOutlineLockClosed className="shrink-0 text-[10px]" aria-hidden="true" />
+                <span className="truncate">{host}</span>
+              </span>
+            </div>
+          )}
+
+          {!loaded && !blocked && (
+            <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#0E0E12]">
+              <div className="text-center">
+                <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-white/15 border-t-teal-400" />
+                <p className="mt-4 text-[0.7rem] font-bold uppercase tracking-[0.16em] text-white/40">
+                  Ucitavam {project.title}…
+                </p>
+              </div>
+            </div>
+          )}
+
+          {blocked && !loaded && (
+            <div className="flex flex-1 flex-col items-center justify-center gap-6 px-6 py-16 text-center">
+              <HiOutlineGlobeAlt className="text-4xl text-teal-300/70" aria-hidden="true" />
+              <div>
+                <p className="text-lg font-extrabold text-white">
+                  Ovaj sajt se ne da ugraditi u okvir
+                </p>
+                <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-white/45">
+                  {host} dozvoljava prikaz samo na svojoj adresi. Otvorite ga u novom tabu —
+                  radi normalno, samo ne unutar drugog sajta.
+                </p>
+              </div>
+              <a
+                href={project.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-400 to-[#0891B2] px-6 py-3 text-sm font-extrabold text-white transition hover:brightness-110"
+              >
+                Otvori {project.title}
+                <HiOutlineArrowTopRightOnSquare className="text-base" aria-hidden="true" />
+              </a>
+            </div>
+          )}
+
+          <iframe
+            src={project.url}
+            title={`Pregled uzivo: ${project.title}`}
+            onLoad={() => setLoaded(true)}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
+            className={`w-full flex-1 border-0 bg-white ${
+              device === "desktop" ? "min-h-[60vh] md:min-h-[70vh]" : "min-h-[70vh]"
+            } ${blocked && !loaded ? "hidden" : ""}`}
+          />
+        </div>
+      </div>
+
+      {/* Podnozje: opis */}
+      <div className="shrink-0 border-t border-white/10 px-4 py-3 md:px-6">
+        <p className="mx-auto max-w-3xl text-center text-[0.72rem] leading-5 text-white/40">
+          <span className="font-bold text-teal-300">{project.tag}</span> — {project.description}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// Tri dugmeta ispod svakog projekta.
+function ProjectActions({
+  project,
+  variant = "row",
+}: {
+  project: { title: string; url: string; tag: string; description: string };
+  variant?: "row" | "compact";
+}) {
+  const [preview, setPreview] = useState(false);
+  const hasUrl = !!project.url && /^https?:\/\//.test(project.url);
+
+  return (
+    <>
+      <div className={`mt-4 flex flex-wrap items-center gap-2 ${variant === "compact" ? "" : "md:gap-3"}`}>
+        {/* 1. Primarna akcija */}
+        {hasUrl ? (
+          <a
+            href={project.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-400 to-[#0891B2] px-4 py-2.5 text-[0.72rem] font-extrabold uppercase tracking-[0.1em] text-white transition hover:brightness-110 md:px-5"
+          >
+            Otvori demo
+            <HiOutlineArrowTopRightOnSquare className="text-sm" aria-hidden="true" />
+          </a>
+        ) : (
+          <span className="inline-flex items-center gap-2 border border-white/12 px-4 py-2.5 text-[0.72rem] font-extrabold uppercase tracking-[0.1em] text-white/30">
+            Demo u izradi
+          </span>
+        )}
+
+        {/* 2. Live preview — ostaje na sajtu */}
+        {hasUrl && (
+          <button
+            type="button"
+            onClick={() => setPreview(true)}
+            className="inline-flex items-center gap-2 border border-white/25 px-4 py-2.5 text-[0.72rem] font-extrabold uppercase tracking-[0.1em] text-white transition hover:border-teal-300 hover:bg-white hover:text-black md:px-5"
+          >
+            <HiOutlinePlay className="text-sm" aria-hidden="true" />
+            Pregled uzivo
+          </button>
+        )}
+
+        {/* 3. Sekundarno */}
+        {variant === "row" && hasUrl && (
+          <span className="hidden items-center gap-1.5 text-[0.68rem] font-semibold text-white/30 md:inline-flex">
+            <HiOutlineBolt className="text-sm text-teal-300/60" aria-hidden="true" />
+            bez instalacije
+          </span>
+        )}
+      </div>
+
+      {preview && hasUrl && <LivePreviewModal project={project} onClose={() => setPreview(false)} />}
+    </>
+  );
+}
+
 function DeviceMockup({ image, imageMobile, title, url, glow = true }: { image: string; imageMobile?: string; title: string; url?: string; glow?: boolean }) {
   return (
     <div className="relative">
@@ -1786,15 +2039,16 @@ function Projects() {
                 <p className="text-sm font-bold uppercase tracking-[0.25em] text-teal-300">{project.category}</p>
                 <h3 className="mt-2 text-2xl font-extrabold tracking-tight text-white md:text-3xl">{project.title}</h3>
                 <p className="mt-3 max-w-md text-base leading-7 text-[#A7AABB]">{project.description}</p>
-                <a
-                  className="mt-6 inline-flex items-center gap-2 rounded-none border border-white/20 px-6 py-3 text-sm font-bold text-white transition hover:border-teal-300 hover:bg-white hover:text-black"
-                  href={project.link}
-                  target={project.link.startsWith("http") ? "_blank" : undefined}
-                  rel={project.link.startsWith("http") ? "noopener noreferrer" : undefined}
-                >
-                  Pogledaj projekt
-                  <HiOutlineChevronRight className="text-base" aria-hidden="true" />
-                </a>
+                <div className="mt-6">
+                  <ProjectActions
+                    project={{
+                      title: project.title,
+                      url: project.link,
+                      tag: project.category,
+                      description: project.description,
+                    }}
+                  />
+                </div>
               </div>
             </article>
           )),
@@ -2894,17 +3148,15 @@ function ProjectRow({ group, rowIndex }: { group: { service: string; items: Proj
                     <p className="mt-2.5 line-clamp-3 text-sm leading-6 text-[#A7AABB] md:text-base md:leading-7">
                       {project.description}
                     </p>
-                    {project.url && (
-                      <a
-                        href={project.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-4 inline-flex items-center gap-1.5 border border-white/20 px-4 py-2 text-xs font-extrabold uppercase tracking-[0.14em] text-white transition hover:border-teal-300 hover:bg-white hover:text-black"
-                      >
-                        Pogledaj projekt
-                        <HiOutlineArrowTopRightOnSquare className="text-sm" aria-hidden="true" />
-                      </a>
-                    )}
+                    <ProjectActions
+                      project={{
+                        title: project.title,
+                        url: project.url,
+                        tag: project.tag,
+                        description: project.description,
+                      }}
+                      variant="compact"
+                    />
                   </div>
                 </div>
               </div>
