@@ -98,6 +98,24 @@ const SEED: AdminProject[] = [
     imageMobile: "https://ljaljevic-dental.vercel.app/images/hero/dental-clinic.jpg",
     createdAt: 6,
   },
+  {
+    id: "seed-sarajevo-visit",
+    title: "Saraya Hotspot — Sarajevo Visit",
+    service: "Mobilne aplikacije",
+    tag: "Turizam · GPS · 3D",
+    url: "https://sarajevo-visit.vercel.app/map",
+    description:
+      "Turistička aplikacija koja Sarajevo pretvara u igru otkrivanja. Radi kao web aplikacija (PWA) — " +
+      "instaliraš je na telefon kao pravu aplikaciju, ali bez Play Storea i App Storea. GPS prepozna kad si " +
+      "blizu znamenitosti (50 m), potvrdiš posjetu i otključa ti se priča, fotografije i 3D model koji okrećeš " +
+      "prstom — Sebilj, Vijećnica, Sahat kula, Vječna vatra, Spomenik ubijenoj djeci Sarajeva i Multicultural Man. " +
+      "Koristi: vodi turistu kao digitalni vodič na 9 jezika, daje navigaciju pješice ili autom, a sakupljanje " +
+      "znamenitosti i maskota-vuka drži pažnju — grad se prolazi pješice i pamti, umjesto da se svede na " +
+      "slikanje i odlazak.",
+    imageDesktop: "https://sarajevo-visit.vercel.app/logos/logo.png",
+    imageMobile: "https://sarajevo-visit.vercel.app/icons/icon-512.png",
+    createdAt: 7,
+  },
 ];
 
 const EVENT = "devforge:projects-changed";
@@ -115,7 +133,7 @@ let cache: AdminProject[] | null = null;
 // se poveca i novi seed-ovi se automatski dodaju i u postojecu lokalnu bazu
 // (bez brisanja onoga sto je korisnik sam dodao/uredio).
 const SEED_VERSION_KEY = "devforge-projects-seed-version";
-const SEED_VERSION = "6";
+const SEED_VERSION = "7";
 
 function readRaw(): AdminProject[] {
   if (!isBrowser()) return SEED;
