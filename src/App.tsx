@@ -1194,9 +1194,6 @@ function HeroLogos() {
 
       <div className="mx-auto max-w-7xl px-5 md:px-8">
         <div className="flex flex-col items-center gap-1 text-center">
-          <p className="text-[0.62rem] font-black uppercase tracking-[0.3em] text-teal-300/70">
-            Tehnologije
-          </p>
           <p className="text-sm font-bold tracking-tight text-white/70 md:text-base">
             Gradimo modernim, provjerenim tehnologijama
           </p>
