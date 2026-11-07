@@ -23,6 +23,7 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
   2. **MYICON** (`my-icon.shop`) — *Web shopovi* — tekstil i štampa, nemački, 34 proizvoda. `myicon2025@gmail.com`. Slike: `i.ibb.co`.
   3. **Formula Racers** (`formula1-unbranded.vercel.app`) — *2D igrice* — top-down racing, Next.js + canvas.
   4. **Qiro** (`qiro-tools.vercel.app`) — *Web stranice* — short linkovi, QR, konverzija fajlova WebAssembly.
+  5. **Ljaljević Dental** (`ljaljevic-dental.vercel.app`, repo `AfanKulaglic/Ljaljevic-Dental`) — *Web stranice* — stomatološka ordinacija Sarajevo (Zlatni standard: protetika, cirkon krunice, proteze, estetika, endodoncija). React + Vite + Tailwind, Framer Motion, schema.org Dentist. Bardakčije 23, +387 33 567 890, info@ljaljevic-dental.ba. Slika: `/images/hero/dental-clinic.jpg` sa vercel.app domena (domena .ba još ne resolva).
   5. **Fun4Four — Game Launcher** (`github.com/AfanKulaglic/GameLauncher`) — *Mobilne aplikacije* — multiplayer launcher za 2–4 igrača (Battleship, Ludo, Slagalica, Runbound Rivals). React Native + Expo SDK 54, Firebase RTDB (lobi + gameState realtime), Auth email/Google, React Navigation stack+tabs, custom SVG ikone. Repo ima `GAME_INTEGRATION_GUIDE.md` + `GAME_SUBSYSTEMS_PLAYBOOK.md` (1060 + 214 linija).
   - NAPOMENA: seed se prikazuje samo dok lokalni `devforge-projects-v1` kljuc ne postoji. Ako je vec postojao u browseru, kliknuti **"Resetuj na pocetno"** u `/admin`.
 - **NOVI CMS / ADMIN PANEL na `/admin`** (bez baze, sve lokalno — `localStorage`).

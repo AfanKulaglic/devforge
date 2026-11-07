@@ -86,6 +86,18 @@ const SEED: AdminProject[] = [
     imageMobile: "https://opengraph.githubassets.com/1/AfanKulaglic/GameLauncher",
     createdAt: 5,
   },
+  {
+    id: "seed-ljaljevic",
+    title: "Ljaljević Dental",
+    service: "Web stranice",
+    tag: "Stomatologija",
+    url: "https://ljaljevic-dental.vercel.app/",
+    description:
+      "Web stranica specijalističke stomatološke ordinacije u Sarajevu — protetika, cirkonske i metalokeramičke krunice, proteze, estetska stomatologija, endodoncija i oralna hirurgija. Sekcije: usluge, o nama, rezultati prije/poslije, tim, tehnologija i zakazivanje. Adresa Bardakčije 23, telefon +387 33 567 890, info@ljaljevic-dental.ba. Napravljeno u React + Vite + Tailwind, animacije Framer Motion, SEO sa schema.org Dentist structured data.",
+    imageDesktop: "https://ljaljevic-dental.vercel.app/images/hero/dental-clinic.jpg",
+    imageMobile: "https://ljaljevic-dental.vercel.app/images/hero/dental-clinic.jpg",
+    createdAt: 6,
+  },
 ];
 
 const EVENT = "devforge:projects-changed";
