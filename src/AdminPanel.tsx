@@ -8,6 +8,8 @@ import {
   HiOutlineChevronRight,
   HiOutlineChevronUp,
   HiOutlineDevicePhoneMobile,
+  HiOutlineEye,
+  HiOutlineEyeSlash,
   HiOutlineGlobeAlt,
   HiOutlineLockClosed,
   HiOutlinePencilSquare,
@@ -25,6 +27,7 @@ import {
   newProjectId,
   reorderProjects,
   resetProjects,
+  toggleProjectVisibility,
   saveProject,
   subscribe,
 } from "./lib/projectsStore";
@@ -65,6 +68,8 @@ type Draft = {
   description: string;
   imageDesktop: string;
   imageMobile: string;
+  visible: boolean;
+  createdAt: number | null; // null = novi projekt
 };
 
 const EMPTY_DRAFT: Draft = {
@@ -76,6 +81,8 @@ const EMPTY_DRAFT: Draft = {
   description: "",
   imageDesktop: "",
   imageMobile: "",
+  visible: true,
+  createdAt: null,
 };
 
 function draftFrom(p: AdminProject): Draft {
@@ -88,6 +95,8 @@ function draftFrom(p: AdminProject): Draft {
     description: p.description,
     imageDesktop: p.imageDesktop,
     imageMobile: p.imageMobile,
+    visible: p.visible !== false,
+    createdAt: p.createdAt,
   };
 }
 
@@ -246,7 +255,9 @@ function ProjectForm({
       description: form.description.trim(),
       imageDesktop: form.imageDesktop.trim(),
       imageMobile: form.imageMobile.trim() || form.imageDesktop.trim(),
-      createdAt: Date.now(),
+      // Uredjivanje NE smije promijeniti redoslijed — zadrzi postojeci createdAt.
+      createdAt: form.createdAt ?? Date.now(),
+      visible: form.visible,
     };
     saveProject(project);
     setError("");
@@ -440,6 +451,7 @@ function ProjectCard({
   onAskDelete,
   onCancelDelete,
   onConfirmDelete,
+  onToggleVisible,
 }: {
   project: AdminProject;
   position: number;
@@ -451,18 +463,40 @@ function ProjectCard({
   onAskDelete: () => void;
   onCancelDelete: () => void;
   onConfirmDelete: () => void;
+  onToggleVisible: () => void;
 }) {
+  const isVisible = project.visible !== false;
   const canUp = position > 1;
   const canDown = position < total;
   return (
-    <div className="group flex flex-col border border-white/10 bg-white/[0.03] transition hover:border-teal-300/40">
-      {/* Redoslijed unutar kategorije */}
+    <div className={`group flex flex-col border bg-white/[0.03] transition hover:border-teal-300/40 ${isVisible ? "border-white/10" : "border-dashed border-white/20"}`}>
+      {/* Redoslijed + vidljivost */}
       <div className="flex items-center justify-between gap-2 border-b border-white/10 bg-black/25 px-2 py-1.5">
         <span className="flex items-center gap-1.5 pl-1 text-[0.6rem] font-black uppercase tracking-[0.16em] text-white/35">
           <span className="text-teal-300/80">#{position}</span>
           <span className="hidden sm:inline">po redu</span>
         </span>
         <div className="flex items-center gap-1">
+          {/* Vidljiv / sakriven — jedan klik */}
+          <button
+            type="button"
+            onClick={onToggleVisible}
+            title={isVisible ? "Sakrij s javnog sajta" : "Prikaži na javnom sajtu"}
+            aria-label={isVisible ? `Sakrij ${project.title} s javnog sajta` : `Prikaži ${project.title} na javnom sajtu`}
+            aria-pressed={isVisible}
+            className={`flex items-center gap-1 border px-1.5 py-1 text-[0.58rem] font-black uppercase tracking-[0.1em] transition ${
+              isVisible
+                ? "border-teal-300/45 bg-teal-400/15 text-teal-200 hover:bg-teal-400/25"
+                : "border-white/15 bg-transparent text-white/35 hover:border-white/35 hover:text-white/60"
+            }`}
+          >
+            {isVisible ? (
+              <HiOutlineEye className="text-sm" aria-hidden="true" />
+            ) : (
+              <HiOutlineEyeSlash className="text-sm" aria-hidden="true" />
+            )}
+            <span className="hidden sm:inline">{isVisible ? "Vidljiv" : "Sakriven"}</span>
+          </button>
           <button
             type="button"
             onClick={onMoveUp}
@@ -487,10 +521,19 @@ function ProjectCard({
       </div>
 
       <div className="relative aspect-[16/9] overflow-hidden bg-[#0A0A0E]">
+        {/* Sakriven projekt: slika je prigusena da se odmah vidi status */}
+        {!isVisible && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#060608]/70">
+            <span className="flex items-center gap-1.5 border border-white/20 bg-black/60 px-2.5 py-1 text-[0.6rem] font-black uppercase tracking-[0.16em] text-white/70">
+              <HiOutlineEyeSlash className="text-sm" aria-hidden="true" />
+              Sakriven
+            </span>
+          </div>
+        )}
         <img
           src={project.imageDesktop}
           alt={project.title}
-          className="h-full w-full object-cover"
+          className={`h-full w-full object-cover transition ${isVisible ? "" : "opacity-30 grayscale"}`}
           loading="lazy"
           onError={(e) => {
             (e.currentTarget as HTMLImageElement).style.opacity = "0.15";
@@ -616,9 +659,23 @@ function ProjectsTab() {
         <div>
           <h2 className="text-xl font-extrabold tracking-tight text-white">Projekti</h2>
           <p className="mt-1 text-sm text-white/45">
-            {projects.length === 0
-              ? "Još nema projekata — dodaj prvi."
-              : `${projects.length} ${projects.length === 1 ? "projekt" : "projekta"} na sajtu`}
+            {projects.length === 0 ? (
+              "Još nema projekata — dodaj prvi."
+            ) : (
+              <>
+                {projects.length} {projects.length === 1 ? "projekt" : "projekta"} ukupno
+                {" · "}
+                <span className="font-semibold text-teal-200/80">
+                  {projects.filter((p) => p.visible !== false).length} vidljivo
+                </span>
+                {projects.some((p) => p.visible === false) && (
+                  <span className="text-white/30">
+                    {" · "}
+                    {projects.filter((p) => p.visible === false).length} sakriveno
+                  </span>
+                )}
+              </>
+            )}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -675,6 +732,12 @@ function ProjectsTab() {
                   <p className="text-base font-extrabold text-white">{group.service}</p>
                   <p className="text-[0.68rem] text-white/35">
                     {group.items.length} {group.items.length === 1 ? "projekt" : "projekta"}
+                    {group.items.some((p) => p.visible === false) && (
+                      <span className="text-white/25">
+                        {" · "}
+                        {group.items.filter((p) => p.visible === false).length} sakriven
+                      </span>
+                    )}
                   </p>
                 </div>
               </div>
@@ -717,6 +780,7 @@ function ProjectsTab() {
                           deleteProject(p.id);
                           setConfirmId(null);
                         }}
+                        onToggleVisible={() => toggleProjectVisibility(p.id)}
                       />
                     ))}
                   </div>

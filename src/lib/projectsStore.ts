@@ -13,6 +13,9 @@ export type AdminProject = {
   imageDesktop: string; // URL slike za desktop prikaz
   imageMobile: string; // URL slike za mobilni prikaz
   createdAt: number;
+  // Ako je false, projekt je sakriven na javnom sajtu (/projekti i home marquee),
+  // ali ostaje u admin panelu. Nedefinisano = vidljiv (stari zapisi).
+  visible?: boolean;
 };
 
 const STORAGE_KEY = "devforge-projects-v1";
@@ -250,6 +253,16 @@ export function saveProject(project: AdminProject) {
   write(exists ? list.map((p) => (p.id === project.id ? project : p)) : [...list, project]);
 }
 
+// Ukljuci/iskljuci vidljivost projekta na javnom sajtu.
+export function toggleProjectVisibility(id: string) {
+  const list = getProjects();
+  write(
+    list.map((p) =>
+      p.id === id ? { ...p, visible: p.visible === false ? true : false } : p,
+    ),
+  );
+}
+
 export function deleteProject(id: string) {
   write(getProjects().filter((p) => p.id !== id));
 }
@@ -293,6 +306,11 @@ export function resetProjects() {
   }
   cache = SEED;
   if (isBrowser()) window.dispatchEvent(new Event(EVENT));
+}
+
+// Vraca samo projekte vidljive na javnom sajtu (visible !== false).
+export function visibleProjects(list: AdminProject[]): AdminProject[] {
+  return list.filter((p) => p.visible !== false);
 }
 
 // Grupisanje za /projekti: uvijek iste tri grupe, u istom redu, i prazne se prikazuju.

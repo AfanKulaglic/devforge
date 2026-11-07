@@ -50,6 +50,7 @@ import {
   getProjects as getStoredProjects,
   getServerProjects,
   groupProjects,
+  visibleProjects,
   subscribe as subscribeProjects,
 } from "./lib/projectsStore";
 import {
@@ -218,12 +219,6 @@ const benefits = [
   },
 ];
 
-const companyStats: { icon: IconType; value: string; label: string }[] = [
-  { icon: HiOutlineBriefcase, value: "20+", label: "Realizovanih projekata" },
-  { icon: HiOutlineClock, value: "3+", label: "Godine iskustva" },
-  { icon: HiOutlineGlobeAlt, value: "BiH + regija", label: "Zadovoljni klijenti" },
-  { icon: HiOutlineCheckCircle, value: "Demo", label: "Besplatan — ne plaća se" },
-];
 
 const services = [
   {
@@ -319,7 +314,7 @@ function useHomeProjects(): HomeProject[] {
   const stored = useSyncExternalStore(subscribeProjects, getStoredProjects, getServerProjects);
   return useMemo(
     () =>
-      [...stored]
+      visibleProjects([...stored])
         .sort((a, b) => a.createdAt - b.createdAt)
         .map((p) => ({
           id: p.id,
@@ -345,7 +340,7 @@ function useStoredProjects(): { service: string; items: ProjectItem[] }[] {
   const stored = useSyncExternalStore(subscribeProjects, getStoredProjects, getServerProjects);
   return useMemo(
     () =>
-      groupProjects(stored).map((group) => ({
+      groupProjects(visibleProjects(stored)).map((group) => ({
         service: group.service,
         items: group.items.map((p) => ({
           title: p.title,
@@ -1336,26 +1331,6 @@ function Hero() {
             ))}
           </div>
         </div>
-      </div>
-    </section>
-  );
-}
-
-function TrustBar() {
-  return (
-    <section className="border-b border-white/10 bg-[#060606] py-6 md:py-5" aria-label="Brojke">
-      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-x-4 gap-y-5 px-5 md:flex md:flex-wrap md:justify-center md:gap-10 md:px-8">
-        {companyStats.map((item) => (
-          <div key={item.label} className="flex items-center gap-3">
-            <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-teal-500/15 ring-1 ring-teal-400/20">
-              <item.icon className="text-lg text-teal-300" aria-hidden="true" />
-            </span>
-            <div className="flex min-w-0 flex-col leading-tight">
-              <span className="text-base font-extrabold text-white md:text-lg">{item.value}</span>
-              <span className="text-xs font-medium text-white/60 md:text-sm">{item.label}</span>
-            </div>
-          </div>
-        ))}
       </div>
     </section>
   );
@@ -2629,7 +2604,6 @@ function HomePage() {
     <main className="anim-rich">
       <Hero />
       <HeroLogos />
-      <TrustBar />
       <WhyUs />
       <Services />
       <Pricing />
