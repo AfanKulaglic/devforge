@@ -1,6 +1,6 @@
 # DevGen — TRENUTNO STANJE
 > Ovaj fajl se PREPISUJE (ne dopisuje) na kraju svake sesije. Drži ga kratkim.
-Zadnje ažurirano: 2026-06-15 (nova stranica Projekti)
+Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`. Stilovi `src/index.css`.
@@ -9,6 +9,29 @@ Zadnje ažurirano: 2026-06-15 (nova stranica Projekti)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **FIX: STRELICE U HOME PROJEKTI SEKCIJI** — nisu radile jer je `scrollByCard` koristio `behavior: "smooth"`, a auto-marquee `tick` loop svakih 16 ms piše u `scrollLeft` i prekida smooth scroll. Sada: rAF animacija sa easing-om, `pausedRef.current = true` tokom animacije, gap se čita iz `getComputedStyle(track).columnGap` (umjesto hardkodovanih 24 px — stvarni je 20/28 px).
+- **HOME PROJEKTI VEZANI ZA BAZU** — marquee sekcija `Projects` (#projects) na naslovnoj sada čita iz istog `projectsStore` (localStorage) preko novog hooka `useHomeProjects()`. Obrisan hardkodirani `const projects[]`. Kartice prikazuju `service` kao kategoriju, `imageDesktop`/`imageMobile` kroz `DeviceMockup`, a dugme vodi na pravi URL projekta (`target="_blank"`) umjesto mrtvog `#contact`. Label promijenjen u „Pogledaj projekt".
+- **NOVI TAB „CIJENE" u admin panelu** (/admin, pored taba Projekti) — potpuno upravljanje paketima.
+  - `src/lib/pricingStore.ts` — lokalna baza cijena (localStorage kljuc `devforge-pricing-v1`). 4 grupe: `web-sites` / `web-shops` / `games` / `mobile`. Tipovi `PricingGroupData`/`PricingPlanData`, `saveGroup`/`deleteGroup`/`moveGroup`/`resetPricing`, event `devforge:pricing-changed`, `GROUP_TO_SERVICE` mapiranje.
+  - `src/AdminPricingTab.tsx` — akordeon po grupi: uređivanje naslova/podnaslova/napomene grupe, CRUD paketa (naziv, cijena, tagline, checkbox „Najpopularnije", stavke = jedan red = jedna kvačica), pomicanje grupa gore/dolje, brisanje grupe i paketa sa potvrdom, dodavanje nove grupe, reset na početno.
+  - `App.tsx`: `Pricing` sada čita iz store-a preko `usePricingGroups()`/`usePricingMeta()`. `/cijene` → `AllPricing`; `/usluge/*` → `ServicePricing serviceKey=...` (novo polje `ServiceDetail.pricingKey`). Ikone paketa se izvode iz naziva kroz `planIcon()` (ne mogu u localStorage).
+  - NAPOMENA: cijena u hero badge-u („Web već od 150 KM"), u `pricing[]` karticama, `AD_SERVICES` i SEO meta naslovima ostaje **fiksni tekst** — nije vezana za store.
+- **KATEGORIJE PROMIJENJENE** u 4 grupe (redom): **Web shopovi · Web stranice · 2D igrice · Mobilne aplikacije**. `SERVICE_OPTIONS` u `projectsStore.ts`. `/projekti` filtrira prazne grupe (`filter(items.length > 0)`) da se ne prikazuje prazan slajder.
+- **5 PROJEKATA UBAČENO kao seed** u `src/lib/projectsStore.ts`:
+  1. **ELESONIC** (`elesonic.ba`) — *Web shopovi* — elektronika/sigurnosna oprema, 30 proizvoda, 7 kategorija. Slike: `picturetolink.com` banneri.
+  2. **MYICON** (`my-icon.shop`) — *Web shopovi* — tekstil i štampa, nemački, 34 proizvoda. `myicon2025@gmail.com`. Slike: `i.ibb.co`.
+  3. **Formula Racers** (`formula1-unbranded.vercel.app`) — *2D igrice* — top-down racing, Next.js + canvas.
+  4. **Qiro** (`qiro-tools.vercel.app`) — *Web stranice* — short linkovi, QR, konverzija fajlova WebAssembly.
+  5. **Fun4Four — Game Launcher** (`github.com/AfanKulaglic/GameLauncher`) — *Mobilne aplikacije* — multiplayer launcher za 2–4 igrača (Battleship, Ludo, Slagalica, Runbound Rivals). React Native + Expo SDK 54, Firebase RTDB (lobi + gameState realtime), Auth email/Google, React Navigation stack+tabs, custom SVG ikone. Repo ima `GAME_INTEGRATION_GUIDE.md` + `GAME_SUBSYSTEMS_PLAYBOOK.md` (1060 + 214 linija).
+  - NAPOMENA: seed se prikazuje samo dok lokalni `devforge-projects-v1` kljuc ne postoji. Ako je vec postojao u browseru, kliknuti **"Resetuj na pocetno"** u `/admin`.
+- **NOVI CMS / ADMIN PANEL na `/admin`** (bez baze, sve lokalno — `localStorage`).
+  - `src/lib/projectsStore.ts` — lokalna "baza": `AdminProject` tip, `SERVICE_OPTIONS` (4 grupe), `getProjects`/`saveProject`/`deleteProject`/`resetProjects`, `groupProjects()`, event `devforge:projects-changed`. Kljuc `devforge-projects-v1`. Seed od 3 projekta kad kljuca nema.
+  - `src/AdminPanel.tsx` — login (sessionStorage kljuc `devforge-admin-session`; **afan / 080513**) + jedan tab **Projekti**. Forma: naslov, usluga (select), tag, link `https://`, opis, **link slike za DESKTOP** i **link slike za MOBITEL** (bez browse/upload-a, samo URL) + live preview obje. Kartice: uredi / obriši (sa potvrdom) / reset na početno.
+  - Ruta `/admin` prikazuje se **bez** Headera, Footera, CustomCursor-a i cookie banera (rani `if (route === "admin") return <AdminPanel/>`).
+  - `/projekti` sada čita iz baze kroz `useStoredProjects()` (useSyncExternalStore) umjesto hardkodiranog `projectGroups`; `ProjectRow` prosleđuje `project.imageMobile`; `DeviceMockup` dobio opcioni `imageMobile` (telefon prikazuje tu sliku, fallback na desktop).
+  - Home marquee (`Projects`, `#projects`) NETAKNUT — još koristi stari niz `projects[]`.
+- **GARANCIJA UKLONJENA SVIJUDJE** (bilo 8 mesta: companyStats, FAQ "podrška nakon projekta", pricing items ×3, deliverables, comparison tabela, legal FAQ "Odgovornost"). Nema više ni jedne reči "garancija"/"warranty" u projektu. Umesto nje svuda stoji **"Demo se ne plaća"** — demo verzija je besplatna, plaćanje kreće tek kad se klijent odluči za puni razvoj.
+- **CIJENE PODIGNUTE (sve stranice, sweep kroz App.tsx):** web stranice 39→**150 KM**, web shopovi 199→**600 KM**, mobilne ostaju "Po dogovoru". Paketi: Web Start 150–250, Business 300–450, Premium 500–800; Shop Start 600–1.000, Shop Business 1.200–1.800, Shop Premium 2.000–3.500. Logo 19→100 KM. Poređenje s agencijama 500→1.500 KM.
 - NOVA stranica **Projekti** (`#/projekti` → `ProjectsPage`): `ProjectsHero` → `TrustBar` → `ProjectsGallery` → `Facts`. navItems href `#projects`→`#/projekti`; Header `isProjects` + underline; App router grana `projects`. Home `<Projects/>` (#projects marquee) OSTAJE.
   - `ProjectsGallery`: 1 red = 1 usluga, svaki red je SLAJDER (`ProjectRow`) kroz više projekata te usluge (strelice + tačkice + touch swipe, brojač `index/count`, naizmjenična strana mockupa `flip`). Podaci `projectGroups` (3 usluge × 3 projekta, placeholder slike). Mrtvi "Detaljnije o projektu" link UKLONJEN (nigdje nije vodio).
 - (ranije danas) Novi desktop navbar: `NavLink` + teal underline (aktivni/hover), puni teal CTA, bogat "Usluge" dropdown, kompaktan na scroll. Status-tačka "Dostupni za projekte" je BILA dodana pa UKLONJENA na zahtjev.
@@ -21,7 +44,10 @@ Zadnje ažurirano: 2026-06-15 (nova stranica Projekti)
 - FIX dev server (heap OOM): `vite.config.ts` → `server.watch.ignored: ["**/shots/**","**/dist/**"]`.
 
 ## Sljedeći korak
-- (prazno — čeka novi zadatak korisnika)
+- **CMS radi.** Login: `/admin` → `afan` / `080513`. Ako se ne vide 4 nova projekta, klikni **"Resetuj na početno"**.
+- **EMAILI IZ ISTRAŽIVANJA (za chatanje / kontakt):** elesonic.ba — *nije objavljen na sajtu* (SPA/Firebase, kontakt forma); my-icon.shop — **myicon2025@gmail.com**, tel +49 176 64824863 / 02191 5606112.
+- **BLOKATORI za lansiranje:** (1) `FORM_ENDPOINT` (App.tsx:55) je prazan → forme su demo, ne šalju ništa; treba Formspree. (2) `info@devforge.ba` mora postojati. (3) Pravi telefon još nije ubačen — placeholder `(+387) 61 000 000` na 4 mjesta (App.tsx:2032, 2098, 2851 + `tel:`). Korisnik dao 062 576 456 — čeka potvrdu formata.
+- **OGRANIČENJE:** localStorage je per-browser/per-uređaj — projekti dodani na jednom računaru se NE vide na drugom ni na produkciji za posjetioce. Za pravu višekorisničku bazu treba Supabase/Firebase.
 - Preporuka iz ranije: obrisati `shots/profile-review/` (Chrome profil, ne pripada projektu).
 
 ## Komande
@@ -31,6 +57,10 @@ Zadnje ažurirano: 2026-06-15 (nova stranica Projekti)
 - Nastavi prošli chat: `claude --continue`  (u E:\0_Downloads\devgen11)
 
 ## Ključne lokacije u App.tsx (orijentaciono, provjeri grep-om)
+- `src/lib/projectsStore.ts` — **lokalna baza projekata** (localStorage)
+- `src/AdminPanel.tsx` — **/admin** login + tab Projekti
+- `useStoredProjects()` ~321 — hook koji hrani `/projekti`
+- `/admin` rana grana u `App()` pre glavnog return-a
 - `pricing` data ~339 | `PricingCard` ~1520 | `Pricing` ~1584 | `DeviceMockup` ~1330 | `projects` data ~274
 - `ProjectsPage`/`ProjectsHero`/`ProjectsGallery` (uz `AboutPage`), `Header`+`NavLink` (navbar), App router ~2330
 - `serviceDetails` (web/games/mobile) sadrži `pricingGroups`/`pricingSubtitle`/`pricingNote`

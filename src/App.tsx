@@ -1,4 +1,4 @@
-import { FormEvent, ReactNode, TouchEvent as ReactTouchEvent, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, ReactNode, TouchEvent as ReactTouchEvent, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { IconType } from "react-icons";
 import {
   HiOutlineRocketLaunch,
@@ -45,6 +45,20 @@ import {
   HiOutlineScale,
 } from "react-icons/hi2";
 import { FaLinkedinIn, FaInstagram } from "react-icons/fa6";
+import AdminPanel from "./AdminPanel";
+import {
+  getProjects as getStoredProjects,
+  getServerProjects,
+  groupProjects,
+  subscribe as subscribeProjects,
+} from "./lib/projectsStore";
+import {
+  GROUP_TO_SERVICE,
+  getPricing,
+  getServerPricing,
+  subscribePricing,
+  type PricingGroupData,
+} from "./lib/pricingStore";
 
 const CTA_LABEL = "🚀 Dobijte gotovu verziju za 5 dana";
 
@@ -201,7 +215,7 @@ const benefits = [
     image: images.hero,
     title: "Transparentne cijene bez skrivenih troškova",
     description:
-      "Cijene su javne i jasne od početka: web stranice od 39 KM, web shopovi od 199 KM. Tačnu ponudu dobijate prije početka rada — bez naknadnih iznenađenja, skrivenih stavki ili dodatnih naplata na kraju. Znate tačno za šta plaćate.",
+      "Cijene su javne i jasne od početka: web stranice od 150 KM, web shopovi od 600 KM. Tačnu ponudu dobijate prije početka rada — bez naknadnih iznenađenja, skrivenih stavki ili dodatnih naplata na kraju. Znate tačno za šta plaćate.",
   },
 ];
 
@@ -209,7 +223,7 @@ const companyStats: { icon: IconType; value: string; label: string }[] = [
   { icon: HiOutlineBriefcase, value: "20+", label: "Realizovanih projekata" },
   { icon: HiOutlineClock, value: "3+", label: "Godine iskustva" },
   { icon: HiOutlineGlobeAlt, value: "BiH + regija", label: "Zadovoljni klijenti" },
-  { icon: HiOutlineCheckCircle, value: "30 dana", label: "Garancija na projekat" },
+  { icon: HiOutlineCheckCircle, value: "Demo", label: "Besplatan — ne plaća se" },
 ];
 
 const services = [
@@ -241,7 +255,7 @@ const services = [
 
 // Linkovi na detaljne podstranice usluga (koristi se u nav meniju).
 const serviceLinks: { label: string; href: string; icon: IconType; desc: string }[] = [
-  { label: "Web stranice", href: "/usluge/web-stranice", icon: HiOutlineGlobeAlt, desc: "Landing, korporativne i shop stranice — od 39 KM." },
+  { label: "Web stranice", href: "/usluge/web-stranice", icon: HiOutlineGlobeAlt, desc: "Landing, korporativne i shop stranice — od 150 KM." },
   { label: "2D igrice", href: "/usluge/2d-igrice", icon: HiOutlinePuzzlePiece, desc: "Web i mobilne 2D igre po mjeri." },
   { label: "Mobilne aplikacije", href: "/usluge/mobilne-aplikacije", icon: HiOutlineDevicePhoneMobile, desc: "Android i iOS aplikacije za vaš biznis." },
 ];
@@ -299,42 +313,53 @@ const facts: { target: number; suffix: string; icon: IconType; text: string }[] 
 ];
 
 // `link` je za sada fejk redirect (#contact) — kasnije zamijeniti pravim URL-om projekta.
-const projects = [
-  { id: 1, title: "E-Commerce Platform", category: "Web Shop", image: images.project1, link: "#contact", url: "www.webshop.ba", description: "Web shop sa katalogom proizvoda, korpom i online plaćanjem — brz, responzivan i jednostavan za održavanje." },
-  { id: 2, title: "Arcade Learning Game", category: "2D Igrica", image: images.project2, link: "#contact", url: "www.igrica.ba", description: "Edukativna 2D igrica koja kroz nivoe i nagrade drži korisnike angažiranima — jednako dobro na webu i mobitelu." },
-  { id: 3, title: "Field Service App", category: "Mobilna Aplikacija", image: images.project3, link: "#contact", url: "www.servis.ba", description: "Mobilna aplikacija za terenske timove — raspored, zadaci i izvještaji uz sinkronizaciju podataka u realnom vremenu." },
-];
+// Projekti za home marquee — isti izvor kao /projekti (localStorage store).
+type HomeProject = { id: string; title: string; category: string; image: string; imageMobile?: string; link: string; url: string; description: string };
+
+function useHomeProjects(): HomeProject[] {
+  const stored = useSyncExternalStore(subscribeProjects, getStoredProjects, getServerProjects);
+  return useMemo(
+    () =>
+      [...stored]
+        .sort((a, b) => a.createdAt - b.createdAt)
+        .map((p) => ({
+          id: p.id,
+          title: p.title,
+          category: p.service,
+          image: p.imageDesktop,
+          imageMobile: p.imageMobile,
+          link: p.url || "#contact",
+          url: (p.url || "").replace(/^https?:\/\//, "").replace(/\/$/, ""),
+          description: p.description,
+        })),
+    [stored],
+  );
+}
 
 // Projekti grupirani po usluzi — svaka usluga ima više projekata; na stranici
 // /projekti svaki red je slajder kroz projekte te usluge. (Slike su placeholder
 // dok korisnik ne ubaci prave snimke/URL-ove.)
-type ProjectItem = { title: string; tag: string; url: string; image: string; description: string };
-const projectGroups: { service: string; items: ProjectItem[] }[] = [
-  {
-    service: "Web stranice & shopovi",
-    items: [
-      { title: "E-Commerce Platform", tag: "Web shop", url: "www.webshop.ba", image: images.project1, description: "Web shop sa katalogom proizvoda, korpom i online plaćanjem — brz, responzivan i jednostavan za samostalno održavanje." },
-      { title: "Landing kampanja", tag: "Landing page", url: "www.kampanja.ba", image: images.web, description: "Fokusirana landing stranica za marketinšku kampanju — jasna poruka, brzo učitavanje i poziv na akciju koji pretvara posjetitelje u upite." },
-      { title: "Korporativni sajt", tag: "Korporativna", url: "www.firma.ba", image: images.project2, description: "Višestranični sajt s blogom i CMS-om za samostalno uređivanje — predstavlja firmu, usluge i tim na profesionalan način." },
-    ],
-  },
-  {
-    service: "2D igrice",
-    items: [
-      { title: "Arcade Learning Game", tag: "Edukativna", url: "www.igrica.ba", image: images.game, description: "Edukativna 2D igrica koja kroz nivoe i nagrade drži korisnike angažiranima — jednako dobro na webu i mobitelu." },
-      { title: "Promo Spin Game", tag: "Promo igra", url: "www.spin.ba", image: images.project3, description: "Brendirana promo igra za kampanju — nagradni mehanizam, dijeljenje rezultata i prikupljanje kontakata kroz zabavu." },
-      { title: "Platformer Adventure", tag: "Platformer", url: "www.adventure.ba", image: images.project1, description: "Platformer s više nivoa, likovima i mehanikama — custom 2D grafika i glatka kontrola na svim uređajima." },
-    ],
-  },
-  {
-    service: "Mobilne aplikacije",
-    items: [
-      { title: "Field Service App", tag: "Terenski timovi", url: "www.servis.ba", image: images.mobile, description: "Aplikacija za terenske timove — raspored, zadaci i izvještaji uz sinkronizaciju podataka u realnom vremenu." },
-      { title: "Fitness Tracker", tag: "Health & fitness", url: "www.fit.ba", image: images.project2, description: "Praćenje treninga i napretka s personaliziranim ciljevima, statistikom i podsjetnicima — iOS i Android." },
-      { title: "Booking & rezervacije", tag: "Booking", url: "www.rezervacije.ba", image: images.project3, description: "Sistem za zakazivanje termina s kalendarom, potvrdama i obavijestima — idealno za usluge i ugostiteljstvo." },
-    ],
-  },
-];
+type ProjectItem = { title: string; tag: string; url: string; image: string; imageMobile?: string; description: string };
+// Hook: projekti iz lokalne baze (admin panel /admin) — pretvara se u iste
+// grupe po usluzi koje su prije bile hardkodirane.
+function useStoredProjects(): { service: string; items: ProjectItem[] }[] {
+  const stored = useSyncExternalStore(subscribeProjects, getStoredProjects, getServerProjects);
+  return useMemo(
+    () =>
+      groupProjects(stored).map((group) => ({
+        service: group.service,
+        items: group.items.map((p) => ({
+          title: p.title,
+          tag: p.tag,
+          url: p.url,
+          image: p.imageDesktop,
+          imageMobile: p.imageMobile,
+          description: p.description,
+        })),
+      })),
+    [stored],
+  );
+}
 
 const testimonials = [
   {
@@ -371,7 +396,7 @@ const faqs = [
   {
     question: "Da li nudite podršku nakon završetka projekta?",
     answer:
-      "Svaki projekat dolazi sa 30 dana tehničke garancije i besplatne podrške. U tom periodu ispravljamo sve bugove, prilagodavamo detalje i odgovaramo na vaša pitanja. Nakon toga nudimo maintenance pakete za ongoing podršku, optimizaciju i nove funkcionalnosti.",
+      "Prvo izrađujemo besplatnu demo verziju vašeg projekta i za nju ne plaćate ništa. Plaćate tek kada vam se demo svidi i kada se dogovorimo za puni razvoj — bez predujma i bez rizika.",
   },
   {
     question: "Koje tehnologije koristite?",
@@ -381,7 +406,7 @@ const faqs = [
   {
     question: "Koliko košta izrada projekta?",
     answer:
-      "Cijene su transparentne i počinju od 39 KM za web stranicu, odnosno od 199 KM za web shop. 2D igrice i kompleksniji sistemi imaju custom cijenu. Tačnu ponudu dajemo nakon besplatne konsultacije i analize zahtjeva — bez skrivenih troškova.",
+      "Cijene su transparentne i počinju od 150 KM za web stranicu, odnosno od 600 KM za web shop. 2D igrice i kompleksniji sistemi imaju custom cijenu. Tačnu ponudu dajemo nakon besplatne konsultacije i analize zahtjeva — bez skrivenih troškova.",
   },
   {
     question: "Kako teče plaćanje?",
@@ -398,17 +423,17 @@ const faqs = [
 const pricing = [
   {
     title: "Web Stranice",
-    price: "39 KM",
+    price: "150 KM",
     icon: HiOutlineGlobeAlt,
     detailLink: "/usluge/web-stranice",
-    items: ["Landing page ili jednostavna web stranica", "UI/UX dizajn uključen u cijenu", "Responzivni dizajn", "Kontakt forma", "30 dana garancije", "Postavljanje hostinga i domene"],
+    items: ["Landing page ili jednostavna web stranica", "UI/UX dizajn uključen u cijenu", "Responzivni dizajn", "Kontakt forma", "Demo se ne plaća", "Postavljanje hostinga i domene"],
   },
   {
     title: "Web Shopovi",
-    price: "199 KM",
+    price: "600 KM",
     icon: HiOutlineShoppingCart,
     detailLink: "/usluge/web-stranice",
-    items: ["Kompletan e-commerce sistem", "UI/UX dizajn uključen u cijenu", "Online plaćanje (Stripe, PayPal)", "Admin panel", "Inventory management", "30 dana garancije"],
+    items: ["Kompletan e-commerce sistem", "UI/UX dizajn uključen u cijenu", "Online plaćanje (Stripe, PayPal)", "Admin panel", "Inventory management", "Demo se ne plaća"],
   },
   {
     title: "Mobilne Aplikacije",
@@ -429,7 +454,7 @@ const deliverables: { icon: IconType; title: string; text: string }[] = [
   { icon: HiOutlineSwatch, title: "UI/UX dizajn uključen", text: "Profesionalan, moderan dizajn dolazi uz svaki paket — bez doplate i bez kompromisa na izgledu." },
   { icon: HiOutlineDevicePhoneMobile, title: "Responzivno na svim uređajima", text: "Svaki proizvod izgleda i radi besprijekorno na mobitelu, tabletu i desktopu — kao da je rađen baš za taj ekran." },
   { icon: HiOutlineRocketLaunch, title: "Brza i optimizovana izrada", text: "Optimizovan kod koji se brzo učitava — bolji dojam, niža stopa napuštanja i veća konverzija." },
-  { icon: HiOutlineCheckCircle, title: "30 dana garancije", text: "Nakon isporuke ispravljamo bugove i prilagođavamo detalje 30 dana — bez dodatne naplate." },
+  { icon: HiOutlineCheckCircle, title: "Demo se ne plaća", text: "Prvo dobijate besplatnu demo verziju projekta — za nju ne plaćate ništa. Plaćanje kreće tek kad se dogovorimo za puni razvoj." },
   { icon: HiOutlineCodeBracketSquare, title: "Čist, dokumentiran kod", text: "Predajemo uredan, održiv kod s dokumentacijom — projekt je u potpunosti vaš." },
   { icon: HiOutlineArrowPath, title: "4 besplatne revizije", text: "Doradjujemo dizajn i funkcionalnosti dok rezultat ne odgovara točno vašoj viziji." },
 ];
@@ -438,8 +463,8 @@ const comparison: { feature: string; devforge: string; others: string }[] = [
   { feature: "Predujam prije početka", devforge: "Ne — plaćate tek na kraju", others: "Obavezan, često 30–50%" },
   { feature: "Besplatna gotova verzija", devforge: "Da, za 5 radnih dana", others: "Rijetko ili uz naplatu" },
   { feature: "Besplatne revizije", devforge: "4 uključene u cijenu", others: "Naplata po svakoj izmjeni" },
-  { feature: "Transparentne cijene", devforge: "Javne, od 39 KM", others: "Skrivene stavke i doplate" },
-  { feature: "Garancija nakon isporuke", devforge: "30 dana podrške", others: "Često bez garancije" },
+  { feature: "Transparentne cijene", devforge: "Javne, od 150 KM", others: "Skrivene stavke i doplate" },
+  { feature: "Demo verzija", devforge: "Ne plaća se", others: "Rijetko ili uz naplatu" },
   { feature: "Vlasništvo nad kodom", devforge: "100% pripada vama", others: "Ograničeno ili vezano" },
 ];
 
@@ -481,6 +506,8 @@ type ServiceDetail = {
   pricingGroups: PricingGroup[];
   pricingSubtitle?: string;
   pricingNote?: string;
+  /** Kljuc grupe u pricingStore-u — odakle se citaju cijene (admin panel). */
+  pricingKey?: "web" | "webShops" | "games" | "mobile";
   faqs: { question: string; answer: string }[];
 };
 
@@ -516,14 +543,14 @@ const serviceDetails: Record<"web" | "games" | "mobile", ServiceDetail> = {
         plans: [
           {
             title: "Start",
-            price: "39–69 KM",
+            price: "150–250 KM",
             icon: HiOutlineRocketLaunch,
             tagline: "Idealno za prvu online prisutnost",
-            items: ["Landing ili do 5 podstranica", "UI/UX dizajn uključen", "Responzivno (mobitel/tablet/desktop)", "Kontakt forma", "30 dana garancije", "Postavljanje hostinga i domene"],
+            items: ["Landing ili do 5 podstranica", "UI/UX dizajn uključen", "Responzivno (mobitel/tablet/desktop)", "Kontakt forma", "Demo se ne plaća", "Postavljanje hostinga i domene"],
           },
           {
             title: "Business",
-            price: "79–139 KM",
+            price: "300–450 KM",
             icon: HiOutlineBriefcase,
             popular: true,
             tagline: "Najčešći izbor za firme",
@@ -531,7 +558,7 @@ const serviceDetails: Record<"web" | "games" | "mobile", ServiceDetail> = {
           },
           {
             title: "Premium",
-            price: "149–249 KM",
+            price: "500–800 KM",
             icon: HiOutlineSparkles,
             tagline: "Za zahtjevne, custom projekte",
             items: ["Neograničeno podstranica", "Custom dizajn i animacije", "Napredni CMS + više korisnika", "Višejezičnost", "Integracije (API, CRM, alati)", "Prioritetna podrška", "Postavljanje hostinga i domene"],
@@ -543,14 +570,14 @@ const serviceDetails: Record<"web" | "games" | "mobile", ServiceDetail> = {
         plans: [
           {
             title: "Shop Start",
-            price: "199–399 KM",
+            price: "600–1.000 KM",
             icon: HiOutlineShoppingCart,
             tagline: "Pokrenite online prodaju",
             items: ["Do 50 proizvoda", "UI/UX dizajn uključen", "Korpa i checkout", "Online plaćanje (Stripe ili PayPal)", "Admin panel za proizvode", "Postavljanje hostinga i domene"],
           },
           {
             title: "Shop Business",
-            price: "449–699 KM",
+            price: "1.200–1.800 KM",
             icon: HiOutlineChartBar,
             popular: true,
             tagline: "Za ozbiljne online trgovine",
@@ -558,7 +585,7 @@ const serviceDetails: Record<"web" | "games" | "mobile", ServiceDetail> = {
           },
           {
             title: "Shop Premium",
-            price: "799–1.499 KM",
+            price: "2.000–3.500 KM",
             icon: HiOutlineSparkles,
             tagline: "Skalabilna e-commerce platforma",
             items: ["Neograničeno proizvoda", "Custom dizajn i funkcionalnosti", "Integracije (ERP, dostava, fiskalizacija)", "Višejezičnost i više valuta", "Marketing i email automatizacija", "Prioritetna podrška", "Postavljanje hostinga i domene"],
@@ -566,10 +593,11 @@ const serviceDetails: Record<"web" | "games" | "mobile", ServiceDetail> = {
         ],
       },
     ],
+    pricingKey: "web",
     pricingSubtitle: "Tri paketa za web stranice i tri za web shopove — UI/UX dizajn uključen u svaki paket.",
     pricingNote: "Hosting i domena se plaćaju dodatno (ako ih nemate) — postavljamo ih, a plaćate direktno provideru otprilike 50–100 KM godišnje, ovisno o domeni (uključuje i poslovni email i ostalo što ide uz to), bez naše marže; ako ih već imate, samo se povežemo. Online plaćanje povezujemo sa Stripe, PayPal ili sličnim servisom koji već koristite. Osnovna SEO podešavanja (meta naslovi i opisi) uključena su kao dodatak. Održavanje i podrška: opcionalno, po dogovoru. Tačnu ponudu dobijate nakon besplatne konsultacije, bez skrivenih troškova.",
     faqs: [
-      { question: "Koliko košta web stranica?", answer: "Web stranice počinju od 39 KM za landing/jednostavnu stranicu, a web shopovi od 199 KM. Tačnu ponudu dobijate nakon besplatne konsultacije — bez skrivenih troškova." },
+      { question: "Koliko košta web stranica?", answer: "Web stranice počinju od 150 KM za landing/jednostavnu stranicu, a web shopovi od 600 KM. Tačnu ponudu dobijate nakon besplatne konsultacije — bez skrivenih troškova." },
       { question: "Koliko traje izrada?", answer: "Landing page ili jednostavna stranica obično 1–2 sedmice, web shop 3–4 sedmice. Prvu besplatnu gotovu verziju vidite već za 5 radnih dana." },
       { question: "Hoće li stranica raditi na mobitelu?", answer: "Da — svaka stranica je u potpunosti responzivna i testirana na mobitelu, tabletu i desktopu, s posebnom pažnjom na brzinu učitavanja." },
       { question: "Mogu li sam uređivati sadržaj?", answer: "Da, ugrađujemo CMS prilagođen vama uz kratku obuku, tako da možete samostalno mijenjati tekstove, slike i proizvode." },
@@ -628,6 +656,7 @@ const serviceDetails: Record<"web" | "games" | "mobile", ServiceDetail> = {
         ],
       },
     ],
+    pricingKey: "games",
     pricingSubtitle: "Tri paketa za 2D igre — od jednostavne promo igre do kompleksnog, brendiranog iskustva. Dizajn i 2D grafika uvijek uključeni.",
     pricingNote: "Cijene zavise od kompleksnosti mehanika, broja nivoa i grafike. Hosting (za web igre): plaćate direktno provideru, od ~50 KM/godišnje, bez naše marže. Održavanje i nove funkcije: opcionalno, po dogovoru. Nakon besplatne konsultacije dajemo tačnu ponudu.",
     faqs: [
@@ -690,6 +719,7 @@ const serviceDetails: Record<"web" | "games" | "mobile", ServiceDetail> = {
         ],
       },
     ],
+    pricingKey: "mobile",
     pricingSubtitle: "Tri paketa za mobilne aplikacije — od brzog MVP-a do skalabilnog proizvoda. UI/UX dizajn uključen u svaki paket.",
     pricingNote: "Cijene zavise od funkcija, integracija i platformi. Objavu na App Store i Google Play radimo mi (uz godišnje naknade trgovina). Backend hosting: plaćate direktno provideru, bez naše marže. Održavanje i nadogradnje: opcionalno, po dogovoru.",
     faqs: [
@@ -865,7 +895,7 @@ function Header() {
                   <span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-teal-300/30 bg-teal-300/10 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wide text-teal-200">
                     <HiOutlineBanknotes aria-hidden="true" /> Cijene
                   </span>
-                  <p className="text-base font-extrabold leading-tight text-white">Web već od 39 KM</p>
+                  <p className="text-base font-extrabold leading-tight text-white">Web već od 150 KM</p>
                   <p className="text-xs leading-relaxed text-white/55">Transparentni paketi bez skrivenih troškova — među najpovoljnijima na tržištu.</p>
                   <span className="mt-1 inline-flex items-center gap-1.5 text-sm font-bold text-teal-200 transition group-hover/feat:gap-2.5 group-hover/feat:text-white">
                     Pogledajte cijene <HiOutlineChevronRight className="text-xs" aria-hidden="true" />
@@ -1215,12 +1245,12 @@ function Hero() {
         eyebrow: "Najpovoljniji u BiH",
         title: (
           <>
-            Web stranica već <span className="bg-gradient-to-r from-teal-300 to-cyan-300 bg-clip-text text-transparent">od 39 KM</span>
+            Web stranica već <span className="bg-gradient-to-r from-teal-300 to-cyan-300 bg-clip-text text-transparent">od 150 KM</span>
           </>
         ),
         subtitle: (
           <>
-            Dok agencije počinju od 500 KM, kod nas web stranica kreće od <span className="font-semibold text-white">39 KM</span>, a web shop od <span className="font-semibold text-white">199 KM</span>. Iste provjerene tehnologije i profesionalan dizajn — bez agencijskih cijena i bez skrivenih troškova.
+            Dok agencije počinju od 1.500 KM, kod nas web stranica kreće od <span className="font-semibold text-white">150 KM</span>, a web shop od <span className="font-semibold text-white">600 KM</span>. Iste provjerene tehnologije i profesionalan dizajn — bez agencijskih cijena i bez skrivenih troškova.
           </>
         ),
         secondaryHref: "#pricing",
@@ -1570,7 +1600,7 @@ function Facts() {
   );
 }
 
-function DeviceMockup({ image, title, url, glow = true }: { image: string; title: string; url?: string; glow?: boolean }) {
+function DeviceMockup({ image, imageMobile, title, url, glow = true }: { image: string; imageMobile?: string; title: string; url?: string; glow?: boolean }) {
   return (
     <div className="relative">
       {glow && <div className="pointer-events-none absolute -inset-4 -z-10 bg-gradient-to-br from-teal-600/20 to-cyan-600/10 blur-3xl" aria-hidden="true" />}
@@ -1594,7 +1624,7 @@ function DeviceMockup({ image, title, url, glow = true }: { image: string; title
         <div className="relative overflow-hidden rounded-[1rem]">
           <span className="absolute left-1/2 top-1.5 z-10 h-1 w-7 -translate-x-1/2 rounded-full bg-white/25" aria-hidden="true" />
           <div className="aspect-[9/18] overflow-hidden">
-            <img className="h-full w-full object-cover object-top" src={image} alt="" loading="lazy" draggable={false} />
+            <img className="h-full w-full object-cover object-top" src={imageMobile || image} alt="" loading="lazy" draggable={false} />
           </div>
         </div>
       </div>
@@ -1603,9 +1633,11 @@ function DeviceMockup({ image, title, url, glow = true }: { image: string; title
 }
 
 function Projects() {
+  const projects = useHomeProjects();
   const trackRef = useRef<HTMLDivElement | null>(null);
   const setWidthRef = useRef(0); // širina jedne grupe (1 kopija projekata + gap)
   const pausedRef = useRef(false);
+  const stepRef = useRef(0); // rAF id animacije strelica
 
   // PRAVA beskonačna traka (marquee): renderiramo 3 identične kopije i traka
   // neprekidno klizi. Kad pomakne za jednu grupu, scrollLeft se nevidljivo
@@ -1659,18 +1691,44 @@ function Projects() {
     return () => {
       cancelAnimationFrame(startRaf);
       cancelAnimationFrame(raf);
+      cancelAnimationFrame(stepRef.current);
       track.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", measure);
       imgs.forEach((img) => img.removeEventListener("load", measure));
     };
   }, []);
 
+  // Strelice: privremeno pauziraj auto-marquee, animiraj pomak ručno rAF-om
+  // (CSS smooth scroll bi se borio sa `tick` loop-om koji piše u scrollLeft),
+  // pa nastavi klizanje kad animacija završi.
   const scrollByCard = (direction: number) => {
     const track = trackRef.current;
     if (!track) return;
+
     const card = track.querySelector<HTMLElement>("[data-project-card]");
-    const amount = card ? card.offsetWidth + 24 : track.clientWidth * 0.7;
-    track.scrollBy({ left: direction * amount, behavior: "smooth" });
+    const gap = parseFloat(getComputedStyle(track).columnGap || "0") || 0;
+    const step = card ? card.offsetWidth + gap : track.clientWidth * 0.7;
+    const target = track.scrollLeft + direction * step;
+    const from = track.scrollLeft;
+    const distance = target - from;
+    const duration = 420;
+    const t0 = performance.now();
+
+    pausedRef.current = true;
+    cancelAnimationFrame(stepRef.current);
+
+    const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+
+    const animate = (now: number) => {
+      const t = Math.min(1, (now - t0) / duration);
+      track.scrollLeft = from + distance * ease(t);
+      if (t < 1) {
+        stepRef.current = requestAnimationFrame(animate);
+      } else {
+        pausedRef.current = false; // nastavi marquee
+      }
+    };
+    stepRef.current = requestAnimationFrame(animate);
   };
 
   const pause = () => {
@@ -1722,7 +1780,7 @@ function Projects() {
               data-project-card
               className="w-[78%] shrink-0 sm:w-[56%] lg:w-[44%]"
             >
-              <DeviceMockup image={project.image} title={project.title} url={project.url} />
+              <DeviceMockup image={project.image} imageMobile={project.imageMobile} title={project.title} url={project.url} />
               <div className="mt-6">
                 <p className="text-sm font-bold uppercase tracking-[0.25em] text-teal-300">{project.category}</p>
                 <h3 className="mt-2 text-2xl font-extrabold tracking-tight text-white md:text-3xl">{project.title}</h3>
@@ -1730,8 +1788,10 @@ function Projects() {
                 <a
                   className="mt-6 inline-flex items-center gap-2 rounded-none border border-white/20 px-6 py-3 text-sm font-bold text-white transition hover:border-teal-300 hover:bg-white hover:text-black"
                   href={project.link}
+                  target={project.link.startsWith("http") ? "_blank" : undefined}
+                  rel={project.link.startsWith("http") ? "noopener noreferrer" : undefined}
                 >
-                  Detaljnije o projektu
+                  Pogledaj projekt
                   <HiOutlineChevronRight className="text-base" aria-hidden="true" />
                 </a>
               </div>
@@ -1863,6 +1923,76 @@ function PricingCard({ plan, delay }: { plan: PricingPlan; delay: number }) {
 
 const defaultPricingGroups: PricingGroup[] = [{ plans: pricing }];
 
+// Mapiranje ikona po nazivu paketa (ikone ne mogu u localStorage, pa se izvode iz naziva/grupe).
+function planIcon(title: string, groupHeading?: string): IconType {
+  const t = title.toLowerCase();
+  const h = (groupHeading ?? "").toLowerCase();
+  if (t.includes("premium")) return HiOutlineSparkles;
+  if (t.includes("business") || t.includes("standard")) return h.includes("shop") ? HiOutlineChartBar : HiOutlineBriefcase;
+  if (t.includes("shop")) return HiOutlineShoppingCart;
+  if (t.includes("mini") || t.includes("start") || t.includes("mvp")) return HiOutlineRocketLaunch;
+  if (h.includes("igric")) return HiOutlinePuzzlePiece;
+  if (h.includes("mobil")) return HiOutlineDevicePhoneMobile;
+  return HiOutlineGlobeAlt;
+}
+
+// Pretvara grupe iz localStorage store-a u oblik koji Pricing očekuje.
+function toPricingGroups(list: PricingGroupData[]): PricingGroup[] {
+  return list.map((g) => ({
+    heading: g.heading || undefined,
+    plans: g.plans.map((p) => ({
+      title: p.title,
+      price: p.price,
+      icon: planIcon(p.title, g.heading),
+      popular: p.popular,
+      tagline: p.tagline || undefined,
+      items: p.items,
+    })),
+  }));
+}
+
+// Hook za cijene (ili podskup za jednu uslugu).
+function usePricingGroups(serviceKey?: "web" | "webShops" | "games" | "mobile") {
+  const stored = useSyncExternalStore(subscribePricing, getPricing, getServerPricing);
+  return useMemo(() => {
+    const filtered = serviceKey
+      ? stored.filter((g) => GROUP_TO_SERVICE[g.id] === serviceKey)
+      : stored;
+    return toPricingGroups(filtered);
+  }, [stored, serviceKey]);
+}
+
+// Vraća podnaslov + napomenu za datu uslugu (id grupe).
+function usePricingMeta(serviceKey?: "web" | "webShops" | "games" | "mobile") {
+  const stored = useSyncExternalStore(subscribePricing, getPricing, getServerPricing);
+  return useMemo(() => {
+    const g = serviceKey ? stored.find((x) => GROUP_TO_SERVICE[x.id] === serviceKey) : undefined;
+    return { subtitle: g?.subtitle || undefined, note: g?.note || undefined };
+  }, [stored, serviceKey]);
+}
+
+// Stranica usluge — cijene za tu jednu uslugu iz store-a (uz fallback).
+function ServicePricing({
+  serviceKey,
+  fallbackSubtitle,
+  fallbackNote,
+}: {
+  serviceKey: "web" | "webShops" | "games" | "mobile";
+  fallbackSubtitle?: string;
+  fallbackNote?: string;
+}) {
+  const groups = usePricingGroups(serviceKey);
+  const meta = usePricingMeta(serviceKey);
+  if (groups.length === 0) return null;
+  return <Pricing groups={groups} subtitle={meta.subtitle ?? fallbackSubtitle} note={meta.note ?? fallbackNote} />;
+}
+
+// /cijene — sve grupe iz store-a.
+function AllPricing() {
+  const groups = usePricingGroups();
+  return <Pricing groups={groups} subtitle={undefined} note={undefined} />;
+}
+
 function Pricing({ groups, subtitle, note }: { groups?: PricingGroup[]; subtitle?: string; note?: string } = {}) {
   const groupList = groups ?? defaultPricingGroups;
   return (
@@ -1887,7 +2017,7 @@ function Pricing({ groups, subtitle, note }: { groups?: PricingGroup[]; subtitle
           ))}
         </div>
         <div className="mt-12 border-t border-white/10 pt-7 text-sm leading-7 text-[#A7AABB]">
-          <p>{note ?? "Hosting i domena se plaćaju dodatno (ako ih nemate): plaćate direktno provideru otprilike 50–100 KM godišnje ovisno o domeni (uključuje poslovni email i ostalo), bez naše marže. Osnovna SEO podešavanja (meta naslovi i opisi) uključena su kao dodatak. Dodatne usluge: logo i identitet od 19 KM · 2D igrice i mobilne aplikacije po dogovoru · održavanje po dogovoru."}</p>
+          <p>{note ?? "Hosting i domena se plaćaju dodatno (ako ih nemate): plaćate direktno provideru otprilike 50–100 KM godišnje ovisno o domeni (uključuje poslovni email i ostalo), bez naše marže. Osnovna SEO podešavanja (meta naslovi i opisi) uključena su kao dodatak. Dodatne usluge: logo i identitet od 100 KM · 2D igrice i mobilne aplikacije po dogovoru · održavanje po dogovoru."}</p>
           <p className="mt-2">Dizajn je uvijek uključen, bez skrivenih troškova. Izmjene dizajna možete zatražiti u bilo koje vrijeme tokom razvoja.</p>
         </div>
       </div>
@@ -2604,7 +2734,7 @@ function ProjectRow({ group, flip, rowIndex }: { group: { service: string; items
             <div key={project.title} className="w-full shrink-0">
               <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
                 <div className={flip ? "lg:order-2" : ""}>
-                  <DeviceMockup image={project.image} title={project.title} url={project.url} glow={false} />
+                  <DeviceMockup image={project.image} imageMobile={project.imageMobile} title={project.title} url={project.url} glow={false} />
                 </div>
                 <div className={flip ? "lg:order-1" : ""}>
                   <p className="text-sm font-bold uppercase tracking-[0.25em] text-teal-300">{project.tag}</p>
@@ -2645,6 +2775,7 @@ function ProjectRow({ group, flip, rowIndex }: { group: { service: string; items
 // Galerija projekata — po jedan red (slajder) za svaku uslugu, isti DeviceMockup
 // kao na home stranici radi konzistentnosti.
 function ProjectsGallery() {
+  const projectGroups = useStoredProjects();
   return (
     <section className="overflow-hidden bg-[#060606] py-20 md:py-28">
       <div className="mx-auto max-w-7xl px-5 md:px-8">
@@ -2655,7 +2786,7 @@ function ProjectsGallery() {
           eyebrow="Radovi"
         />
         <div className="mt-14 space-y-16 md:mt-20 md:space-y-24">
-          {projectGroups.map((group, groupIndex) => (
+          {projectGroups.filter((group) => group.items.length > 0).map((group, groupIndex) => (
             <ProjectRow key={group.service} group={group} flip={groupIndex % 2 === 1} rowIndex={groupIndex} />
           ))}
         </div>
@@ -2789,9 +2920,9 @@ function CijenePage() {
         eyebrow="Cijene"
         icon={HiOutlineBanknotes}
         title="Transparentne cijene, bez iznenađenja"
-        intro="Plaćate kad ste zadovoljni — bez predujma i bez skrivenih troškova. Cijene počinju od 39 KM, a tačnu ponudu dajemo nakon besplatne konsultacije."
+        intro="Plaćate kad ste zadovoljni — bez predujma i bez skrivenih troškova. Cijene počinju od 150 KM, a tačnu ponudu dajemo nakon besplatne konsultacije."
       />
-      <Pricing />
+      <AllPricing />
       <CompareTable />
       <ClosingCTA
         title="Niste sigurni koji paket?"
@@ -3137,7 +3268,7 @@ function ServiceDetailPage({ detail }: { detail: ServiceDetail }) {
       <ServiceStack detail={detail} />
       <IncludedSplit />
       <HowItWorks />
-      <Pricing groups={detail.pricingGroups} subtitle={detail.pricingSubtitle} note={detail.pricingNote} />
+      <ServicePricing serviceKey={detail.pricingKey ?? "web"} fallbackSubtitle={detail.pricingSubtitle} fallbackNote={detail.pricingNote} />
       <ServiceFAQ detail={detail} />
     </main>
   );
@@ -3270,7 +3401,7 @@ const legalDocs: Record<"privatnost" | "uslovi" | "kolacici", LegalDoc> = {
       { heading: "2. Usluge i ponuda", body: ["Svaki projekat započinje besplatnom konsultacijom i gotovom verzijom. Tačan obim, rok i cijena definišu se ponudom prije početka rada."] },
       { heading: "3. Cijene i plaćanje", body: ["Ne tražimo predujam — plaćate tek kada ste zadovoljni rezultatom. Cijene su navedene u KM i mogu varirati ovisno o obimu projekta. Hosting i domena plaćaju se direktno provideru."] },
       { heading: "4. Intelektualno vlasništvo", body: ["Nakon isporuke i izmirenja dogovorene cijene, kompletan kod, dizajn i prava nad projektom pripadaju klijentu."] },
-      { heading: "5. Odgovornost", body: ["Svaki projekat dolazi sa 30 dana tehničke garancije. Ne odgovaramo za štetu nastalu nepravilnim korištenjem ili izmjenama izvršenim od strane trećih lica nakon isporuke."] },
+      { heading: "5. Odgovornost", body: ["Demo verzija projekta je besplatna i za nju se ne plaća ništa. Ne odgovaramo za štetu nastalu nepravilnim korištenjem ili izmjenama izvršenim od strane trećih lica nakon isporuke."] },
       { heading: "6. Izmjene uslova", body: ["Zadržavamo pravo izmjene ovih uslova. Aktuelna verzija uvijek je dostupna na ovoj stranici."] },
       { heading: "7. Kontakt", body: ["Za pitanja o uslovima korištenja javite se na info@devforge.ba."] },
     ],
@@ -3594,8 +3725,8 @@ function AdWords({ parts, start = 0.1, step = 0.13, className = "" }: { parts: {
 
 // Usluge u 2×2 gridu — svaka ima cijenu (najniži paket) koja se "pečatira" na kraju.
 const AD_SERVICES = [
-  { icon: HiOutlineGlobeAlt, label: "Web stranice", price: "39 KM" },
-  { icon: HiOutlineShoppingCart, label: "Web shopovi", price: "199 KM" },
+  { icon: HiOutlineGlobeAlt, label: "Web stranice", price: "150 KM" },
+  { icon: HiOutlineShoppingCart, label: "Web shopovi", price: "600 KM" },
   { icon: HiOutlineDevicePhoneMobile, label: "Mobilne aplikacije", price: "Po dogovoru" },
   { icon: HiOutlinePuzzlePiece, label: "2D igrice", price: "Po dogovoru" },
 ];
@@ -3850,6 +3981,7 @@ export default function App() {
     "/uslovi": "uslovi",
     "/kolacici": "kolacici",
     "/reklama": "reklama",
+    "/admin": "admin",
   };
   // "/" → home; poznata putanja → njena vrijednost; sve ostalo → 404.
   const route = path === "/" ? "home" : routeMap[path] ?? "notfound";
@@ -3927,12 +4059,12 @@ export default function App() {
       home: "DevForge — Web stranice, shopovi i aplikacije | Sarajevo, BiH",
       about: "O nama — DevForge | Digitalna agencija iz Sarajeva",
       services: "Usluge — web, shopovi, aplikacije i 2D igre | DevForge",
-      "svc-web": "Izrada web stranica od 39 KM | DevForge Sarajevo",
+      "svc-web": "Izrada web stranica od 150 KM | DevForge Sarajevo",
       "svc-games": "Izrada 2D igara | DevForge",
       "svc-mobile": "Izrada mobilnih aplikacija (Android & iOS) | DevForge",
       projects: "Projekti — naš rad | DevForge",
       utisci: "Utisci klijenata | DevForge",
-      cijene: "Cijene — web od 39 KM, shop od 199 KM | DevForge",
+      cijene: "Cijene — web od 150 KM, shop od 600 KM | DevForge",
       faq: "Česta pitanja | DevForge",
       kontakt: "Kontakt — zatražite gotovu verziju | DevForge Sarajevo",
       privatnost: "Politika privatnosti | DevForge",
@@ -3949,6 +4081,9 @@ export default function App() {
 
   // Reklama: samostalan 9:16 okvir bez headera/footera/kursora (čist za snimanje).
   if (route === "reklama") return <AdReel />;
+
+  // Admin panel: samostalan prikaz bez headera, footera, kursora i cookie banera.
+  if (route === "admin") return <AdminPanel />;
 
   return (
     <div className="min-h-screen bg-[#060606] font-sans text-white selection:bg-teal-400 selection:text-black">
