@@ -1873,10 +1873,11 @@ function DeviceMockup({ image, imageMobile, title, url, glow = true }: { image: 
           <img className="h-full w-full object-contain" src={image} alt={title} loading="lazy" draggable={false} />
         </div>
       </div>
-      {/* Phone */}
-      <div className="absolute bottom-4 right-4 w-[26%] max-w-[120px] rounded-[1.4rem] border border-white/15 bg-[#0E0E12] p-1.5 shadow-2xl shadow-black/70 ring-1 ring-black/40 sm:bottom-5 sm:right-5">
-        <div className="relative overflow-hidden rounded-[1rem]">
-          <span className="absolute left-1/2 top-1.5 z-10 h-1 w-7 -translate-x-1/2 rounded-full bg-white/25" aria-hidden="true" />
+      {/* Phone — veci prikaz da se odmah vidi da projekt ima i mobilnu verziju.
+          Na malim ekranima je manji da ne prekrije desktop snimku. */}
+      <div className="absolute bottom-2 right-2 w-[30%] max-w-[150px] rounded-[1.5rem] border border-white/20 bg-[#0E0E12] p-1.5 shadow-2xl shadow-black/80 ring-1 ring-black/50 sm:bottom-4 sm:right-4 sm:w-[34%] sm:max-w-[165px] sm:rounded-[1.6rem]">
+        <div className="relative overflow-hidden rounded-[1.15rem]">
+          <span className="absolute left-1/2 top-1.5 z-10 h-1 w-8 -translate-x-1/2 rounded-full bg-white/30" aria-hidden="true" />
           <div className="aspect-[9/18] overflow-hidden">
             <img className="h-full w-full object-cover object-top" src={imageMobile || image} alt="" loading="lazy" draggable={false} />
           </div>
@@ -2969,9 +2970,10 @@ function ProjectRow({ group, rowIndex }: { group: { service: string; items: Proj
       const w = el.clientWidth;
       const isSmall = window.innerWidth < 768;
       setViewportWidth(w);
-      // 62% desktop / 78% mobilni → susjed vidljiv ~31% (desktop) / 14% (mobilni).
-      // Dovoljno da se vidi sadrzaj susjedne kartice, a centrirana ostaje glavna.
-      setCardWidth(Math.round(w * (isSmall ? 0.78 : 0.62)));
+      // 46% desktop / 72% mobilni. Uz gap ovo daje: aktivna kartica veca,
+      // susjed vidljiv skoro cijeli, a nazire se i treca kartica — pa se
+      // odmah vidi da ima vise projekata.
+      setCardWidth(Math.round(w * (isSmall ? 0.72 : 0.46)));
     };
     measure();
     const observer = new ResizeObserver(measure);
@@ -3137,7 +3139,7 @@ function ProjectRow({ group, rowIndex }: { group: { service: string; items: Proj
                         }
                   }
                   className={`relative transition-opacity duration-500 ${
-                    active ? "opacity-100" : "cursor-pointer opacity-75 hover:opacity-90"
+                    active ? "opacity-100" : "cursor-pointer opacity-75 hover:opacity-95"
                   }`}
                 >
                   <DeviceMockup
