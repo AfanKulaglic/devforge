@@ -38,12 +38,27 @@ import {
   HiOutlineHome,
   HiOutlineChevronRight,
   HiOutlineChevronLeft,
+  HiOutlineBolt,
   HiOutlineChevronDown,
   HiOutlineXMark,
   HiOutlineArrowUp,
   HiOutlineShieldCheck,
   HiOutlineScale,
 } from "react-icons/hi2";
+import {
+  SiExpo,
+  SiFirebase,
+  SiFlutter,
+  SiLaravel,
+  SiMongodb,
+  SiNextdotjs,
+  SiNodedotjs,
+  SiPhp,
+  SiPostgresql,
+  SiReact,
+  SiTailwindcss,
+  SiTypescript,
+} from "react-icons/si";
 import { FaLinkedinIn, FaInstagram } from "react-icons/fa6";
 import AdminPanel from "./AdminPanel";
 import {
@@ -174,7 +189,23 @@ const menuInfoLinks: { label: string; href: string; icon: IconType; desc: string
   { label: "Cijene", href: "/cijene", icon: HiOutlineBanknotes, desc: "Transparentni paketi, bez skrivenih troškova." },
 ];
 
-const companyLogos = ["React", "Next.js", "TypeScript", "Node.js", "Laravel", "Flutter", "React Native", "PostgreSQL", "Tailwind", "MongoDB"];
+// Tehnologije koje koristimo — ikonica + brend boja za hover akcenat.
+// `brand` je boja kojom ikona zasija na hover; `dim` je mirnija varijanta
+// koja se koristi dok kartica nije aktivna (da traka ne bude šarena).
+const techStack: { name: string; icon: IconType; brand: string }[] = [
+  { name: "React", icon: SiReact, brand: "#61DAFB" },
+  { name: "Next.js", icon: SiNextdotjs, brand: "#FFFFFF" },
+  { name: "TypeScript", icon: SiTypescript, brand: "#3178C6" },
+  { name: "Node.js", icon: SiNodedotjs, brand: "#5FA04E" },
+  { name: "Laravel", icon: SiLaravel, brand: "#FF2D20" },
+  { name: "PHP", icon: SiPhp, brand: "#777BB4" },
+  { name: "React Native", icon: SiExpo, brand: "#FFFFFF" },
+  { name: "Flutter", icon: SiFlutter, brand: "#02569B" },
+  { name: "Tailwind", icon: SiTailwindcss, brand: "#06B6D4" },
+  { name: "PostgreSQL", icon: SiPostgresql, brand: "#4169E1" },
+  { name: "MongoDB", icon: SiMongodb, brand: "#47A248" },
+  { name: "Firebase", icon: SiFirebase, brand: "#FFCA28" },
+];
 
 const benefits = [
   {
@@ -1147,20 +1178,87 @@ function SectionHeading({ title, subtitle, align = "left", icon: Icon, eyebrow, 
 }
 
 function HeroLogos() {
-  const logos = useMemo(() => [...companyLogos, ...companyLogos], []);
+  // Duplirana lista za beskonacnu traku (marquee). Kljuc mora biti unikatan.
+  const items = useMemo(() => [...techStack, ...techStack, ...techStack], []);
+
   return (
-    <div className="border-y border-white/10 bg-[#080808] py-7" aria-label="Tehnologije koje koristimo">
-      <p className="mb-5 text-center text-xs font-bold uppercase tracking-[0.25em] text-white/40">Gradimo modernim, provjerenim tehnologijama</p>
-      <div className="mx-auto max-w-7xl overflow-hidden px-5 md:px-8">
-        <div className="logo-track flex items-center gap-4">
-          {logos.map((logo, index) => (
-            <div key={`${logo}-${index}`} className="logo-item flex h-16 shrink-0 items-center justify-center border border-white/10 bg-white/[0.03] text-sm font-extrabold uppercase tracking-[0.25em] text-white/45">
-              {logo}
-            </div>
-          ))}
+    <section
+      className="relative overflow-hidden border-y border-white/10 bg-[#080808] py-8 md:py-9"
+      aria-label="Tehnologije koje koristimo"
+    >
+      {/* Suptilan teal odsjaj u sredini — da traka ne bude ravna */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-teal-400/30 to-transparent"
+        aria-hidden="true"
+      />
+
+      <div className="mx-auto max-w-7xl px-5 md:px-8">
+        <div className="flex flex-col items-center gap-1 text-center">
+          <p className="text-[0.62rem] font-black uppercase tracking-[0.3em] text-teal-300/70">
+            Tehnologije
+          </p>
+          <p className="text-sm font-bold tracking-tight text-white/70 md:text-base">
+            Gradimo modernim, provjerenim tehnologijama
+          </p>
         </div>
       </div>
-    </div>
+
+      {/* Traka sa logotipima — puna sirina, bez paddinga da ivice "izlaze" */}
+      <div className="relative mt-6 md:mt-7">
+        {/* Ivicne maske: logotipi se gube u pozadini, ne sijeku se tvrdo */}
+        <div
+          className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-[#080808] to-transparent md:w-24"
+          aria-hidden="true"
+        />
+        <div
+          className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-[#080808] to-transparent md:w-24"
+          aria-hidden="true"
+        />
+
+        <div className="overflow-hidden">
+          <div className="tech-track flex items-stretch gap-3 md:gap-4">
+            {items.map((tech, index) => {
+              const Icon = tech.icon;
+              return (
+                <div
+                  key={`${tech.name}-${index}`}
+                  className="tech-card group flex shrink-0 items-center gap-2.5 border border-white/10 bg-white/[0.025] px-3.5 py-2.5 transition-colors duration-300 hover:border-white/25 hover:bg-white/[0.05] md:gap-3 md:px-4 md:py-3"
+                >
+                  <Icon
+                    className="shrink-0 text-lg text-white/45 transition-colors duration-300 md:text-xl"
+                    style={{ "--brand": tech.brand } as React.CSSProperties}
+                    aria-hidden="true"
+                  />
+                  <span className="whitespace-nowrap text-[0.72rem] font-extrabold uppercase tracking-[0.12em] text-white/55 transition-colors duration-300 group-hover:text-white md:text-[0.78rem]">
+                    {tech.name}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Donja linija: dvije kljucne stavke kao potvrda, ne kao brojke */}
+      <div className="mx-auto mt-6 max-w-7xl px-5 md:mt-7 md:px-8">
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[0.66rem] font-semibold uppercase tracking-[0.16em] text-white/30 md:text-[0.7rem]">
+          <span className="flex items-center gap-1.5">
+            <HiOutlineDevicePhoneMobile className="text-teal-300/60" aria-hidden="true" />
+            Prilagođeno mobitelu
+          </span>
+          <span className="hidden h-3 w-px bg-white/15 sm:block" aria-hidden="true" />
+          <span className="flex items-center gap-1.5">
+            <HiOutlineBolt className="text-teal-300/60" aria-hidden="true" />
+            Brzo učitavanje
+          </span>
+          <span className="hidden h-3 w-px bg-white/15 sm:block" aria-hidden="true" />
+          <span className="flex items-center gap-1.5">
+            <HiOutlineSparkles className="text-teal-300/60" aria-hidden="true" />
+            SEO spremno
+          </span>
+        </div>
+      </div>
+    </section>
   );
 }
 

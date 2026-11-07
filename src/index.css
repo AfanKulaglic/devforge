@@ -172,6 +172,16 @@ button {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .tech-track {
+    animation: none;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .tech-card {
+    opacity: 1 !important;
+  }
+
   .hero-decor-img {
     animation: none;
   }
@@ -359,16 +369,29 @@ button {
   animation: cta-pulse 3.4s ease-in-out infinite;
 }
 
-.logo-track {
-  animation: logo-marquee 28s linear infinite;
+/* ── Traka tehnologija (hero) ── */
+.tech-track {
+  width: max-content;
+  animation: tech-marquee 45s linear infinite;
 }
 
-.logo-track:hover {
+.tech-track:hover {
   animation-play-state: paused;
 }
 
-.logo-item {
-  flex-basis: calc((100% - 4rem) / 5);
+/* Hover: ikona dobije brend boju preko CSS varijable --brand */
+.tech-card:hover svg {
+  color: var(--brand);
+}
+
+@keyframes tech-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    /* pomak za jednu trecinu (imamo 3 kopije liste) */
+    transform: translate3d(calc(-100% / 3), 0, 0);
+  }
 }
 
 .project-slide {
@@ -595,30 +618,13 @@ button {
   }
 }
 
-@keyframes logo-marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(calc(-50% - 0.5rem));
-  }
-}
-
 @media (max-width: 991px) {
-  .logo-item {
-    flex-basis: calc((100% - 3rem) / 4);
-  }
-
   .project-track {
     --project-w: calc((100vw - 2rem) / 2.2);
   }
 }
 
 @media (max-width: 767px) {
-  .logo-item {
-    flex-basis: calc((100% - 2rem) / 3);
-  }
-
   .project-track {
     --project-w: calc((100vw - 2rem) / 1.15);
   }
