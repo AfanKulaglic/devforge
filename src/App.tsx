@@ -2701,6 +2701,7 @@ function ProjectRow({ group, rowIndex }: { group: { service: string; items: Proj
   const [dragging, setDragging] = useState(false);
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const [cardWidth, setCardWidth] = useState(0);
+  const [viewportWidth, setViewportWidth] = useState(0);
   const touchX = useRef<number | null>(null);
   const pointerStart = useRef<number | null>(null);
   const count = group.items.length;
@@ -2713,6 +2714,7 @@ function ProjectRow({ group, rowIndex }: { group: { service: string; items: Proj
     const measure = () => {
       const w = el.clientWidth;
       const isSmall = window.innerWidth < 768;
+      setViewportWidth(w);
       setCardWidth(Math.round(w * (isSmall ? 0.82 : 0.7)));
     };
     measure();
@@ -2725,8 +2727,9 @@ function ProjectRow({ group, rowIndex }: { group: { service: string; items: Proj
     };
   }, []);
 
-  const go = (dir: number) => setIndex((value) => (value + dir + count) % count);
-  const goTo = (target: number) => setIndex(((target % count) + count) % count);
+  const go = (dir: number) =>
+    setIndex((value) => Math.min(count - 1, Math.max(0, value + dir)));
+  const goTo = (target: number) => setIndex(Math.min(count - 1, Math.max(0, target)));
 
   // Razmak izmedju kartica (u px) — cita se iz stvarnog CSS-a da se ne
   // desi da se pomjeraj i prikaz razidju.
@@ -2745,7 +2748,8 @@ function ProjectRow({ group, rowIndex }: { group: { service: string; items: Proj
 
   // Pomak tako da aktivna kartica bude centrirana u viewportu.
   const step = cardWidth + gap;
-  const centering = cardWidth > 0 ? (viewportRef.current?.clientWidth ?? 0) / 2 - cardWidth / 2 : 0;
+  // Centriranje iz STATE-a (ne iz ref-a — ref je null na prvom renderu).
+  const centering = cardWidth > 0 && viewportWidth > 0 ? viewportWidth / 2 - cardWidth / 2 : 0;
   const translate = centering - index * step + drag;
 
   const clampDrag = (dx: number) => {
@@ -2796,9 +2800,11 @@ function ProjectRow({ group, rowIndex }: { group: { service: string; items: Proj
   const arrowBtn =
     "rounded-none border border-white/20 p-2.5 text-white transition hover:border-teal-300 hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-25 disabled:hover:border-white/20 disabled:hover:bg-transparent disabled:hover:text-white";
 
-  // Beskonacna traka: [zadnji] + svi + [prvi, drugi] da se vidi susjed i na kraju.
-  const looped = count > 1 ? [group.items[count - 1], ...group.items, ...group.items.slice(0, 2)] : group.items;
-  const loopOffset = count > 1 ? 1 : 0;
+  // Traka je samo stvarna lista projekata — bez klonova. Klonovi su pravili
+  // duple "aktivne" kartice i pogresan odsjaj/blur. Prikaz je centriran, a
+  // lijevo/desno se prirodno vide susjedi (na krajevima se ne vidi nista,
+  // sto je i logicno: nema sta dalje).
+  const looped = group.items;
 
   return (
     <Reveal direction="up" as="div" delay={0.05}>
@@ -2817,10 +2823,10 @@ function ProjectRow({ group, rowIndex }: { group: { service: string; items: Proj
           <span className="text-sm font-semibold tabular-nums text-white/40">
             {index + 1} / {count}
           </span>
-          <button type="button" onClick={() => go(-1)} aria-label="Prethodni projekt" className={arrowBtn} disabled={count < 2}>
+          <button type="button" onClick={() => go(-1)} aria-label="Prethodni projekt" className={arrowBtn} disabled={count < 2 || index === 0}>
             <HiOutlineChevronLeft className="text-lg" aria-hidden="true" />
           </button>
-          <button type="button" onClick={() => go(1)} aria-label="Sljedeci projekt" className={arrowBtn} disabled={count < 2}>
+          <button type="button" onClick={() => go(1)} aria-label="Sljedeci projekt" className={arrowBtn} disabled={count < 2 || index === count - 1}>
             <HiOutlineChevronRight className="text-lg" aria-hidden="true" />
           </button>
         </div>
@@ -2852,8 +2858,7 @@ function ProjectRow({ group, rowIndex }: { group: { service: string; items: Proj
           }}
         >
           {looped.map((project, i) => {
-            const realIndex = count > 1 ? (i - loopOffset + count) % count : i;
-            const active = realIndex === index;
+            const active = i === index;
             return (
               <div
                 key={`${project.title}-${i}`}
@@ -2862,16 +2867,24 @@ function ProjectRow({ group, rowIndex }: { group: { service: string; items: Proj
                 aria-hidden={!active}
               >
                 <div
-                  className={`transition-opacity duration-500 ${
-                    active ? "opacity-100" : "pointer-events-none opacity-35"
+                  className={`relative transition-opacity duration-500 ${
+                    active ? "opacity-100" : "pointer-events-none opacity-30"
                   }`}
                 >
+                  {/* Odsjaj (glow) samo ispod AKTIVNE kartice, izvan opacity sloja
+                      da se ne mijesa sa susjedima. */}
+                  {active && (
+                    <div
+                      className="pointer-events-none absolute -inset-6 -z-10 bg-gradient-to-br from-teal-600/25 to-cyan-600/10 blur-3xl"
+                      aria-hidden="true"
+                    />
+                  )}
                   <DeviceMockup
                     image={project.image}
                     imageMobile={project.imageMobile}
                     title={project.title}
                     url={project.url}
-                    glow={active}
+                    glow={false}
                   />
 
                   {/* Tekst ispod slike — vidljiv i kad je kartica susjedna */}
