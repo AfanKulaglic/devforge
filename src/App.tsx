@@ -1,4 +1,4 @@
-import { FormEvent, ReactNode, TouchEvent as ReactTouchEvent, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { FormEvent, PointerEvent as ReactPointerEvent, ReactNode, TouchEvent as ReactTouchEvent, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { IconType } from "react-icons";
 import {
   HiOutlineRocketLaunch,
@@ -13,6 +13,7 @@ import {
   HiOutlinePuzzlePiece,
   HiOutlineDevicePhoneMobile,
   HiOutlineShoppingCart,
+  HiOutlineArrowTopRightOnSquare,
   HiOutlineRectangleGroup,
   HiOutlineCodeBracketSquare,
   HiOutlineCircleStack,
@@ -2690,84 +2691,232 @@ function ProjectsHero() {
 
 // Jedan red = jedna usluga; slajder kroz projekte te usluge (strelice, tačkice,
 // touch swipe). Strana mockupa se naizmjenično mijenja (flip) radi ritma.
-function ProjectRow({ group, flip, rowIndex }: { group: { service: string; items: ProjectItem[] }; flip: boolean; rowIndex: number }) {
+// Carousel sa susjednim karticama: aktivna kartica je centrirana, a lijevo i
+// desno se vidi po jedna trecina susjedne — tako se odmah vidi da ima jos
+// projekata. Fluidno: koristi se stvarna sirina kontejnera (ResizeObserver),
+// pa se na svakom ekranu prikaze ista proporcija.
+function ProjectRow({ group, rowIndex }: { group: { service: string; items: ProjectItem[] }; rowIndex: number }) {
   const [index, setIndex] = useState(0);
+  const [drag, setDrag] = useState(0); // px, za vrijeme povlacenja prstom/misem
+  const [dragging, setDragging] = useState(false);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
+  const [cardWidth, setCardWidth] = useState(0);
   const touchX = useRef<number | null>(null);
+  const pointerStart = useRef<number | null>(null);
   const count = group.items.length;
+
+  // Stvarna sirina kartice = 70% viewporta (na mobilnom 86%).
+  // Time se lijevo/desno vidi ~15% / ~15% susjedne kartice na desktopu.
+  useEffect(() => {
+    const el = viewportRef.current;
+    if (!el) return;
+    const measure = () => {
+      const w = el.clientWidth;
+      const isSmall = window.innerWidth < 768;
+      setCardWidth(Math.round(w * (isSmall ? 0.82 : 0.7)));
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    window.addEventListener("resize", measure);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
+
   const go = (dir: number) => setIndex((value) => (value + dir + count) % count);
+  const goTo = (target: number) => setIndex(((target % count) + count) % count);
+
+  // Razmak izmedju kartica (u px) — cita se iz stvarnog CSS-a da se ne
+  // desi da se pomjeraj i prikaz razidju.
+  const [gap, setGap] = useState(20);
+  useEffect(() => {
+    const el = viewportRef.current;
+    if (!el) return;
+    const read = () => {
+      const g = parseFloat(getComputedStyle(el).columnGap || "0");
+      if (!Number.isNaN(g)) setGap(g);
+    };
+    read();
+    window.addEventListener("resize", read);
+    return () => window.removeEventListener("resize", read);
+  }, []);
+
+  // Pomak tako da aktivna kartica bude centrirana u viewportu.
+  const step = cardWidth + gap;
+  const centering = cardWidth > 0 ? (viewportRef.current?.clientWidth ?? 0) / 2 - cardWidth / 2 : 0;
+  const translate = centering - index * step + drag;
+
+  const clampDrag = (dx: number) => {
+    // Otpor na krajevima (wrap je beskonacan pa nema tvrdih granica) — samo
+    // malo usporimo da ne izgleda "gumeno".
+    return dx * 0.85;
+  };
+
+  const finishDrag = (dx: number) => {
+    if (Math.abs(dx) > Math.max(40, cardWidth * 0.14)) {
+      go(dx < 0 ? 1 : -1);
+    }
+    setDrag(0);
+    setDragging(false);
+  };
 
   const onTouchStart = (event: ReactTouchEvent) => {
     touchX.current = event.touches[0].clientX;
+    setDragging(true);
   };
-  const onTouchEnd = (event: ReactTouchEvent) => {
+  const onTouchMove = (event: ReactTouchEvent) => {
     if (touchX.current === null) return;
-    const dx = event.changedTouches[0].clientX - touchX.current;
-    if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
+    setDrag(clampDrag(event.touches[0].clientX - touchX.current));
+  };
+  const onTouchEnd = () => {
+    if (touchX.current === null) return;
+    finishDrag(drag);
     touchX.current = null;
   };
 
-  const arrowBtn = "rounded-none border border-white/20 p-2.5 text-white transition hover:border-teal-300 hover:bg-white hover:text-black";
+  // Mis (drag na desktopu)
+  const onPointerDown = (event: ReactPointerEvent) => {
+    if (event.pointerType === "touch") return;
+    pointerStart.current = event.clientX;
+    setDragging(true);
+    (event.currentTarget as HTMLElement).setPointerCapture?.(event.pointerId);
+  };
+  const onPointerMove = (event: ReactPointerEvent) => {
+    if (pointerStart.current === null) return;
+    setDrag(clampDrag(event.clientX - pointerStart.current));
+  };
+  const onPointerUp = () => {
+    if (pointerStart.current === null) return;
+    finishDrag(drag);
+    pointerStart.current = null;
+  };
+
+  const arrowBtn =
+    "rounded-none border border-white/20 p-2.5 text-white transition hover:border-teal-300 hover:bg-white hover:text-black disabled:cursor-not-allowed disabled:opacity-25 disabled:hover:border-white/20 disabled:hover:bg-transparent disabled:hover:text-white";
+
+  // Beskonacna traka: [zadnji] + svi + [prvi, drugi] da se vidi susjed i na kraju.
+  const looped = count > 1 ? [group.items[count - 1], ...group.items, ...group.items.slice(0, 2)] : group.items;
+  const loopOffset = count > 1 ? 1 : 0;
 
   return (
     <Reveal direction="up" as="div" delay={0.05}>
-      {/* Zaglavlje reda: usluga + brojač + strelice (desktop) */}
-      <div className="mb-7 flex items-end justify-between gap-4 border-b border-white/10 pb-5">
+      {/* Zaglavlje reda: usluga + brojac + strelice */}
+      <div className="mb-7 flex flex-wrap items-end justify-between gap-4 border-b border-white/10 pb-5">
         <div className="flex items-center gap-3">
           <span className="text-sm font-black tracking-[0.3em] text-white/25">0{rowIndex + 1}</span>
-          <h3 className="text-xl font-extrabold tracking-tight text-white md:text-2xl">{group.service}</h3>
+          <div>
+            <h3 className="text-xl font-extrabold tracking-tight text-white md:text-2xl">{group.service}</h3>
+            <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-white/35">
+              {count} {count === 1 ? "projekt" : "projekta"}
+            </p>
+          </div>
         </div>
-        <div className="hidden shrink-0 items-center gap-3 md:flex">
-          <span className="text-sm font-semibold tabular-nums text-white/40">{index + 1} / {count}</span>
-          <button type="button" onClick={() => go(-1)} aria-label="Prethodni projekt" className={arrowBtn}>
+        <div className="flex shrink-0 items-center gap-3">
+          <span className="text-sm font-semibold tabular-nums text-white/40">
+            {index + 1} / {count}
+          </span>
+          <button type="button" onClick={() => go(-1)} aria-label="Prethodni projekt" className={arrowBtn} disabled={count < 2}>
             <HiOutlineChevronLeft className="text-lg" aria-hidden="true" />
           </button>
-          <button type="button" onClick={() => go(1)} aria-label="Sljedeći projekt" className={arrowBtn}>
+          <button type="button" onClick={() => go(1)} aria-label="Sljedeci projekt" className={arrowBtn} disabled={count < 2}>
             <HiOutlineChevronRight className="text-lg" aria-hidden="true" />
           </button>
         </div>
       </div>
 
-      {/* Slajder: track se pomjera za index*100% */}
-      <div className="overflow-hidden" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-        <div className="flex transition-transform duration-500 ease-out" style={{ transform: `translateX(-${index * 100}%)` }}>
-          {group.items.map((project) => (
-            <div key={project.title} className="w-full shrink-0">
-              <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
-                <div className={flip ? "lg:order-2" : ""}>
-                  <DeviceMockup image={project.image} imageMobile={project.imageMobile} title={project.title} url={project.url} glow={false} />
-                </div>
-                <div className={flip ? "lg:order-1" : ""}>
-                  <p className="text-sm font-bold uppercase tracking-[0.25em] text-teal-300">{project.tag}</p>
-                  <h4 className="mt-2 text-2xl font-extrabold tracking-tight text-white md:text-3xl">{project.title}</h4>
-                  <p className="mt-4 max-w-xl text-base leading-8 text-[#A7AABB] md:text-lg">{project.description}</p>
+      {/* Viewport sa susjednim karticama */}
+      <div
+        ref={viewportRef}
+        className="relative -mx-5 overflow-hidden px-0 md:-mx-0"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        style={{ touchAction: "pan-y", cursor: dragging ? "grabbing" : "grab" }}
+      >
+        {/* Blage ivicne maske da susjedne kartice "izlaze" iz mraka */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 z-20 w-10 bg-gradient-to-r from-[#060606] to-transparent md:w-16" aria-hidden="true" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-10 bg-gradient-to-l from-[#060606] to-transparent md:w-16" aria-hidden="true" />
+
+        <div
+          className="flex items-start gap-5 md:gap-7"
+          style={{
+            transform: `translate3d(${translate}px, 0, 0)`,
+            transition: dragging ? "none" : "transform 520ms cubic-bezier(0.22, 1, 0.36, 1)",
+            willChange: "transform",
+          }}
+        >
+          {looped.map((project, i) => {
+            const realIndex = count > 1 ? (i - loopOffset + count) % count : i;
+            const active = realIndex === index;
+            return (
+              <div
+                key={`${project.title}-${i}`}
+                className="shrink-0"
+                style={{ width: cardWidth > 0 ? `${cardWidth}px` : "100%" }}
+                aria-hidden={!active}
+              >
+                <div
+                  className={`transition duration-500 ${
+                    active ? "opacity-100" : "pointer-events-none opacity-40 blur-[1.5px] saturate-50"
+                  }`}
+                >
+                  <DeviceMockup
+                    image={project.image}
+                    imageMobile={project.imageMobile}
+                    title={project.title}
+                    url={project.url}
+                    glow={active}
+                  />
+
+                  {/* Tekst ispod slike — vidljiv i kad je kartica susjedna */}
+                  <div className="mt-5 md:mt-6">
+                    <p className="text-[0.7rem] font-bold uppercase tracking-[0.25em] text-teal-300">{project.tag}</p>
+                    <h4 className="mt-2 text-lg font-extrabold tracking-tight text-white md:text-2xl">{project.title}</h4>
+                    <p className="mt-2.5 line-clamp-3 text-sm leading-6 text-[#A7AABB] md:text-base md:leading-7">
+                      {project.description}
+                    </p>
+                    {project.url && (
+                      <a
+                        href={project.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-4 inline-flex items-center gap-1.5 border border-white/20 px-4 py-2 text-xs font-extrabold uppercase tracking-[0.14em] text-white transition hover:border-teal-300 hover:bg-white hover:text-black"
+                      >
+                        Pogledaj projekt
+                        <HiOutlineArrowTopRightOnSquare className="text-sm" aria-hidden="true" />
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
-      {/* Tačkice + strelice (mobitel) */}
-      <div className="mt-7 flex items-center justify-center gap-4 md:justify-start">
-        <button type="button" onClick={() => go(-1)} aria-label="Prethodni projekt" className={`${arrowBtn} md:hidden`}>
-          <HiOutlineChevronLeft className="text-base" aria-hidden="true" />
-        </button>
-        <div className="flex items-center gap-2">
+      {/* Tackice */}
+      {count > 1 && (
+        <div className="mt-7 flex flex-wrap items-center justify-center gap-2.5">
           {group.items.map((project, dotIndex) => (
             <button
               key={project.title}
               type="button"
-              onClick={() => setIndex(dotIndex)}
-              aria-label={`Projekt ${dotIndex + 1}`}
+              onClick={() => goTo(dotIndex)}
+              aria-label={`Projekt ${dotIndex + 1}: ${project.title}`}
               aria-current={dotIndex === index}
-              className={`h-2 rounded-full transition-all duration-300 ${dotIndex === index ? "w-7 bg-teal-400" : "w-2 bg-white/25 hover:bg-white/45"}`}
+              className={`h-2 rounded-full transition-all duration-300 ${
+                dotIndex === index ? "w-8 bg-teal-400" : "w-2 bg-white/25 hover:bg-white/45"
+              }`}
             />
           ))}
         </div>
-        <button type="button" onClick={() => go(1)} aria-label="Sljedeći projekt" className={`${arrowBtn} md:hidden`}>
-          <HiOutlineChevronRight className="text-base" aria-hidden="true" />
-        </button>
-      </div>
+      )}
     </Reveal>
   );
 }
@@ -2781,13 +2930,13 @@ function ProjectsGallery() {
       <div className="mx-auto max-w-7xl px-5 md:px-8">
         <SectionHeading
           title="Odabrani radovi"
-          subtitle="Po svakoj usluzi više projekata — prelistajte ih u svakom redu, prikazane na desktopu i mobitelu."
+          subtitle="Po svakoj usluzi vise projekata. Listajte strelicama, tackicama ili prevucite prstom — susjedni projekti se naziru sa strane."
           icon={HiOutlineRectangleGroup}
           eyebrow="Radovi"
         />
         <div className="mt-14 space-y-16 md:mt-20 md:space-y-24">
           {projectGroups.filter((group) => group.items.length > 0).map((group, groupIndex) => (
-            <ProjectRow key={group.service} group={group} flip={groupIndex % 2 === 1} rowIndex={groupIndex} />
+            <ProjectRow key={group.service} group={group} rowIndex={groupIndex} />
           ))}
         </div>
       </div>
