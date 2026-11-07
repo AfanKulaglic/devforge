@@ -2008,17 +2008,19 @@ function Projects() {
       >
         {[0, 1, 2].map((copy) =>
           projects.map((project) => (
+            // h-full + flex da sve kartice u redu budu iste visine; opis ima
+            // granicu od 5 redova pa duzi tekst ne razvlaci karticu.
             <article
               key={`${project.id}-${copy}`}
               data-project-card
-              className="w-[78%] shrink-0 sm:w-[56%] lg:w-[44%]"
+              className="flex h-full w-[78%] shrink-0 flex-col sm:w-[56%] lg:w-[44%]"
             >
               <DeviceMockup image={project.image} imageMobile={project.imageMobile} title={project.title} url={project.url} />
-              <div className="mt-6">
+              <div className="mt-6 flex flex-1 flex-col">
                 <p className="text-sm font-bold uppercase tracking-[0.25em] text-teal-300">{project.category}</p>
-                <h3 className="mt-2 text-2xl font-extrabold tracking-tight text-white md:text-3xl">{project.title}</h3>
-                <p className="mt-3 max-w-md text-base leading-7 text-[#A7AABB]">{project.description}</p>
-                <div className="mt-6">
+                <h3 className="mt-2 line-clamp-2 text-2xl font-extrabold tracking-tight text-white md:text-3xl">{project.title}</h3>
+                <p className="mt-3 line-clamp-5 max-w-md text-base leading-7 text-[#A7AABB]">{project.description}</p>
+                <div className="mt-auto pt-6">
                   <ProjectActions
                     project={{
                       title: project.title,
@@ -3093,8 +3095,8 @@ function ProjectRow({ group, rowIndex }: { group: { service: string; items: Proj
                   {/* Tekst ispod slike — vidljiv i kad je kartica susjedna */}
                   <div className="mt-5 md:mt-6">
                     <p className="text-[0.7rem] font-bold uppercase tracking-[0.25em] text-teal-300">{project.tag}</p>
-                    <h4 className="mt-2 text-lg font-extrabold tracking-tight text-white md:text-2xl">{project.title}</h4>
-                    <p className="mt-2.5 line-clamp-3 text-sm leading-6 text-[#A7AABB] md:text-base md:leading-7">
+                    <h4 className="mt-2 line-clamp-2 text-lg font-extrabold tracking-tight text-white md:text-2xl">{project.title}</h4>
+                    <p className="mt-2.5 line-clamp-5 text-sm leading-6 text-[#A7AABB] md:text-base md:leading-7">
                       {project.description}
                     </p>
                     <ProjectActions
