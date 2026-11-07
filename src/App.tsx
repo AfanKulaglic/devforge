@@ -3125,14 +3125,6 @@ function ProjectRow({ group, rowIndex }: { group: { service: string; items: Proj
                     active ? "opacity-100" : "pointer-events-none opacity-30"
                   }`}
                 >
-                  {/* Odsjaj (glow) samo ispod AKTIVNE kartice, izvan opacity sloja
-                      da se ne mijesa sa susjedima. */}
-                  {active && (
-                    <div
-                      className="pointer-events-none absolute -inset-6 -z-10 bg-gradient-to-br from-teal-600/25 to-cyan-600/10 blur-3xl"
-                      aria-hidden="true"
-                    />
-                  )}
                   <DeviceMockup
                     image={project.image}
                     imageMobile={project.imageMobile}
