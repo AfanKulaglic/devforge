@@ -13,38 +13,70 @@
     <meta name="format-detection" content="telephone=no" />
 
     <!-- Primarni SEO -->
-    <title>DevForge — Web stranice, shopovi i aplikacije | Sarajevo, BiH</title>
-    <meta name="description" content="DevForge izrađuje web stranice od 150 KM, web shopove od 600 KM, mobilne aplikacije i 2D igre. Gotova verzija za 5 dana — plaćate tek kad ste zadovoljni. Bez predujma." />
-    <meta name="keywords" content="izrada web stranica sarajevo, web stranice bih, web shop bosna, e-commerce bih, mobilne aplikacije, izrada aplikacija, 2d igre, web dizajn sarajevo, web development bih, devforge" />
+    <title>Izrada web stranica Sarajevo od 150 KM | Web shopovi i aplikacije — DevForge</title>
+    <meta name="description" content="Izrada web stranica u Sarajevu od 150 KM, web shopova od 600 KM, mobilnih aplikacija i 2D igara. Gotova verzija za 5 dana, bez predujma — plaćate tek kad ste zadovoljni. Admin panel uključen." />
+    <meta name="keywords" content="izrada web stranica sarajevo, web stranice cijena, izrada sajta sarajevo, web shop izrada bih, izrada webshopa cijena, e-commerce bosna, mobilne aplikacije izrada, izrada android aplikacija, izrada ios aplikacija, 2d igre izrada, web dizajn sarajevo, web development bih, izrada sajta bez predujma, admin panel cms, devforge" />
     <meta name="author" content="DevForge" />
     <meta name="publisher" content="DevForge" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="googlebot" content="index, follow" />
     <link rel="canonical" href="https://dev-forge-studio.vercel.app/" />
 
+    <!-- Hreflang: jezici i regije (jedna verzija sajta, ali eksplicitno za pretraživače) -->
+    <link rel="alternate" hreflang="bs-BA" href="https://dev-forge-studio.vercel.app/" />
+    <link rel="alternate" hreflang="hr-HR" href="https://dev-forge-studio.vercel.app/" />
+    <link rel="alternate" hreflang="sr-RS" href="https://dev-forge-studio.vercel.app/" />
+    <link rel="alternate" hreflang="x-default" href="https://dev-forge-studio.vercel.app/" />
+
+    <!-- Geo targeting (lokalni SEO za Sarajevo / BiH) -->
+    <meta name="geo.region" content="BA-BIH" />
+    <meta name="geo.placename" content="Sarajevo" />
+    <meta name="geo.position" content="43.8563;18.4131" />
+    <meta name="ICBM" content="43.8563, 18.4131" />
+    <meta name="language" content="Bosnian" />
+    <meta name="distribution" content="global" />
+    <meta name="rating" content="general" />
+
     <!-- Favicon / ikona aplikacije -->
     <link rel="icon" type="image/png" href="/images/logo-icon.png" />
     <link rel="apple-touch-icon" href="/images/logo-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
     <!-- Performanse: rano povezivanje na Google Fonts (font se učitava iz CSS-a) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Performanse: dns-prefetch za vanjske izvore slika (Core Web Vitals = SEO ranking) -->
+    <link rel="dns-prefetch" href="https://images.pexels.com" />
+    <link rel="preconnect" href="https://images.pexels.com" crossorigin />
+
+    <!-- LCP optimizacija: hero slika se učitava odmah (najveći element na stranici) -->
+    <link rel="preload" as="image" href="/og-image.png" fetchpriority="high" />
+
+    <!-- Resource hints: OG slika za drustvene mreze -->
+    <link rel="prefetch" href="/og-image.png" as="image" />
 
     <!-- Open Graph (Facebook, LinkedIn, Viber, WhatsApp) -->
     <meta property="og:title" content="DevForge — Web stranice, shopovi i aplikacije | Sarajevo, BiH" />
     <meta property="og:description" content="Web stranice od 150 KM, web shopovi od 600 KM, mobilne aplikacije i 2D igre. Gotova verzija za 5 dana — plaćate tek kad ste zadovoljni." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://dev-forge-studio.vercel.app/" />
-    <meta property="og:image" content="https://dev-forge-studio.vercel.app/hero-3d.png" />
+    <meta property="og:image" content="https://dev-forge-studio.vercel.app/og-image.png" />
     <meta property="og:image:alt" content="DevForge — izrada web stranica, shopova, aplikacija i igara" />
     <meta property="og:locale" content="bs_BA" />
     <meta property="og:site_name" content="DevForge" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:phone_number" content="+38762576456" />
+    <meta property="og:email" content="devforge.studio@gmail.com" />
+    <meta property="og:country-name" content="Bosnia and Herzegovina" />
 
     <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="DevForge — Web stranice, shopovi i aplikacije" />
     <meta name="twitter:description" content="Web stranice od 150 KM, web shopovi od 600 KM, mobilne aplikacije i 2D igre. Gotova verzija za 5 dana — plaćate tek kad ste zadovoljni." />
-    <meta name="twitter:image" content="https://dev-forge-studio.vercel.app/hero-3d.png" />
+    <meta name="twitter:image" content="https://dev-forge-studio.vercel.app/og-image.png" />
     <meta name="twitter:image:alt" content="DevForge — digitalna agencija iz Sarajeva" />
     <meta name="twitter:site" content="@devforge" />
     <meta name="twitter:creator" content="@devforge" />
@@ -58,8 +90,8 @@
         "name": "DevForge",
         "alternateName": "DevForge Digital Solutions",
         "url": "https://dev-forge-studio.vercel.app/",
-        "logo": "https://dev-forge-studio.vercel.app/hero-3d.png",
-        "image": "https://dev-forge-studio.vercel.app/hero-3d.png",
+        "logo": "https://dev-forge-studio.vercel.app/images/logo-icon.png",
+        "image": "https://dev-forge-studio.vercel.app/og-image.png",
         "description": "DevForge je digitalna agencija iz Sarajeva specijalizovana za izradu web stranica, e-commerce shopova, mobilnih aplikacija i 2D igara. Gotova verzija za 5 dana, bez predujma — plaćate tek kad ste zadovoljni.",
         "slogan": "Plaćate tek kad ste zadovoljni — bez predujma.",
         "address": {
@@ -73,9 +105,9 @@
           "latitude": 43.8563,
           "longitude": 18.4131
         },
-        "telephone": "+387-61-000-000",
+        "telephone": "+387-62-576-456",
         "email": "devforge.studio@gmail.com",
-        "priceRange": "39–1499 KM",
+        "priceRange": "150–3500 KM",
         "currenciesAccepted": "BAM",
         "paymentAccepted": "Bankovni transfer",
         "foundingDate": "2023",
@@ -93,8 +125,9 @@
           }
         ],
         "sameAs": [
-          "https://www.linkedin.com/company/devforge",
-          "https://www.instagram.com/devforge_studio"
+          "https://www.instagram.com/devforge_studio",
+          "https://wa.me/38762576456",
+          "https://ig.me/m/devforge_studio"
         ],
         "hasOfferCatalog": {
           "@type": "OfferCatalog",
@@ -103,14 +136,14 @@
             {
               "@type": "Offer",
               "priceCurrency": "BAM",
-              "price": "39",
-              "itemOffered": { "@type": "Service", "name": "Izrada web stranica", "description": "Profesionalne, brze i responzivne web stranice s admin panelom (CMS)." }
+              "price": "150",
+              "itemOffered": { "@type": "Service", "name": "Izrada web stranica", "description": "Profesionalne, brze i responzivne web stranice s admin panelom (CMS). Od 150 KM." }
             },
             {
               "@type": "Offer",
               "priceCurrency": "BAM",
-              "price": "199",
-              "itemOffered": { "@type": "Service", "name": "Web shop / e-commerce", "description": "Online prodavnice s online plaćanjem i upravljanjem proizvodima." }
+              "price": "600",
+              "itemOffered": { "@type": "Service", "name": "Web shop / e-commerce", "description": "Online prodavnice s online plaćanjem i upravljanjem proizvodima. Od 600 KM." }
             },
             {
               "@type": "Offer",
@@ -159,12 +192,12 @@
           {
             "@type": "Question",
             "name": "Da li nudite podršku nakon završetka projekta?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Svaki projekat dolazi sa 30 dana tehničke garancije i besplatne podrške. Nakon toga nudimo maintenance pakete za ongoing podršku, optimizaciju i nove funkcionalnosti." }
+            "acceptedAnswer": { "@type": "Answer", "text": "Svaki projekat dolazi s admin panelom tako da sami mijenjate tekst, slike, proizvode i cijene — bez koda. Podrška i održavanje su opcionalni, po dogovoru." }
           },
           {
             "@type": "Question",
             "name": "Koliko košta izrada projekta?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Cijene su transparentne i počinju od 39 KM za web stranicu, odnosno od 199 KM za web shop. 2D igrice i kompleksniji sistemi imaju custom cijenu. Tačnu ponudu dajemo nakon besplatne konsultacije, bez skrivenih troškova." }
+            "acceptedAnswer": { "@type": "Answer", "text": "Cijene su transparentne i počinju od 150 KM za web stranicu, odnosno od 600 KM za web shop. 2D igrice i kompleksniji sistemi imaju custom cijenu. Tačnu ponudu dajemo nakon besplatne konsultacije, bez skrivenih troškova." }
           },
           {
             "@type": "Question",
@@ -179,17 +212,135 @@
         ]
       }
     </script>
+
+    <!-- Structured data: breadcrumbs (prikaz putanje u Google rezultatima) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Početna", "item": "https://dev-forge-studio.vercel.app/" },
+          { "@type": "ListItem", "position": 2, "name": "Usluge", "item": "https://dev-forge-studio.vercel.app/usluge" },
+          { "@type": "ListItem", "position": 3, "name": "Cijene", "item": "https://dev-forge-studio.vercel.app/cijene" },
+          { "@type": "ListItem", "position": 4, "name": "Projekti", "item": "https://dev-forge-studio.vercel.app/projekti" },
+          { "@type": "ListItem", "position": 5, "name": "Kontakt", "item": "https://dev-forge-studio.vercel.app/kontakt" }
+        ]
+      }
+    </script>
+
+    <!-- Structured data: pojedinacne usluge sa ponudama (Service rich result) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Service",
+            "@id": "https://dev-forge-studio.vercel.app/usluge/web-stranice#service",
+            "name": "Izrada web stranica",
+            "serviceType": "Izrada web stranica",
+            "description": "Profesionalne, brze i responzivne web stranice za firme, obrtnike i udruzenja. Ukljucen admin panel za samostalno mijenjanje teksta, slika i cijena.",
+            "provider": { "@id": "https://dev-forge-studio.vercel.app/#organization" },
+            "areaServed": { "@type": "Country", "name": "Bosna i Hercegovina" },
+            "url": "https://dev-forge-studio.vercel.app/usluge/web-stranice",
+            "offers": {
+              "@type": "Offer",
+              "priceCurrency": "BAM",
+              "price": "150",
+              "priceSpecification": {
+                "@type": "PriceSpecification",
+                "priceCurrency": "BAM",
+                "minPrice": "150",
+                "maxPrice": "800"
+              },
+              "availability": "https://schema.org/InStock"
+            }
+          },
+          {
+            "@type": "Service",
+            "@id": "https://dev-forge-studio.vercel.app/cijene#web-shopovi",
+            "name": "Izrada web shopova",
+            "serviceType": "E-commerce izrada",
+            "description": "Online prodavnice sa korpom, online placanjem, upravljanjem zalihama i admin panelom. Od 600 KM.",
+            "provider": { "@id": "https://dev-forge-studio.vercel.app/#organization" },
+            "areaServed": { "@type": "Country", "name": "Bosna i Hercegovina" },
+            "url": "https://dev-forge-studio.vercel.app/cijene",
+            "offers": {
+              "@type": "Offer",
+              "priceCurrency": "BAM",
+              "price": "600",
+              "priceSpecification": {
+                "@type": "PriceSpecification",
+                "priceCurrency": "BAM",
+                "minPrice": "600",
+                "maxPrice": "3500"
+              },
+              "availability": "https://schema.org/InStock"
+            }
+          },
+          {
+            "@type": "Service",
+            "@id": "https://dev-forge-studio.vercel.app/usluge/mobilne-aplikacije#service",
+            "name": "Izrada mobilnih aplikacija",
+            "serviceType": "Razvoj mobilnih aplikacija",
+            "description": "Android i iOS aplikacije (React Native / Flutter) sa admin panelom i backend sistemom.",
+            "provider": { "@id": "https://dev-forge-studio.vercel.app/#organization" },
+            "areaServed": { "@type": "Country", "name": "Bosna i Hercegovina" },
+            "url": "https://dev-forge-studio.vercel.app/usluge/mobilne-aplikacije"
+          },
+          {
+            "@type": "Service",
+            "@id": "https://dev-forge-studio.vercel.app/usluge/2d-igrice#service",
+            "name": "Izrada 2D igara",
+            "serviceType": "Razvoj igara",
+            "description": "2D igre za web i mobilne uredjaje, sa admin panelom za upravljanje nivoima i rezultatima.",
+            "provider": { "@id": "https://dev-forge-studio.vercel.app/#organization" },
+            "areaServed": { "@type": "Country", "name": "Bosna i Hercegovina" },
+            "url": "https://dev-forge-studio.vercel.app/usluge/2d-igrice"
+          }
+        ]
+      }
+    </script>
+
+    <!-- Structured data: lista projekata (portfolio) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "@id": "https://dev-forge-studio.vercel.app/projekti#page",
+        "name": "Projekti — DevForge portfolio",
+        "url": "https://dev-forge-studio.vercel.app/projekti",
+        "isPartOf": { "@id": "https://dev-forge-studio.vercel.app/#website" },
+        "about": { "@id": "https://dev-forge-studio.vercel.app/#organization" },
+        "description": "Pregled realizovanih projekata: web stranice, web shopovi, mobilne aplikacije i 2D igrice."
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
     <!-- Fallback za pretraživače/čitače bez JavaScripta (SPA se renderira JS-om) -->
     <noscript>
-      <h1>DevForge — izrada web stranica, web shopova, mobilnih aplikacija i 2D igara | Sarajevo, BiH</h1>
+      <h1>Izrada web stranica, web shopova, mobilnih aplikacija i 2D igara — DevForge Sarajevo</h1>
       <p>
-        DevForge izrađuje web stranice od 39 KM, web shopove od 199 KM, mobilne aplikacije i 2D igre.
-        Gotova verzija za 5 dana, plaćate tek kad ste zadovoljni — bez predujma i bez rizika.
-        Kontakt: devforge.studio@gmail.com
+        DevForge je digitalna agencija iz Sarajeva. Izrađujemo web stranice od 150 KM,
+        web shopove od 600 KM, mobilne aplikacije (Android i iOS) i 2D igrice po dogovoru.
+        Gotova verzija za 5 dana, bez predujma — plaćate tek kad ste zadovoljni.
+        Uz svaki projekat dobijate admin panel za samostalno uređivanje sadržaja.
       </p>
+      <h2>Usluge</h2>
+      <ul>
+        <li><a href="/usluge/web-stranice">Izrada web stranica — od 150 KM</a></li>
+        <li><a href="/cijene">Izrada web shopova — od 600 KM</a></li>
+        <li><a href="/usluge/mobilne-aplikacije">Izrada mobilnih aplikacija — po dogovoru</a></li>
+        <li><a href="/usluge/2d-igrice">Izrada 2D igara — po dogovoru</a></li>
+      </ul>
+      <h2>Kontakt</h2>
+      <p>
+        Telefon: <a href="tel:+38762576456">+387 62 576 456</a><br />
+        Email: <a href="mailto:devforge.studio@gmail.com">devforge.studio@gmail.com</a><br />
+        Instagram: <a href="https://www.instagram.com/devforge_studio">@devforge_studio</a><br />
+        Adresa: Maršala Tita 28, 71000 Sarajevo, Bosna i Hercegovina
+      </p>
+      <p><a href="/projekti">Pogledajte naše projekte</a> · <a href="/cijene">Cijene</a> · <a href="/kontakt">Kontakt</a></p>
     </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>

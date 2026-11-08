@@ -1,4 +1,49 @@
+# robots.txt — DevForge
+# https://dev-forge-studio.vercel.app
+
 User-agent: *
 Allow: /
 
+# Interno / testno — ne indeksirati
+Disallow: /admin
+Disallow: /reklama
+Disallow: /api/
+
+# Google
+User-agent: Googlebot
+Allow: /
+Disallow: /admin
+Disallow: /reklama
+
+# Google Ads bot (mora vidjeti sve)
+User-agent: AdsBot-Google
+Allow: /
+
+# Bing
+User-agent: Bingbot
+Allow: /
+Disallow: /admin
+Disallow: /reklama
+
+# AI crawleri — dozvoljeno citanje (dolazi saobracaj iz AI pretraga)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# Arhive
+User-agent: archive.org_bot
+Allow: /
+
 Sitemap: https://dev-forge-studio.vercel.app/sitemap.xml
+Host: dev-forge-studio.vercel.app

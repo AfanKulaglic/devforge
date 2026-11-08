@@ -789,7 +789,11 @@ function Logo() {
 
 function NavLink({ href, label, active = false, hasCaret = false }: { href: string; label: string; active?: boolean; hasCaret?: boolean }) {
   return (
-    <a href={href} className={`group relative inline-flex items-center gap-1 py-1 transition ${active ? "text-white" : "text-white/70 hover:text-white"}`}>
+    <a
+      href={href}
+      aria-current={active ? "page" : undefined}
+      className={`group relative inline-flex items-center gap-1 py-1 transition ${active ? "text-white" : "text-white/70 hover:text-white"}`}
+    >
       {label}
       {hasCaret && <HiOutlineChevronDown className="text-xs transition group-hover:rotate-180" aria-hidden="true" />}
       <span className={`pointer-events-none absolute -bottom-1 left-0 h-0.5 w-full origin-left rounded-full bg-gradient-to-r from-teal-400 to-cyan-400 transition-transform duration-300 ${active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"}`} aria-hidden="true" />
@@ -1320,6 +1324,7 @@ function HeroLogos() {
 type HeroSlide = {
   image: string;
   imageMobile: string;
+  imageAlt: string;
   eyebrow: string;
   title: ReactNode;
   subtitle: ReactNode;
@@ -1335,6 +1340,7 @@ function Hero() {
       {
         image: images.hero,
         imageMobile: images.heroMobile,
+        imageAlt: "Web dizajn i razvoj digitalnih proizvoda u Sarajevu — DevForge digitalna agencija",
         eyebrow: "DevForge · Digitalna agencija iz BiH",
         title: (
           <>
@@ -1351,6 +1357,7 @@ function Hero() {
       },
       {
         image: "https://images.pexels.com/photos/3861958/pexels-photo-3861958.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600",
+        imageAlt: "Izrada web stranica bez predujma — plaćanje tek nakon odobrenja projekta",
         imageMobile: "https://images.pexels.com/photos/12899162/pexels-photo-12899162.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1500&w=800",
         eyebrow: "Bez rizika za vas",
         title: (
@@ -1368,6 +1375,7 @@ function Hero() {
       },
       {
         image: "https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=900&w=1600",
+        imageAlt: "Web stranica od 150 KM — najpovoljnija izrada sajta u Bosni i Hercegovini",
         imageMobile: "https://images.pexels.com/photos/5474282/pexels-photo-5474282.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1500&w=800",
         eyebrow: "Najpovoljniji u BiH",
         title: (
@@ -1428,8 +1436,11 @@ function Hero() {
             <img
               className="h-full w-full object-cover"
               src={s.image}
-              alt="DevForge digitalna rješenja"
+              alt={s.imageAlt}
               loading={index === 0 ? "eager" : "lazy"}
+              // SEO: prva (LCP) slika ima prioritet, ostale lazy
+              fetchPriority={index === 0 ? "high" : "low"}
+              decoding="async"
             />
           </picture>
         ))}
@@ -1455,9 +1466,14 @@ function Hero() {
             <HiOutlineSparkles aria-hidden="true" />
             {slide.eyebrow}
           </span>
-          <h1 className="hero-headline text-[2rem] font-extrabold leading-[1.08] tracking-tight text-white sm:text-5xl md:text-6xl md:leading-[1.03] lg:text-7xl">
-            {slide.title}
+          {/* SEO H1: jedini <h1> na stranici, sa kljucnim rijecima za pretragu.
+              Vizuelno skriven (sr-only) — dizajn zadrzava animirani naslov ispod. */}
+          <h1 className="sr-only">
+            Izrada web stranica, web shopova, mobilnih aplikacija i 2D igara u Sarajevu — DevForge
           </h1>
+          <p className="hero-headline text-[2rem] font-extrabold leading-[1.08] tracking-tight text-white sm:text-5xl md:text-6xl md:leading-[1.03] lg:text-7xl">
+            {slide.title}
+          </p>
           <p className="mt-5 max-w-2xl text-base leading-7 text-[#D4D7E3] sm:text-lg sm:leading-8">
             {slide.subtitle}
           </p>
@@ -2312,16 +2328,18 @@ const footerColumns: { title: string; links: { label: string; href?: string; soo
       { label: "Početna", href: "/" },
       { label: "O nama", href: "/o-nama" },
       { label: "Projekti", href: "/projekti" },
+      { label: "Cijene", href: "/cijene" },
       { label: "Kontakt", href: "/kontakt" },
     ],
   },
   {
+    // Interna link mreza: svaka usluga linkuje svoju stranicu (SEO + navigacija).
     title: "Usluge",
     links: [
-      { label: "Web stranice", href: "/usluge/web-stranice" },
-      { label: "2D igrice", href: "/usluge/2d-igrice" },
+      { label: "Izrada web stranica", href: "/usluge/web-stranice" },
+      { label: "Izrada web shopova", href: "/cijene" },
       { label: "Mobilne aplikacije", href: "/usluge/mobilne-aplikacije" },
-      { label: "Cijene", href: "/cijene" },
+      { label: "2D igrice", href: "/usluge/2d-igrice" },
       { label: "Sve usluge", href: "/usluge" },
     ],
   },
@@ -2329,19 +2347,21 @@ const footerColumns: { title: string; links: { label: string; href?: string; soo
     title: "Kompanija",
     links: [
       { label: "Česta pitanja", href: "/cesta-pitanja" },
-      { label: "Blog", soon: true },
-      { label: "Karijere", soon: true },
-      { label: "Partneri", soon: true },
-      { label: "Press kit", soon: true },
-    ],
-  },
-  {
-    title: "Pravno",
-    links: [
       { label: "Politika privatnosti", href: "/privatnost" },
       { label: "Uslovi korištenja", href: "/uslovi" },
       { label: "Politika kolačića", href: "/kolacici" },
-      { label: "GDPR usklađenost", soon: true },
+    ],
+  },
+  {
+    // Kontakt kolona — vanjski linkovi (mailto:, tel:, wa.me) su dobri za SEO
+    // jer Google vidi NAP (Name-Address-Phone) konzistentnost.
+    title: "Kontakt",
+    links: [
+      { label: "+387 62 576 456", href: "tel:+38762576456" },
+      { label: "devforge.studio@gmail.com", href: "mailto:devforge.studio@gmail.com" },
+      { label: "WhatsApp", href: "https://wa.me/38762576456" },
+      { label: "Instagram DM", href: "https://ig.me/m/devforge_studio" },
+      { label: "Viber", href: "viber://chat?number=%2B38762576456" },
     ],
   },
 ];
@@ -2774,7 +2794,12 @@ function ContactAndFooter() {
                       </li>
                     ) : (
                       <li key={link.label}>
-                        <a className="group inline-flex items-center gap-2 text-sm text-[#A7AABB] transition hover:text-white" href={link.href}>
+                        <a
+                          className="group inline-flex items-center gap-2 text-sm text-[#A7AABB] transition hover:text-white"
+                          href={link.href}
+                          rel={/^https?:/.test(link.href ?? "") ? "noopener noreferrer" : undefined}
+                          target={/^https?:/.test(link.href ?? "") ? "_blank" : undefined}
+                        >
                           <span className="h-px w-0 bg-teal-300 transition-all duration-300 group-hover:w-3" aria-hidden="true" />
                           {link.label}
                         </a>
@@ -3138,7 +3163,7 @@ function Timeline() {
 
 function ServicesPage() {
   return (
-    <main className="anim-rich">
+    <main id="content" className="anim-rich">
       <ServicesHero />
       <Services />
       <ServicesTech />
@@ -3153,7 +3178,7 @@ function ServicesPage() {
 
 function HomePage() {
   return (
-    <main className="anim-rich">
+    <main id="content" className="anim-rich">
       <Hero />
       <HeroLogos />
       <WhyUs />
@@ -3162,14 +3187,71 @@ function HomePage() {
       <HowItWorks />
       <Projects />
       <ContactChannels />
+      <SeoLocalText />
       <FAQs />
     </main>
   );
 }
 
+// ── SEO: tekstualni blok za lokalne pretrage ──────────────────────────────
+// Google rangira stranice koje imaju stvarni sadrzaj o temi. Ovaj blok je
+// namjerno vizuelno diskretan (mala tipografija, tamna pozadina), ali sadrzi
+// kljucne rijeci koje ljudi stvarno kucaju: "izrada sajta sarajevo",
+// "koliko kosta web stranica", "web shop bih", "izrada aplikacija sarajevo".
+// Nije skriveni tekst (cloka ne kaznjava) — stvarno je vidljiv i koristan.
+function SeoLocalText() {
+  return (
+    <section className="border-t border-white/5 bg-[#060606] py-14 md:py-20" aria-labelledby="seo-local-heading">
+      <div className="mx-auto max-w-4xl px-5 md:px-8">
+        <h2 id="seo-local-heading" className="text-xl font-extrabold tracking-tight text-white md:text-2xl">
+          Izrada web stranica u Sarajevu — šta dobijate
+        </h2>
+        <div className="mt-6 space-y-5 text-sm leading-7 text-[#9CA3AF] md:text-[0.95rem] md:leading-8">
+          <p>
+            DevForge je digitalna agencija iz Sarajeva koja izrađuje <strong className="font-semibold text-white/90">web stranice, web shopove, mobilne aplikacije i 2D igrice</strong> za firme, obrtnike, udruženja i pojedince u Bosni i Hercegovini i regionu. Web stranica počinje od 150 KM, web shop od 600 KM, dok se mobilne aplikacije i igre rade po dogovoru — ovisno o broju ekrana, funkcionalnosti i mehanika.
+          </p>
+          <p>
+            Svaki projekat dobija <strong className="font-semibold text-white/90">vlastiti admin panel</strong> (CMS), tako da sami mijenjate tekst, slike, proizvode i cijene — bez programera i bez mjesečnih troškova za sitne izmjene. Stranice su responzivne (prilagođene mobitelu), brze i pripremljene za Google pretragu: uredne meta naslove i opise, strukturirane podatke, sitemap i čiste URL-ove.
+          </p>
+          <p>
+            Radimo bez predujma. Prvo izrađujemo <strong className="font-semibold text-white/90">besplatnu gotovu verziju za 5 dana</strong> kako biste vidjeli dizajn, strukturu i osnovne funkcionalnosti. Plaćate tek kada ste zadovoljni rezultatom — sav rizik je na nama. Hosting i domenu plaćate direktno provideru, bez naše marže.
+          </p>
+          <p>
+            Najčešće izrađujemo: prezentacijske stranice za firme i obrtnike, restorane i kafiće, stomatološke i medicinske ordinacije, advokatske kancelarije, škole i udruženja, web shopove s karticama i online plaćanjem (Stripe, PayPal), aplikacije za narudžbe i dostavu, te 2D igre za web i mobilne uređaje.
+          </p>
+        </div>
+
+        <h3 className="mt-10 text-base font-extrabold tracking-tight text-white md:text-lg">
+          Zašto klijenti biraju nas
+        </h3>
+        <ul className="mt-4 grid gap-2.5 text-sm leading-7 text-[#9CA3AF] sm:grid-cols-2">
+          <li>· Bez predujma — plaćate tek kad ste zadovoljni</li>
+          <li>· Gotova verzija za 5 dana, bez obaveze</li>
+          <li>· Admin panel uključen u svaki projekat</li>
+          <li>· Transparentne cijene, bez skrivenih troškova</li>
+          <li>· Prilagođeno mobitelu i brzo učitavanje</li>
+          <li>· Tehnička SEO osnova uključena</li>
+          <li>· Kompletan kod i prava pripadaju vama</li>
+          <li>· Sarajevo i cijela BiH — radimo i dalje</li>
+        </ul>
+
+        <h3 className="mt-10 text-base font-extrabold tracking-tight text-white md:text-lg">
+          Gdje nas možete naći
+        </h3>
+        <p className="mt-3 text-sm leading-7 text-[#9CA3AF]">
+          Radimo iz <strong className="font-semibold text-white/90">Sarajeva</strong>, a klijente primamo i online — cijela Bosna i Hercegovina, Hrvatska, Srbija i Crna Gora. Za klijente iz Sarajeva moguć je i sastanak uživo.
+          Kontakt: telefon <a className="text-teal-300 underline-offset-4 hover:underline" href={`tel:${CONTACT.phoneRaw}`}>{CONTACT.phoneDisplay}</a>,
+          email <a className="text-teal-300 underline-offset-4 hover:underline" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>,
+          ili Instagram DM <a className="text-teal-300 underline-offset-4 hover:underline" href={CONTACT.instagramUrl} target="_blank" rel="noopener noreferrer">{CONTACT.instagramHandle}</a>.
+        </p>
+      </div>
+    </section>
+  );
+}
+
 function AboutPage() {
   return (
-    <main className="anim-rich">
+    <main id="content" className="anim-rich">
       <AboutHero />
       <AboutStory />
       <CompareTable />
@@ -3488,7 +3570,7 @@ function ProjectsGallery() {
 
 function ProjectsPage() {
   return (
-    <main className="anim-rich">
+    <main id="content" className="anim-rich">
       <ProjectsHero />
       <ProjectsGallery />
     </main>
@@ -3540,7 +3622,7 @@ function InfoHero({ eyebrow, icon: Icon, title, intro }: { eyebrow: string; icon
 
 function CijenePage() {
   return (
-    <main className="anim-rich">
+    <main id="content" className="anim-rich">
       <InfoHero
         eyebrow="Cijene"
         icon={HiOutlineBanknotes}
@@ -3584,7 +3666,7 @@ function FaqStillQuestions() {
 
 function FaqPage() {
   return (
-    <main className="anim-rich">
+    <main id="content" className="anim-rich">
       <InfoHero
         eyebrow="FAQ"
         icon={HiOutlineQuestionMarkCircle}
@@ -3657,7 +3739,7 @@ function ContactMethods() {
 
 function KontaktPage() {
   return (
-    <main className="anim-rich">
+    <main id="content" className="anim-rich">
       <InfoHero
         eyebrow="Kontakt"
         icon={HiOutlineEnvelope}
@@ -3879,7 +3961,7 @@ function ServiceFAQ({ detail }: { detail: ServiceDetail }) {
 
 function ServiceDetailPage({ detail }: { detail: ServiceDetail }) {
   return (
-    <main className="anim-rich">
+    <main id="content" className="anim-rich">
       <ServiceDetailHero detail={detail} />
       <ServiceTypes detail={detail} />
       <ServiceStack detail={detail} />
@@ -3964,7 +4046,7 @@ function CookieConsent({ visible, onAccept }: { visible: boolean; onAccept: () =
 // 404 stranica (nepoznata #/ ruta).
 function NotFoundPage() {
   return (
-    <main className="anim-rich">
+    <main id="content" className="anim-rich">
       <section className="relative flex min-h-[70vh] items-center overflow-hidden bg-[#060606] pt-32 pb-20 md:pt-40">
         <HeroDecor />
         <div className="relative z-10 mx-auto max-w-3xl px-5 text-center md:px-8">
@@ -4041,7 +4123,7 @@ const legalDocs: Record<"privatnost" | "uslovi" | "kolacici", LegalDoc> = {
 
 function LegalPage({ doc }: { doc: LegalDoc }) {
   return (
-    <main className="anim-rich">
+    <main id="content" className="anim-rich">
       <InfoHero eyebrow={doc.eyebrow} icon={doc.icon} title={doc.title} intro={doc.intro} />
       <section className="bg-[#F4F5F7] py-16 md:py-24">
         <div className="mx-auto max-w-3xl px-5 md:px-8">
@@ -4775,6 +4857,64 @@ function AdReel({ recordMode = false }: { recordMode?: boolean }) {
     </div>
   );
 }
+// ── SEO: dinamički JSON-LD po ruti ────────────────────────────────────────
+// Staticki JSON-LD u index.html pokriva organizaciju, FAQ i sve usluge globalno.
+// Ovaj helper dodaje "WebPage" cvor koji Google koristi da poveze stranicu
+// sa organizacijom i prikaze breadcrumb putanju u rezultatima pretrage.
+const SITE_URL = "https://dev-forge-studio.vercel.app";
+
+const ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> = {
+  about: [{ name: "Početna", path: "/" }, { name: "O nama", path: "/o-nama" }],
+  services: [{ name: "Početna", path: "/" }, { name: "Usluge", path: "/usluge" }],
+  "svc-web": [{ name: "Početna", path: "/" }, { name: "Usluge", path: "/usluge" }, { name: "Web stranice", path: "/usluge/web-stranice" }],
+  "svc-games": [{ name: "Početna", path: "/" }, { name: "Usluge", path: "/usluge" }, { name: "2D igrice", path: "/usluge/2d-igrice" }],
+  "svc-mobile": [{ name: "Početna", path: "/" }, { name: "Usluge", path: "/usluge" }, { name: "Mobilne aplikacije", path: "/usluge/mobilne-aplikacije" }],
+  projects: [{ name: "Početna", path: "/" }, { name: "Projekti", path: "/projekti" }],
+  cijene: [{ name: "Početna", path: "/" }, { name: "Cijene", path: "/cijene" }],
+  faq: [{ name: "Početna", path: "/" }, { name: "Česta pitanja", path: "/cesta-pitanja" }],
+  kontakt: [{ name: "Početna", path: "/" }, { name: "Kontakt", path: "/kontakt" }],
+};
+
+function injectRouteSchema(route: string, docTitle: string, desc: string) {
+  const ID = "df-route-schema";
+  document.getElementById(ID)?.remove();
+  if (route === "notfound" || route === "admin" || route === "reklama") return;
+
+  const crumbs = ROUTE_BREADCRUMB[route];
+  const graph: Record<string, unknown>[] = [
+    {
+      "@type": "WebPage",
+      "@id": `${SITE_URL}/#webpage-${route}`,
+      url: `${SITE_URL}${route === "home" ? "/" : ""}`,
+      name: docTitle,
+      description: desc,
+      isPartOf: { "@id": `${SITE_URL}/#website` },
+      about: { "@id": `${SITE_URL}/#organization` },
+      inLanguage: "bs-BA",
+      primaryImageOfPage: { "@type": "ImageObject", url: `${SITE_URL}/og-image.png`, width: 1200, height: 630 },
+    },
+  ];
+  if (crumbs) {
+    graph.push({
+      "@type": "BreadcrumbList",
+      "@id": `${SITE_URL}/#breadcrumb-${route}`,
+      itemListElement: crumbs.map((c, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: c.name,
+        item: `${SITE_URL}${c.path}`,
+      })),
+    });
+  }
+
+  const el = document.createElement("script");
+  el.type = "application/ld+json";
+  el.id = ID;
+  el.textContent = JSON.stringify({ "@context": "https://schema.org", "@graph": graph });
+  document.head.appendChild(el);
+}
+// ──────────────────────────────────────────────────────────────────────────
+
 export default function App() {
   const rawPath = useAppRoute();
   // normaliziraj trailing slash (/usluge/ → /usluge), osim korijena
@@ -4868,27 +5008,91 @@ export default function App() {
 
   // SEO: dinamički <title> po stranici (kad JS radi) — svaka ruta dobije svoj naslov.
   useEffect(() => {
-    const titles: Record<string, string> = {
-      home: "DevForge — Web stranice, shopovi i aplikacije | Sarajevo, BiH",
-      about: "O nama — DevForge | Digitalna agencija iz Sarajeva",
-      services: "Usluge — web, shopovi, aplikacije i 2D igre | DevForge",
-      "svc-web": "Izrada web stranica od 150 KM | DevForge Sarajevo",
-      "svc-games": "Izrada 2D igara | DevForge",
-      "svc-mobile": "Izrada mobilnih aplikacija (Android & iOS) | DevForge",
-      projects: "Projekti — naš rad | DevForge",
-      cijene: "Cijene — web od 150 KM, shop od 600 KM | DevForge",
-      faq: "Česta pitanja | DevForge",
-      kontakt: "Kontakt — zatražite gotovu verziju | DevForge Sarajevo",
-      privatnost: "Politika privatnosti | DevForge",
-      uslovi: "Uslovi korištenja | DevForge",
-      kolacici: "Kolačići | DevForge",
-      notfound: "Stranica nije pronađena | DevForge",
+    // SEO po ruti: title + description + og + twitter + canonical + robots.
+    // Opis je namjerno razlicit za svaku stranicu (Google ne voli duplirane opise).
+    type SeoEntry = { title: string; desc: string; noindex?: boolean };
+    const SEO: Record<string, SeoEntry> = {
+      home: {
+        title: "Izrada web stranica Sarajevo od 150 KM | Web shopovi i aplikacije — DevForge",
+        desc: "Izrada web stranica u Sarajevu od 150 KM, web shopova od 600 KM, mobilnih aplikacija i 2D igara. Gotova verzija za 5 dana, bez predujma — plaćate tek kad ste zadovoljni.",
+      },
+      about: {
+        title: "O nama — digitalna agencija iz Sarajeva | DevForge",
+        desc: "DevForge je digitalna agencija iz Sarajeva. Gradimo web stranice, web shopove, mobilne aplikacije i 2D igre — bez predujma i uz admin panel u svakom projektu.",
+      },
+      services: {
+        title: "Usluge — web stranice, shopovi, aplikacije i 2D igre | DevForge",
+        desc: "Web stranice od 150 KM, web shopovi od 600 KM, mobilne aplikacije i 2D igrice po dogovoru. Sve s admin panelom, bez predujma, gotovo za 5 dana.",
+      },
+      "svc-web": {
+        title: "Izrada web stranica od 150 KM — Sarajevo i BiH | DevForge",
+        desc: "Profesionalne web stranice od 150 KM: brze, responzivne i SEO spremne. Admin panel uključen. Gotova verzija za 5 dana, bez predujma.",
+      },
+      "svc-games": {
+        title: "Izrada 2D igara za web i mobilne uređaje | DevForge",
+        desc: "Izrađujemo 2D igre po mjeri za web i mobilne uređaje — mehanike, nivoi, grafika i admin panel za upravljanje sadržajem. Cijena po dogovoru.",
+      },
+      "svc-mobile": {
+        title: "Izrada mobilnih aplikacija za Android i iOS | DevForge",
+        desc: "Android i iOS aplikacije (React Native / Flutter) s backendom i admin panelom. Za biznis, narudžbe, dostavu i interne alate. Cijena po dogovoru.",
+      },
+      projects: {
+        title: "Projekti — web stranice, shopovi i igre koje smo izradili | DevForge",
+        desc: "Pregled realizovanih projekata: web shopovi, korporativne stranice, mobilne aplikacije i 2D igrice. Svaki projekt dolazi s admin panelom.",
+      },
+      cijene: {
+        title: "Cijene — web stranice od 150 KM, web shopovi od 600 KM | DevForge",
+        desc: "Transparentne cijene bez skrivenih troškova: web stranice 150–250 KM, web shopovi 600–1.000 KM, aplikacije i igre po dogovoru. Bez predujma.",
+      },
+      faq: {
+        title: "Česta pitanja o izradi sajta, cijenama i plaćanju | DevForge",
+        desc: "Odgovori na najčešća pitanja: koliko traje izrada, kako funkcioniše besplatna gotova verzija, ko plaća hosting i domenu, te kome pripada kod.",
+      },
+      kontakt: {
+        title: "Kontakt — zatražite besplatnu gotovu verziju | DevForge Sarajevo",
+        desc: "Javite nam se na Viber, WhatsApp, Instagram DM ili telefon +387 62 576 456. Odgovaramo u roku od 10 minuta. Besplatna gotova verzija bez obaveza.",
+      },
+      privatnost: {
+        title: "Politika privatnosti | DevForge",
+        desc: "Kako prikupljamo, koristimo i štitimo vaše podatke na dev-forge-studio.vercel.app. Bez kolačića za praćenje bez vaše privole.",
+      },
+      uslovi: {
+        title: "Uslovi korištenja | DevForge",
+        desc: "Uslovi korištenja usluga DevForge: obim posla, plaćanje, rokovi isporuke, vlasništvo nad kodom i prava nakon isporuke.",
+      },
+      kolacici: {
+        title: "Kolačići (cookies) | DevForge",
+        desc: "Koje kolačiće koristimo na sajtu, čemu služe i kako ih možete onemogućiti u svom pretraživaču.",
+      },
+      notfound: { title: "Stranica nije pronađena (404) | DevForge", desc: "Tražena stranica ne postoji. Vratite se na početnu ili pogledajte usluge i cijene.", noindex: true },
     };
-    document.title = titles[route] ?? titles.home;
+
+    const seo = SEO[route] ?? SEO.home;
+    document.title = seo.title;
+
+    const setMeta = (selector: string, value: string) => {
+      const el = document.querySelector(selector);
+      if (el) el.setAttribute("content", value);
+    };
+    setMeta('meta[name="description"]', seo.desc);
+    setMeta('meta[property="og:title"]', seo.title);
+    setMeta('meta[property="og:description"]', seo.desc);
+    setMeta('meta[name="twitter:title"]', seo.title);
+    setMeta('meta[name="twitter:description"]', seo.desc);
+
+    // 404 i admin se ne indeksiraju
+    const robots = seo.noindex ? "noindex, nofollow" : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
+    setMeta('meta[name="robots"]', robots);
+    setMeta('meta[name="googlebot"]', seo.noindex ? "noindex, nofollow" : "index, follow");
+
     // Canonical + og:url po ruti (čisti URL-ovi → svaka stranica ima svoj kanonski URL).
     const url = "https://dev-forge-studio.vercel.app" + (path === "/" ? "/" : path);
     document.querySelector('link[rel="canonical"]')?.setAttribute("href", url);
-    document.querySelector('meta[property="og:url"]')?.setAttribute("content", url);
+    setMeta('meta[property="og:url"]', url);
+    setMeta('meta[name="twitter:url"]', url);
+
+    // JSON-LD za ovu rutu (WebPage + BreadcrumbList)
+    injectRouteSchema(route, seo.title, seo.desc);
   }, [route, path]);
 
   // Reklama: samostalan 9:16 okvir bez headera/footera/kursora (čist za snimanje).
@@ -4909,6 +5113,11 @@ export default function App() {
       <div className="grain-overlay" aria-hidden="true" />
       <Preloader />
       <RouteCurtain trigger={route} />
+      {/* Skip-link: prvi fokusabilni element — tastatura i citaci ekrana.
+          Google ovo smatra znakom pristupacnosti (a11y). */}
+      <a href="#content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[9999] focus:rounded-lg focus:bg-teal-400 focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-black">
+        Preskoči na sadržaj
+      </a>
       <Header />
       {route === "about" ? (
         <AboutPage />

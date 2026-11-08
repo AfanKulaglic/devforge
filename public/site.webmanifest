@@ -1,0 +1,33 @@
+{
+  "name": "DevForge — Web stranice, shopovi i aplikacije",
+  "short_name": "DevForge",
+  "description": "Digitalna agencija iz Sarajeva: web stranice od 150 KM, web shopovi od 600 KM, mobilne aplikacije i 2D igre.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#060606",
+  "theme_color": "#060606",
+  "lang": "bs",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "design"],
+  "icons": [
+    {
+      "src": "/images/logo-icon.png",
+      "sizes": "64x64",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/logo-icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/images/logo-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
