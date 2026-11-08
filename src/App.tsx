@@ -105,8 +105,8 @@ const CONTACT = {
   phoneRaw: "+38762576456", // bez + i razmaka za wa.me
   email: "devforge.studio@gmail.com",
   // Instagram DM — najbrzi kanal za mnoge klijente.
-  instagramHandle: "@devforge.studio",
-  instagramUrl: "https://ig.me/m/devforge.studio", // ig.me/m/ = direktno otvara DM
+  instagramHandle: "@devforge_studio",
+  instagramUrl: "https://ig.me/m/devforge_studio", // ig.me/m/ = direktno otvara DM
   address: "Maršala Tita 28, Sarajevo",
   street: "Maršala Tita 28",
   city: "71000 Sarajevo",
@@ -1097,7 +1097,7 @@ function Header() {
                   <a className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-white/70 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.linkedin.com/company/devforge" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
                     <FaLinkedinIn className="text-sm" />
                   </a>
-                  <a className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-white/70 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.instagram.com/devforge.studio" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                  <a className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-white/70 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.instagram.com/devforge_studio" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                     <FaInstagram className="text-sm" />
                   </a>
                 </div>
@@ -2694,7 +2694,7 @@ function ContactAndFooter() {
             <a className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.linkedin.com/company/devforge" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
               <FaLinkedinIn />
             </a>
-            <a className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.instagram.com/devforge.studio" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <a className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.instagram.com/devforge_studio" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
               <FaInstagram />
             </a>
           </div>
@@ -2760,7 +2760,7 @@ function ContactAndFooter() {
                 <a className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.linkedin.com/company/devforge" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
                   <FaLinkedinIn />
                 </a>
-                <a className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.instagram.com/devforge.studio" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                <a className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.instagram.com/devforge_studio" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                   <FaInstagram />
                 </a>
               </div>
@@ -3652,7 +3652,7 @@ function ContactMethods() {
           <a className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-[#0B0B0F] transition hover:border-teal-500 hover:bg-teal-500 hover:text-white" href="https://www.linkedin.com/company/devforge" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
             <FaLinkedinIn />
           </a>
-          <a className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-[#0B0B0F] transition hover:border-teal-500 hover:bg-teal-500 hover:text-white" href="https://www.instagram.com/devforge.studio" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <a className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-[#0B0B0F] transition hover:border-teal-500 hover:bg-teal-500 hover:text-white" href="https://www.instagram.com/devforge_studio" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
             <FaInstagram />
           </a>
         </div>
