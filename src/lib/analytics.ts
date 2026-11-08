@@ -206,7 +206,10 @@ export async function mergeRemoteVisits(): Promise<Visit[]> {
   for (const v of remote) byId.set(v.id, v);
   for (const v of local) byId.set(v.id, v);
   const merged = [...byId.values()].sort((a, b) => a.startedAt - b.startedAt).slice(-MAX_VISITS);
-  invalidate();
+  // Postavi NOVU referencu direktno u keš — inace useSyncExternalStore ne vidi
+  // promjenu (invalidate() bi vratio novi objekat iz localStorage, ali bi
+  // React mogao zadrzati staru referencu i ne re-renderovati).
+  cachedVisits = merged;
   try {
     window.localStorage.setItem(VISITS_KEY, JSON.stringify(merged));
   } catch {

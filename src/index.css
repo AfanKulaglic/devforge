@@ -1233,16 +1233,59 @@ button {
 .ad-svc-grid.is-six .ad-svc-label { font-size: 2.05cqh; }
 .ad-svc-grid.is-six .ad-stamp { font-size: 1.7cqh; padding: 0.45cqh 1.1cqh; }
 
-/* 5 usluga — 2 gore + 3 dolje = simetrična piramida, bez prazne ćelije.
-   Donji red ima 3 kolone; prve dvije ćelije su centrirane preko `grid-column`. */
-.ad-svc-grid.is-five {
-  grid-template-columns: repeat(6, 1fr);
-  gap: 3.2cqh 2.4cqh;
+/* ── 5 usluga u KRUGU (pravilni petougao) ────────────────────────────────
+   Umjesto neparnih redova: 5 ikona raspoređenih po kružnici, jedna po jedna
+   otkrivana. Pozicije su fiksne (calc + sin/cos uglovi 90°, 162°, 234°, 306°, 18°)
+   da raspored bude deterministican i identican u previewu i u MP4 snimku.
+   Centar kruga je 50% / 50% roditelja; radius = 33cqh (dovoljno za 9:16). */
+.ad-svc-ring {
+  position: relative;
+  width: 100%;
+  height: 60cqh;
+  max-height: 60cqh;
+  margin-top: 4cqh;
 }
-.ad-svc-grid.is-five .ad-svc-cell { grid-column: span 3; }        /* red 1: 2 ćelije (3+3 = 6) */
-.ad-svc-grid.is-five .ad-svc-cell:nth-child(n + 3) { grid-column: span 2; } /* red 2: 3 ćelije (2+2+2 = 6) */
-.ad-svc-grid.is-five .ad-svc-label { font-size: 2.15cqh; }
-.ad-svc-grid.is-five .ad-stamp { font-size: 1.75cqh; padding: 0.45cqh 1.15cqh; }
+.ad-svc-ring .ad-svc-cell {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.4cqh;
+  transform: translate(-50%, -50%);
+  width: 34%;
+}
+/* 5 tacaka po krugu — vrh (-90°), pa na svakih 72°.
+   Vrijednosti su pre-izracunate (radius 26cqh) da ne zavise od CSS cos()/sin()
+   podrske u browseru — ista pozicija svuda, i u MP4 snimku. */
+.ad-svc-ring .ad-svc-cell:nth-child(1) { margin-left: 0.0cqh; margin-top: -24.0cqh; }
+.ad-svc-ring .ad-svc-cell:nth-child(2) { margin-left: 22.83cqh; margin-top: -7.42cqh; }
+.ad-svc-ring .ad-svc-cell:nth-child(3) { margin-left: 14.11cqh; margin-top: 19.42cqh; }
+.ad-svc-ring .ad-svc-cell:nth-child(4) { margin-left: -14.11cqh; margin-top: 19.42cqh; }
+.ad-svc-ring .ad-svc-cell:nth-child(5) { margin-left: -22.83cqh; margin-top: -7.42cqh; }
+.ad-svc-ring .ad-svc-label { font-size: 2.05cqh; }
+.ad-svc-ring .ad-stamp { font-size: 1.65cqh; padding: 0.4cqh 1cqh; }
+
+/* Tanak prsten u pozadini — vizuelno veže 5 tacaka u jednu cjelinu */
+.ad-svc-ring::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 48cqh;
+  height: 48cqh;
+  margin-left: -24cqh;
+  margin-top: -24cqh;
+  border-radius: 50%;
+  border: 0.22cqh solid rgba(45, 212, 191, 0.16);
+  pointer-events: none;
+  animation: ad-ring-fade 1.2s ease-out forwards;
+}
+@keyframes ad-ring-fade {
+  from { opacity: 0; transform: scale(0.88); }
+  to { opacity: 1; transform: scale(1); }
+}
 .ad-svc-cell { display: flex; flex-direction: column; align-items: center; gap: 2cqh; }
 .ad-svc-label { font-size: 2.3cqh; font-weight: 700; color: #fff; line-height: 1.15; text-align: center; }
 

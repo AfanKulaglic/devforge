@@ -4531,7 +4531,8 @@ function AdServices({ paused }: { paused: boolean }) {
       <h3 className="ad-h3 text-white">
         <AdWords parts={[{ t: "Sve" }, { t: "na" }, { t: "jednom", grad: true }, { t: "mjestu", grad: true }]} />
       </h3>
-      <div className={`ad-svc-grid${N === 5 ? " is-five" : N > 6 ? " is-six" : ""}`}>
+      {/* 5 usluga → krug (petougao); 4 ili 6 → grid. Krug izbjegava neparan red. */}
+      <div className={N === 5 ? "ad-svc-ring" : `ad-svc-grid${N > 6 ? " is-six" : ""}`}>
         {AD_SERVICES.map((s, i) => (
           <div key={i} className={`ad-svc-cell ad-cell ${i <= step ? "is-in" : ""}`}>
             <span className="ad-svc-iconwrap">

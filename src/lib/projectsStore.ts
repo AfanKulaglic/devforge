@@ -141,6 +141,26 @@ const SEED: AdminProject[] = [
     imageMobile: "https://sarajevo-visit.vercel.app/icons/icon-512.png",
     createdAt: 7,
   },
+  {
+    id: "seed-recello",
+    title: "Recello — AI telefonska recepcionarka",
+    service: "AI sistemi",
+    tag: "AI SaaS · Glasovni asistent · UK",
+    url: "https://www.recello.co.uk/",
+    description:
+      "AI recepcionarka koja preuzima posao sekretarice — neprekidno 24 sata dnevno. Javlja se na svaki poziv " +
+      "prirodnim glasom za manje od jedne sekunde, razumije šta kupac pita i odgovara na osnovu stvarnih " +
+      "podataka o firmi: usluge, cijene, popusti, radno vrijeme. Tokom razgovora sama preuzima narudžbu i " +
+      "zakaže termin, a kad kupac traži vlasnika ili je riječ o hitnom slučaju — preusmjeri poziv na telefon, " +
+      "bez da kupac išta ponavlja. Sve što sazna upisuje u zajedničku bazu znanja (Library) iz koje i vlasnik " +
+      "uči asistenta običnom chat porukom. Uz AI sistem razvijena je i web prezentacija sa SEO strukturom te " +
+      "mobilna i web aplikacija za praćenje svakog poziva, narudžbe i termina. Nije riječ o običnoj stranici " +
+      "— ovo je stvarni AI SaaS proizvod s mjesečnom pretplatom.",
+    // Slike se dodaju iz admin panela (Projekti → Recello → Uredi).
+    imageDesktop: "",
+    imageMobile: "",
+    createdAt: 8,
+  },
 ];
 
 // ───────────────────────────────────────────────────────────────────────────
@@ -162,7 +182,7 @@ import { getDb, firebaseReady } from "./firebase";
 // Lokalni kes i zastita od visestrukog upisa.
 const STORAGE_KEY = "devforge-projects-v1";
 const SEED_VERSION_KEY = "devforge-projects-seed-version";
-const SEED_VERSION = "9";
+const SEED_VERSION = "10";
 // Oznaka da je migracija u Firebase vec uradjena (sprecava ponovni upis).
 const MIGRATED_KEY = "devforge-projects-migrated-v1";
 
@@ -300,6 +320,29 @@ async function migrateLocalToFirebase(): Promise<AdminProject[] | null> {
   }
 }
 
+// ── Nove seed stavke → u bazu (bez diranja korisnikovih izmjena) ─────────
+// Kad dodamo novi projekat u SEED (npr. Recello), korisnikova baza vec ima
+// svoje projekte pa se novi nikad ne bi pojavio. Ova funkcija ubacuje SAMO
+// one seed id-eve kojih u bazi jos nema. Postojeci se nikad ne prepisuju.
+async function syncMissingSeeds(): Promise<AdminProject[]> {
+  if (!firebaseReady) return [];
+  try {
+    const snap = await get(ref(getDb(), DB_PATH));
+    if (!snap.exists()) return [];
+    const remote = snap.val() as Record<string, AdminProject>;
+    const missing = SEED.filter((seed) => !remote[seed.id]);
+    if (missing.length === 0) return [];
+
+    const db = getDb();
+    for (const proj of missing) {
+      await set(ref(db, `${DB_PATH}/${proj.id}`), proj);
+    }
+    return missing;
+  } catch {
+    return [];
+  }
+}
+
 // ── Start sync (poziva se jednom iz App.tsx) ──────────────────────────────
 let started = false;
 
@@ -324,6 +367,10 @@ export function startProjectsSync() {
     if (migrated) {
       // Migracija uspjesna — lokalni podaci su sada u bazi.
       writeLocal(migrated);
+    } else {
+      // Baza vec ima podatke — ubaci samo NOVE seed projekte (npr. Recello),
+      // bez diranja onoga sto je korisnik sam mijenjao.
+      await syncMissingSeeds();
     }
 
     // 3) Real-time slusanje: svaka promjena u bazi azurira sajt svima.

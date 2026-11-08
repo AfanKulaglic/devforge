@@ -262,11 +262,15 @@ export default function AnalyticsTab() {
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => window.location.reload()}
-              className="inline-flex items-center gap-1.5 border border-white/15 px-3 py-1.5 text-xs font-bold text-white/60 transition hover:border-teal-300 hover:text-white"
+              onClick={() => {
+                setLoading(true);
+                void mergeRemoteVisits().finally(() => setLoading(false));
+              }}
+              disabled={loading}
+              className="inline-flex items-center gap-1.5 border border-white/15 px-3 py-1.5 text-xs font-bold text-white/60 transition hover:border-teal-300 hover:text-white disabled:opacity-50"
             >
-              <HiOutlineArrowPath className="text-sm" aria-hidden="true" />
-              Osvježi
+              <HiOutlineArrowPath className={`text-sm ${loading ? "animate-spin" : ""}`} aria-hidden="true" />
+              {loading ? "Učitavam…" : "Osvježi"}
             </button>
             <button
               type="button"
