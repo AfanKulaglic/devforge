@@ -66,7 +66,7 @@ import {
 } from "react-icons/si";
 import { FaLinkedinIn, FaInstagram } from "react-icons/fa6";
 import AdminPanel from "./AdminPanel";
-import { initAnalytics, trackPageView } from "./lib/analytics";
+import { initAnalytics, trackEvent, trackPageView } from "./lib/analytics";
 import { startProjectsSync } from "./lib/projectsStore";
 import { startPricingSync } from "./lib/pricingStore";
 import { Analytics as VercelAnalytics } from "@vercel/analytics/react";
@@ -1319,7 +1319,13 @@ function CtaButton({
           : "inline-flex items-center gap-1.5 font-bold text-teal-700 transition hover:text-teal-900";
 
   return (
-    <button type="button" onClick={open} className={`${base} ${className}`}>
+    <button
+      type="button"
+      onClick={open}
+      data-track="cta"
+      data-track-label={label}
+      className={`${base} ${className}`}
+    >
       {children}
       {label}
     </button>
@@ -1862,6 +1868,9 @@ function ProjectActions({
           href={project.url}
           target="_blank"
           rel="noopener noreferrer"
+          data-track="project_click"
+          data-track-label={project.title}
+          onClick={() => trackEvent("project_click", project.title)}
           className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-400 to-[#0891B2] px-4 py-2.5 text-[0.72rem] font-extrabold uppercase tracking-[0.1em] text-white transition hover:brightness-110 md:px-5"
         >
           Otvori demo
@@ -2382,7 +2391,7 @@ function FAQs() {
             const isOpen = openIndex === index;
             return (
               <div key={faq.question} className="border-b border-black/10">
-                <button className="flex w-full items-center justify-between gap-6 py-6 text-left" type="button" aria-expanded={isOpen} onClick={() => setOpenIndex(isOpen ? -1 : index)}>
+                <button className="flex w-full items-center justify-between gap-6 py-6 text-left" type="button" aria-expanded={isOpen} data-track="faq_open" data-track-label={faq.question} onClick={() => { if (!isOpen) trackEvent("faq_open", faq.question); setOpenIndex(isOpen ? -1 : index); }}>
                   <span className="flex items-center gap-3 text-lg font-extrabold text-[#0B0B0F] md:text-xl">
                     <HiOutlineQuestionMarkCircle className="shrink-0 text-xl text-teal-600" aria-hidden="true" />
                     {faq.question}
@@ -2498,6 +2507,11 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
     };
   }, [open, onClose]);
 
+  // Analitika: zabiljezi otvaranje kontakt modala (jednom po otvaranju).
+  useEffect(() => {
+    if (open) trackEvent("contact_open", "kontakt modal");
+  }, [open]);
+
   if (!open) return null;
 
   const buildMailto = () => {
@@ -2519,6 +2533,7 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
 
   const submitMail = (event: FormEvent) => {
     event.preventDefault();
+    trackEvent("form_submit", "kontakt modal", undefined, "/kontakt");
     // Otvara mejl klijent (Outlook / Gmail / Apple Mail) sa popunjenom porukom
     // i nasom adresom u primaoce. Korisnik samo klikne „Posalji".
     window.location.href = buildMailto();
@@ -4022,7 +4037,7 @@ function ServiceFAQ({ detail }: { detail: ServiceDetail }) {
             const isOpen = openIndex === index;
             return (
               <div key={faq.question} className="border-b border-black/10">
-                <button className="flex w-full items-center justify-between gap-6 py-6 text-left" type="button" aria-expanded={isOpen} onClick={() => setOpenIndex(isOpen ? -1 : index)}>
+                <button className="flex w-full items-center justify-between gap-6 py-6 text-left" type="button" aria-expanded={isOpen} data-track="faq_open" data-track-label={faq.question} onClick={() => { if (!isOpen) trackEvent("faq_open", faq.question); setOpenIndex(isOpen ? -1 : index); }}>
                   <span className="flex items-center gap-3 text-lg font-extrabold text-[#0B0B0F] md:text-xl">
                     <HiOutlineQuestionMarkCircle className="shrink-0 text-xl text-teal-600" aria-hidden="true" />
                     {faq.question}

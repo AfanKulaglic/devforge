@@ -9,6 +9,23 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **FULL ANALITIKA — događaji, konverzije, skrol, putanje, bounce** — korisnik: „zelim te posebno pitati sta jos mogu od analitike ukljuciti ako neki trigger nesto pritisnu da mogu znati da su nesto radili istrazivali otvarali druge stranice zelim full analitiku" + „uradi sta od mozes i moguce je za bolju analitiku".
+  **`src/lib/analytics.ts` — prosireno (~700 linija):**
+  - Novi tip **`EventKind`** (13 vrsta): `cta`, `contact_open`, `contact_channel`, `form_start`, `form_submit`, `project_click`, `pricing_click`, `faq_open`, `scroll`, `social_click`, `external_click`, `dead_click`, `rage_click`. Novi tip **`TrackEvent`** (`kind`, `path`, `label`, `value`, `at`).
+  - `Visit` dobio **`events?: TrackEvent[]`**, **`maxScroll?: number`**, **`bounced?: boolean`**.
+  - `trackEvent(kind, label, value, path)` — upisuje događaj u aktivnu sesiju (max 120 po sesiji). Skrol se salje **samo kad predje novi prag** (25/50/75/100) — `lastScrollDepth` deklarisan **prije** funkcije (popravljena temporal dead zone greska koja bi pukla na prvom skrolu).
+  - `resetScrollDepth()` na svaku promjenu stranice; `markBounceIfIdle()` na `beforeunload`/`pagehide` — sesija je bounce ako nema akcije, ≤1 stranicu i <8s.
+  - **`initAnalytics()` — automatsko pracenje bez rucnog dodavanja:**
+    - globalni `click` listener (capture) → `classifyClick()` prepoznaje `data-track` atribute, `tel:`/`mailto:` (→ telefon/email), `viber:`, `wa.me`/`whatsapp`, `ig.me`/instagram, facebook, linkedin, vanjske https linkove (→ hostname), dugmad po tekstu.
+    - **rage click** — 3+ klika na istom mjestu unutar 1.2s (grid 20px).
+    - **dead click** — klik na neinteraktivni element (img/svg/span/div…).
+    - `scroll` listener (passive) → pragovi 25/50/75/100.
+    - `focusin` listener → `form_start` kad korisnik prvi put klikne u polje forme.
+  - `normalizeVisit()` prosiren za `events`, `maxScroll`, `bounced`.
+  - **`summarize()` — 8 novih agregacija:** `byEvent` (kind+label, sortirano), `byChannel` (samo `contact_channel` po labeli — Viber/WhatsApp/Instagram/telefon/email), `byEventDay` (trend po danu), `scrollFunnel` (25/50/75/100% + procenat), `bounceRate`, `bouncedCount`, `avgPagesPerVisit`, `returningCount`, `paths` (redoslijed stranica po sesiji, top 12), `allEvents` (zadnjih 60 hronoloski).
+  **`src/App.tsx`:** `CtaButton` dobio `data-track="cta"` + `data-track-label={label}`; import `trackEvent`; `ContactModal` — `useEffect` na `open` → `contact_open`, `submitMail` → `form_submit`; FAQ dugmad → `data-track="faq_open"` + `trackEvent`; `ProjectActions` „Otvori demo" → `data-track="project_click"` + `trackEvent`.
+  **`src/AdminAnalyticsTab.tsx`:** `EVENT_LABEL` mapa za 13 vrsta događaja; `fmtTime()` helper; **4 nove `StatCard`** (Bounce rate, Str. po posjeti, Povratnici, Događaja); **nove sekcije**: „Konverzije i akcije" (top 14 događaja), „Kako te kontaktiraju" (kanali), „Koliko daleko čitaju" (scroll funnel s procentima), „Putanje kroz sajt" (redoslijed stranica), „Događaji" (scrollabilna lista zadnjih 60 s vremenom, tipom, labelom i putanjom).
+  **Verifikacija:** `npx tsc --noEmit` → 0; build ✓ 1.039 kB (gzip 281, +11 kB); `/`, `/admin`, `/cijene`, `/projekti` → 200; sve nove funkcije prisutne u bundleu; logički test skrol serije (25/50/30/75/100) — 30 se ispravno preskače, `maxScroll` = 100.
 - **ANALITIKA — DRUGI KRIVAC NADJEN (`v.pages.length` u tabeli)** — korisnik ponovo: „opet ne radi tab za analitiku … m.pages is not iterable".
   Prva popravka (`normalizeVisit` + `Array.isArray` u `summarize`) nije bila dovoljna jer je **`AdminAnalyticsTab.tsx` tabela „Nedavne posjete" pristupala `v.pages.length` i `v.pages.map()` DIREKTNO** — a `s.recent` dolazi iz `[...visits]` koji nije prolazio kroz normalizaciju kad zapisi dodju iz starog localStorage kesa ili SEED-a.
   **Konacna popravka (dva mjesta):**

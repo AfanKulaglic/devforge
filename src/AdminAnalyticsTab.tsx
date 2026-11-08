@@ -12,6 +12,8 @@ import {
   HiOutlineLink,
   HiOutlineTrash,
   HiOutlineUsers,
+  HiOutlineCursorArrowRays,
+  HiOutlineHandRaised,
 } from "react-icons/hi2";
 import { useEffect, useState as useState2 } from "react";
 import {
@@ -120,6 +122,32 @@ function DailyChart({ daily }: { daily: AnalyticsSummary["daily"] }) {
   );
 }
 
+// Nazivi događaja za prikaz u adminu.
+const EVENT_LABEL: Record<string, string> = {
+  cta: "CTA dugme",
+  contact_open: "Otvoren kontakt",
+  contact_channel: "Klik na kontakt",
+  form_start: "Počeo pisati formu",
+  form_submit: "Poslao formu",
+  project_click: "Klik na projekt",
+  pricing_click: "Klik na cijene",
+  faq_open: "Otvoreno FAQ",
+  scroll: "Skrol",
+  social_click: "Klik na social",
+  external_click: "Odlazak sa sajta",
+  dead_click: "Klik bez akcije",
+  rage_click: "Frustracija (rage click)",
+};
+
+// Kratko vrijeme (HH:MM:SS) za listu događaja.
+function fmtTime(ts: number): string {
+  try {
+    return new Date(ts).toLocaleTimeString("bs-BA", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  } catch {
+    return "—";
+  }
+}
+
 // ── Tab ───────────────────────────────────────────────────────────────────
 export default function AnalyticsTab() {
   const visits = useVisits();
@@ -148,6 +176,8 @@ export default function AnalyticsTab() {
   const maxSource = Math.max(...s.bySource.map((c) => c.count), 1);
   const maxDevice = Math.max(...s.byDevice.map((c) => c.count), 1);
   const maxPage = Math.max(...s.byPage.map((p) => p.views), 1);
+  const maxEvent = Math.max(...s.byEvent.map((e) => e.count), 1);
+  const maxChannel = Math.max(...s.byChannel.map((c) => c.count), 1);
 
   const onClear = () => {
     if (window.confirm("Obrisati sve lokalno prikupljene posjete? Ovo ne može poništiti.")) {
@@ -204,6 +234,66 @@ export default function AnalyticsTab() {
         <StatCard icon={<HiOutlineChartBar />} label="Ukupno vrijeme" value={fmtDuration(s.totalTimeMs)} hint="sve posjete" />
         <StatCard icon={<HiOutlineGlobeAlt />} label="Država" value={String(s.byCountry.length)} hint="različitih izvora" />
       </div>
+
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <StatCard icon={<HiOutlineArrowPath />} label="Bounce rate" value={`${s.bounceRate}%`} hint={`${s.bouncedCount} bez akcije`} />
+        <StatCard icon={<HiOutlineCursorArrowRays />} label="Str. po posjeti" value={String(s.avgPagesPerVisit)} hint="prosjek" />
+        <StatCard icon={<HiOutlineUsers />} label="Povratnici" value={String(s.returningCount)} hint="već bili na sajtu" />
+        <StatCard icon={<HiOutlineHandRaised />} label="Događaja" value={String(s.byEvent.reduce((n, e) => n + e.count, 0))} hint="klikovi, skrol, forme" />
+      </div>
+
+      {/* KONVERZIJE — šta posjetioci konkretno rade */}
+      <SectionCard title="Konverzije i akcije" subtitle="svaki klik koji vodi ka poslu">
+        {s.byEvent.length === 0 ? (
+          <p className="text-sm text-white/35">
+            Još nema događaja. Otvori sajt u drugom tabu i klikni nešto — pojavit će se ovdje.
+          </p>
+        ) : (
+          s.byEvent.slice(0, 14).map((e) => (
+            <BarRow
+              key={`${e.kind}-${e.label}`}
+              label={`${EVENT_LABEL[e.kind] ?? e.kind}${e.label ? ` — ${e.label}` : ""}`}
+              value={e.count}
+              max={maxEvent}
+            />
+          ))
+        )}
+      </SectionCard>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        {/* Kanali kontakta */}
+        <SectionCard title="Kako te kontaktiraju" subtitle="Viber, WhatsApp, Instagram, telefon…">
+          {s.byChannel.length === 0 ? (
+            <p className="text-sm text-white/35">Nema klikova na kontakt još.</p>
+          ) : (
+            s.byChannel.map((c) => (
+              <BarRow key={c.label} label={c.label} value={c.count} max={maxChannel} />
+            ))
+          )}
+        </SectionCard>
+
+        {/* Scroll depth */}
+        <SectionCard title="Koliko daleko čitaju" subtitle="dubina skrola po posjeti">
+          {s.scrollFunnel.map((f) => (
+            <BarRow key={f.depth} label={`${f.depth}% stranice`} value={f.count} max={s.totalVisits || 1} suffix={`${f.percent}%`} />
+          ))}
+        </SectionCard>
+      </div>
+
+      {/* Putanje kroz sajt */}
+      <SectionCard title="Putanje kroz sajt" subtitle="redoslijed stranica koje posjetilac otvori">
+        {s.paths.length === 0 ? (
+          <p className="text-sm text-white/35">Nema dovoljno podataka još.</p>
+        ) : (
+          s.paths.map((p) => (
+            <div key={p.path} className="flex items-center gap-3">
+              <span className="flex-1 truncate font-mono text-[0.7rem] text-white/70" title={p.path}>{p.path}</span>
+              <span className="shrink-0 text-xs tabular-nums text-white/45">{p.count}×</span>
+              <span className="w-10 shrink-0 text-right text-xs font-bold tabular-nums text-teal-300/85">{p.percent}%</span>
+            </div>
+          ))
+        )}
+      </SectionCard>
 
       {/* Grafik */}
       <SectionCard title="Posjete po danu" subtitle="zadnjih 14 dana">
@@ -270,6 +360,29 @@ export default function AnalyticsTab() {
           )}
         </SectionCard>
       </div>
+
+      {/* Događaji — hronološki, šta je ko kliknuo */}
+      <SectionCard title="Događaji" subtitle="svaki klik, skrol i akcija — najnovije prvo">
+        {s.allEvents.length === 0 ? (
+          <p className="text-sm text-white/35">Još nema događaja.</p>
+        ) : (
+          <div className="max-h-80 space-y-1.5 overflow-y-auto pr-1">
+            {s.allEvents.map((e, i) => (
+              <div
+                key={`${e.at}-${i}`}
+                className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-white/[0.04] py-1.5 text-xs last:border-0"
+              >
+                <span className="w-24 shrink-0 tabular-nums text-white/35">{fmtTime(e.at)}</span>
+                <span className="rounded-sm bg-teal-500/15 px-1.5 py-0.5 text-[0.65rem] font-bold text-teal-200">
+                  {EVENT_LABEL[e.kind] ?? e.kind}
+                </span>
+                {e.label && <span className="text-white/70">{e.label}</span>}
+                <span className="ml-auto font-mono text-[0.65rem] text-white/30">{e.path}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </SectionCard>
 
       {/* Nedavne posjete */}
       <div className={cardCls}>
