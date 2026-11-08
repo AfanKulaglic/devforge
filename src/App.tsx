@@ -77,7 +77,7 @@ import {
   subscribePricing,
   type PricingGroupData,
 } from "./lib/pricingStore";
-import { recordAdToMp4, downloadBlob, AD_W, AD_H, type RecordProgress } from "./lib/adRecorder";
+import { recordAdToMp4, downloadBlob, checkRecorderSupport, AD_W, AD_H, type RecordProgress } from "./lib/adRecorder";
 
 const CTA_LABEL = "🚀 Dobijte gotovu verziju za 5 dana";
 
@@ -4258,6 +4258,11 @@ function AdReel({ recordMode = false }: { recordMode?: boolean }) {
 
   const startExport = async () => {
     if (recording) return;
+    const unsupported = checkRecorderSupport();
+    if (unsupported) {
+      setRecError(unsupported);
+      return;
+    }
     setRecError("");
     const controller = new AbortController();
     abortRef.current = controller;
@@ -4271,8 +4276,10 @@ function AdReel({ recordMode = false }: { recordMode?: boolean }) {
       downloadBlob(blob, `devforge-reklama-${AD_W}x${AD_H}.mp4`);
       setRecording(null);
     } catch (err) {
+      // Detalj u konzolu — lakse dijagnostikovati bez pogađanja.
+      console.error("[adRecorder]", err);
       setRecording(null);
-      setRecError(err instanceof Error ? err.message : "Snimanje nije uspjelo");
+      setRecError(err instanceof Error ? err.message : String(err));
     } finally {
       abortRef.current = null;
     }
@@ -4406,7 +4413,7 @@ function AdReel({ recordMode = false }: { recordMode?: boolean }) {
     return (
       <div
         className="ad-reel ad-clean"
-        style={{ width: "1080px", height: "1920px", position: "fixed", inset: 0 }}
+        style={{ width: "1080px", height: "1920px", position: "fixed", left: 0, top: 0 }}
       >
         <div className={`ad-bg ad-bg-${scene}`} key={`bg-${scene}`} aria-hidden="true" />
         <div className="ad-fold" aria-hidden="true" />
@@ -4537,9 +4544,18 @@ function AdReel({ recordMode = false }: { recordMode?: boolean }) {
               Preuzmi MP4 ({AD_W}×{AD_H})
             </button>
           )}
-          {recError && <p className="mt-2 text-xs text-red-300">{recError}</p>}
+          {recError && (
+            <div className="mt-2 border border-red-400/40 bg-red-500/10 px-3 py-2">
+              <p className="text-xs font-bold text-red-200">Snimanje nije uspjelo</p>
+              <p className="mt-1 text-[0.7rem] leading-relaxed text-red-200/80">{recError}</p>
+              <p className="mt-1.5 text-[0.68rem] leading-relaxed text-white/40">
+                Otvorite DevTools konzolu (F12) za detalje. Ako se ponavlja, javite mi tačan tekst greške.
+              </p>
+            </div>
+          )}
           <p className="mt-2 text-[0.7rem] leading-relaxed text-white/35">
-            Snima se u pozadini ~30 fps. Ne diraj prozor dok traje.
+            Format: MP4 · H.264 · 1080×1920 (9:16) · 30 fps — Instagram Reels, Story, TikTok.
+            Snima se u pozadini ~27 s, ne diraj prozor dok traje.
           </p>
         </div>
         <p className="text-xs leading-relaxed text-white/40">Snimi screen-recorderom samo teal okvir (9:16). Ovaj panel se ne snima.</p>
