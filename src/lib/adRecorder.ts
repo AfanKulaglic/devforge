@@ -1,22 +1,20 @@
 import { BufferTarget, CanvasSource, Mp4OutputFormat, Output, Quality } from "mediabunny";
-import { toCanvas } from "html-to-image";
 
 // ───────────────────────────────────────────────────────────────────────────
-// Snimanje reklame u MP4 — sve u browseru, bez servera.
+// Snimanje reklame u MP4 — varijanta sa `getDisplayMedia`.
 //
-// Izlaz: MP4 H.264, 1080×1920 (9:16), 30 fps — Instagram Reels / Story /
-// TikTok / Facebook format, tacno ono sto se vidi u pregledu na /reklama.
+// Zasto ova varijanta: DOM->canvas pristup (html-to-image) je bio prekompleksan
+// i nepouzdan — spora rasterizacija, gubitak rezolucije, neuskladjena brzina.
 //
-// Dva koraka:
-//   A) iframe 1080x1920 ucita /reklama?record=1  → reklama u punoj rezoluciji
-//      (bez panela; `cqh` jedinice se skaliraju na 1920px, ne na 90vh).
-//   B) svakih 1/30 s: .ad-reel → html-to-image → canvas -> mediabunny -> MP4
+// `getDisplayMedia` snima STVARNI piksel output browsera: rezolucija je tacna
+// (1080x1920 iz naseg okvira), fps je tacan (60), boje i blur su identicni
+// pregledu. Nema rekonstrukcije DOM-a, nema gubitka kvaliteta.
 //
-// Zasto ne MediaRecorder + captureStream: canvas stream snima samo ono sto se
-// crta u canvas, ali nam treba DOM sa CSS-om. MediaRecorder nad canvas-om bi
-// radio tek kad bismo sami crtali kadar po kadar — sto je upravo ovo gore,
-// samo sa MP4 muxerom umjesto MediaRecorder-a (MediaRecorder ne daje MP4 u
-// svim browserima, mediabunny daje uvijek).
+// Tok:
+//   1. Otvorimo `/reklama?record=1` u NOVOM prozoru (1080x1920).
+//   2. `getDisplayMedia` — korisnik odabere taj prozor (jedan klik).
+//   3. Snimamo video track u realnom vremenu kroz mediabunny -> MP4 H.264.
+//   4. Zatvorimo prozor, ponudimo download.
 // ───────────────────────────────────────────────────────────────────────────
 
 export const AD_W = 1080;
@@ -36,9 +34,22 @@ type Options = {
   signal?: AbortSignal;
 };
 
+/** Pretvori bilo kakav throw (ukljucujuci goli objekat) u citljiv string. */
+export function describeError(err: unknown): string {
+  if (err instanceof Error) return `${err.name}: ${err.message}`;
+  if (typeof err === "string") return err;
+  try {
+    const json = JSON.stringify(err, Object.getOwnPropertyNames(err ?? {}), 1);
+    return json === "{}" ? String(err) : json;
+  } catch {
+    return String(err);
+  }
+}
+
 /**
- * Snimi reklamu u MP4 (1080×1920, H.264, 30fps) i vrati Blob.
- * @throws ako browser ne podrzava potrebne API-je ili korisnik prekine.
+ * Snimi reklamu u MP4 (H.264) preko snimanja ekrana.
+ *
+ * Korisnik mora odabrati prozor sa reklamom u dijalogu koji browser prikaze.
  */
 export async function recordAdToMp4({
   sceneDurations,
@@ -48,16 +59,97 @@ export async function recordAdToMp4({
   const totalMs = sceneDurations.reduce((a, b) => a + b, 0);
   const totalFrames = Math.round((totalMs / 1000) * FPS);
   onProgress({ phase: "loading", frame: 0, totalFrames, percent: 0 });
-  console.info("[adRecorder] start", { totalFrames, totalMs, AD_W, AD_H, FPS });
 
-  const frame = await openReelFrame();
+  // 1) Otvori prozor sa reklamom u punoj rezoluciji.
+  const win = window.open(
+    new URL("/reklama?record=1", window.location.origin).href,
+    "devforge-ad-reel",
+    `width=${AD_W},height=${AD_H},menubar=no,toolbar=no,location=no,status=no,resizable=yes`,
+  );
+  if (!win) {
+    throw new Error(
+      "Browser je blokirao prozor sa reklamom. Dozvolite pop-up za ovu stranicu pa pokušajte ponovo.",
+    );
+  }
+
+  let stream: MediaStream | null = null;
   let aborted = false;
-  const onAbort = () => { aborted = true; };
+  const onAbort = () => {
+    aborted = true;
+  };
   signal?.addEventListener("abort", onAbort, { once: true });
 
   try {
-    const { reel } = await waitForReel(frame);
-    const { canvas, ctx } = makeCanvas();
+    // Sacekaj da se prozor ucita i da reklama krene.
+    await new Promise<void>((resolve) => {
+      const timer = window.setInterval(() => {
+        try {
+          if (win.document.querySelector(".ad-reel")) {
+            window.clearInterval(timer);
+            resolve();
+          }
+        } catch {
+          /* cross-origin dok se ucitava */
+        }
+      }, 150);
+      window.setTimeout(() => window.clearInterval(timer), 15000);
+    });
+
+    // Ponovo pokreni reklamu od scene 0 preko postMessage.
+    try {
+      win.postMessage({ type: "ad:reset" }, window.location.origin);
+    } catch {
+      /* ignorisi */
+    }
+    await sleep(400);
+
+    // 2) Trazi dozvolu za snimanje ekrana — korisnik bira prozor reklame.
+    const display = await navigator.mediaDevices.getDisplayMedia({
+      video: {
+        // Trazimo tacnu rezoluciju; browser daje najblizu mogucu.
+        width: { ideal: AD_W },
+        height: { ideal: AD_H },
+        frameRate: { ideal: FPS, max: 60 },
+      },
+      audio: false,
+    });
+    stream = display;
+
+    const track = display.getVideoTracks()[0];
+    if (!track) throw new Error("Nema video zapisa u odabranom izvoru");
+
+    // 3) Postavi canvas u tacnoj rezoluciji i crtaj dolazne kadrove.
+    const canvas = document.createElement("canvas");
+    canvas.width = AD_W;
+    canvas.height = AD_H;
+    const ctx = canvas.getContext("2d", { alpha: false });
+    if (!ctx) throw new Error("Canvas 2D nije dostupan");
+    ctx.fillStyle = "#040807";
+    ctx.fillRect(0, 0, AD_W, AD_H);
+
+    // Video element koji prima stream, pa crtamo u nas canvas.
+    const video = document.createElement("video");
+    video.srcObject = display;
+    video.muted = true;
+    video.playsInline = true;
+    await video.play();
+
+    await new Promise<void>((resolve) => {
+      if (video.videoWidth) return resolve();
+      video.onloadedmetadata = () => resolve();
+    });
+
+    const srcW = video.videoWidth || AD_W;
+    const srcH = video.videoHeight || AD_H;
+
+    // Skaliraj proporcionalno (contain) — nikad ne rastezi sliku.
+    const scale = Math.min(AD_W / srcW, AD_H / srcH);
+    const drawW = Math.round(srcW * scale);
+    const drawH = Math.round(srcH * scale);
+    const offX = Math.round((AD_W - drawW) / 2);
+    const offY = Math.round((AD_H - drawH) / 2);
+
+    console.info("[adRecorder] capture", { srcW, srcH, drawW, drawH, offX, offY });
 
     const output = new Output({
       format: new Mp4OutputFormat(),
@@ -75,36 +167,22 @@ export async function recordAdToMp4({
     let written = 0;
     let prev = 0;
 
-    // Ubrzaj rasterizaciju — skini blur/backdrop-filter tokom snimanja.
-    const restoreEffects = stripHeavyEffects(frame.doc as Document);
-
-    // ── SNAMANJE ──
-    // Kljucno pravilo: timestamp kadra = STVARNO proteklo vrijeme.
-    // Trajanje = razlika do sljedeceg stvarnog kadra. Time video uvijek
-    // traje `maxDuration` sekundi, bez obzira na brzinu toCanvas-a.
     while (!aborted && !signal?.aborted) {
-      const elapsed = (performance.now() - start) / 1000;
-      if (elapsed >= maxDuration) break;
+      if ((performance.now() - start) / 1000 >= maxDuration) break;
 
-      // Uhvati kadar (moze potrajati 50-300ms).
-      let snap: HTMLCanvasElement | null = null;
-      try {
-        snap = await toCanvas(reel, REEL_SNAPSHOT_OPTS);
-      } catch {
-        snap = null;
+      // Crtaj trenutni kadar stream-a u canvas (visoka rezolucija, bez gubitka).
+      ctx.fillStyle = "#040807";
+      ctx.fillRect(0, 0, AD_W, AD_H);
+      if (video.readyState >= 2) {
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(video, offX, offY, drawW, drawH);
       }
 
       const now = Math.min((performance.now() - start) / 1000, maxDuration);
       if (now - prev < 1 / FPS) {
-        // Preblizu prethodnom kadru — sacekaj da prodje barem jedan frame.
         await sleep(Math.max(1, (1 / FPS - (now - prev)) * 1000));
         continue;
-      }
-
-      if (snap) {
-        ctx.fillStyle = "#040807";
-        ctx.fillRect(0, 0, AD_W, AD_H);
-        ctx.drawImage(snap, 0, 0, AD_W, AD_H);
       }
 
       await videoSource.add(prev, now - prev);
@@ -119,9 +197,6 @@ export async function recordAdToMp4({
       });
     }
 
-    restoreEffects();
-
-    // Popuni do kraja ako je zadnji kadar ranije uhvacen.
     if (prev < maxDuration) {
       await videoSource.add(prev, maxDuration - prev);
     }
@@ -144,145 +219,12 @@ export async function recordAdToMp4({
     return blob;
   } finally {
     signal?.removeEventListener("abort", onAbort);
-    frame.el.remove();
-  }
-}
-
-/** Opcije za toCanvas — iste u MP4 i WebM putanji. */
-const REEL_SNAPSHOT_OPTS = {
-  width: AD_W,
-  height: AD_H,
-  canvasWidth: AD_W,
-  canvasHeight: AD_H,
-  pixelRatio: 1,
-  backgroundColor: "#040807",
-  style: { position: "relative", left: "0", top: "0", transform: "none" },
-  skipFonts: true,
-  filter: (node: Node) => {
-    const name = (node as HTMLElement).nodeName;
-    return name !== "IFRAME" && name !== "SCRIPT";
-  },
-} as const;
-
-/**
- * Ukloni skupe CSS efekte prije snimanja (blur/backdrop-filter).
- *
- * Zasto: `toCanvas` mora da rasterizuje 1080x1920 sa 13 `filter: blur()` i
- * nekoliko `backdrop-filter` slojeva. To traje 100-300ms po kadru, pa snimak
- * ima malo kadrova i izgleda trzawo/sporo. Bez blura rasterizacija je 5-10x
- * brza, a razlika u izgledu je minimalna (blur je ionako suptilan).
- *
- * Vraca funkciju za vracanje originalnih vrijednosti.
- */
-function stripHeavyEffects(root: Document | HTMLElement): () => void {
-  const restore: Array<() => void> = [];
-  const nodes = root.querySelectorAll<HTMLElement>("*");
-  nodes.forEach((el) => {
-    const cs = (root as Document).defaultView?.getComputedStyle(el) ?? window.getComputedStyle(el);
-    const filter = cs.filter;
-    const backdrop = cs.backdropFilter || (cs as unknown as { webkitBackdropFilter?: string }).webkitBackdropFilter;
-    if (filter && filter !== "none" && filter.includes("blur")) {
-      const prev = el.style.filter;
-      el.style.filter = "none";
-      restore.push(() => { el.style.filter = prev; });
+    stream?.getTracks().forEach((t) => t.stop());
+    try {
+      win.close();
+    } catch {
+      /* prozor je vec zatvoren */
     }
-    if (backdrop && backdrop !== "none" && backdrop.includes("blur")) {
-      const prev = el.style.backdropFilter;
-      el.style.backdropFilter = "none";
-      restore.push(() => { el.style.backdropFilter = prev; });
-    }
-  });
-  return () => restore.forEach((fn) => fn());
-}
-
-function makeCanvas() {
-  const canvas = document.createElement("canvas");
-  canvas.width = AD_W;
-  canvas.height = AD_H;
-  const ctx = canvas.getContext("2d", { alpha: false });
-  if (!ctx) throw new Error("Canvas 2D nije dostupan u ovom browseru");
-  ctx.fillStyle = "#040807";
-  ctx.fillRect(0, 0, AD_W, AD_H);
-  return { canvas, ctx };
-}
-
-/** Napravi skriveni iframe 1080x1920 sa reklamom u record modu. */
-async function openReelFrame() {
-  const el = document.createElement("iframe");
-  el.src = new URL("/reklama?record=1", window.location.origin).href;
-  el.setAttribute("aria-hidden", "true");
-  el.setAttribute("tabindex", "-1");
-  el.style.cssText = [
-    "position:fixed",
-    "left:0",
-    "top:0",
-    `width:${AD_W}px`,
-    `height:${AD_H}px`,
-    "border:0",
-    "opacity:0",
-    "pointer-events:none",
-    "z-index:-1",
-  ].join(";");
-  document.body.appendChild(el);
-
-  await new Promise<void>((resolve, reject) => {
-    const timer = window.setTimeout(
-      () => reject(new Error("Reklama se nije učitala u 25s. Provjerite /reklama.")),
-      25000,
-    );
-    el.onload = () => {
-      window.clearTimeout(timer);
-      resolve();
-    };
-    el.onerror = () => {
-      window.clearTimeout(timer);
-      reject(new Error("Iframe nije mogao učitati /reklama"));
-    };
-  });
-
-  return { el, doc: el.contentDocument, win: el.contentWindow };
-}
-
-async function waitForReel(frame: { doc: Document | null; win: Window | null }) {
-  const doc = frame.doc;
-  if (!doc) throw new Error("Iframe nije dostupan (cross-origin?)");
-  const reel = await waitForElement(doc, ".ad-reel", 20000);
-  await waitForFonts(doc);
-
-  // Vrati reklamu na scenu 0 da snimak pocne od pocetka. Bez ovoga bismo
-  // uhvatili reklamu koja je vec odmakla (npr. 600ms) i snimak bi izgledao
-  // "presporo" jer bi prva scena bila skracena.
-  try {
-    frame.win?.postMessage({ type: "ad:reset" }, window.location.origin);
-  } catch {
-    /* postMessage nije kriticno */
-  }
-  // Sacekaj da React obradi reset i da se prva animacija pokrene od nule.
-  const firstScene = doc.querySelector(".ad-scene-enter");
-  if (firstScene) {
-    // Ukloni i vrati animaciju da krene ispocetka.
-    (firstScene as HTMLElement).style.animation = "none";
-    void (firstScene as HTMLElement).offsetWidth;
-    (firstScene as HTMLElement).style.animation = "";
-  }
-  await sleep(120);
-
-  console.info("[adRecorder] reel ready", {
-    w: (reel as HTMLElement).offsetWidth,
-    h: (reel as HTMLElement).offsetHeight,
-  });
-  return { reel: reel as HTMLElement };
-}
-
-/** Pretvori bilo kakav throw (ukljucujuci goli objekat) u citljiv string. */
-export function describeError(err: unknown): string {
-  if (err instanceof Error) return `${err.name}: ${err.message}`;
-  if (typeof err === "string") return err;
-  try {
-    const json = JSON.stringify(err, Object.getOwnPropertyNames(err ?? {}), 1);
-    return json === "{}" ? String(err) : json;
-  } catch {
-    return String(err);
   }
 }
 
@@ -290,42 +232,7 @@ function sleep(ms: number) {
   return new Promise<void>((resolve) => window.setTimeout(resolve, Math.max(0, ms)));
 }
 
-function waitForElement(doc: Document, selector: string, timeout: number) {
-  return new Promise<Element>((resolve, reject) => {
-    const found = doc.querySelector(selector);
-    if (found) return resolve(found);
-
-    const timer = window.setTimeout(() => {
-      observer.disconnect();
-      reject(
-        new Error(
-          `Reklama nije spremna (nema ${selector}). Provjerite da li se /reklama?record=1 ispravno prikazuje.`,
-        ),
-      );
-    }, timeout);
-
-    const Observer = doc.defaultView?.MutationObserver ?? MutationObserver;
-    const observer = new Observer(() => {
-      const el = doc.querySelector(selector);
-      if (el) {
-        window.clearTimeout(timer);
-        observer.disconnect();
-        resolve(el);
-      }
-    });
-    observer.observe(doc.documentElement, { childList: true, subtree: true });
-  });
-}
-
-async function waitForFonts(doc: Document) {
-  try {
-    await doc.fonts?.ready;
-  } catch {
-    /* fontovi nisu kriticni */
-  }
-}
-
-/** Skida MP4 na uredjaj. */
+/** Skida fajl na uredjaj. */
 export function downloadBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -338,21 +245,17 @@ export function downloadBlob(blob: Blob, filename: string) {
   window.setTimeout(() => URL.revokeObjectURL(url), 120000);
 }
 
-/**
- * Provjera podrske prije nego sto korisnik klikne.
- * Vraca null ako je sve u redu, inace poruku greske.
- */
+/** Provjeri podrsku prije pokretanja. */
 export function checkRecorderSupport(): string | null {
   if (typeof window === "undefined") return "Snimanje radi samo u browseru.";
-  if (typeof document.createElement("canvas").getContext !== "function") {
-    return "Ovaj browser ne podržava canvas.";
+  if (!navigator.mediaDevices?.getDisplayMedia) {
+    return "Ovaj browser ne podržava snimanje ekrana (getDisplayMedia). Koristite Chrome/Edge/Firefox na desktopu.";
   }
-  if (!window.isSecureContext && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+  if (!window.isSecureContext && !["localhost", "127.0.0.1"].includes(window.location.hostname)) {
     return "Snimanje zahtijeva HTTPS ili localhost.";
   }
-  // mediabunny koristi WebCodecs API — bez njega MP4 ne moze nastati.
   if (typeof (window as unknown as { VideoEncoder?: unknown }).VideoEncoder !== "function") {
-    return "Ovaj browser ne podržava WebCodecs (VideoEncoder). Koristite Chrome/Edge 94+ ili noviji.";
+    return "Ovaj browser ne podržava WebCodecs. Koristite Chrome/Edge 94+.";
   }
   return null;
 }
@@ -376,69 +279,82 @@ export async function canEncodeH264(): Promise<boolean> {
   }
 }
 
-// ───────────────────────────────────────────────────────────────────────────
-// FALLBACK — WebM preko MediaRecorder-a (bez WebCodecs).
-//
-// Ako browser ne moze H.264 u MP4, snimamo isti canvas tok u WebM (VP9/VP8).
-// Rezolucija i sadrzaj su identicni; samo kontejner nije MP4. Instagram i
-// TikTok prihvataju WebM, a ako treba MP4 — konverzija je jedan klik u
-// bilo kojem online konverteru.
-// ───────────────────────────────────────────────────────────────────────────
-
-export async function recordAdToWebm({
-  sceneDurations,
-  onProgress,
-  signal,
-}: Options): Promise<Blob> {
+/**
+ * WebM fallback preko MediaRecorder-a — koristi isti `getDisplayMedia` stream,
+ * pa je i kvalitet identican. Kontejner je WebM (VP9) umjesto MP4.
+ */
+export async function recordAdToWebm(opts: Options): Promise<Blob> {
+  // Isti pristup, samo drugi muxer — pozajmljujemo MP4 tok i prekodiramo?
+  // Ne: MediaRecorder snima stream direktno, bez canvasa, sto je najkvalitetnije.
+  const { sceneDurations, onProgress, signal } = opts;
   const totalMs = sceneDurations.reduce((a, b) => a + b, 0);
   const totalFrames = Math.round((totalMs / 1000) * FPS);
   onProgress({ phase: "loading", frame: 0, totalFrames, percent: 0 });
 
-  const frame = await openReelFrame();
+  const win = window.open(
+    new URL("/reklama?record=1", window.location.origin).href,
+    "devforge-ad-reel",
+    `width=${AD_W},height=${AD_H},menubar=no,toolbar=no,location=no,status=no`,
+  );
+  if (!win) throw new Error("Browser je blokirao prozor sa reklamom. Dozvolite pop-up.");
+
+  let stream: MediaStream | null = null;
   let aborted = false;
-  const onAbort = () => { aborted = true; };
+  const onAbort = () => {
+    aborted = true;
+  };
   signal?.addEventListener("abort", onAbort, { once: true });
 
   try {
-    const { reel } = await waitForReel(frame);
-    const { canvas, ctx } = makeCanvas();
+    await new Promise<void>((resolve) => {
+      const timer = window.setInterval(() => {
+        try {
+          if (win.document.querySelector(".ad-reel")) {
+            window.clearInterval(timer);
+            resolve();
+          }
+        } catch {
+          /* ignore */
+        }
+      }, 150);
+      window.setTimeout(() => window.clearInterval(timer), 15000);
+    });
+    try {
+      win.postMessage({ type: "ad:reset" }, window.location.origin);
+    } catch {
+      /* ignore */
+    }
+    await sleep(400);
 
-    const stream = canvas.captureStream(FPS);
+    stream = await navigator.mediaDevices.getDisplayMedia({
+      video: { width: { ideal: AD_W }, height: { ideal: AD_H }, frameRate: { ideal: FPS, max: 60 } },
+      audio: false,
+    });
+
     const mime = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"].find((m) =>
       MediaRecorder.isTypeSupported(m),
     );
-    if (!mime) throw new Error("MediaRecorder ne podržava WebM u ovom browseru");
+    if (!mime) throw new Error("MediaRecorder ne podržava WebM");
 
     const chunks: BlobPart[] = [];
     const recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 12_000_000 });
-    recorder.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
+    recorder.ondataavailable = (e) => {
+      if (e.data.size) chunks.push(e.data);
+    };
     recorder.start();
 
-    // MediaRecorder sam radi u realnom vremenu, pa samo crtamo sto brze mozemo.
     const maxDuration = totalMs / 1000;
     const start = performance.now();
-    let written = 0;
-
     while (!aborted && !signal?.aborted) {
       const elapsed = (performance.now() - start) / 1000;
       if (elapsed >= maxDuration) break;
-
-      try {
-        const snap = await toCanvas(reel, REEL_SNAPSHOT_OPTS);
-        ctx.fillStyle = "#040807";
-        ctx.fillRect(0, 0, AD_W, AD_H);
-        ctx.drawImage(snap, 0, 0, AD_W, AD_H);
-        written++;
-      } catch {
-        /* zadrzi prethodni kadar */
-      }
-
       onProgress({
         phase: "recording",
-        frame: written,
+        frame: Math.round(elapsed * FPS),
         totalFrames,
         percent: Math.min(99, Math.round((elapsed / maxDuration) * 100)),
       });
+      await sleep(200);
     }
 
     onProgress({ phase: "encoding", frame: totalFrames, totalFrames, percent: 100 });
@@ -446,14 +362,17 @@ export async function recordAdToWebm({
       recorder.onstop = () => resolve();
       recorder.stop();
     });
-    stream.getTracks().forEach((t) => t.stop());
 
     const blob = new Blob(chunks, { type: mime.split(";")[0] });
-    console.info("[adRecorder] webm done", { written, size: blob.size });
     onProgress({ phase: "done", frame: totalFrames, totalFrames, percent: 100 });
     return blob;
   } finally {
     signal?.removeEventListener("abort", onAbort);
-    frame.el.remove();
+    stream?.getTracks().forEach((t) => t.stop());
+    try {
+      win.close();
+    } catch {
+      /* ignore */
+    }
   }
 }

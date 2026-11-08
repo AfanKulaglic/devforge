@@ -4610,7 +4610,10 @@ function AdReel({ recordMode = false }: { recordMode?: boolean }) {
           )}
           <p className="mt-2 text-[0.7rem] leading-relaxed text-white/35">
             Format: MP4 · H.264 · 1080×1920 (9:16) · 30 fps — Instagram Reels, Story, TikTok.
-            Snima se u pozadini ~27 s, ne diraj prozor dok traje.
+          </p>
+          <p className="mt-1.5 text-[0.7rem] leading-relaxed text-teal-300/60">
+            Browser će tražiti da odaberete prozor sa reklamom. Odaberite{" "}
+            <strong className="text-teal-200">„DevForge reklama"</strong> u dijalogu i kliknite Podijeli.
           </p>
         </div>
         <p className="text-xs leading-relaxed text-white/40">Snimi screen-recorderom samo teal okvir (9:16). Ovaj panel se ne snima.</p>
