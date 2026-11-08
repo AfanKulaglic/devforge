@@ -1,4 +1,4 @@
-import { FormEvent, PointerEvent as ReactPointerEvent, ReactNode, TouchEvent as ReactTouchEvent, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { createContext, FormEvent, PointerEvent as ReactPointerEvent, ReactNode, TouchEvent as ReactTouchEvent, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { IconType } from "react-icons";
 import {
   HiOutlineRocketLaunch,
@@ -7,6 +7,7 @@ import {
   HiOutlineBanknotes,
   HiOutlineArrowPath,
   HiOutlineChatBubbleLeftRight,
+  HiOutlineChatBubbleOvalLeftEllipsis,
   HiOutlineFlag,
   HiOutlineCheckCircle,
   HiOutlineGlobeAlt,
@@ -83,6 +84,18 @@ const CTA_LABEL = "🚀 Dobijte gotovu verziju za 5 dana";
 // pa ovdje zalijepi npr. "https://formspree.io/f/abcdwxyz". Prazno = forme rade
 // u demo modu (prikažu success bez stvarnog slanja).
 const FORM_ENDPOINT = "";
+
+// ── Kontakt podaci (promijeni ovdje — koristi se svuda) ───────────────────
+// Telefon mora biti u međunarodnom formatu bez razmaka za tel:/viber:/wa.me linkove.
+const CONTACT = {
+  phoneDisplay: "+387 62 576 456",
+  phoneRaw: "+38762576456", // bez + i razmaka za wa.me
+  email: "info@devforge.ba",
+  address: "Maršala Tita 28, Sarajevo",
+  street: "Maršala Tita 28",
+  city: "71000 Sarajevo",
+  country: "Bosna i Hercegovina",
+};
 // ───────────────────────────────────────────────────────────────────────────
 
 type RevealDirection = "up" | "down" | "left" | "right" | "scale";
@@ -811,6 +824,7 @@ function Header() {
   }, []);
 
   const closeMenu = () => setMenuOpen(false);
+  const openContact = useOpenContact();
 
   return (
     <>
@@ -855,7 +869,7 @@ function Header() {
                     <HiOutlineChevronRight className="text-xs" aria-hidden="true" />
                   </a>
                 </div>
-                <a className="group/feat relative flex flex-col justify-end gap-2 border-l border-white/10 bg-gradient-to-br from-teal-500/15 via-cyan-500/10 to-transparent p-5 transition hover:from-teal-500/25" href="#contact">
+                <button type="button" onClick={openContact} className="group/feat relative flex flex-col justify-end gap-2 border-l border-white/10 bg-gradient-to-br from-teal-500/15 via-cyan-500/10 to-transparent p-5 text-left transition hover:from-teal-500/25">
                   <span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-teal-300/30 bg-teal-300/10 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wide text-teal-200">
                     <HiOutlineRocketLaunch aria-hidden="true" /> Gotovo za 5 dana
                   </span>
@@ -864,7 +878,7 @@ function Header() {
                   <span className="mt-1 inline-flex items-center gap-1.5 text-sm font-bold text-teal-200 transition group-hover/feat:gap-2.5 group-hover/feat:text-white">
                     Zatražite gotovu verziju <HiOutlineChevronRight className="text-xs" aria-hidden="true" />
                   </span>
-                </a>
+                </button>
               </div>
             </div>
           </div>
@@ -913,10 +927,13 @@ function Header() {
         </nav>
         <div className="hidden items-center gap-5 lg:flex">
           <Magnetic strength={0.4}>
-            <a className="group inline-flex items-center gap-2 rounded-none bg-gradient-to-r from-teal-400 to-[#0891B2] px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-teal-500/20 transition hover:scale-[1.02] hover:shadow-teal-500/40 focus:outline-none focus:ring-2 focus:ring-teal-300" href="#contact">
+            <CtaButton
+              variant="nav"
+              label="Zatražite gotovu verziju"
+              className="px-5 py-2.5 text-sm"
+            >
               <HiOutlineRocketLaunch className="text-base transition group-hover:rotate-12" aria-hidden="true" />
-              Zatražite gotovu verziju
-            </a>
+            </CtaButton>
           </Magnetic>
         </div>
         <button
@@ -1049,14 +1066,13 @@ function Header() {
             </nav>
 
             <div className="border-t border-white/10 px-4 pb-5 pt-4">
-              <a
-                className="inline-flex w-full items-center justify-center gap-2 rounded-none bg-gradient-to-r from-teal-400 to-[#0891B2] px-6 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-teal-500/20 transition hover:scale-[1.02]"
-                href="#contact"
-                onClick={closeMenu}
+              <CtaButton
+                label="Zatražite gotovu verziju"
+                variant="nav"
+                className="w-full px-6 py-3.5 text-sm"
               >
                 <HiOutlineRocketLaunch className="text-base" aria-hidden="true" />
-                Zatražite gotovu verziju
-              </a>
+              </CtaButton>
               <div className="mt-4 flex items-center justify-between px-1">
                 <a className="text-sm font-medium text-white/55 transition hover:text-white" href="mailto:info@devforge.ba">
                   info@devforge.ba
@@ -1174,6 +1190,38 @@ function SectionHeading({ title, subtitle, align = "left", icon: Icon, eyebrow, 
       <h2 className={`text-3xl font-extrabold tracking-tight md:text-5xl ${light ? "text-[#0B0B0F]" : "text-white"}`}>{title}</h2>
       {subtitle && <p className={`text-base leading-7 md:text-lg ${light ? "text-[#5A5D6E]" : "text-[#A7AABB]"}`}>{subtitle}</p>}
     </Reveal>
+  );
+}
+
+// CTA dugme koje otvara kontakt modal (umjesto skrolanja na #contact).
+// `variant` cuva postojeci izgled na svakom mjestu gdje se koristi.
+function CtaButton({
+  label,
+  variant = "primary",
+  className = "",
+  children,
+}: {
+  label: string;
+  variant?: "primary" | "outline" | "text" | "nav";
+  className?: string;
+  children?: ReactNode;
+}) {
+  const open = useOpenContact();
+
+  const base =
+    variant === "primary"
+      ? "cta-glow inline-flex items-center justify-center rounded-none bg-gradient-to-r from-teal-400 to-[#0891B2] font-extrabold text-white transition hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-teal-300"
+      : variant === "outline"
+        ? "inline-flex items-center justify-center rounded-none border border-white/15 font-bold text-white transition hover:border-teal-300 hover:bg-white hover:text-black"
+        : variant === "nav"
+          ? "group inline-flex items-center gap-2 rounded-none bg-gradient-to-r from-teal-400 to-[#0891B2] font-bold text-white shadow-lg shadow-teal-500/20 transition hover:scale-[1.02] hover:shadow-teal-500/40 focus:outline-none focus:ring-2 focus:ring-teal-300"
+          : "inline-flex items-center gap-1.5 font-bold text-teal-700 transition hover:text-teal-900";
+
+  return (
+    <button type="button" onClick={open} className={`${base} ${className}`}>
+      {children}
+      {label}
+    </button>
   );
 }
 
@@ -1405,9 +1453,10 @@ function Hero() {
           </p>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center md:mt-8">
             <Magnetic className="w-full sm:w-auto">
-              <a className="cta-glow inline-flex w-full items-center justify-center rounded-none bg-gradient-to-r from-teal-400 to-[#0891B2] px-7 py-4 text-sm font-extrabold text-white transition hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-teal-300 sm:w-auto" href="#contact">
-                {CTA_LABEL}
-              </a>
+              <CtaButton
+                label={CTA_LABEL}
+                className="w-full px-7 py-4 text-sm sm:w-auto"
+              />
             </Magnetic>
             <a className="hidden w-full items-center justify-center gap-2 rounded-none border border-white/20 px-7 py-4 text-sm font-bold text-white transition hover:border-teal-300 hover:bg-white/[0.05] sm:inline-flex sm:w-auto" href={slide.secondaryHref}>
               {slide.secondaryLabel}
@@ -1469,9 +1518,7 @@ function About() {
           ))}
         </div>
         <div className="mt-12 text-center">
-          <a className="inline-flex rounded-none border border-white/15 px-6 py-3 text-sm font-bold text-white transition hover:border-teal-300 hover:bg-white hover:text-black" href="#contact">
-            {CTA_LABEL}
-          </a>
+          <CtaButton label={CTA_LABEL} variant="outline" className="px-6 py-3 text-sm" />
         </div>
       </div>
       {activeBenefit && (
@@ -1521,9 +1568,7 @@ function Services() {
                     Detaljnije o usluzi
                     <HiOutlineChevronRight className="text-base" aria-hidden="true" />
                   </a>
-                  <a className="inline-flex items-center justify-center gap-1.5 text-sm font-bold text-teal-700 transition hover:text-teal-900" href="#contact">
-                    Zatražite gotovu verziju
-                  </a>
+                  <CtaButton label="Zatražite gotovu verziju" variant="text" className="justify-center text-sm" />
                 </div>
               </div>
             </Reveal>
@@ -1914,6 +1959,7 @@ function markScrollToPricing() {
 }
 
 function PricingCard({ plan, delay }: { plan: PricingPlan; delay: number }) {
+  const openContact = useOpenContact();
   return (
     <Reveal
       direction="up"
@@ -1959,17 +2005,18 @@ function PricingCard({ plan, delay }: { plan: PricingPlan; delay: number }) {
         ))}
       </ul>
 
-      <a
+      <button
+        type="button"
+        onClick={openContact}
         className={`mt-10 inline-flex w-full items-center justify-center gap-2 rounded-none px-6 py-4 text-sm font-extrabold transition hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-teal-300 ${
           plan.popular
             ? "bg-gradient-to-r from-teal-400 to-[#0891B2] text-white shadow-lg shadow-teal-900/30"
             : "border border-white/25 text-white hover:bg-white hover:text-black"
         }`}
-        href="#contact"
       >
         <HiOutlineRocketLaunch aria-hidden="true" />
         Zatražite ponudu
-      </a>
+      </button>
 
       {plan.detailLink && (
         <a
@@ -2167,6 +2214,284 @@ const footerColumns: { title: string; links: { label: string; href?: string; soo
     ],
   },
 ];
+
+// ───────────────────────────────────────────────────────────────────────────
+// Modal „Zatražite gotovu verziju".
+//
+// Redoslijed je namjerno od najbržeg ka najsporijem:
+//   1. Viber / WhatsApp na mobilnom — jedan dodir, razgovor odmah, prosječno
+//      najbolji odziv i najmanje trenja (nema pisanja forme ni mejla).
+//   2. Poziv — najbrže kad je čovjek za računarom.
+//   3. Forma → otvara se u njegovom mejl klijentu (Outlook/Gmail), sa već
+//      popunjenim sadržajem. Nema servera, nema registracije.
+//
+// Zašto mailto a ne server: korisnik je tražio da poruka stigne „u Outlook" i
+// njemu i nama. mailto: radi bez ikakve infrastrukture i bez lažnog obećanja
+// „poslano" — mejl zaista ide iz njegovog sandučeta, a kopija na našu adresu.
+// ───────────────────────────────────────────────────────────────────────────
+
+// Otvaranje kontakt modala sa bilo kojeg mjesta na sajtu (bilo koje CTA dugme).
+const ContactModalCtx = createContext<() => void>(() => {});
+const useOpenContact = () => useContext(ContactModalCtx);
+
+type ContactChannel = "viber" | "whatsapp" | "call";
+
+function ContactModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [service, setService] = useState("Web stranica");
+  const [budget, setBudget] = useState("Do 500 KM");
+  const [message, setMessage] = useState("");
+  const [mailOpened, setMailOpened] = useState(false);
+
+  // ESC zatvara + blokiraj skrol pozadine
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  const buildMailto = () => {
+    const subject = `Zahtjev za gotovu verziju — ${service}`;
+    const body = [
+      `Ime: ${name || "(nije upisano)"}`,
+      `Telefon: ${phone || "(nije upisan)"}`,
+      `Usluga: ${service}`,
+      `Budžet: ${budget}`,
+      "",
+      "Opis projekta:",
+      message || "(nije upisan)",
+      "",
+      "— — —",
+      "Poslano sa devforge.ba",
+    ].join("\n");
+    return `mailto:${CONTACT.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
+  const submitMail = (event: FormEvent) => {
+    event.preventDefault();
+    // Otvara mejl klijent (Outlook / Gmail / Apple Mail) sa popunjenom porukom
+    // i nasom adresom u primaoce. Korisnik samo klikne „Posalji".
+    window.location.href = buildMailto();
+    setMailOpened(true);
+  };
+
+  const quickLink = (channel: ContactChannel) => {
+    if (channel === "viber") return `viber://chat?number=${encodeURIComponent(CONTACT.phoneRaw)}`;
+    if (channel === "whatsapp") return `https://wa.me/${CONTACT.phoneRaw.replace(/\D/g, "")}`;
+    return `tel:${CONTACT.phoneRaw}`;
+  };
+
+  const channels: { key: ContactChannel; label: string; sub: string; icon: IconType; ring: string; bg: string }[] = [
+    { key: "viber", label: "Viber", sub: "Najbrži odgovor", icon: HiOutlineChatBubbleLeftRight, ring: "border-[#7360F2]/50", bg: "bg-[#7360F2]/15 hover:bg-[#7360F2]/25" },
+    { key: "whatsapp", label: "WhatsApp", sub: "Odmah na telefonu", icon: HiOutlineChatBubbleOvalLeftEllipsis, ring: "border-[#25D366]/50", bg: "bg-[#25D366]/15 hover:bg-[#25D366]/25" },
+    { key: "call", label: "Pozovi", sub: CONTACT.phoneDisplay, icon: HiOutlinePhone, ring: "border-white/20", bg: "bg-white/[0.05] hover:bg-white/[0.1]" },
+  ];
+
+  return (
+    <div
+      className="fixed inset-0 z-[130] flex items-start justify-center overflow-y-auto bg-black/80 p-4 py-8 backdrop-blur-sm sm:items-center sm:py-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Zatražite gotovu verziju"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-2xl border border-white/12 bg-[#0B0B0F] shadow-2xl shadow-black/80"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Zaglavlje */}
+        <div className="flex items-start justify-between gap-4 border-b border-white/10 px-5 py-4 md:px-7 md:py-5">
+          <div>
+            <p className="text-[0.6rem] font-black uppercase tracking-[0.24em] text-teal-300">
+              Bez predujma · plaćate tek kad ste zadovoljni
+            </p>
+            <h2 className="mt-1.5 text-xl font-extrabold tracking-tight text-white md:text-2xl">
+              Zatražite gotovu verziju
+            </h2>
+            <p className="mt-1.5 text-[0.8rem] leading-6 text-white/45">
+              Gotova verzija za 5 dana. Odaberite kako vam je najlakše — odgovaramo isti dan.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Zatvori"
+            className="-mr-1 shrink-0 border border-white/12 p-1.5 text-white/60 transition hover:border-white/40 hover:text-white"
+          >
+            <HiOutlineXMark className="text-lg" aria-hidden="true" />
+          </button>
+        </div>
+
+        <div className="max-h-[calc(100vh-8rem)] overflow-y-auto px-5 py-5 md:px-7 md:py-6">
+          {/* 1. Brzi kanali */}
+          <p className="text-[0.62rem] font-black uppercase tracking-[0.2em] text-white/35">
+            1. Najbrže — javite se direktno
+          </p>
+          <div className="mt-3 grid gap-2 sm:grid-cols-3">
+            {channels.map((c) => {
+              const Icon = c.icon;
+              return (
+                <a
+                  key={c.key}
+                  href={quickLink(c.key)}
+                  target={c.key === "whatsapp" ? "_blank" : undefined}
+                  rel={c.key === "whatsapp" ? "noopener noreferrer" : undefined}
+                  className={`flex items-center gap-3 border px-3.5 py-3 transition ${c.ring} ${c.bg}`}
+                >
+                  <Icon className="shrink-0 text-lg text-white" aria-hidden="true" />
+                  <span className="min-w-0">
+                    <span className="block text-[0.82rem] font-extrabold text-white">{c.label}</span>
+                    <span className="block truncate text-[0.66rem] text-white/45">{c.sub}</span>
+                  </span>
+                </a>
+              );
+            })}
+          </div>
+
+          {/* Adresa + email */}
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            <a
+              href={`https://maps.google.com/?q=${encodeURIComponent(`${CONTACT.street} ${CONTACT.city}`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2.5 border border-white/10 bg-white/[0.02] px-3.5 py-2.5 text-[0.72rem] text-white/55 transition hover:border-white/25 hover:text-white"
+            >
+              <HiOutlineMapPin className="shrink-0 text-base text-teal-300/70" aria-hidden="true" />
+              <span className="truncate">{CONTACT.address}</span>
+            </a>
+            <a
+              href={`mailto:${CONTACT.email}`}
+              className="flex items-center gap-2.5 border border-white/10 bg-white/[0.02] px-3.5 py-2.5 text-[0.72rem] text-white/55 transition hover:border-white/25 hover:text-white"
+            >
+              <HiOutlineEnvelope className="shrink-0 text-base text-teal-300/70" aria-hidden="true" />
+              <span className="truncate">{CONTACT.email}</span>
+            </a>
+          </div>
+
+          {/* Razdjelnik */}
+          <div className="my-5 flex items-center gap-3">
+            <span className="h-px flex-1 bg-white/10" />
+            <span className="text-[0.6rem] font-bold uppercase tracking-[0.18em] text-white/25">ili</span>
+            <span className="h-px flex-1 bg-white/10" />
+          </div>
+
+          {/* 2. Forma → mejl */}
+          <p className="text-[0.62rem] font-black uppercase tracking-[0.2em] text-white/35">
+            2. Napišite nam ovdje
+          </p>
+          <p className="mt-1.5 text-[0.72rem] leading-5 text-white/35">
+            Klikom na „Pošalji" otvara se vaš mejl (Outlook, Gmail…) sa već popunjenom porukom — vi samo
+            potvrdite slanje.
+          </p>
+
+          <form className="mt-3.5 space-y-3" onSubmit={submitMail}>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="block">
+                <span className="mb-1.5 block text-[0.68rem] font-bold text-white/50">Ime i prezime *</span>
+                <input
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Vaše ime"
+                  className="w-full border border-white/12 bg-white/[0.03] px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:border-teal-300/60 focus:outline-none"
+                />
+              </label>
+              <label className="block">
+                <span className="mb-1.5 block text-[0.68rem] font-bold text-white/50">Telefon</span>
+                <input
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+387 61 000 000"
+                  inputMode="tel"
+                  className="w-full border border-white/12 bg-white/[0.03] px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:border-teal-300/60 focus:outline-none"
+                />
+              </label>
+              <label className="block">
+                <span className="mb-1.5 block text-[0.68rem] font-bold text-white/50">Šta vam treba</span>
+                <select
+                  value={service}
+                  onChange={(e) => setService(e.target.value)}
+                  className="w-full border border-white/12 bg-[#0E0E12] px-3 py-2.5 text-sm text-white focus:border-teal-300/60 focus:outline-none"
+                >
+                  {["Web stranica", "Web shop", "Mobilna aplikacija", "2D igrica", "Nešto drugo"].map((o) => (
+                    <option key={o} value={o}>
+                      {o}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="block">
+                <span className="mb-1.5 block text-[0.68rem] font-bold text-white/50">Budžet</span>
+                <select
+                  value={budget}
+                  onChange={(e) => setBudget(e.target.value)}
+                  className="w-full border border-white/12 bg-[#0E0E12] px-3 py-2.5 text-sm text-white focus:border-teal-300/60 focus:outline-none"
+                >
+                  {["Do 500 KM", "500–1000 KM", "1000–2000 KM", "2000+ KM", "Nisam siguran"].map((o) => (
+                    <option key={o} value={o}>
+                      {o}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <label className="block">
+              <span className="mb-1.5 block text-[0.68rem] font-bold text-white/50">Opišite projekat</span>
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                rows={3}
+                placeholder="Npr. trebam web shop za prodaju namještaja, oko 50 proizvoda…"
+                className="w-full resize-y border border-white/12 bg-white/[0.03] px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:border-teal-300/60 focus:outline-none"
+              />
+            </label>
+
+            {mailOpened ? (
+              <div className="border border-teal-400/40 bg-teal-400/10 px-4 py-3">
+                <p className="flex items-center gap-2 text-sm font-bold text-teal-200">
+                  <HiOutlineCheckCircle className="text-base" aria-hidden="true" />
+                  Otvorili smo vaš mejl
+                </p>
+                <p className="mt-1 text-[0.72rem] leading-5 text-white/55">
+                  Poruka je već popunjena — samo kliknite <strong className="text-white">Pošalji</strong> u
+                  Outlooku ili Gmailu. Ako se ništa nije otvorilo, pišite na{" "}
+                  <a className="font-bold text-teal-200 underline" href={`mailto:${CONTACT.email}`}>
+                    {CONTACT.email}
+                  </a>
+                  .
+                </p>
+              </div>
+            ) : (
+              <button
+                type="submit"
+                className="inline-flex w-full items-center justify-center gap-2 bg-gradient-to-r from-teal-400 to-[#0891B2] px-6 py-3.5 text-sm font-extrabold text-white transition hover:brightness-110"
+              >
+                <HiOutlinePaperAirplane className="text-base" aria-hidden="true" />
+                Pošalji
+              </button>
+            )}
+
+            <p className="text-center text-[0.66rem] leading-5 text-white/25">
+              Bez predujma · bez obaveze · odgovaramo isti dan
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function ContactAndFooter() {
   const [contactSent, setContactSent] = useState(false);
@@ -2578,10 +2903,9 @@ function Industries() {
       <div className="relative z-10 mx-auto grid max-w-7xl gap-10 px-5 md:px-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:gap-16">
         <div>
           <SectionHeading title="Za koga gradimo" subtitle="Radimo s klijentima različitih veličina i djelatnosti — od prve web stranice do kompletnog digitalnog proizvoda." icon={HiOutlineUserGroup} eyebrow="Klijenti" />
-          <a className="mt-8 inline-flex items-center gap-2 rounded-none border border-white/20 px-6 py-3 text-sm font-bold text-white transition hover:border-teal-300 hover:bg-white hover:text-black" href="#contact">
+          <CtaButton label="Razgovarajmo o vašem projektu" variant="outline" className="mt-8 gap-2 border-white/20 px-6 py-3 text-sm">
             <HiOutlineChatBubbleLeftRight className="text-base" aria-hidden="true" />
-            Razgovarajmo o vašem projektu
-          </a>
+          </CtaButton>
         </div>
         <div className="flex flex-wrap gap-3 md:gap-4">
           {industries.map((item, itemIndex) => (
@@ -3049,13 +3373,9 @@ function ClosingCTA({ title, text, tone = "dark" }: { title: string; text: strin
             <h3 className={`text-2xl font-extrabold tracking-tight md:text-3xl ${light ? "text-[#0B0B0F]" : "text-white"}`}>{title}</h3>
             <p className={`mt-2 max-w-xl text-base leading-7 ${light ? "text-[#5A5D6E]" : "text-[#A7AABB]"}`}>{text}</p>
           </div>
-          <a
-            className="group inline-flex shrink-0 items-center gap-2 rounded-none bg-gradient-to-r from-teal-400 to-[#0891B2] px-7 py-4 text-sm font-extrabold text-white shadow-lg shadow-teal-500/20 transition hover:scale-[1.02] hover:shadow-teal-500/40 focus:outline-none focus:ring-2 focus:ring-teal-300"
-            href="#contact"
-          >
+          <CtaButton label={CTA_LABEL} className="group shrink-0 gap-2 px-7 py-4 text-sm">
             <HiOutlineRocketLaunch className="text-base transition group-hover:rotate-12" aria-hidden="true" />
-            {CTA_LABEL}
-          </a>
+          </CtaButton>
         </div>
       </div>
     </section>
@@ -3119,13 +3439,9 @@ function FaqStillQuestions() {
               Pišite nam — odgovaramo isti dan i rado pojašnjavamo sve oko procesa, rokova i cijena, bez ikakvih obaveza.
             </p>
           </div>
-          <a
-            className="group inline-flex shrink-0 items-center gap-2 rounded-none bg-gradient-to-r from-teal-400 to-[#0891B2] px-7 py-4 text-sm font-extrabold text-white shadow-lg shadow-teal-500/20 transition hover:scale-[1.02] hover:shadow-teal-500/40 focus:outline-none focus:ring-2 focus:ring-teal-300"
-            href="#contact"
-          >
+          <CtaButton label="Kontaktirajte nas" className="group shrink-0 gap-2 px-7 py-4 text-sm">
             <HiOutlineRocketLaunch className="text-base transition group-hover:rotate-12" aria-hidden="true" />
-            Kontaktirajte nas
-          </a>
+          </CtaButton>
         </div>
       </div>
     </section>
@@ -3287,9 +3603,7 @@ function WhyUs() {
         </div>
         <div className="mt-12 text-center">
           <Magnetic>
-            <a className="inline-flex rounded-none border border-white/15 px-6 py-3 text-sm font-bold text-white transition hover:border-teal-300 hover:bg-white hover:text-black" href="#contact">
-              {CTA_LABEL}
-            </a>
+            <CtaButton label={CTA_LABEL} variant="outline" className="px-6 py-3 text-sm" />
           </Magnetic>
         </div>
       </div>
@@ -3319,9 +3633,7 @@ function ServiceDetailHero({ detail }: { detail: ServiceDetail }) {
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-7 text-[#D4D7E3] sm:text-lg sm:leading-8">{detail.intro}</p>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <a className="cta-glow inline-flex w-full items-center justify-center rounded-none bg-gradient-to-r from-teal-400 to-[#0891B2] px-7 py-4 text-sm font-extrabold text-white transition hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-teal-300 sm:w-auto" href="#contact">
-              {CTA_LABEL}
-            </a>
+            <CtaButton label={CTA_LABEL} className="w-full px-7 py-4 text-sm sm:w-auto" />
             <button type="button" onClick={toPricing} className="inline-flex w-full items-center justify-center gap-2 rounded-none border border-white/20 px-7 py-4 text-sm font-bold text-white transition hover:border-teal-300 hover:bg-white/[0.05] sm:w-auto">
               Pogledajte cijene
             </button>
@@ -4156,6 +4468,7 @@ export default function App() {
   // "/" → home; poznata putanja → njena vrijednost; sve ostalo → 404.
   const route = path === "/" ? "home" : routeMap[path] ?? "notfound";
 
+  const [contactOpen, setContactOpen] = useState(false);
   const [cookieVisible, setCookieVisible] = useState(false);
   useEffect(() => {
     try {
@@ -4255,6 +4568,7 @@ export default function App() {
   if (route === "admin") return <AdminPanel />;
 
   return (
+    <ContactModalCtx.Provider value={() => setContactOpen(true)}>
     <div className="min-h-screen bg-[#060606] font-sans text-white selection:bg-teal-400 selection:text-black">
       <CustomCursor />
       <ScrollProgress />
@@ -4295,6 +4609,8 @@ export default function App() {
       <ContactAndFooter />
       <FloatingActions raised={cookieVisible} />
       <CookieConsent visible={cookieVisible} onAccept={acceptCookies} />
+      <ContactModal open={contactOpen} onClose={() => setContactOpen(false)} />
     </div>
+    </ContactModalCtx.Provider>
   );
 }
