@@ -1074,7 +1074,7 @@ button {
 .ad-pill { display: inline-flex; align-items: center; gap: 1cqh; border-radius: 9999px;
   background: rgba(45,212,191,0.14); border: 1px solid rgba(45,212,191,0.34); color: #fff;
   font-weight: 600; font-size: 2.1cqh; padding: 1.3cqh 3cqh; }
-/* Kontakt "chip" u zadnjoj sceni reklame — tri nacina da se javite */
+/* Kontakt "chip" (stariji stil, ostaje za slucaj) */
 .ad-contact-chip {
   display: inline-flex;
   align-items: center;
@@ -1092,6 +1092,41 @@ button {
   width: 2.1cqh;
   height: 2.1cqh;
   flex-shrink: 0;
+}
+
+/* Kontakt kartica u zadnjoj sceni reklame:
+   ikona + naziv kanala + KONKRETNA radnja ("Posalji DM") — covjek odmah zna sta da klikne. */
+.ad-contact-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5cqh;
+  border-radius: 2.4cqh;
+  border: 1px solid rgba(94, 234, 212, 0.26);
+  background: linear-gradient(160deg, rgba(45, 212, 191, 0.14), rgba(6, 182, 212, 0.06));
+  padding: 1.9cqh 1.2cqh;
+  color: #e6fffb;
+}
+.ad-contact-card-icon {
+  width: 4.2cqh;
+  height: 4.2cqh;
+  margin-bottom: 0.4cqh;
+  color: #5eead4;
+  flex-shrink: 0;
+}
+.ad-contact-card-title {
+  font-size: 1.95cqh;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  color: #fff;
+}
+.ad-contact-card-action {
+  font-size: 1.6cqh;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: rgba(230, 255, 251, 0.62);
+  line-height: 1.2;
 }
 
 .ad-iconrow { display: flex; align-items: center; justify-content: center; gap: 2.6cqh; flex-wrap: wrap; }

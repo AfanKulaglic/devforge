@@ -4314,7 +4314,7 @@ const AD_NARRATION = [
   "Uz svaki projekt dobijate vlastiti admin panel — sami mijenjate tekst, slike, proizvode i cijene, bez koda.",
   "Do šezdeset posto jeftinije od agencija — uz isti vrhunski kvalitet i iste provjerene tehnologije.",
   "Zatražite svoju besplatnu gotovu verziju na devforge corporation tačka vercel tačka app.",
-  "DevForge. Bez rizika, bez predujma. Javite nam se na Viber, WhatsApp ili Instagram — dogovor za pet minuta.",
+  "DevForge. Bez rizika, bez predujma. Pošaljite nam direktnu poruku na Instagramu ili Viberu — javljamo se u roku od deset minuta.",
 ];
 
 // Frosted-glass ikona — glavni vizual scene (Spacemail stil). Pop ulaz + lebdenje.
@@ -4575,35 +4575,51 @@ function AdReel({ recordMode = false }: { recordMode?: boolean }) {
             </p>
           </div>
         );
-      default: // END CARD
+      default: // END CARD — jasan poziv: posalji DM, javljamo se odmah
         return (
           <div className="ad-box">
             <div className="ad-pop flex items-center" style={{ gap: "1.8cqh" }}>
-              <AdMark size="9cqh" />
+              <AdMark size="8cqh" />
               <AdWordmark className="ad-wm-xl" />
             </div>
-            <div className="ad-rise text-center" style={{ animationDelay: ".35s" }}>
-              <p className="ad-eyebrow text-teal-300/70">Bez rizika</p>
-              <p className="ad-eyebrow mt-[0.5cqh] text-teal-300/70">Bez predujma</p>
+
+            {/* Glavni poziv — velika rijec "DM", najjasnija akcija */}
+            <h2 className="ad-h2 text-white mt-[1.2cqh]">
+              <AdWords parts={[{ t: "Pošaljite" }, { t: "nam" }, { t: "DM.", grad: true }]} />
+            </h2>
+            <p className="ad-rise ad-lead text-white/60" style={{ animationDelay: ".6s" }}>
+              Javljamo se u roku od 10 minuta.
+            </p>
+
+            {/* Cetiri kanala — ikona + KONKRETNA radnja ispod nje */}
+            <div className="ad-rise mt-[3cqh] grid w-full grid-cols-2" style={{ animationDelay: ".85s", gap: "1.6cqh" }}>
+              <span className="ad-contact-card">
+                <HiOutlineCamera className="ad-contact-card-icon" aria-hidden="true" />
+                <span className="ad-contact-card-title">Instagram</span>
+                <span className="ad-contact-card-action">Pošalji DM</span>
+              </span>
+              <span className="ad-contact-card">
+                <HiOutlineChatBubbleLeftRight className="ad-contact-card-icon" aria-hidden="true" />
+                <span className="ad-contact-card-title">Viber</span>
+                <span className="ad-contact-card-action">Piši nam</span>
+              </span>
+              <span className="ad-contact-card">
+                <HiOutlineChatBubbleOvalLeftEllipsis className="ad-contact-card-icon" aria-hidden="true" />
+                <span className="ad-contact-card-title">WhatsApp</span>
+                <span className="ad-contact-card-action">Piši nam</span>
+              </span>
+              <span className="ad-contact-card">
+                <HiOutlinePhone className="ad-contact-card-icon" aria-hidden="true" />
+                <span className="ad-contact-card-title">Pozovi</span>
+                <span className="ad-contact-card-action">{CONTACT.phoneDisplay}</span>
+              </span>
             </div>
 
-            {/* Javite nam se — 3 konkretna nacina, da covjek odmah zna sta dalje */}
-            <div className="ad-rise mt-[3.2cqh] flex items-center justify-center" style={{ animationDelay: ".7s", gap: "2.2cqh" }}>
-              <span className="ad-contact-chip">
-                <HiOutlineChatBubbleLeftRight aria-hidden="true" />
-                Viber
-              </span>
-              <span className="ad-contact-chip">
-                <HiOutlineChatBubbleOvalLeftEllipsis aria-hidden="true" />
-                WhatsApp
-              </span>
-              <span className="ad-contact-chip">
-                <HiOutlineCamera aria-hidden="true" />
-                Instagram DM
-              </span>
-            </div>
-            <p className="ad-rise ad-eyebrow mt-[1.6cqh] text-white/45" style={{ animationDelay: ".9s" }}>
-              {CONTACT.phoneDisplay}
+            <p className="ad-rise ad-eyebrow mt-[2.4cqh] text-teal-300/80" style={{ animationDelay: "1.1s" }}>
+              {CONTACT.instagramHandle}
+            </p>
+            <p className="ad-rise ad-eyebrow mt-[0.5cqh] text-white/40" style={{ animationDelay: "1.2s" }}>
+              dev-forge-studio.vercel.app
             </p>
           </div>
         );
