@@ -6,6 +6,7 @@ import {
   HiOutlineClock,
   HiOutlineBanknotes,
   HiOutlineArrowPath,
+  HiOutlineArrowDownTray,
   HiOutlineChatBubbleLeftRight,
   HiOutlineChatBubbleOvalLeftEllipsis,
   HiOutlineFlag,
@@ -76,6 +77,7 @@ import {
   subscribePricing,
   type PricingGroupData,
 } from "./lib/pricingStore";
+import { recordAdToMp4, downloadBlob, AD_W, AD_H, type RecordProgress } from "./lib/adRecorder";
 
 const CTA_LABEL = "🚀 Dobijte gotovu verziju za 5 dana";
 
@@ -4244,10 +4246,37 @@ function AdServices({ paused }: { paused: boolean }) {
   );
 }
 
-function AdReel() {
+function AdReel({ recordMode = false }: { recordMode?: boolean }) {
   const [scene, setScene] = useState(0);
   const [paused, setPaused] = useState(false);
   const [sound, setSound] = useState(false);
+
+  // ── Snimanje u MP4 ──
+  const [recording, setRecording] = useState<RecordProgress | null>(null);
+  const [recError, setRecError] = useState("");
+  const abortRef = useRef<AbortController | null>(null);
+
+  const startExport = async () => {
+    if (recording) return;
+    setRecError("");
+    const controller = new AbortController();
+    abortRef.current = controller;
+    setRecording({ phase: "loading", frame: 0, totalFrames: 0, percent: 0 });
+    try {
+      const blob = await recordAdToMp4({
+        sceneDurations: AD_DUR,
+        onProgress: setRecording,
+        signal: controller.signal,
+      });
+      downloadBlob(blob, `devforge-reklama-${AD_W}x${AD_H}.mp4`);
+      setRecording(null);
+    } catch (err) {
+      setRecording(null);
+      setRecError(err instanceof Error ? err.message : "Snimanje nije uspjelo");
+    } finally {
+      abortRef.current = null;
+    }
+  };
 
   useEffect(() => {
     if (paused) return;
@@ -4364,11 +4393,43 @@ function AdReel() {
               <AdWordmark className="ad-wm-xl" />
             </div>
             <p className="ad-rise ad-eyebrow text-teal-300/70" style={{ animationDelay: ".35s" }}>
-              Bez rizika · Bez predujma
+              Bez predujma
             </p>
           </div>
         );
     }
+  }
+
+  // U record modu: iframe je 1080x1920, okvir popunjava sve, bez panela.
+  if (recordMode) {
+    return (
+      <div
+        className="ad-reel ad-clean"
+        style={{ width: "1080px", height: "1920px", position: "fixed", inset: 0 }}
+      >
+        <div className={`ad-bg ad-bg-${scene}`} key={`bg-${scene}`} aria-hidden="true" />
+        <div className="ad-fold" aria-hidden="true" />
+        <div className="ad-particles" aria-hidden="true">
+          {AD_PARTICLES.map((p, i) => (
+            <span
+              key={i}
+              className="ad-dot"
+              style={{ left: `${p.l}%`, width: `${p.s}cqh`, height: `${p.s}cqh`, animationDuration: `${p.dur}s`, animationDelay: `${p.d}s` }}
+            />
+          ))}
+        </div>
+        <div className="ad-scene ad-scene-enter" key={scene}>
+          {renderScene()}
+        </div>
+        <div className={`ad-trans ${AD_TRANS[scene]}`} key={`tr-${scene}`} aria-hidden="true">
+          <span className="ad-trans-a" />
+          <span className="ad-trans-b" />
+          <span className="ad-trans-bars"><i /><i /><i /><i /><i /></span>
+        </div>
+        <div className="ad-filmgrain" aria-hidden="true" />
+        <div className="ad-vignette" aria-hidden="true" />
+      </div>
+    );
   }
 
   return (
@@ -4439,6 +4500,46 @@ function AdReel() {
           <a href="/" className="rounded-full border border-white/15 bg-white/5 px-4 py-2 font-semibold text-white transition hover:bg-white/10">
             ← Stranica
           </a>
+        </div>
+
+        {/* Preuzimanje MP4 */}
+        <div className="mt-1 border-t border-white/10 pt-3">
+          {recording ? (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-xs font-semibold text-white/70">
+                <span>
+                  {recording.phase === "loading" && "Priprema scene…"}
+                  {recording.phase === "recording" && `Snimam kadar ${recording.frame}/${recording.totalFrames}`}
+                  {recording.phase === "encoding" && "Zatvaram MP4…"}
+                </span>
+                <span className="text-teal-300">{recording.percent}%</span>
+              </div>
+              <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-teal-400 to-cyan-400 transition-all duration-200"
+                  style={{ width: `${recording.percent}%` }}
+                />
+              </div>
+              <button
+                onClick={() => abortRef.current?.abort()}
+                className="w-full rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-semibold text-white/70 transition hover:bg-white/10"
+              >
+                Prekini snimanje
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={startExport}
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-teal-400 to-[#0891B2] px-4 py-2.5 text-sm font-extrabold text-white transition hover:brightness-110"
+            >
+              <HiOutlineArrowDownTray aria-hidden="true" />
+              Preuzmi MP4 ({AD_W}×{AD_H})
+            </button>
+          )}
+          {recError && <p className="mt-2 text-xs text-red-300">{recError}</p>}
+          <p className="mt-2 text-[0.7rem] leading-relaxed text-white/35">
+            Snima se u pozadini ~30 fps. Ne diraj prozor dok traje.
+          </p>
         </div>
         <p className="text-xs leading-relaxed text-white/40">Snimi screen-recorderom samo teal okvir (9:16). Ovaj panel se ne snima.</p>
       </div>
@@ -4562,7 +4663,10 @@ export default function App() {
   }, [route, path]);
 
   // Reklama: samostalan 9:16 okvir bez headera/footera/kursora (čist za snimanje).
-  if (route === "reklama") return <AdReel />;
+  if (route === "reklama") {
+    const isRecord = new URLSearchParams(window.location.search).get("record") === "1";
+    return <AdReel recordMode={isRecord} />;
+  }
 
   // Admin panel: samostalan prikaz bez headera, footera, kursora i cookie banera.
   if (route === "admin") return <AdminPanel />;
