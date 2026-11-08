@@ -1232,6 +1232,17 @@ button {
 .ad-svc-grid.is-six { gap: 2.6cqh 3.2cqh; }
 .ad-svc-grid.is-six .ad-svc-label { font-size: 2.05cqh; }
 .ad-svc-grid.is-six .ad-stamp { font-size: 1.7cqh; padding: 0.45cqh 1.1cqh; }
+
+/* 5 usluga — 2 gore + 3 dolje = simetrična piramida, bez prazne ćelije.
+   Donji red ima 3 kolone; prve dvije ćelije su centrirane preko `grid-column`. */
+.ad-svc-grid.is-five {
+  grid-template-columns: repeat(6, 1fr);
+  gap: 3.2cqh 2.4cqh;
+}
+.ad-svc-grid.is-five .ad-svc-cell { grid-column: span 3; }        /* red 1: 2 ćelije (3+3 = 6) */
+.ad-svc-grid.is-five .ad-svc-cell:nth-child(n + 3) { grid-column: span 2; } /* red 2: 3 ćelije (2+2+2 = 6) */
+.ad-svc-grid.is-five .ad-svc-label { font-size: 2.15cqh; }
+.ad-svc-grid.is-five .ad-stamp { font-size: 1.75cqh; padding: 0.45cqh 1.15cqh; }
 .ad-svc-cell { display: flex; flex-direction: column; align-items: center; gap: 2cqh; }
 .ad-svc-label { font-size: 2.3cqh; font-weight: 700; color: #fff; line-height: 1.15; text-align: center; }
 

@@ -9,6 +9,11 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **REKLAMA: 5 usluga u piramidi (2+3), bez Admin panela** — korisnik: „nemoj ni admin panel stavljat. to izbaci neka ih bude toliko nemoj dodavati nista vise samo bolji raspored napravi i prikaz da ne izgleda neparno".
+  `AD_SERVICES` 6 → **5** (Admin panel uklonjen): Web stranice 150 KM · Web shopovi 600 KM · Mobilne aplikacije Po dogovoru · 2D igrice Po dogovoru · AI sistemi Po dogovoru.
+  **Raspored:** umjesto 2+2+1 (neparna zadnja ćelija) sada **2 gore + 3 dolje** — simetrična piramida. Nova CSS klasa `.ad-svc-grid.is-five` sa **6-kolonskim gridom**: red 1 = 2× `span 3`, red 2 = 3× `span 2` (nth-child(n+3)) → oba reda pune 6 kolona, **nula praznih ćelija**. Label 2.15cqh, pečat 1.75cqh.
+  **Trajanje:** `AD_DUR[2]` 6200 → **4900 ms** (5×720 + naslov ≈ 4100). **Ukupno 27.7 s** (nazad na originalnih ~27.6 s).
+  **Verifikacija:** `npx tsc --noEmit` → 0; build ✓ 1.024 kB; `/reklama` → 200; grid matematika provjerena (3+3 = 6, 2+2+2 = 6).
 - **ISPRAVAK: „AI recepcionar" nije posebna usluga — dio je AI sistema** — korisnik: „zasto ai recepcionar pise tu kao posebna usuga to je ai sistem...???". Uklonjena 2 pogresna mjesta:
   1. `serviceList[]` — „AI recepcionar" bio zasebna stavka pored „AI sistemi" → **obrisan**; „AI sistemi" opis sada glasi: „AI chat na sajtu, AI telefonski recepcionar i baza znanja — asistent koji odgovara kupcima 24/7 umjesto Vas."
   2. `AD_SERVICES` (reklama, scena 2) — „AI recepcionar / Mjesečno" bio 6. usluga → **zamijenjen sa „Admin panel / Uključeno"** (`HiOutlineRectangleGroup`). Reklama sada prikazuje 6 STVARNIH usluga: Web stranice 150 KM, Web shopovi 600 KM, Mobilne aplikacije Po dogovoru, 2D igrice Po dogovoru, **AI sistemi Po dogovoru**, Admin panel Uključeno.

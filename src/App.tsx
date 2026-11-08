@@ -4449,7 +4449,7 @@ function AdWordmark({ className = "text-xl" }: { className?: string }) {
 
 const AD_SCENES = 7;
 const AD_SVC_STEP = 720; // ms po koraku scene Usluge (build-up usluga, pa pečati cijena)
-const AD_DUR = [3800, 3800, 6200, 3800, 3800, 3800, 3800]; // ms po sceni; scena 2 (Usluge) duža: 6 usluga × 720ms build-up + rezerva
+const AD_DUR = [3800, 3800, 4900, 3800, 3800, 3800, 3800]; // ms po sceni; scena 2 (Usluge) malo duža: 5 usluga × 720ms build-up + naslov
 
 // Tip prijelazne animacije (zavjesa/iris/wipe/blinds) koji se odigra na ULASKU u svaku scenu.
 // Različiti tipovi → reklama "diše", svaka scena se otkriva drugačije. Re-okida se preko key={scene}.
@@ -4514,7 +4514,6 @@ const AD_SERVICES = [
   { icon: HiOutlineDevicePhoneMobile, label: "Mobilne aplikacije", price: "Po dogovoru" },
   { icon: HiOutlinePuzzlePiece, label: "2D igrice", price: "Po dogovoru" },
   { icon: HiOutlineCpuChip, label: "AI sistemi", price: "Po dogovoru" },
-  { icon: HiOutlineRectangleGroup, label: "Admin panel", price: "Uključeno" },
 ];
 
 // Scena "Usluge" — ćelije se pojave JEDNA PO JEDNA, a cijena (pečat) dolazi ODMAH sa ikonom (ne poslije).
@@ -4532,7 +4531,7 @@ function AdServices({ paused }: { paused: boolean }) {
       <h3 className="ad-h3 text-white">
         <AdWords parts={[{ t: "Sve" }, { t: "na" }, { t: "jednom", grad: true }, { t: "mjestu", grad: true }]} />
       </h3>
-      <div className={`ad-svc-grid${N > 4 ? " is-six" : ""}`}>
+      <div className={`ad-svc-grid${N === 5 ? " is-five" : N > 6 ? " is-six" : ""}`}>
         {AD_SERVICES.map((s, i) => (
           <div key={i} className={`ad-svc-cell ad-cell ${i <= step ? "is-in" : ""}`}>
             <span className="ad-svc-iconwrap">
