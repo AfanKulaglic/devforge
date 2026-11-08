@@ -158,28 +158,79 @@ export const DEFAULT_PRICING: PricingGroupData[] = [
     note: "Pored izrade postoji mjesečna naknada jer glasovni i jezički modeli imaju stalne troškove po razgovoru. Broj telefona, hosting i AI potrošnja se plaćaju direktno provideru, bez naše marže.",
     plans: [
       {
-        id: "ai-start",
-        title: "AI Start",
+        id: "ai-chat",
+        title: "AI Chat",
         price: "Po dogovoru",
-        tagline: "AI chat na sajtu ili baza znanja",
+        tagline: "AI asistent na sajtu — najjednostavniji start",
         popular: false,
-        items: ["AI chat asistent na sajtu", "Baza znanja o firmi (usluge, cijene)", "Obuka asistenta na Vaš sadržaj", "Upis upita i razgovora", "Mjesečna naknada za AI", "Mjesečno održavanje"],
+        items: [
+          "AI chat asistent na sajtu",
+          "Odgovara na pitanja o uslugama i cijenama",
+          "Obuka na Vaš sadržaj (do 20 stranica)",
+          "Upis svakog razgovora i upita",
+          "Osnovno prilagođavanje izgleda",
+          "Mjesečna naknada za AI",
+        ],
       },
       {
-        id: "ai-business",
-        title: "AI Business",
+        id: "ai-chat-plus",
+        title: "AI Chat Plus",
         price: "Po dogovoru",
-        tagline: "AI recepcionar koji prima pozive",
+        tagline: "Pametniji chat s bazom znanja i uptima",
+        popular: false,
+        items: [
+          "Sve iz AI Chat paketa",
+          "Baza znanja (usluge, cijene, radno vrijeme)",
+          "Asistent uči iz razgovora automatski",
+          "Prepoznavanje namjere (prodaja / podrška)",
+          "Upiti u bazu + email obavijest",
+          "Višejezičnost (2 jezika)",
+        ],
+      },
+      {
+        id: "ai-voice",
+        title: "AI Recepcionar",
+        price: "Po dogovoru",
+        tagline: "Prima telefonske pozive 24/7",
         popular: true,
-        items: ["AI telefonski recepcionar 24/7", "Prirodan glas na Vašem jeziku", "Sve iz AI Start paketa", "Automatske narudžbe i termini", "Pametno preusmjeravanje na Vas", "Mjesečna naknada za AI"],
+        items: [
+          "AI telefonski recepcionar 24/7",
+          "Prirodan glas na Vašem jeziku",
+          "Sve iz AI Chat Plus paketa",
+          "Odgovara na pozive bez čekanja",
+          "Pametno preusmjeravanje na Vas",
+          "Transkript i snimka svakog poziva",
+        ],
       },
       {
-        id: "ai-premium",
-        title: "AI Premium",
+        id: "ai-orders",
+        title: "AI Narudžbe",
         price: "Po dogovoru",
-        tagline: "Kompletan AI sistem s aplikacijom",
+        tagline: "Preuzima narudžbe i zakazuje termine",
         popular: false,
-        items: ["Sve iz AI Business paketa", "Web i mobilna aplikacija", "AI analitika i izvještaji", "Više brojeva i korisnika", "Integracije (CRM, kalendar, plaćanje)", "Prioritetna podrška"],
+        items: [
+          "Sve iz AI Recepcionar paketa",
+          "Automatske narudžbe tokom razgovora",
+          "Zakazivanje termina s kalendarom",
+          "Potvrde kupcu (SMS / email)",
+          "Upis u bazu narudžbi i termina",
+          "Obavijest Vama u realnom vremenu",
+        ],
+      },
+      {
+        id: "ai-complete",
+        title: "AI Complete",
+        price: "Po dogovoru",
+        tagline: "Cijeli sistem + web i mobilna aplikacija",
+        popular: false,
+        items: [
+          "Sve iz AI Narudžbe paketa",
+          "Web i mobilna aplikacija za upravljanje",
+          "AI analitika i izvještaji",
+          "Više brojeva i više korisnika",
+          "Integracije (CRM, kalendar, plaćanje)",
+          "Prioritetna podrška i održavanje",
+        ],
       },
     ],
   },
@@ -239,6 +290,13 @@ export function subscribePricingSync(cb: () => void) {
 }
 
 // ── Lokalni kes ───────────────────────────────────────────────────────────
+/** Dodaj nove default grupe koje lokalni kes jos nema (npr. "AI sistemi"). */
+function withMissingDefaults(list: PricingGroupData[]): PricingGroupData[] {
+  const have = new Set(list.map((g) => g.id));
+  const missing = DEFAULT_PRICING.filter((g) => !have.has(g.id));
+  return missing.length === 0 ? list : [...list, ...missing];
+}
+
 function readLocal(): PricingGroupData[] {
   if (!isBrowser()) return DEFAULT_PRICING;
   try {
@@ -246,9 +304,12 @@ function readLocal(): PricingGroupData[] {
     if (raw === null) return DEFAULT_PRICING;
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed) || parsed.length === 0) return DEFAULT_PRICING;
-    return parsed.filter(
+    const valid = parsed.filter(
       (g): g is PricingGroupData => !!g && typeof g.id === "string" && Array.isArray(g.plans),
     );
+    // Ako smo u medjuvremenu dodali novu grupu u kod, ona mora da se pojavi
+    // i kod korisnika ciji localStorage vec ima stare grupe.
+    return withMissingDefaults(valid);
   } catch {
     return DEFAULT_PRICING;
   }
@@ -275,10 +336,13 @@ function withOrder(list: PricingGroupData[]): PricingGroupData[] {
 
 function fromDbObject(obj: Record<string, PricingGroupData> | null): PricingGroupData[] {
   if (!obj) return [];
-  return Object.entries(obj)
+  const list = Object.entries(obj)
     .filter(([, v]) => v && typeof v === "object" && Array.isArray((v as PricingGroupData).plans))
     .map(([id, v], i) => ({ ...v, id, order: typeof v.order === "number" ? v.order : i }))
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  // Baza mozda nema novo-dodanu grupu (npr. "AI sistemi") — dopuni iz
+  // DEFAULT_PRICING da se odmah pojavi i u adminu i na /cijene.
+  return withMissingDefaults(list);
 }
 
 // ── Firebase upis cijele liste ────────────────────────────────────────────
@@ -321,6 +385,37 @@ async function migrateLocalToFirebase(): Promise<PricingGroupData[] | null> {
   }
 }
 
+// ── Dodaj grupe kojih nema u bazi (npr. nova "AI sistemi") ───────────────
+// Kad dodamo novu grupu u DEFAULT_PRICING, korisnikova baza vec ima stare
+// grupe pa se nova nikad ne bi pojavila (migracija se preskace jer baza
+// nije prazna). Ova funkcija ubacuje SAMO grupe kojih u bazi jos nema.
+// Postojece grupe se NIKAD ne prepisuju — korisnikove izmjene ostaju.
+async function syncMissingGroups(): Promise<PricingGroupData[]> {
+  if (!firebaseReady || !isBrowser()) return [];
+  try {
+    const snap = await get(ref(getDb(), DB_PATH));
+    if (!snap.exists()) return [];
+    const remote = snap.val() as Record<string, PricingGroupData>;
+    const missing = DEFAULT_PRICING.filter((g) => !remote[g.id]);
+    if (missing.length === 0) return [];
+
+    const db = getDb();
+    // `order` = nastavi iza postojecih grupa
+    const maxOrder = Math.max(
+      -1,
+      ...Object.values(remote).map((g) => (typeof g.order === "number" ? g.order : 0)),
+    );
+    for (let i = 0; i < missing.length; i++) {
+      const g = missing[i];
+      await set(ref(db, `${DB_PATH}/${g.id}`), { ...g, order: maxOrder + 1 + i });
+    }
+    return missing;
+  } catch (e) {
+    setSync("error", e instanceof Error ? e.message : String(e));
+    return [];
+  }
+}
+
 // ── Start sync ────────────────────────────────────────────────────────────
 let started = false;
 
@@ -340,7 +435,12 @@ export function startPricingSync() {
 
   void (async () => {
     const migrated = await migrateLocalToFirebase();
-    if (migrated) writeLocal(migrated);
+    if (migrated) {
+      writeLocal(migrated);
+    } else {
+      // Baza vec ima cijene — dodaj samo NOVE grupe (npr. "AI sistemi").
+      await syncMissingGroups();
+    }
 
     try {
       onValue(

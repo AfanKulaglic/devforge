@@ -9,6 +9,17 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **AI SISTEMI U ADMINU + /cijene — 5 paketa od najjednostavnijeg do najkompleksnijeg** — korisnik: „zasto ai sistemi nemam u admin pageu ni na stranici cijene??? mora biti i po dogovoru svi paketi za ai sisteme od najjednostavnijih do najkompleksinijih i moraju se moc editovati kroz admin page".
+  **UZROK (dva nezavisna buga — oba popravljena):**
+  1. **`readLocal()`/`fromDbObject()`** — ako je `localStorage` ili Firebase vec imao 4 stare grupe, `DEFAULT_PRICING` (koja sadrzi `ai`) se **uopste nije citao**, pa se AI grupa nikad nije pojavila ni na sajtu ni u adminu.
+  2. **`migrateLocalToFirebase()`** — vracala `null` cim baza ima **bilo koju** cijenu, pa nova `ai` grupa nikad nije otisla u Firebase.
+  **POPRAVKE u `src/lib/pricingStore.ts`:**
+  - Nova `withMissingDefaults(list)` — dopunjuje listu grupama iz `DEFAULT_PRICING` kojih nema (po `id`). Poziva se u `readLocal()` i `fromDbObject()` → nova grupa se **odmah pojavi** i sa kesom i sa bazom.
+  - Nova `syncMissingGroups()` — procita `/pricing`, pronadje grupe iz `DEFAULT_PRICING` kojih u bazi nema i **upise SAMO njih** (`order` = `maxOrder+1+i`). Postojece grupe se **nikad ne prepisuju**. Poziva se iz `startPricingSync()` kad migracija nije izvrsena.
+  - **5 AI paketa (Po dogovoru)** umjesto 3: `ai-chat` (**AI Chat** — asistent na sajtu, najjednostavniji start) → `ai-chat-plus` (**AI Chat Plus** — baza znanja, prepoznavanje namjere, 2 jezika) → `ai-voice` (**AI Recepcionar** ★ popular — prima pozive 24/7, glas, transkript) → `ai-orders` (**AI Narudzbe** — narudzbe tokom razgovora, kalendar, SMS/email potvrde) → `ai-complete` (**AI Complete** — web + mobilna aplikacija, AI analitika, CRM integracije, prioritetna podrska). Svaki paket naslanja se na prethodni („Sve iz … paketa").
+  **`src/App.tsx`** — `/cijene` grid vise nije fiksno 3 kolone: `>=5 planova` → `sm:2 lg:3 xl:5`; `4` → `lg:4`; inace `lg:3`.
+  **Firebase:** AI grupa direktno upisana u `/pricing/ai` (`order: 4`, 5 paketa) — verifikovano: baza sada ima **5 grupa** (web-sites 3, web-shops 3, games 3, mobile 3, **ai 5**).
+  **Verifikacija:** `npx tsc --noEmit` → 0; build ✓ 1.042 kB (gzip 282); `/cijene`, `/admin`, `/usluge/ai-sistemi` → 200; admin `GroupCard` vec podrzava uređivanje naslova/podnaslova/napomene grupe, dodavanje/brisanje paketa i reorder — radi i za AI.
 - **CRVENI BADGE „novo od zadnjeg pregleda“ na kartici Analitika** — korisnik: „kada se desi nesto novo zelim okrugli crveni badge na toj kartici da znam koliko toga je novog bilo od zadnjeg gledanja analitike".
   **Novi fajl `src/lib/analyticsBadge.ts` (~140 linija):**
   - `countSignals(visits)` — jedan signal = **posjeta ILI jedan događaj** u njoj. Posjetilac koji je kliknuo 4 stvari daje +5; nova posjeta bez akcija +1.

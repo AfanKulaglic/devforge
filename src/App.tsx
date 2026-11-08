@@ -2279,7 +2279,15 @@ function Pricing({ groups, subtitle, note }: { groups?: PricingGroup[]; subtitle
                   <span className="h-px flex-1 bg-white/10" />
                 </div>
               )}
-              <div className="grid gap-6 sm:gap-7 lg:grid-cols-3 lg:gap-8">
+              <div
+                className={`grid gap-6 sm:gap-7 lg:gap-8 ${
+                  group.plans.length >= 5
+                    ? "sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+                    : group.plans.length === 4
+                      ? "sm:grid-cols-2 lg:grid-cols-4"
+                      : "lg:grid-cols-3"
+                }`}
+              >
                 {group.plans.map((plan, planIndex) => (
                   <PricingCard key={plan.title} plan={plan} delay={planIndex * 0.1} />
                 ))}
