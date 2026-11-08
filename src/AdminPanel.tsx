@@ -3,6 +3,7 @@ import {
   HiOutlineArrowLeft,
   HiOutlineArrowTopRightOnSquare,
   HiOutlineBanknotes,
+  HiOutlineChartBar,
   HiOutlineCheck,
   HiOutlineChevronDown,
   HiOutlineChevronRight,
@@ -32,6 +33,7 @@ import {
   subscribe,
 } from "./lib/projectsStore";
 import PricingTab from "./AdminPricingTab";
+import AnalyticsTab from "./AdminAnalyticsTab";
 
 // ───────────────────────────────────────────────────────────────────────────
 // Admin panel — lokalna prijava (sessionStorage) + jedan tab: Projekti.
@@ -817,7 +819,7 @@ function ProjectsTab() {
 // ── Admin shell ────────────────────────────────────────────────────────────
 export default function AdminPanel() {
   const [authed, setAuthed] = useState(() => isAuthed());
-  const [tab, setTab] = useState<"projekti" | "cijene">("projekti");
+  const [tab, setTab] = useState<"projekti" | "cijene" | "analitika">("projekti");
 
   if (!authed) return <AdminLogin onSuccess={() => setAuthed(true)} />;
 
@@ -898,10 +900,24 @@ export default function AdminPanel() {
             <HiOutlineBanknotes className="text-base" aria-hidden="true" />
             Cijene
           </button>
+          <button
+            type="button"
+            onClick={() => setTab("analitika")}
+            aria-current={tab === "analitika"}
+            className={`-mb-px inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-bold transition ${
+              tab === "analitika"
+                ? "border-teal-400 text-white"
+                : "border-transparent text-white/45 hover:text-white/80"
+            }`}
+          >
+            <HiOutlineChartBar className="text-base" aria-hidden="true" />
+            Analitika
+          </button>
         </div>
 
         {tab === "projekti" && <ProjectsTab />}
         {tab === "cijene" && <PricingTab />}
+        {tab === "analitika" && <AnalyticsTab />}
       </main>
     </div>
   );

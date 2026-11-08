@@ -64,6 +64,8 @@ import {
 } from "react-icons/si";
 import { FaLinkedinIn, FaInstagram } from "react-icons/fa6";
 import AdminPanel from "./AdminPanel";
+import { initAnalytics, trackPageView } from "./lib/analytics";
+import { Analytics as VercelAnalytics } from "@vercel/analytics/react";
 import {
   getProjects as getStoredProjects,
   getServerProjects,
@@ -5093,7 +5095,18 @@ export default function App() {
 
     // JSON-LD za ovu rutu (WebPage + BreadcrumbList)
     injectRouteSchema(route, seo.title, seo.desc);
+
+    // Analitika: biljezi posjetu ove stranice (trajanje se mjeri do odlaska).
+    // Ne biljezi /admin i /reklama — to nisu prave posjete sajtu.
+    if (route !== "admin" && route !== "reklama") {
+      trackPageView(path, seo.title);
+    }
   }, [route, path]);
+
+  // Analitika: flush trajanja na odlazak / skrivanje taba (jednom, pri montazi).
+  useEffect(() => {
+    initAnalytics();
+  }, []);
 
   // Reklama: samostalan 9:16 okvir bez headera/footera/kursora (čist za snimanje).
   if (route === "reklama") {
@@ -5152,6 +5165,9 @@ export default function App() {
       <FloatingActions raised={cookieVisible} />
       <CookieConsent visible={cookieVisible} onAccept={acceptCookies} />
       <ContactModal open={contactOpen} onClose={() => setContactOpen(false)} />
+      {/* Vercel Analytics: pravi podaci o posjetama (drzava, stranice, uredjaj).
+          Radi samo na Vercelu; lokalno je tiho i ne salje nista. */}
+      <VercelAnalytics />
     </div>
     </ContactModalCtx.Provider>
   );

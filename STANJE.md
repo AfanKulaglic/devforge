@@ -9,6 +9,30 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **ANALITIKA U ADMIN PANELU (novi tab)** — korisnik: „mozes li mi u adminu ovog projekta napraviti analizu da mogu vidjeti ko je ulazio na sajt, iz koje drzave, odakle je dosao, koliko se zadrzao na svakoj stranici, konzistentnog dizajna sa ostatkom stranice".
+  **Iskreno o ogranicenju:** sajt je statican (localStorage, bez servera), pa **lokalna analitika biljezi samo posjete iz tog preglednika** — ne tudje. To je jasno napisano u UI-u na vrhu taba (teal info box) sa dugmadima ka Vercel Analytics i Google Analytics.
+  **Novi fajl `src/lib/analytics.ts` (~430 linija):**
+  - Tipovi `Visit`, `PageView`, `DeviceType`.
+  - `detectDevice()` — mobile/tablet/desktop iz UA + `screen.width/height` (`390x844`).
+  - `detectSource(referrer)` — prepoznaje **Google, Instagram, ig.me, Facebook, LinkedIn, TikTok, Viber, WhatsApp, Bing, ChatGPT, Perplexity**; fallback hostname.
+  - `detectCountry()` — **`TZ_MAP` sa 38 vremenskih zona** (Sarajevo→BA, Belgrade→RS, Zagreb→HR, Ljubljana, Podgorica, Skopje, Vienna, Berlin, Zurich, Stockholm, Oslo, Copenhagen, Amsterdam, Brussels, Paris, Rome, Madrid, Lisbon, London, Dublin, Prague, Bratislava, Budapest, Warsaw, Bucharest, Sofia, Athens, Istanbul, Kiev, Moscow, New_York, Chicago, Denver, LA, Toronto, Sydney, Melbourne) + fallback po jeziku (bs/hr/sr/sl/de/en). **Bez GeoIP servisa — ne trosi mrezu.**
+  - `trackPageView(path, title)` — zapocinje posjetu ili dodaje stranicu; `flushPage()` mjeri **stvarno trajanje** do odlaska.
+  - `initAnalytics()` — flush na `beforeunload`, `pagehide`, `visibilitychange`.
+  - `summarize(visits)` — agregira: `totalVisits`, `avgSessionMs`, `totalTimeMs`, `byCountry`, `bySource`, `byDevice`, `byPage` (views + avgMs), `daily` (14 dana), `recent` (40).
+  - `fmtDuration()` („1 min 23 s"), `fmtDateTime()`, `clearVisits()`, `subscribeVisits`/`getVisits`/`getServerVisits` (za `useSyncExternalStore`).
+  - localStorage key `devforge-visits-v1`, max 500 posjeta.
+  **Novi fajl `src/AdminAnalyticsTab.tsx` (~340 linija):**
+  - Info box (ogranicenje + Vercel/GA dugmad).
+  - 4 `StatCard`: Posjeta / Prosj. trajanje / Ukupno vrijeme / Drzava.
+  - `DailyChart` — SVG linija + gradient fill, bez biblioteka.
+  - 4 `SectionCard` sa `BarRow` (teal→cyan gradient): **Drzave**, **Odakle dolaze**, **Uredaji**, **Stranice** (sa prosj. zadrzavanjem).
+  - Tabela **Nedavne posjete** (min-w 56rem, horizontalno skrolovanje): Vrijeme / Drzava / Izvor / Uredaj + rezolucija / Stranice (svaka sa trajanjem) / Trajanje.
+  - Dugmad Osvježi i Očisti (sa `confirm()`).
+  - Dizajn identican ostatku admina: `border-white/10 bg-white/[0.02] p-5`, teal akcenti, `tabular-nums`, uppercase tracking labele.
+  **`src/AdminPanel.tsx`:** import `AnalyticsTab` + `HiOutlineChartBar`; tip taba `"projekti" | "cijene" | "analitika"`; trece tab dugme **Analitika** (isti stil: border-b-2, teal kad aktivan); render `{tab === "analitika" && <AnalyticsTab />}`.
+  **`src/App.tsx`:** import `initAnalytics`/`trackPageView`; poziv `trackPageView(path, seo.title)` na kraju SEO effecta (preskace `/admin` i `/reklama`); `useEffect(() => initAnalytics(), [])` pri montazi.
+  **Vercel Analytics (pravo rjesenje):** instaliran `@vercel/analytics@^2.0.1`; `<VercelAnalytics />` u `App` return. Lokalno je tiho, na Vercelu salje prave podatke (drzava, grad, stranice, uredjaj) — besplatno na Hobby planu. **Korisnik treba ukljuciti u Vercel dashboard: Project → Analytics → Enable.**
+  **Verifikacija:** `npx tsc --noEmit` → 0; `npm run build` → ✓ 845.68 kB (gzip 223.49, +7 kB zbog @vercel/analytics); `/`, `/admin`, `/projekti`, `/cijene` → HTTP 200; `analytics.ts` i `AdminAnalyticsTab.tsx` se serviraju (200).
 - **KOMPLETNA SEO OPTIMIZACIJA (veliki zahvat)** — korisnik: „odradi mi sto bolju SEO optimizaciju dokle mozes, najbolju SEO optimizaciju hocu, sve sto je SEO optimizovati moguce uraditi".
   **A) Kriticne greske popravljene:** (1) JSON-LD `telephone` je bio `+387-61-000-000` (placeholder!) → `+387-62-576-456`; (2) `priceRange` `39–1499 KM` → `150–3500 KM`; (3) `Offer price` `39` → `150`, `199` → `600`; (4) FAQ schema imala stare cijene 39/199 → 150/600; (5) FAQ schema nudila „30 dana garancije" (uklonjeno sa sajta!) → zamijenjeno admin panelom; (6) `sameAs` imao **lazni LinkedIn** `linkedin.com/company/devforge` → zamijenjen sa wa.me + ig.me; (7) `logo` pokazivao na `hero-3d.png` → `images/logo-icon.png`; (8) schema rute `/usluge/web-shopovi` (ne postoji!) → `/cijene`; (9) ruta `/usluge/2d-igre` → `/usluge/2d-igrice` (stvarna); (10) `noscript` imao stare cijene 39/199.
   **B) `index.html` nadogradnje:** title prepisan za kljucnu rijec („Izrada web stranica Sarajevo od 150 KM | Web shopovi i aplikacije — DevForge"), description prosiren, keywords prosireni (12 → 14 fraza, dodano „izrada sajta bez predujma", „izrada webshopa cijena"), **hreflang** (bs-BA, hr-HR, sr-RS, x-default), **geo meta** (geo.region BA-BIH, geo.placename Sarajevo, geo.position 43.8563;18.4131, ICBM), `og:image:width/height/type`, `og:phone_number`, `og:email`, `og:country-name`, **manifest** link, **preload** LCP slike, **dns-prefetch** za images.pexels.com, noscript potpuno prepisan (sve usluge + cijene + NAP kontakt).
