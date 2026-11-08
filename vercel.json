@@ -33,6 +33,10 @@
       "destination": "/index.html"
     },
     {
+      "source": "/usluge/ai-sistemi",
+      "destination": "/index.html"
+    },
+    {
       "source": "/projekti",
       "destination": "/index.html"
     },

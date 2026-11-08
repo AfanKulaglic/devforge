@@ -36,6 +36,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://dev-forge-studio.vercel.app/usluge/ai-sistemi</loc>
+    <lastmod>2025-11-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://dev-forge-studio.vercel.app/cijene</loc>
     <lastmod>2025-11-08</lastmod>
     <changefreq>monthly</changefreq>

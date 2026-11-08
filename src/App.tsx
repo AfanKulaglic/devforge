@@ -3,6 +3,8 @@ import type { IconType } from "react-icons";
 import {
   HiOutlineRocketLaunch,
   HiOutlineSparkles,
+  HiOutlineCpuChip,
+  HiOutlineMicrophone,
   HiOutlineClock,
   HiOutlineBanknotes,
   HiOutlineArrowPath,
@@ -195,6 +197,8 @@ const images = {
     "https://images.pexels.com/photos/37694203/pexels-photo-37694203.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
   mobile:
     "https://images.pexels.com/photos/12001948/pexels-photo-12001948.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
+  // AI sistemi — lokalna, tamno-teal obradjena slika (1200x627), ista velicina kao gore.
+  ai: "/images/ai-hero.jpg",
   project1:
     "https://images.pexels.com/photos/7857496/pexels-photo-7857496.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
   project2:
@@ -309,6 +313,14 @@ const services = [
     description:
       "Native i cross-platform mobilne aplikacije za iOS i Android. Od MVP-a do fully-featured app-a sa backend integracijom.",
   },
+  {
+    title: "AI sistemi",
+    icon: HiOutlineCpuChip,
+    image: images.ai,
+    link: "/usluge/ai-sistemi",
+    description:
+      "AI recepcionar i chat asistent koji primaju pozive 24/7, odgovaraju kupcima, zakazuju termine i bilježe narudžbe — bez Vašeg učešća.",
+  },
 ];
 
 // Linkovi na detaljne podstranice usluga (koristi se u nav meniju).
@@ -316,6 +328,7 @@ const serviceLinks: { label: string; href: string; icon: IconType; desc: string 
   { label: "Web stranice", href: "/usluge/web-stranice", icon: HiOutlineGlobeAlt, desc: "Landing, korporativne i shop stranice — od 150 KM." },
   { label: "2D igrice", href: "/usluge/2d-igrice", icon: HiOutlinePuzzlePiece, desc: "Web i mobilne 2D igre po mjeri." },
   { label: "Mobilne aplikacije", href: "/usluge/mobilne-aplikacije", icon: HiOutlineDevicePhoneMobile, desc: "Android i iOS aplikacije za vaš biznis." },
+  { label: "AI sistemi", href: "/usluge/ai-sistemi", icon: HiOutlineCpuChip, desc: "AI recepcionar i chat koji rade 24/7." },
 ];
 
 const serviceList: { icon: IconType; title: string; description: string }[] = [
@@ -545,11 +558,11 @@ type ServiceDetail = {
   pricingSubtitle?: string;
   pricingNote?: string;
   /** Kljuc grupe u pricingStore-u — odakle se citaju cijene (admin panel). */
-  pricingKey?: "web" | "webShops" | "games" | "mobile";
+  pricingKey?: "web" | "webShops" | "games" | "mobile" | "ai";
   faqs: { question: string; answer: string }[];
 };
 
-const serviceDetails: Record<"web" | "games" | "mobile", ServiceDetail> = {
+const serviceDetails: Record<"web" | "games" | "mobile" | "ai", ServiceDetail> = {
   web: {
     name: "Web stranice",
     icon: HiOutlineGlobeAlt,
@@ -765,6 +778,70 @@ const serviceDetails: Record<"web" | "games" | "mobile", ServiceDetail> = {
       { question: "Koliko košta mobilna aplikacija?", answer: "Cijena je po dogovoru jer ovisi o funkcijama i integracijama. Krećemo od besplatne konsultacije i gotove verzije, pa dobijate jasnu ponudu bez skrivenih troškova." },
       { question: "Objavljujete li aplikaciju na App Store i Google Play?", answer: "Da — objavu na App Store i Google Play radimo mi, uključujući pripremu materijala i ispunjavanje tehničkih zahtjeva trgovina." },
       { question: "Mogu li krenuti s MVP-om pa nadograđivati?", answer: "Naravno — preporučujemo da krenete s MVP-om ključnih funkcija, lansirate brzo, pa aplikaciju nadograđujemo na osnovu stvarnih korisnika." },
+    ],
+  },
+  ai: {
+    name: "AI sistemi",
+    icon: HiOutlineCpuChip,
+    image: images.ai,
+    title: "AI sistemi koji rade dok Vi spavate",
+    intro:
+      "Ne pravimo samo stranicu — pravimo sistem koji prima pozive, odgovara kupcima, zakazuje termine i bilježi svaku narudžbu, 24 sata dnevno. AI asistent koji poznaje Vašu firmu, cijene i radno vrijeme, i odgovara isto tačno u tri ujutro kao i u podne.",
+    chips: ["AI recepcionar", "AI chat na sajtu", "AI baza znanja", "Automatske narudžbe", "Zakazivanje termina", "AI analitika"],
+    typesHeading: "Koje AI sisteme gradimo",
+    typesSubtitle: "Od glasovnog recepcionara do pametne baze znanja — sistem koji preuzima rutinu umjesto Vas.",
+    types: [
+      { icon: HiOutlineMicrophone, title: "AI telefonski recepcionar", text: "Prima pozive 24/7 prirodnim glasom, razumije pitanje kupca i odgovara na osnovu podataka o Vašoj firmi — bez propuštenog poziva i bez čekanja." },
+      { icon: HiOutlineChatBubbleOvalLeftEllipsis, title: "AI chat na sajtu", text: "Umjesto prazne kontakt forme — asistent koji odmah odgovara na pitanja o cijenama, uslugama i dostupnosti, i pretvara posjetioca u upit." },
+      { icon: HiOutlineCircleStack, title: "AI baza znanja", text: "Jedno mjesto gdje živi sve o Vašoj firmi: usluge, cijene, popusti, radno vrijeme. Vi dopunjavate običnom porukom, asistent sam upisuje svaki razgovor." },
+      { icon: HiOutlineShoppingCart, title: "Automatske narudžbe", text: "Asistent prima narudžbu tokom razgovora i upisuje je direktno u sistem — bez prepisivanja, bez izgubljenih detalja, bez Vašeg učešća." },
+      { icon: HiOutlineClock, title: "Zakazivanje termina", text: "Kupac zakaže termin bez Vašeg učešća — asistent provjeri slobodne termine, potvrdi i pošalje obavijest. Bez telefonskog razgovora i bez duplih rezervacija." },
+      { icon: HiOutlineChartBar, title: "AI analitika razgovora", text: "Vidite ko je zvao, šta je tražio i šta je na kraju kupljeno — stvarni podaci o potražnji umjesto nagađanja." },
+    ],
+    stackHeading: "Tehnologije za AI sisteme",
+    stackSubtitle: "Glasovni modeli, jezički modeli i realtime baza — sve povezano u jedan sistem.",
+    stack: [
+      { title: "AI & glas", icon: HiOutlineCpuChip, items: ["LLM (OpenAI, Claude)", "Glasovni modeli (TTS/STT)", "Razumijevanje govora", "Prirodan glas, < 1s odgovor"] },
+      { title: "Sistem & baza", icon: HiOutlineCircleStack, items: ["Baza znanja (Library)", "Realtime baza podataka", "Automatizacija tokova", "Pametno preusmjeravanje poziva"] },
+      { title: "Integracije", icon: HiOutlineArrowPath, items: ["Telefonija (SIP / broj)", "Email i SMS obavijesti", "Kalendar i termini", "Web i mobilna aplikacija"] },
+    ],
+    pricingGroups: [
+      {
+        heading: "AI sistemi",
+        plans: [
+          {
+            title: "AI Start",
+            price: "Po dogovoru",
+            icon: HiOutlineRocketLaunch,
+            tagline: "AI chat na sajtu ili baza znanja",
+            items: ["AI chat asistent na sajtu", "Baza znanja o firmi (usluge, cijene)", "Obuka asistenta na Vaš sadržaj", "Upis upita i razgovora", "Mjesečna naknada za AI", "Mjesečno održavanje"],
+          },
+          {
+            title: "AI Business",
+            price: "Po dogovoru",
+            icon: HiOutlineMicrophone,
+            popular: true,
+            tagline: "AI recepcionar koji prima pozive",
+            items: ["AI telefonski recepcionar 24/7", "Prirodan glas na Vašem jeziku", "Sve iz AI Start paketa", "Automatske narudžbe i termini", "Pametno preusmjeravanje na Vas", "Mjesečna naknada za AI"],
+          },
+          {
+            title: "AI Premium",
+            price: "Po dogovoru",
+            icon: HiOutlineSparkles,
+            tagline: "Kompletan AI sistem s aplikacijom",
+            items: ["Sve iz AI Business paketa", "Web i mobilna aplikacija", "AI analitika i izvještaji", "Više brojeva i korisnika", "Integracije (CRM, kalendar, plaćanje)", "Prioritetna podrška"],
+          },
+        ],
+      },
+    ],
+    pricingKey: "ai",
+    pricingSubtitle: "AI sistemi se naplaćuju izradom + mjesečnom naknadom — asistent troši AI resurse svaki put kad razgovara s kupcem.",
+    pricingNote: "AI sistemi se razlikuju od običnih stranica: pored izrade postoji mjesečna naknada jer glasovni i jezički modeli imaju stalne troškove po razgovoru. Tačan iznos zavisi od broja poziva i složenosti — dobijate ga nakon besplatne konsultacije. Broj telefona, hosting i AI potrošnja se plaćaju direktno provideru, bez naše marže. Održavanje i dopuna baze znanja: po dogovoru.",
+    faqs: [
+      { question: "Šta je AI recepcionar i kako radi?", answer: "To je glasovni asistent koji odgovara na telefonske pozive Vaše firme 24 sata dnevno. Prirodnim glasom pozdravi kupca, razumije pitanje i odgovori na osnovu podataka o Vašoj firmi — usluge, cijene, radno vrijeme. Ako procijeni da je poziv hitan ili da kupac traži Vas lično, preusmjeri poziv bez da kupac išta ponavlja." },
+      { question: "Kako asistent zna sve o mojoj firmi?", answer: "Kroz bazu znanja koju gradimo zajedno. Vi unos možete dopuniti običnom porukom u chatu (npr. „cijena je od sutra 20% niža“), a asistent sam upisuje svaki razgovor i narudžbu. Sve je na jednom mjestu i uvijek ažurno — bez formulara i bez čekanja." },
+      { question: "Zašto postoji mjesečna naknada?", answer: "Zato što AI asistent troši AI resurse pri svakom razgovoru — svaki poziv se obrađuje u realnom vremenu. To je stvarni, ponavljajući trošak, pa se AI sistemi razlikuju od običnih web stranica koje se plaćaju jednom." },
+      { question: "Može li asistent preuzeti narudžbe i zakazati termine?", answer: "Da. Tokom razgovora asistent zabilježi šta kupac traži, upiše narudžbu ili zakaže termin i pošalje Vam obavijest. Vi ne morate biti dostupni — sistem radi i dok spavate." },
     ],
   },
 };
@@ -2131,7 +2208,7 @@ function toPricingGroups(list: PricingGroupData[]): PricingGroup[] {
 }
 
 // Hook za cijene (ili podskup za jednu uslugu).
-function usePricingGroups(serviceKey?: "web" | "webShops" | "games" | "mobile") {
+function usePricingGroups(serviceKey?: "web" | "webShops" | "games" | "mobile" | "ai") {
   const stored = useSyncExternalStore(subscribePricing, getPricing, getServerPricing);
   return useMemo(() => {
     const filtered = serviceKey
@@ -2142,7 +2219,7 @@ function usePricingGroups(serviceKey?: "web" | "webShops" | "games" | "mobile") 
 }
 
 // Vraća podnaslov + napomenu za datu uslugu (id grupe).
-function usePricingMeta(serviceKey?: "web" | "webShops" | "games" | "mobile") {
+function usePricingMeta(serviceKey?: "web" | "webShops" | "games" | "mobile" | "ai") {
   const stored = useSyncExternalStore(subscribePricing, getPricing, getServerPricing);
   return useMemo(() => {
     const g = serviceKey ? stored.find((x) => GROUP_TO_SERVICE[x.id] === serviceKey) : undefined;
@@ -2156,7 +2233,7 @@ function ServicePricing({
   fallbackSubtitle,
   fallbackNote,
 }: {
-  serviceKey: "web" | "webShops" | "games" | "mobile";
+  serviceKey: "web" | "webShops" | "games" | "mobile" | "ai";
   fallbackSubtitle?: string;
   fallbackNote?: string;
 }) {
@@ -2344,6 +2421,7 @@ const footerColumns: { title: string; links: { label: string; href?: string; soo
       { label: "Izrada web shopova", href: "/cijene" },
       { label: "Mobilne aplikacije", href: "/usluge/mobilne-aplikacije" },
       { label: "2D igrice", href: "/usluge/2d-igrice" },
+      { label: "AI sistemi", href: "/usluge/ai-sistemi" },
       { label: "Sve usluge", href: "/usluge" },
     ],
   },
@@ -4873,6 +4951,7 @@ const ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> = {
   "svc-web": [{ name: "Početna", path: "/" }, { name: "Usluge", path: "/usluge" }, { name: "Web stranice", path: "/usluge/web-stranice" }],
   "svc-games": [{ name: "Početna", path: "/" }, { name: "Usluge", path: "/usluge" }, { name: "2D igrice", path: "/usluge/2d-igrice" }],
   "svc-mobile": [{ name: "Početna", path: "/" }, { name: "Usluge", path: "/usluge" }, { name: "Mobilne aplikacije", path: "/usluge/mobilne-aplikacije" }],
+  "svc-ai": [{ name: "Početna", path: "/" }, { name: "Usluge", path: "/usluge" }, { name: "AI sistemi", path: "/usluge/ai-sistemi" }],
   projects: [{ name: "Početna", path: "/" }, { name: "Projekti", path: "/projekti" }],
   cijene: [{ name: "Početna", path: "/" }, { name: "Cijene", path: "/cijene" }],
   faq: [{ name: "Početna", path: "/" }, { name: "Česta pitanja", path: "/cesta-pitanja" }],
@@ -4930,6 +5009,7 @@ export default function App() {
     "/usluge/web-stranice": "svc-web",
     "/usluge/2d-igrice": "svc-games",
     "/usluge/mobilne-aplikacije": "svc-mobile",
+    "/usluge/ai-sistemi": "svc-ai",
     "/cijene": "cijene",
     "/cesta-pitanja": "faq",
     "/kontakt": "kontakt",
@@ -5039,6 +5119,10 @@ export default function App() {
       "svc-mobile": {
         title: "Izrada mobilnih aplikacija za Android i iOS | DevForge",
         desc: "Android i iOS aplikacije (React Native / Flutter) s backendom i admin panelom. Za biznis, narudžbe, dostavu i interne alate. Cijena po dogovoru.",
+      },
+      "svc-ai": {
+        title: "AI sistemi — AI recepcionar i chat asistent 24/7 | DevForge",
+        desc: "AI telefonski recepcionar i chat asistent koji primaju pozive 24/7, odgovaraju kupcima, zakazuju termine i bilježe narudžbe. Izrada AI sistema po mjeri.",
       },
       projects: {
         title: "Projekti — web stranice, shopovi i igre koje smo izradili | DevForge",
@@ -5152,6 +5236,8 @@ export default function App() {
         <ServiceDetailPage detail={serviceDetails.games} />
       ) : route === "svc-mobile" ? (
         <ServiceDetailPage detail={serviceDetails.mobile} />
+      ) : route === "svc-ai" ? (
+        <ServiceDetailPage detail={serviceDetails.ai} />
       ) : route === "cijene" ? (
         <CijenePage />
       ) : route === "faq" ? (

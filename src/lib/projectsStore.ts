@@ -27,6 +27,7 @@ export const SERVICE_OPTIONS = [
   "Web stranice",
   "2D igrice",
   "Mobilne aplikacije",
+  "AI sistemi",
 ];
 
 

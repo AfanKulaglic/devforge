@@ -151,6 +151,38 @@ export const DEFAULT_PRICING: PricingGroupData[] = [
       },
     ],
   },
+  {
+    id: "ai",
+    heading: "AI sistemi",
+    subtitle: "AI sistemi se naplaćuju izradom + mjesečnom naknadom — asistent troši AI resurse svaki put kad razgovara s kupcem.",
+    note: "Pored izrade postoji mjesečna naknada jer glasovni i jezički modeli imaju stalne troškove po razgovoru. Broj telefona, hosting i AI potrošnja se plaćaju direktno provideru, bez naše marže.",
+    plans: [
+      {
+        id: "ai-start",
+        title: "AI Start",
+        price: "Po dogovoru",
+        tagline: "AI chat na sajtu ili baza znanja",
+        popular: false,
+        items: ["AI chat asistent na sajtu", "Baza znanja o firmi (usluge, cijene)", "Obuka asistenta na Vaš sadržaj", "Upis upita i razgovora", "Mjesečna naknada za AI", "Mjesečno održavanje"],
+      },
+      {
+        id: "ai-business",
+        title: "AI Business",
+        price: "Po dogovoru",
+        tagline: "AI recepcionar koji prima pozive",
+        popular: true,
+        items: ["AI telefonski recepcionar 24/7", "Prirodan glas na Vašem jeziku", "Sve iz AI Start paketa", "Automatske narudžbe i termini", "Pametno preusmjeravanje na Vas", "Mjesečna naknada za AI"],
+      },
+      {
+        id: "ai-premium",
+        title: "AI Premium",
+        price: "Po dogovoru",
+        tagline: "Kompletan AI sistem s aplikacijom",
+        popular: false,
+        items: ["Sve iz AI Business paketa", "Web i mobilna aplikacija", "AI analitika i izvještaji", "Više brojeva i korisnika", "Integracije (CRM, kalendar, plaćanje)", "Prioritetna podrška"],
+      },
+    ],
+  },
 ];
 
 // ───────────────────────────────────────────────────────────────────────────
@@ -448,9 +480,10 @@ export async function countRemotePricing(): Promise<number | null> {
 }
 
 // Mapiranje grupe na ključ usluge (za /usluge/* stranice) — po id-u.
-export const GROUP_TO_SERVICE: Record<string, "web" | "webShops" | "games" | "mobile"> = {
+export const GROUP_TO_SERVICE: Record<string, "web" | "webShops" | "games" | "mobile" | "ai"> = {
   "web-sites": "web",
   "web-shops": "webShops",
   games: "games",
   mobile: "mobile",
+  ai: "ai",
 };
