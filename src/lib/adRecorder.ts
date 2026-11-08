@@ -197,6 +197,18 @@ export async function recordAdToMp4({
   }
 }
 
+/** Pretvori bilo kakav "throw" (ukljucujuci objekte) u citljiv string. */
+export function describeError(err: unknown): string {
+  if (err instanceof Error) return `${err.name}: ${err.message}`;
+  if (typeof err === "string") return err;
+  try {
+    const json = JSON.stringify(err, Object.getOwnPropertyNames(err ?? {}), 1);
+    return json === "{}" ? String(err) : json;
+  } catch {
+    return String(err);
+  }
+}
+
 function sleep(ms: number) {
   return new Promise<void>((resolve) => window.setTimeout(resolve, Math.max(0, ms)));
 }
@@ -258,9 +270,137 @@ export function checkRecorderSupport(): string | null {
   if (typeof document.createElement("canvas").getContext !== "function") {
     return "Ovaj browser ne podržava canvas.";
   }
-  // MediaRecorder nije potreban, ali provjerimo da nema ociglednih blokada.
   if (!window.isSecureContext && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
     return "Snimanje zahtijeva HTTPS ili localhost.";
   }
+  // mediabunny koristi WebCodecs API — bez njega MP4 ne moze nastati.
+  if (typeof (window as unknown as { VideoEncoder?: unknown }).VideoEncoder !== "function") {
+    return "Ovaj browser ne podržava WebCodecs (VideoEncoder). Koristite Chrome/Edge 94+ ili noviji.";
+  }
   return null;
+}
+
+/** Da li browser moze krojiti H.264 u MP4 preko WebCodecs. */
+export async function canEncodeH264(): Promise<boolean> {
+  const VE = (window as unknown as { VideoEncoder?: { isConfigSupported?: (c: unknown) => Promise<{ supported?: boolean }> } })
+    .VideoEncoder;
+  if (!VE?.isConfigSupported) return false;
+  try {
+    const res = await VE.isConfigSupported({
+      codec: "avc1.640028",
+      width: AD_W,
+      height: AD_H,
+      bitrate: 12_000_000,
+      framerate: FPS,
+    });
+    return res.supported === true;
+  } catch {
+    return false;
+  }
+}
+
+// ───────────────────────────────────────────────────────────────────────────
+// FALLBACK — WebM preko MediaRecorder-a (bez WebCodecs).
+//
+// Ako browser ne moze H.264 u MP4, snimamo isti canvas tok u WebM (VP9/VP8).
+// Rezolucija i sadrzaj su identicni; samo kontejner nije MP4. Instagram i
+// TikTok prihvataju WebM, a ako treba MP4 — konverzija je jedan klik u
+// bilo kojem online konverteru.
+// ───────────────────────────────────────────────────────────────────────────
+
+export async function recordAdToWebm({
+  sceneDurations,
+  onProgress,
+  signal,
+}: Options): Promise<Blob> {
+  const totalMs = sceneDurations.reduce((a, b) => a + b, 0);
+  const totalFrames = Math.round((totalMs / 1000) * FPS);
+  onProgress({ phase: "loading", frame: 0, totalFrames, percent: 0 });
+
+  const frame = document.createElement("iframe");
+  frame.src = new URL("/reklama?record=1", window.location.origin).href;
+  frame.setAttribute("aria-hidden", "true");
+  frame.style.cssText = ["position:fixed", "left:0", "top:0", `width:${AD_W}px`, `height:${AD_H}px`, "border:0", "opacity:0", "pointer-events:none", "z-index:-1"].join(";");
+  document.body.appendChild(frame);
+
+  let aborted = false;
+  const onAbort = () => { aborted = true; };
+  signal?.addEventListener("abort", onAbort, { once: true });
+
+  try {
+    await new Promise<void>((resolve, reject) => {
+      const timer = window.setTimeout(() => reject(new Error("Reklama se nije učitala u 25s.")), 25000);
+      frame.onload = () => { window.clearTimeout(timer); resolve(); };
+    });
+
+    const doc = frame.contentDocument;
+    if (!doc) throw new Error("Iframe nije dostupan");
+    const reel = await waitForElement(doc, ".ad-reel", 20000);
+    await waitForFonts(doc);
+    await sleep(400);
+
+    const canvas = document.createElement("canvas");
+    canvas.width = AD_W;
+    canvas.height = AD_H;
+    const ctx = canvas.getContext("2d", { alpha: false });
+    if (!ctx) throw new Error("Canvas 2D nije dostupan");
+    ctx.fillStyle = "#040807";
+    ctx.fillRect(0, 0, AD_W, AD_H);
+
+    const stream = canvas.captureStream(FPS);
+    const mime = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"].find((m) =>
+      MediaRecorder.isTypeSupported(m),
+    );
+    if (!mime) throw new Error("MediaRecorder ne podržava WebM u ovom browseru");
+
+    const chunks: BlobPart[] = [];
+    const recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 12_000_000 });
+    recorder.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
+    recorder.start();
+
+    const frameInterval = 1000 / FPS;
+    const start = performance.now();
+
+    for (let i = 0; i < totalFrames; i++) {
+      if (aborted || signal?.aborted) throw new Error("Snimanje prekinuto");
+      const wait = start + i * frameInterval - performance.now();
+      if (wait > 0) await sleep(wait);
+
+      try {
+        const snap = await toCanvas(reel as HTMLElement, {
+          canvasWidth: AD_W,
+          canvasHeight: AD_H,
+          width: AD_W,
+          height: AD_H,
+          pixelRatio: 1,
+          backgroundColor: "#040807",
+          style: { position: "relative", left: "0", top: "0", transform: "none" },
+          skipFonts: true,
+        });
+        ctx.fillStyle = "#040807";
+        ctx.fillRect(0, 0, AD_W, AD_H);
+        ctx.drawImage(snap, 0, 0, AD_W, AD_H);
+      } catch {
+        /* drzi prethodni kadar */
+      }
+
+      if (i % 2 === 0 || i === totalFrames - 1) {
+        onProgress({ phase: "recording", frame: i + 1, totalFrames, percent: Math.round(((i + 1) / totalFrames) * 100) });
+      }
+    }
+
+    onProgress({ phase: "encoding", frame: totalFrames, totalFrames, percent: 100 });
+    await new Promise<void>((resolve) => {
+      recorder.onstop = () => resolve();
+      recorder.stop();
+    });
+
+    const blob = new Blob(chunks, { type: mime.split(";")[0] });
+    stream.getTracks().forEach((t) => t.stop());
+    onProgress({ phase: "done", frame: totalFrames, totalFrames, percent: 100 });
+    return blob;
+  } finally {
+    signal?.removeEventListener("abort", onAbort);
+    frame.remove();
+  }
 }

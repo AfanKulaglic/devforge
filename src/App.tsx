@@ -77,7 +77,17 @@ import {
   subscribePricing,
   type PricingGroupData,
 } from "./lib/pricingStore";
-import { recordAdToMp4, downloadBlob, checkRecorderSupport, AD_W, AD_H, type RecordProgress } from "./lib/adRecorder";
+import {
+  recordAdToMp4,
+  recordAdToWebm,
+  canEncodeH264,
+  downloadBlob,
+  checkRecorderSupport,
+  describeError,
+  AD_W,
+  AD_H,
+  type RecordProgress,
+} from "./lib/adRecorder";
 
 const CTA_LABEL = "🚀 Dobijte gotovu verziju za 5 dana";
 
@@ -4268,18 +4278,24 @@ function AdReel({ recordMode = false }: { recordMode?: boolean }) {
     abortRef.current = controller;
     setRecording({ phase: "loading", frame: 0, totalFrames: 0, percent: 0 });
     try {
-      const blob = await recordAdToMp4({
-        sceneDurations: AD_DUR,
-        onProgress: setRecording,
-        signal: controller.signal,
-      });
-      downloadBlob(blob, `devforge-reklama-${AD_W}x${AD_H}.mp4`);
+      // MP4 (H.264) ako browser podrzava WebCodecs; inace WebM fallback.
+      const h264 = await canEncodeH264();
+      console.info("[adRecorder] h264 supported:", h264);
+
+      const blob = h264
+        ? await recordAdToMp4({ sceneDurations: AD_DUR, onProgress: setRecording, signal: controller.signal })
+        : await recordAdToWebm({ sceneDurations: AD_DUR, onProgress: setRecording, signal: controller.signal });
+
+      const ext = blob.type.includes("mp4") ? "mp4" : "webm";
+      downloadBlob(blob, `devforge-reklama-${AD_W}x${AD_H}.${ext}`);
       setRecording(null);
     } catch (err) {
       // Detalj u konzolu — lakse dijagnostikovati bez pogađanja.
-      console.error("[adRecorder]", err);
+      // mediabunny zna baciti goli objekat umjesto Error, pa ga serijalizujemo.
+      const msg = describeError(err);
+      console.error("[adRecorder]", msg, err);
       setRecording(null);
-      setRecError(err instanceof Error ? err.message : String(err));
+      setRecError(msg);
     } finally {
       abortRef.current = null;
     }
@@ -4291,24 +4307,50 @@ function AdReel({ recordMode = false }: { recordMode?: boolean }) {
     return () => window.clearTimeout(t);
   }, [scene, paused]);
 
-  // voice-over: izgovori naraciju trenutne scene (bs/hr/sr glas ako postoji)
+  // voice-over: izgovori naraciju trenutne scene (bs/hr/sr glas ako postoji).
+  // Chromium zna baciti odbijeni Promise iz cancel()/speak() kad nema govora
+  // u redu ("Uncaught (in promise) Object"), pa sve ide kroz try/catch.
   useEffect(() => {
-    if (!sound || paused || typeof window === "undefined" || !window.speechSynthesis) return;
-    const synth = window.speechSynthesis;
-    const u = new SpeechSynthesisUtterance(AD_NARRATION[scene]);
-    u.lang = "hr-HR";
-    u.rate = 0.98;
-    const voices = synth.getVoices();
-    const v = voices.find((x) => /^(bs|hr|sr)/i.test(x.lang)) || voices.find((x) => /^(sl|mk)/i.test(x.lang));
-    if (v) u.voice = v;
-    synth.cancel();
-    synth.speak(u);
-  }, [scene, sound, paused]);
+    // U record modu (snimanje MP4) nema govora — zvuk se dodaje naknadno.
+    if (recordMode || !sound || paused || typeof window === "undefined" || !window.speechSynthesis) return;
+    try {
+      const synth = window.speechSynthesis;
+      const u = new SpeechSynthesisUtterance(AD_NARRATION[scene]);
+      u.lang = "hr-HR";
+      u.rate = 0.98;
+      const voices = synth.getVoices();
+      const v = voices.find((x) => /^(bs|hr|sr)/i.test(x.lang)) || voices.find((x) => /^(sl|mk)/i.test(x.lang));
+      if (v) u.voice = v;
+      synth.cancel();
+      // speak() vraca Promise u novijim Chromium verzijama — uhvati odbijanje.
+      const maybePromise = synth.speak(u) as unknown;
+      if (maybePromise && typeof (maybePromise as Promise<void>).catch === "function") {
+        (maybePromise as Promise<void>).catch(() => {});
+      }
+    } catch {
+      /* govor nije dostupan — nije kriticno */
+    }
+  }, [scene, sound, paused, recordMode]);
 
   useEffect(() => {
-    if ((paused || !sound) && typeof window !== "undefined" && window.speechSynthesis) window.speechSynthesis.cancel();
+    if (paused || !sound) return;
+    try {
+      window.speechSynthesis?.cancel();
+    } catch {
+      /* ignorisi */
+    }
   }, [paused, sound]);
-  useEffect(() => () => { if (typeof window !== "undefined" && window.speechSynthesis) window.speechSynthesis.cancel(); }, []);
+
+  useEffect(
+    () => () => {
+      try {
+        window.speechSynthesis?.cancel();
+      } catch {
+        /* ignorisi */
+      }
+    },
+    [],
+  );
 
   function renderScene() {
     switch (scene) {
