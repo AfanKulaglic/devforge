@@ -7,6 +7,7 @@ import {
   HiOutlineBanknotes,
   HiOutlineArrowPath,
   HiOutlineArrowDownTray,
+  HiOutlineCamera,
   HiOutlineChatBubbleLeftRight,
   HiOutlineChatBubbleOvalLeftEllipsis,
   HiOutlineFlag,
@@ -103,6 +104,9 @@ const CONTACT = {
   phoneDisplay: "+387 62 576 456",
   phoneRaw: "+38762576456", // bez + i razmaka za wa.me
   email: "info@devforge.ba",
+  // Instagram DM — najbrzi kanal za mnoge klijente.
+  instagramHandle: "@devforge.ba",
+  instagramUrl: "https://ig.me/m/devforge.ba", // ig.me/m/ = direktno otvara DM
   address: "Maršala Tita 28, Sarajevo",
   street: "Maršala Tita 28",
   city: "71000 Sarajevo",
@@ -1474,6 +1478,44 @@ function Hero() {
               {slide.secondaryLabel}
             </a>
           </div>
+
+          {/* Jedna linija: kako nas kontaktirati. 80% ljudi ne skrola dalje od hero-a. */}
+          <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-[0.78rem] text-white/55">
+            <a
+              href={`tel:${CONTACT.phoneRaw}`}
+              className="inline-flex items-center gap-1.5 font-bold text-white/80 transition hover:text-teal-200"
+            >
+              <HiOutlinePhone className="text-sm text-teal-300" aria-hidden="true" />
+              {CONTACT.phoneDisplay}
+            </a>
+            <span className="h-3 w-px bg-white/20" aria-hidden="true" />
+            <a
+              href={`viber://chat?number=${encodeURIComponent(CONTACT.phoneRaw)}`}
+              className="inline-flex items-center gap-1.5 font-semibold transition hover:text-[#a99bff]"
+            >
+              <HiOutlineChatBubbleLeftRight className="text-sm text-[#8f7dff]" aria-hidden="true" />
+              Viber
+            </a>
+            <a
+              href={`https://wa.me/${CONTACT.phoneRaw.replace(/\D/g, "")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 font-semibold transition hover:text-[#4ce08a]"
+            >
+              <HiOutlineChatBubbleOvalLeftEllipsis className="text-sm text-[#25D366]" aria-hidden="true" />
+              WhatsApp
+            </a>
+            <a
+              href={CONTACT.instagramUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 font-semibold transition hover:text-[#ff6b9d]"
+            >
+              <HiOutlineCamera className="text-sm text-[#E1306C]" aria-hidden="true" />
+              Instagram DM
+            </a>
+          </div>
+
           {/* Indikatori na mobilu - horizontalno ispod CTA */}
           <div className="mt-8 flex gap-3 md:hidden">
             {heroSlides.map((s, index) => (
@@ -2148,6 +2190,89 @@ function Pricing({ groups, subtitle, note }: { groups?: PricingGroup[]; subtitle
   );
 }
 
+// Kratka sekcija "Kako nas kontaktirati" — 4 kanala, bez forme.
+// Cilj: covjek koji skrola do dna odmah zna gdje da se javi i ne mora
+// razmisljati je li to mejl, telefon ili forma.
+function ContactChannels() {
+  const channels = [
+    {
+      href: `viber://chat?number=${encodeURIComponent(CONTACT.phoneRaw)}`,
+      icon: HiOutlineChatBubbleLeftRight,
+      label: "Viber",
+      note: "Najbrži odgovor, obično u par minuta",
+      accent: "text-[#a99bff]",
+      ring: "hover:border-[#7360F2]/60",
+    },
+    {
+      href: `https://wa.me/${CONTACT.phoneRaw.replace(/\D/g, "")}`,
+      icon: HiOutlineChatBubbleOvalLeftEllipsis,
+      label: "WhatsApp",
+      note: "Pišite nam direktno na telefon",
+      accent: "text-[#25D366]",
+      ring: "hover:border-[#25D366]/60",
+      external: true,
+    },
+    {
+      href: CONTACT.instagramUrl,
+      icon: HiOutlineCamera,
+      label: "Instagram DM",
+      note: "Poruka u inbox, javimo se brzo",
+      accent: "text-[#E1306C]",
+      ring: "hover:border-[#E1306C]/60",
+      external: true,
+    },
+    {
+      href: `tel:${CONTACT.phoneRaw}`,
+      icon: HiOutlinePhone,
+      label: CONTACT.phoneDisplay,
+      note: "Pon–Pet, 09–17h",
+      accent: "text-teal-300",
+      ring: "hover:border-teal-300/60",
+    },
+  ];
+
+  return (
+    <section className="border-y border-white/10 bg-[#080808] py-20 md:py-24">
+      <div className="mx-auto max-w-7xl px-5 md:px-8">
+        <SectionHeading
+          title="Javite nam se — bez forme"
+          subtitle="Odaberite kanal koji vam najviše odgovara. Ne morate popunjavati ništa, samo nam pošaljite poruku ili pozovite."
+          align="center"
+          icon={HiOutlineChatBubbleLeftRight}
+          eyebrow="Kontakt"
+        />
+        <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 md:gap-4">
+          {channels.map((c, i) => {
+            const Icon = c.icon;
+            return (
+              <Reveal key={c.label} direction="up" delay={i * 0.08}>
+                <a
+                  href={c.href}
+                  target={c.external ? "_blank" : undefined}
+                  rel={c.external ? "noopener noreferrer" : undefined}
+                  className={`group flex h-full flex-col gap-3 border border-white/12 bg-white/[0.025] p-5 transition hover:bg-white/[0.05] ${c.ring}`}
+                >
+                  <span className={`inline-flex h-11 w-11 items-center justify-center rounded-xl bg-white/[0.06] text-xl ring-1 ring-white/10 ${c.accent}`}>
+                    <Icon aria-hidden="true" />
+                  </span>
+                  <span className="text-base font-extrabold text-white">{c.label}</span>
+                  <span className="mt-auto text-xs leading-5 text-white/45">{c.note}</span>
+                </a>
+              </Reveal>
+            );
+          })}
+        </div>
+        <p className="mt-8 text-center text-sm text-white/40">
+          Ili nam pišite na{" "}
+          <a className="font-bold text-teal-200 underline decoration-teal-400/40 underline-offset-4 hover:text-white" href={`mailto:${CONTACT.email}`}>
+            {CONTACT.email}
+          </a>
+        </p>
+      </div>
+    </section>
+  );
+}
+
 function FAQs() {
   const [openIndex, setOpenIndex] = useState(0);
 
@@ -2246,7 +2371,7 @@ const footerColumns: { title: string; links: { label: string; href?: string; soo
 const ContactModalCtx = createContext<() => void>(() => {});
 const useOpenContact = () => useContext(ContactModalCtx);
 
-type ContactChannel = "viber" | "whatsapp" | "call";
+type ContactChannel = "viber" | "whatsapp" | "instagram" | "call";
 
 function ContactModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [name, setName] = useState("");
@@ -2301,12 +2426,14 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
   const quickLink = (channel: ContactChannel) => {
     if (channel === "viber") return `viber://chat?number=${encodeURIComponent(CONTACT.phoneRaw)}`;
     if (channel === "whatsapp") return `https://wa.me/${CONTACT.phoneRaw.replace(/\D/g, "")}`;
+    if (channel === "instagram") return CONTACT.instagramUrl;
     return `tel:${CONTACT.phoneRaw}`;
   };
 
   const channels: { key: ContactChannel; label: string; sub: string; icon: IconType; ring: string; bg: string }[] = [
     { key: "viber", label: "Viber", sub: "Najbrži odgovor", icon: HiOutlineChatBubbleLeftRight, ring: "border-[#7360F2]/50", bg: "bg-[#7360F2]/15 hover:bg-[#7360F2]/25" },
     { key: "whatsapp", label: "WhatsApp", sub: "Odmah na telefonu", icon: HiOutlineChatBubbleOvalLeftEllipsis, ring: "border-[#25D366]/50", bg: "bg-[#25D366]/15 hover:bg-[#25D366]/25" },
+    { key: "instagram", label: "Instagram", sub: "DM — javimo se brzo", icon: HiOutlineCamera, ring: "border-[#E1306C]/50", bg: "bg-[#E1306C]/15 hover:bg-[#E1306C]/25" },
     { key: "call", label: "Pozovi", sub: CONTACT.phoneDisplay, icon: HiOutlinePhone, ring: "border-white/20", bg: "bg-white/[0.05] hover:bg-white/[0.1]" },
   ];
 
@@ -2350,15 +2477,15 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
           <p className="text-[0.62rem] font-black uppercase tracking-[0.2em] text-white/35">
             1. Najbrže — javite se direktno
           </p>
-          <div className="mt-3 grid gap-2 sm:grid-cols-3">
+          <div className="mt-3 grid grid-cols-2 gap-2 lg:grid-cols-4">
             {channels.map((c) => {
               const Icon = c.icon;
               return (
                 <a
                   key={c.key}
                   href={quickLink(c.key)}
-                  target={c.key === "whatsapp" ? "_blank" : undefined}
-                  rel={c.key === "whatsapp" ? "noopener noreferrer" : undefined}
+                  target={c.key === "whatsapp" || c.key === "instagram" ? "_blank" : undefined}
+                  rel={c.key === "whatsapp" || c.key === "instagram" ? "noopener noreferrer" : undefined}
                   className={`flex items-center gap-3 border px-3.5 py-3 transition ${c.ring} ${c.bg}`}
                 >
                   <Icon className="shrink-0 text-lg text-white" aria-hidden="true" />
@@ -3040,6 +3167,7 @@ function HomePage() {
       <Pricing />
       <HowItWorks />
       <Projects />
+      <ContactChannels />
       <FAQs />
     </main>
   );
@@ -4186,7 +4314,7 @@ const AD_NARRATION = [
   "Uz svaki projekt dobijate vlastiti admin panel — sami mijenjate tekst, slike, proizvode i cijene, bez koda.",
   "Do šezdeset posto jeftinije od agencija — uz isti vrhunski kvalitet i iste provjerene tehnologije.",
   "Zatražite svoju besplatnu gotovu verziju na devforge.ba.",
-  "DevForge. Bez rizika, bez predujma.",
+  "DevForge. Bez rizika, bez predujma. Javite nam se na Viber, WhatsApp ili Instagram — dogovor za pet minuta.",
 ];
 
 // Frosted-glass ikona — glavni vizual scene (Spacemail stil). Pop ulaz + lebdenje.
@@ -4458,6 +4586,25 @@ function AdReel({ recordMode = false }: { recordMode?: boolean }) {
               <p className="ad-eyebrow text-teal-300/70">Bez rizika</p>
               <p className="ad-eyebrow mt-[0.5cqh] text-teal-300/70">Bez predujma</p>
             </div>
+
+            {/* Javite nam se — 3 konkretna nacina, da covjek odmah zna sta dalje */}
+            <div className="ad-rise mt-[3.2cqh] flex items-center justify-center" style={{ animationDelay: ".7s", gap: "2.2cqh" }}>
+              <span className="ad-contact-chip">
+                <HiOutlineChatBubbleLeftRight aria-hidden="true" />
+                Viber
+              </span>
+              <span className="ad-contact-chip">
+                <HiOutlineChatBubbleOvalLeftEllipsis aria-hidden="true" />
+                WhatsApp
+              </span>
+              <span className="ad-contact-chip">
+                <HiOutlineCamera aria-hidden="true" />
+                Instagram DM
+              </span>
+            </div>
+            <p className="ad-rise ad-eyebrow mt-[1.6cqh] text-white/45" style={{ animationDelay: ".9s" }}>
+              {CONTACT.phoneDisplay}
+            </p>
           </div>
         );
     }

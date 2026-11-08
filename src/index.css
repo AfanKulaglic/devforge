@@ -1074,6 +1074,26 @@ button {
 .ad-pill { display: inline-flex; align-items: center; gap: 1cqh; border-radius: 9999px;
   background: rgba(45,212,191,0.14); border: 1px solid rgba(45,212,191,0.34); color: #fff;
   font-weight: 600; font-size: 2.1cqh; padding: 1.3cqh 3cqh; }
+/* Kontakt "chip" u zadnjoj sceni reklame — tri nacina da se javite */
+.ad-contact-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.9cqh;
+  border-radius: 9999px;
+  border: 1px solid rgba(94, 234, 212, 0.30);
+  background: rgba(45, 212, 191, 0.10);
+  color: #e6fffb;
+  font-weight: 700;
+  font-size: 1.85cqh;
+  padding: 1.1cqh 2.2cqh;
+  white-space: nowrap;
+}
+.ad-contact-chip svg {
+  width: 2.1cqh;
+  height: 2.1cqh;
+  flex-shrink: 0;
+}
+
 .ad-iconrow { display: flex; align-items: center; justify-content: center; gap: 2.6cqh; flex-wrap: wrap; }
 
 /* Kursor koji "klikne" CTA */
