@@ -2545,7 +2545,7 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
                 <input
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+387 61 000 000"
+                  placeholder={CONTACT.phoneDisplay}
                   inputMode="tel"
                   className="w-full border border-white/12 bg-white/[0.03] px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:border-teal-300/60 focus:outline-none"
                 />
@@ -2680,7 +2680,7 @@ function ContactAndFooter() {
             Dobijte gotovu verziju
           </a>
           <div className="mt-10 space-y-3 text-[#A7AABB]">
-            <p className="flex items-center gap-3"><HiOutlinePhone className="text-lg text-teal-300" aria-hidden="true" /><span className="font-bold text-white">Telefon:</span> (+387) 61 000 000</p>
+            <p className="flex items-center gap-3"><HiOutlinePhone className="text-lg text-teal-300" aria-hidden="true" /><span className="font-bold text-white">Telefon:</span> {CONTACT.phoneDisplay}</p>
             <p className="flex items-center gap-3"><HiOutlineEnvelope className="text-lg text-teal-300" aria-hidden="true" /><span className="font-bold text-white">Email:</span> devforge.studio@gmail.com</p>
             <p className="flex items-center gap-3"><HiOutlineMapPin className="text-lg text-teal-300" aria-hidden="true" /><span className="font-bold text-white">Lokacija:</span> Marsala Tita 28, Sarajevo, BiH</p>
           </div>
@@ -2746,7 +2746,7 @@ function ContactAndFooter() {
               <Logo />
               <p className="mt-4 max-w-xs text-sm leading-6 text-[#A7AABB]">DevForge — web stranice, shopovi i mobilne aplikacije iz Sarajeva. Bez predujma, uz besplatnu gotovu verziju.</p>
               <div className="mt-5 space-y-2 text-sm text-[#A7AABB]">
-                <a className="flex items-center gap-2.5 transition hover:text-white" href="tel:+38761000000"><HiOutlinePhone className="text-teal-300" aria-hidden="true" /> (+387) 61 000 000</a>
+                <a className="flex items-center gap-2.5 transition hover:text-white" href={`tel:${CONTACT.phoneRaw}`}><HiOutlinePhone className="text-teal-300" aria-hidden="true" /> {CONTACT.phoneDisplay}</a>
                 <a className="flex items-center gap-2.5 transition hover:text-white" href="mailto:devforge.studio@gmail.com"><HiOutlineEnvelope className="text-teal-300" aria-hidden="true" /> devforge.studio@gmail.com</a>
                 <p className="flex items-center gap-2.5"><HiOutlineMapPin className="text-teal-300" aria-hidden="true" /> Maršala Tita 28, Sarajevo, BiH</p>
               </div>
@@ -3600,7 +3600,7 @@ function FaqPage() {
 // NOVA sekcija — direktni načini kontakta u karticama (distinktno od forme u footeru
 // koja se ionako prikazuje ispod). Svaka kartica je klikabilna (tel/mailto/maps).
 const contactMethods: { icon: IconType; label: string; value: string; href: string; note: string }[] = [
-  { icon: HiOutlinePhone, label: "Telefon", value: "(+387) 61 000 000", href: "tel:+38761000000", note: "Pon–Pet, 09–17h" },
+  { icon: HiOutlinePhone, label: "Telefon", value: CONTACT.phoneDisplay, href: `tel:${CONTACT.phoneRaw}`, note: "Pon–Pet, 09–17h" },
   { icon: HiOutlineEnvelope, label: "Email", value: "devforge.studio@gmail.com", href: "mailto:devforge.studio@gmail.com", note: "Odgovaramo isti dan" },
   { icon: HiOutlineMapPin, label: "Lokacija", value: "Maršala Tita 28, Sarajevo", href: "https://maps.google.com/?q=Marsala+Tita+28+Sarajevo", note: "BiH + cijela regija" },
 ];
