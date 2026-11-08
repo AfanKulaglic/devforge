@@ -29,6 +29,7 @@ import {
   subscribeVisits,
   summarize,
 } from "./lib/analytics";
+import { resetAnalyticsSeen } from "./lib/analyticsBadge";
 
 function useVisits() {
   return useSyncExternalStore(subscribeVisits, getVisits, getServerVisits);
@@ -182,6 +183,7 @@ export default function AnalyticsTab() {
   const onClear = () => {
     if (window.confirm("Obrisati sve lokalno prikupljene posjete? Ovo ne može poništiti.")) {
       clearVisits();
+      resetAnalyticsSeen();
     }
   };
 

@@ -34,6 +34,7 @@ import {
 } from "./lib/projectsStore";
 import PricingTab from "./AdminPricingTab";
 import AnalyticsTab from "./AdminAnalyticsTab";
+import { markAnalyticsSeen, startAnalyticsBadgePolling, useNewAnalyticsCount } from "./lib/analyticsBadge";
 import BackupTools from "./AdminBackupTools";
 
 // ───────────────────────────────────────────────────────────────────────────
@@ -822,6 +823,20 @@ function ProjectsTab() {
 export default function AdminPanel() {
   const [authed, setAuthed] = useState(() => isAuthed());
   const [tab, setTab] = useState<"projekti" | "cijene" | "analitika">("projekti");
+  const newAnalytics = useNewAnalyticsCount();
+
+  // Osvjezavaj badge periodicno (svakih 30s dok je admin otvoren).
+  useEffect(() => {
+    startAnalyticsBadgePolling();
+  }, []);
+
+  // Kad korisnik otvori tab Analitika, badge se gasi — ali tek nakon kratke
+  // pauze, da podaci iz Firebase stignu i brojevi budu vidljivi.
+  useEffect(() => {
+    if (tab !== "analitika") return;
+    const t = window.setTimeout(() => markAnalyticsSeen(), 1200);
+    return () => window.clearTimeout(t);
+  }, [tab]);
 
   if (!authed) return <AdminLogin onSuccess={() => setAuthed(true)} />;
 
@@ -914,6 +929,14 @@ export default function AdminPanel() {
           >
             <HiOutlineChartBar className="text-base" aria-hidden="true" />
             Analitika
+            {newAnalytics > 0 && (
+              <span
+                className="inline-flex min-w-[1.15rem] items-center justify-center rounded-full bg-red-500 px-1 text-[0.6rem] font-extrabold leading-[1.15rem] text-white shadow-sm shadow-red-500/40"
+                aria-label={`${newAnalytics} novih događaja`}
+              >
+                {newAnalytics > 99 ? "99+" : newAnalytics}
+              </span>
+            )}
           </button>
         </div>
 

@@ -9,6 +9,15 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **CRVENI BADGE „novo od zadnjeg pregleda“ na kartici Analitika** — korisnik: „kada se desi nesto novo zelim okrugli crveni badge na toj kartici da znam koliko toga je novog bilo od zadnjeg gledanja analitike".
+  **Novi fajl `src/lib/analyticsBadge.ts` (~140 linija):**
+  - `countSignals(visits)` — jedan signal = **posjeta ILI jedan događaj** u njoj. Posjetilac koji je kliknuo 4 stvari daje +5; nova posjeta bez akcija +1.
+  - `readSeen()` / `markAnalyticsSeen()` / `resetAnalyticsSeen()` — `SeenState { count, at }` u `localStorage` kljuc **`devforge-analytics-seen-v1`**. Pamti se **per-uređaj** (pitanje „šta sam ja vidio“ je lokalno), dok su sami podaci globalni u Firebaseu.
+  - `useNewAnalyticsCount()` — hook preko dva `useSyncExternalStore` (posjete + seen stanje), vraća `max(0, total - seen.count)`.
+  - `startAnalyticsBadgePolling(30s)` — periodicno osvježavanje badge-a dok je admin otvoren i tab vidljiv (`document.visibilityState`), da broj raste i bez reload-a.
+  **`src/AdminPanel.tsx`:** import hook-a; `const newAnalytics = useNewAnalyticsCount()`; **badge na dugmetu „Analitika“** — `rounded-full bg-red-500`, `min-w-[1.15rem]`, `text-[0.6rem] font-extrabold`, `shadow-red-500/40`, prikazuje broj ili **„99+“** preko 99; `aria-label` sa brojem. `useEffect` na `tab` — kad se otvori Analitika, nakon **1200 ms** poziva `markAnalyticsSeen()` (pauza da Firebase podaci stignu i brojevi budu vidljivi prije nego badge nestane). `useEffect` na mount — `startAnalyticsBadgePolling()`.
+  **`src/AdminAnalyticsTab.tsx`:** dugme „Očisti“ uz `clearVisits()` sada zove i `resetAnalyticsSeen()`.
+  **Verifikacija:** `npx tsc --noEmit` → 0; build ✓ 1.041 kB (gzip 281); `/admin` → 200; logički test — 2 posjete + 3 događaja = **5 signala**; `seen=0` → badge 5; `seen=5` → badge 0 (nestaje); nova posjeta s 1 događajem → badge **2**.
 - **FULL ANALITIKA — događaji, konverzije, skrol, putanje, bounce** — korisnik: „zelim te posebno pitati sta jos mogu od analitike ukljuciti ako neki trigger nesto pritisnu da mogu znati da su nesto radili istrazivali otvarali druge stranice zelim full analitiku" + „uradi sta od mozes i moguce je za bolju analitiku".
   **`src/lib/analytics.ts` — prosireno (~700 linija):**
   - Novi tip **`EventKind`** (13 vrsta): `cta`, `contact_open`, `contact_channel`, `form_start`, `form_submit`, `project_click`, `pricing_click`, `faq_open`, `scroll`, `social_click`, `external_click`, `dead_click`, `rage_click`. Novi tip **`TrackEvent`** (`kind`, `path`, `label`, `value`, `at`).
