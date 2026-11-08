@@ -152,7 +152,10 @@ function readVisits(): Visit[] {
     const raw = window.localStorage.getItem(VISITS_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .map((v, i) => normalizeVisit(v, `local_${i}`))
+      .filter((v): v is Visit => v !== null);
   } catch {
     return [];
   }
@@ -182,16 +185,57 @@ function writeVisits(visits: Visit[]) {
   }
 }
 
+// ── Normalizacija zapisa ─────────────────────────────────────────────────
+// Firebase cuva JSON koji moze biti nepotpun (prazna polja se izostavljaju),
+// pa posjeta iz baze ume doci bez `pages`. Bez ovoga `summarize()` puca na
+// `v.pages` i cijeli tab Analitika padne. Zato svaki zapis prolazi kroz ovu
+// funkciju prije nego udje u aplikaciju.
+function normalizeVisit(raw: unknown, fallbackId: string): Visit | null {
+  if (!raw || typeof raw !== "object") return null;
+  const v = raw as Partial<Visit>;
+
+  const startedAt = typeof v.startedAt === "number" ? v.startedAt : null;
+  if (startedAt === null) return null; // bez vremena posjeta nema smisla
+
+  const pages: PageView[] = Array.isArray(v.pages)
+    ? v.pages
+        .filter((p) => p && typeof p === "object")
+        .map((p) => ({
+          path: typeof p.path === "string" ? p.path : "/",
+          title: typeof p.title === "string" ? p.title : "",
+          durationMs: typeof p.durationMs === "number" && p.durationMs >= 0 ? p.durationMs : 0,
+          enteredAt: typeof p.enteredAt === "number" ? p.enteredAt : startedAt,
+        }))
+    : [];
+
+  return {
+    id: typeof v.id === "string" && v.id ? v.id : fallbackId,
+    startedAt,
+    lastSeenAt: typeof v.lastSeenAt === "number" ? v.lastSeenAt : startedAt,
+    pages,
+    referrer: typeof v.referrer === "string" ? v.referrer : "",
+    referrerSource: typeof v.referrerSource === "string" ? v.referrerSource : "Direktno",
+    device: v.device === "mobile" || v.device === "tablet" || v.device === "desktop" ? v.device : "desktop",
+    screen: typeof v.screen === "string" ? v.screen : "",
+    country: typeof v.country === "string" ? v.country : "Nepoznato",
+    countryCode: typeof v.countryCode === "string" ? v.countryCode : "",
+    timezone: typeof v.timezone === "string" ? v.timezone : "",
+    language: typeof v.language === "string" ? v.language : "",
+    totalMs: typeof v.totalMs === "number" && v.totalMs >= 0 ? v.totalMs : 0,
+    isReturning: v.isReturning === true,
+  };
+}
+
 // ── Ucitaj posjete iz Firebase (svi uredjaji vide iste brojke) ────────────
 export async function loadRemoteVisits(): Promise<Visit[]> {
   if (!firebaseReady) return [];
   try {
     const snap = await get(ref(getDb(), VISITS_DB_PATH));
     if (!snap.exists()) return [];
-    const obj = snap.val() as Record<string, Visit>;
+    const obj = snap.val() as Record<string, unknown>;
     return Object.entries(obj)
-      .filter(([, v]) => v && typeof v === "object")
-      .map(([id, v]) => ({ ...v, id }))
+      .map(([id, raw]) => normalizeVisit(raw, id))
+      .filter((v): v is Visit => v !== null)
       .sort((a, b) => a.startedAt - b.startedAt);
   } catch {
     return [];
@@ -267,7 +311,7 @@ function flushPage() {
   pageEnteredAt = 0;
 
   upsertVisit((v) => {
-    const pages = [...v.pages];
+    const pages = Array.isArray(v.pages) ? [...v.pages] : [];
     const existing = pages.findIndex((p) => p.path === path && p.enteredAt === pageEnteredAt);
     // uvijek dodaj novi zapis posjete stranice (i ako je ista ruta ponovo otvorena)
     const entry: PageView = { path, title, durationMs, enteredAt: Date.now() - durationMs };
@@ -358,7 +402,7 @@ export function summarize(visits: Visit[]): AnalyticsSummary {
     const day = new Date(v.startedAt).toISOString().slice(0, 10);
     dayMap.set(day, (dayMap.get(day) ?? 0) + 1);
 
-    for (const p of v.pages) {
+    for (const p of Array.isArray(v.pages) ? v.pages : []) {
       const e = pageMap.get(p.path) ?? { path: p.path, title: p.title, views: 0, totalMs: 0 };
       e.views += 1;
       e.totalMs += p.durationMs;

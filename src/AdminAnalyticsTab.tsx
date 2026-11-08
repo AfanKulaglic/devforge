@@ -123,8 +123,21 @@ function DailyChart({ daily }: { daily: AnalyticsSummary["daily"] }) {
 // ── Tab ───────────────────────────────────────────────────────────────────
 export default function AnalyticsTab() {
   const visits = useVisits();
-  const s = useMemo(() => summarize(visits), [visits]);
   const [loading, setLoading] = useState2(true);
+
+  // summarize() nikad ne smije srusiti cijeli admin panel — ako podaci iz
+  // baze nisu u ocekivanom obliku, prikazi prazno stanje umjesto bijelog ekrana.
+  const { summary: s, failed } = useMemo(() => {
+    try {
+      return { summary: summarize(visits), failed: false };
+    } catch (err) {
+      console.error("[analytics] summarize failed:", err, visits);
+      return {
+        summary: summarize([]),
+        failed: true,
+      };
+    }
+  }, [visits]);
 
   // Ucitaj posjete i iz Firebase (svi uredjaji u istu listu).
   useEffect(() => {
@@ -155,6 +168,12 @@ export default function AnalyticsTab() {
             <strong className="text-white">Vercel Analytics</strong>.
           </p>
           {loading && <p className="mt-2 text-xs text-teal-200/70">Učitavam iz baze…</p>}
+          {failed && (
+            <p className="mt-2 text-xs text-amber-300/90">
+              Dio zapisa iz baze nije u ispravnom obliku pa je preskočen. Klikni „Osvježi“ — novi posjeti se
+              bilježe ispravno.
+            </p>
+          )}
           <div className="mt-3 flex flex-wrap gap-2">
             <a
               href="https://vercel.com/dashboard"
