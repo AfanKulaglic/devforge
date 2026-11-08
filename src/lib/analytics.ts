@@ -10,7 +10,11 @@
 // referrer, uredjaj, jezik i daje realnu sliku kako se sajt koristi.
 // ───────────────────────────────────────────────────────────────────────────
 
+import { get, ref, set } from "firebase/database";
+import { getDb, firebaseReady } from "./firebase";
+
 const VISITS_KEY = "devforge-visits-v1";
+const VISITS_DB_PATH = "analytics/visits";
 const MAX_VISITS = 500;
 
 export type DeviceType = "mobile" | "tablet" | "desktop";
@@ -155,12 +159,61 @@ function readVisits(): Visit[] {
 }
 
 function writeVisits(visits: Visit[]) {
+  const capped = visits.slice(-MAX_VISITS);
   try {
-    window.localStorage.setItem(VISITS_KEY, JSON.stringify(visits.slice(-MAX_VISITS)));
+    window.localStorage.setItem(VISITS_KEY, JSON.stringify(capped));
   } catch {
     /* quota — ignorisi */
   }
   listeners.forEach((l) => l());
+
+  // Upisi i u Firebase (zadnjih 100 — da baza ne raste beskonacno).
+  if (firebaseReady) {
+    void (async () => {
+      try {
+        const recent = capped.slice(-100);
+        const payload: Record<string, Visit> = {};
+        for (const v of recent) payload[v.id] = v;
+        await set(ref(getDb(), VISITS_DB_PATH), payload);
+      } catch {
+        /* offline — lokalni kes ostaje */
+      }
+    })();
+  }
+}
+
+// ── Ucitaj posjete iz Firebase (svi uredjaji vide iste brojke) ────────────
+export async function loadRemoteVisits(): Promise<Visit[]> {
+  if (!firebaseReady) return [];
+  try {
+    const snap = await get(ref(getDb(), VISITS_DB_PATH));
+    if (!snap.exists()) return [];
+    const obj = snap.val() as Record<string, Visit>;
+    return Object.entries(obj)
+      .filter(([, v]) => v && typeof v === "object")
+      .map(([id, v]) => ({ ...v, id }))
+      .sort((a, b) => a.startedAt - b.startedAt);
+  } catch {
+    return [];
+  }
+}
+
+/** Spoji lokalne i Firebase posjete (bez duplikata po id-u). */
+export async function mergeRemoteVisits(): Promise<Visit[]> {
+  const local = readVisits();
+  const remote = await loadRemoteVisits();
+  const byId = new Map<string, Visit>();
+  for (const v of remote) byId.set(v.id, v);
+  for (const v of local) byId.set(v.id, v);
+  const merged = [...byId.values()].sort((a, b) => a.startedAt - b.startedAt).slice(-MAX_VISITS);
+  invalidate();
+  try {
+    window.localStorage.setItem(VISITS_KEY, JSON.stringify(merged));
+  } catch {
+    /* ignore */
+  }
+  listeners.forEach((l) => l());
+  return merged;
 }
 
 const listeners = new Set<() => void>();

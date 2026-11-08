@@ -13,6 +13,7 @@ import {
   HiOutlineTrash,
   HiOutlineUsers,
 } from "react-icons/hi2";
+import { useEffect, useState as useState2 } from "react";
 import {
   AnalyticsSummary,
   DEVICE_LABEL,
@@ -22,6 +23,7 @@ import {
   fmtDuration,
   getServerVisits,
   getVisits,
+  mergeRemoteVisits,
   subscribeVisits,
   summarize,
 } from "./lib/analytics";
@@ -122,6 +124,12 @@ function DailyChart({ daily }: { daily: AnalyticsSummary["daily"] }) {
 export default function AnalyticsTab() {
   const visits = useVisits();
   const s = useMemo(() => summarize(visits), [visits]);
+  const [loading, setLoading] = useState2(true);
+
+  // Ucitaj posjete i iz Firebase (svi uredjaji u istu listu).
+  useEffect(() => {
+    void mergeRemoteVisits().finally(() => setLoading(false));
+  }, []);
 
   const maxCountry = Math.max(...s.byCountry.map((c) => c.count), 1);
   const maxSource = Math.max(...s.bySource.map((c) => c.count), 1);
@@ -140,12 +148,13 @@ export default function AnalyticsTab() {
       <div className="flex items-start gap-3 border border-teal-400/25 bg-teal-500/[0.06] p-4">
         <HiOutlineInformationCircle className="mt-0.5 shrink-0 text-lg text-teal-300" aria-hidden="true" />
         <div className="text-sm leading-6 text-white/70">
-          <p className="font-bold text-white">Lokalna analitika — samo ovaj uređaj</p>
+          <p className="font-bold text-white">Analitika — Firebase + lokalno</p>
           <p className="mt-1">
-            Sajt nema server, pa se ovdje bilježe <strong className="text-white">samo posjete iz ovog preglednika</strong>.
-            Za stvarne posjete svih korisnika (država, grad, uređaj) uključi{" "}
-            <strong className="text-white">Vercel Analytics</strong> u Vercel dashboardu — besplatno je i daje prave podatke.
+            Posjete se bilježe lokalno i <strong className="text-white">šalju u Firebase</strong>, pa ih vidiš
+            sa svakog uređaja. Država je procijenjena iz vremenske zone; za tačnu geolokaciju uključi{" "}
+            <strong className="text-white">Vercel Analytics</strong>.
           </p>
+          {loading && <p className="mt-2 text-xs text-teal-200/70">Učitavam iz baze…</p>}
           <div className="mt-3 flex flex-wrap gap-2">
             <a
               href="https://vercel.com/dashboard"

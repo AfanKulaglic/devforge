@@ -1,6 +1,9 @@
 // ───────────────────────────────────────────────────────────────────────────
-// Lokalna "baza" projekata — običan localStorage, bez servera i bez baze.
-// Admin panel piše ovdje, /projekti stranica čita odavde.
+// STORE PROJEKATA — Firebase Realtime Database + lokalni kes (localStorage).
+//
+// Svi uredjaji vide iste projekte jer je baza izvor istine.
+// Lokalni kes postoji da sajt radi i offline i da prikaz bude trenutan.
+// Prvi put: lokalni projekti se automatski migriraju u Firebase.
 // ───────────────────────────────────────────────────────────────────────────
 
 export type AdminProject = {
@@ -18,8 +21,6 @@ export type AdminProject = {
   visible?: boolean;
 };
 
-const STORAGE_KEY = "devforge-projects-v1";
-
 // Početni (fallback) projekti — koriste se samo dok admin ništa ne doda.
 export const SERVICE_OPTIONS = [
   "Web shopovi",
@@ -27,6 +28,7 @@ export const SERVICE_OPTIONS = [
   "2D igrice",
   "Mobilne aplikacije",
 ];
+
 
 const SEED: AdminProject[] = [
   {
@@ -140,79 +142,216 @@ const SEED: AdminProject[] = [
   },
 ];
 
-const EVENT = "devforge:projects-changed";
-const EMPTY: AdminProject[] = [];
+// ───────────────────────────────────────────────────────────────────────────
+// STORE PROJEKATA — Firebase Realtime Database + lokalni kes.
+//
+// Arhitektura:
+//   1. Lokalni `localStorage` je KES (brz prikaz, radi offline).
+//   2. Firebase RTDB je IZVOR ISTINE (svi uredjaji vide isto).
+//   3. Na prvo pokretanje: ako baza je prazna a lokalno ima podataka →
+//      automatska MIGRACIJA lokalnih projekata u Firebase.
+//   4. Svaka izmjena: pise u Firebase, pa u lokalni kes.
+//
+// Kljuc u bazi: /projects/{projectId} = AdminProject
+// ───────────────────────────────────────────────────────────────────────────
+
+import { get, onValue, ref, set, remove, update } from "firebase/database";
+import { getDb, firebaseReady } from "./firebase";
+
+// Lokalni kes i zastita od visestrukog upisa.
+const STORAGE_KEY = "devforge-projects-v1";
+const SEED_VERSION_KEY = "devforge-projects-seed-version";
+const SEED_VERSION = "9";
+// Oznaka da je migracija u Firebase vec uradjena (sprecava ponovni upis).
+const MIGRATED_KEY = "devforge-projects-migrated-v1";
+
+const DB_PATH = "projects";
 
 function isBrowser() {
   return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
 }
 
-// Keširani snapshot — getSnapshot za useSyncExternalStore mora vraćati
-// istu referencu dok se podaci ne promijene (inače React uđe u petlju).
+// ── Stanje ────────────────────────────────────────────────────────────────
 let cache: AdminProject[] | null = null;
+let listeners = new Set<() => void>();
+let firebaseError: string | null = null;
 
-// Kljuc do verzije seed-a: kad se u kodu pojavi novi seed projekt, ovaj broj
-// se poveca i novi seed-ovi se automatski dodaju i u postojecu lokalnu bazu
-// (bez brisanja onoga sto je korisnik sam dodao/uredio).
-const SEED_VERSION_KEY = "devforge-projects-seed-version";
-const SEED_VERSION = "9";
+export type SyncState = "idle" | "connecting" | "live" | "offline" | "error";
+let syncState: SyncState = "idle";
+let syncListeners = new Set<() => void>();
 
-function readRaw(): AdminProject[] {
+function notify() {
+  listeners.forEach((l) => l());
+}
+
+function notifySync() {
+  syncListeners.forEach((l) => l());
+}
+
+function setSync(next: SyncState) {
+  syncState = next;
+  notifySync();
+}
+
+export function getSyncState(): SyncState {
+  return syncState;
+}
+
+export function getSyncError(): string | null {
+  return firebaseError;
+}
+
+export function subscribeSync(cb: () => void) {
+  syncListeners.add(cb);
+  return () => {
+    syncListeners.delete(cb);
+  };
+}
+
+// ── Lokalni kes ───────────────────────────────────────────────────────────
+function readLocal(): AdminProject[] {
   if (!isBrowser()) return SEED;
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    // Ključ ne postoji → prvi posjet: prikaži seed (ali ga NE upisuj).
     if (raw === null) return SEED;
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return EMPTY;
-    const stored = parsed.filter((p): p is AdminProject => !!p && typeof p.id === "string");
-
-    // Kad se SEED_VERSION promijeni:
-    //  1) dodaj seed projekte kojih nema u lokalnoj bazi,
-    //  2) osvjezi TEKST (opis, tag, kategoriju, URL) postojecih seed projekata,
-    //     ali NE diraj slike — korisnik ih je mozda zamijenio svojim.
-    //  3) projekte koje je korisnik sam dodao (nije seed) ne diraj nikako.
-    const seenVersion = window.localStorage.getItem(SEED_VERSION_KEY);
-    if (seenVersion !== SEED_VERSION) {
-      const seedById = new Map(SEED.map((p) => [p.id, p]));
-      const storedIds = new Set(stored.map((p) => p.id));
-
-      const refreshed = stored.map((p) => {
-        const seed = seedById.get(p.id);
-        if (!seed) return p; // korisnikov vlastiti projekt — ne diraj
-        return {
-          ...p,
-          title: seed.title,
-          service: seed.service,
-          tag: seed.tag,
-          url: seed.url,
-          description: seed.description,
-          // imageDesktop / imageMobile ostaju korisnikove ako ih je mijenjao
-          imageDesktop: p.imageDesktop || seed.imageDesktop,
-          imageMobile: p.imageMobile || seed.imageMobile,
-        };
-      });
-
-      const missing = SEED.filter((p) => !storedIds.has(p.id));
-      const merged = missing.length > 0 ? [...refreshed, ...missing] : refreshed;
-
-      try {
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
-        window.localStorage.setItem(SEED_VERSION_KEY, SEED_VERSION);
-      } catch {
-        /* localStorage pun — vrati samo procitano */
-      }
-      return merged;
-    }
-
-    return stored;
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((p): p is AdminProject => !!p && typeof p.id === "string");
   } catch {
     return SEED;
   }
 }
 
+function writeLocal(next: AdminProject[]) {
+  cache = next;
+  if (isBrowser()) {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    } catch {
+      /* pun localStorage — podaci ostaju u memoriji i u Firebaseu */
+    }
+  }
+  notify();
+}
+
+// ── Normalizacija liste ───────────────────────────────────────────────────
+function sortByCreated(list: AdminProject[]): AdminProject[] {
+  return [...list].sort((a, b) => a.createdAt - b.createdAt);
+}
+
+// ── Firebase: pretvori objekat iz baze u listu ────────────────────────────
+function fromDbObject(obj: Record<string, AdminProject> | null): AdminProject[] {
+  if (!obj) return [];
+  return sortByCreated(
+    Object.entries(obj)
+      .filter(([, v]) => v && typeof v === "object")
+      .map(([id, v]) => ({ ...v, id })),
+  );
+}
+
+// ── Firebase: upis cijele liste ───────────────────────────────────────────
+async function pushAll(next: AdminProject[]) {
+  if (!firebaseReady) return;
+  try {
+    const db = getDb();
+    const payload: Record<string, AdminProject> = {};
+    for (const p of next) payload[p.id] = p;
+    await set(ref(db, DB_PATH), payload);
+  } catch (e) {
+    firebaseError = e instanceof Error ? e.message : String(e);
+    setSync("error");
+  }
+}
+
+// ── MIGRACIJA: lokalno → Firebase ─────────────────────────────────────────
+// Pokrece se ako:
+//   - Firebase je prazan (nema /projects)
+//   - a lokalno ima projekata (bilo seed ili korisnikovi)
+// Tada upisuje SVE lokalne projekte u bazu, jednom zauvijek.
+async function migrateLocalToFirebase(): Promise<AdminProject[] | null> {
+  if (!firebaseReady || !isBrowser()) return null;
+  try {
+    const db = getDb();
+    const snap = await get(ref(db, DB_PATH));
+    const remote = snap.exists() ? (snap.val() as Record<string, AdminProject>) : null;
+    const remoteCount = remote ? Object.keys(remote).length : 0;
+
+    if (remoteCount > 0) {
+      // Baza vec ima podatke → ona je izvor istine, lokalno se samo uskladi.
+      return null;
+    }
+
+    // Baza prazna → migriraj lokalno (KES ili SEED).
+    const local = readLocal();
+    if (local.length === 0) return null;
+
+    await pushAll(local);
+    try {
+      window.localStorage.setItem(MIGRATED_KEY, new Date().toISOString());
+    } catch {
+      /* ignore */
+    }
+    return local;
+  } catch (e) {
+    firebaseError = e instanceof Error ? e.message : String(e);
+    setSync("error");
+    return null;
+  }
+}
+
+// ── Start sync (poziva se jednom iz App.tsx) ──────────────────────────────
+let started = false;
+
+export function startProjectsSync() {
+  if (started || !isBrowser()) return;
+  started = true;
+
+  // 1) Odmah prikazi lokalni kes (nema cekanja, nema praznog ekrana).
+  cache = readLocal();
+  notify();
+
+  if (!firebaseReady) {
+    setSync("offline");
+    return;
+  }
+
+  setSync("connecting");
+
+  // 2) Migracija (ako baza prazna a lokalno ima podataka), pa slusaj bazu.
+  void (async () => {
+    const migrated = await migrateLocalToFirebase();
+    if (migrated) {
+      // Migracija uspjesna — lokalni podaci su sada u bazi.
+      writeLocal(migrated);
+    }
+
+    // 3) Real-time slusanje: svaka promjena u bazi azurira sajt svima.
+    try {
+      const db = getDb();
+      onValue(
+        ref(db, DB_PATH),
+        (snap) => {
+          const list = fromDbObject(snap.exists() ? (snap.val() as Record<string, AdminProject>) : null);
+          // Ako baza je prazna a mi imamo seed — prikazi seed (prvi posjet).
+          const resolved = list.length > 0 ? list : SEED;
+          setSync("live");
+          writeLocal(resolved);
+        },
+        (err) => {
+          firebaseError = err.message;
+          setSync("error");
+        },
+      );
+    } catch (e) {
+      firebaseError = e instanceof Error ? e.message : String(e);
+      setSync("error");
+    }
+  })();
+}
+
+// ── Snapshot za useSyncExternalStore ──────────────────────────────────────
 export function getProjects(): AdminProject[] {
-  if (cache === null) cache = readRaw();
+  if (cache === null) cache = readLocal();
   return cache;
 }
 
@@ -220,29 +359,40 @@ export function getServerProjects(): AdminProject[] {
   return SEED;
 }
 
-function write(next: AdminProject[]) {
-  cache = next;
-  if (isBrowser()) {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    } catch {
-      /* localStorage pun / blokiran — podaci ostaju samo u memoriji */
-    }
-    window.dispatchEvent(new Event(EVENT));
-  }
-}
-
 export function subscribe(listener: () => void) {
   if (!isBrowser()) return () => {};
-  const handler = () => listener();
-  window.addEventListener(EVENT, handler);
+  listeners.add(listener);
+  // `storage` event pokriva promjene iz drugog taba istog preglednika.
+  const handler = () => {
+    cache = readLocal();
+    notify();
+  };
   window.addEventListener("storage", handler);
   return () => {
-    window.removeEventListener(EVENT, handler);
+    listeners.delete(listener);
     window.removeEventListener("storage", handler);
   };
 }
 
+// ── Upis (lokalno + Firebase) ─────────────────────────────────────────────
+function persist(next: AdminProject[]) {
+  writeLocal(next);
+  if (firebaseReady) {
+    void (async () => {
+      try {
+        const db = getDb();
+        const payload: Record<string, AdminProject> = {};
+        for (const p of next) payload[p.id] = p;
+        await set(ref(db, DB_PATH), payload);
+      } catch (e) {
+        firebaseError = e instanceof Error ? e.message : String(e);
+        setSync("error");
+      }
+    })();
+  }
+}
+
+// ── CRUD ──────────────────────────────────────────────────────────────────
 export function newProjectId(): string {
   return `p-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
@@ -250,21 +400,56 @@ export function newProjectId(): string {
 export function saveProject(project: AdminProject) {
   const list = getProjects();
   const exists = list.some((p) => p.id === project.id);
-  write(exists ? list.map((p) => (p.id === project.id ? project : p)) : [...list, project]);
+  const next = exists ? list.map((p) => (p.id === project.id ? project : p)) : [...list, project];
+
+  const sorted = sortByCreated(next);
+  writeLocal(sorted);
+
+  if (firebaseReady) {
+    void (async () => {
+      try {
+        const db = getDb();
+        await set(ref(db, `${DB_PATH}/${project.id}`), project);
+      } catch (e) {
+        firebaseError = e instanceof Error ? e.message : String(e);
+        setSync("error");
+      }
+    })();
+  }
 }
 
-// Ukljuci/iskljuci vidljivost projekta na javnom sajtu.
 export function toggleProjectVisibility(id: string) {
   const list = getProjects();
-  write(
-    list.map((p) =>
-      p.id === id ? { ...p, visible: p.visible === false ? true : false } : p,
-    ),
-  );
+  const target = list.find((p) => p.id === id);
+  if (!target) return;
+  const updated = { ...target, visible: target.visible === false ? true : false };
+  writeLocal(list.map((p) => (p.id === id ? updated : p)));
+
+  if (firebaseReady) {
+    void (async () => {
+      try {
+        await update(ref(getDb(), `${DB_PATH}/${id}`), { visible: updated.visible });
+      } catch (e) {
+        firebaseError = e instanceof Error ? e.message : String(e);
+        setSync("error");
+      }
+    })();
+  }
 }
 
 export function deleteProject(id: string) {
-  write(getProjects().filter((p) => p.id !== id));
+  writeLocal(getProjects().filter((p) => p.id !== id));
+
+  if (firebaseReady) {
+    void (async () => {
+      try {
+        await remove(ref(getDb(), `${DB_PATH}/${id}`));
+      } catch (e) {
+        firebaseError = e instanceof Error ? e.message : String(e);
+        setSync("error");
+      }
+    })();
+  }
 }
 
 // Promijeni redoslijed projekata unutar jedne kategorije.
@@ -274,25 +459,17 @@ export function deleteProject(id: string) {
 // vrijednosti unutar te kategorije, tako da sortiranje po createdAt radi.
 export function reorderProjects(service: string, orderedIds: string[]) {
   const list = getProjects();
-  const inGroup = list
-    .filter((p) => p.service === service)
-    .sort((a, b) => a.createdAt - b.createdAt);
+  const inGroup = list.filter((p) => p.service === service).sort((a, b) => a.createdAt - b.createdAt);
 
-  // Osnovica: najmanji createdAt u kategoriji, korak 1.
-  const base =
-    inGroup.length > 0
-      ? Math.min(...inGroup.map((p) => p.createdAt))
-      : 1;
+  const base = inGroup.length > 0 ? Math.min(...inGroup.map((p) => p.createdAt)) : 1;
 
   const newOrder = new Map<string, number>();
   orderedIds.forEach((id, index) => newOrder.set(id, base + index));
 
   const next = list.map((p) =>
-    p.service === service && newOrder.has(p.id)
-      ? { ...p, createdAt: newOrder.get(p.id) as number }
-      : p,
+    p.service === service && newOrder.has(p.id) ? { ...p, createdAt: newOrder.get(p.id) as number } : p,
   );
-  write(next);
+  persist(sortByCreated(next));
 }
 
 export function resetProjects() {
@@ -300,37 +477,32 @@ export function resetProjects() {
     try {
       window.localStorage.removeItem(STORAGE_KEY);
       window.localStorage.removeItem(SEED_VERSION_KEY);
+      window.localStorage.removeItem(MIGRATED_KEY);
     } catch {
       /* ignore */
     }
   }
   cache = SEED;
-  if (isBrowser()) window.dispatchEvent(new Event(EVENT));
+  notify();
+
+  if (firebaseReady) {
+    void pushAll(SEED);
+  }
 }
 
-// Vraca samo projekte vidljive na javnom sajtu (visible !== false).
+// ── Pomocne ───────────────────────────────────────────────────────────────
 export function visibleProjects(list: AdminProject[]): AdminProject[] {
   return list.filter((p) => p.visible !== false);
 }
 
-// Grupisanje za /projekti: uvijek iste tri grupe, u istom redu, i prazne se prikazuju.
 export function groupProjects(list: AdminProject[]) {
   return SERVICE_OPTIONS.map((service) => ({
     service,
-    items: list
-      .filter((p) => p.service === service)
-      .sort((a, b) => a.createdAt - b.createdAt),
+    items: list.filter((p) => p.service === service).sort((a, b) => a.createdAt - b.createdAt),
   }));
 }
 
-// ───────────────────────────────────────────────────────────────────────────
-// BACKUP / IZVOZ / UVOZ
-//
-// Podaci zive u localStorage, sto znaci da su vezani za JEDAN preglednik na
-// JEDNOM racunaru. Ove funkcije omogucavaju da ih prebacis na drugi uredjaj,
-// sacuvas prije vecе promjene, ili vratis ako nesto krene po zlu.
-// ───────────────────────────────────────────────────────────────────────────
-
+// ── BACKUP / IZVOZ / UVOZ ─────────────────────────────────────────────────
 export type BackupFile = {
   kind: "devforge-projects-backup";
   version: 1;
@@ -339,7 +511,6 @@ export type BackupFile = {
   projects: AdminProject[];
 };
 
-/** Napravi backup objekat od trenutnih projekata. */
 export function makeBackup(): BackupFile {
   return {
     kind: "devforge-projects-backup",
@@ -350,7 +521,6 @@ export function makeBackup(): BackupFile {
   };
 }
 
-/** Skini backup kao .json fajl (pokrece download u pregledniku). */
 export function downloadBackup() {
   const data = makeBackup();
   const json = JSON.stringify(data, null, 2);
@@ -366,7 +536,6 @@ export function downloadBackup() {
   URL.revokeObjectURL(url);
 }
 
-/** Ucitaj backup iz stringa (sadrzaj .json fajla). Baca gresku ako nije validan. */
 export function parseBackup(text: string): BackupFile {
   const parsed = JSON.parse(text);
   if (!parsed || parsed.kind !== "devforge-projects-backup") {
@@ -385,16 +554,45 @@ export function parseBackup(text: string): BackupFile {
  */
 export function restoreBackup(backup: BackupFile, mode: "replace" | "merge") {
   if (mode === "replace") {
-    write(backup.projects);
+    persist(backup.projects);
     return;
   }
   const current = getProjects();
   const byId = new Map(current.map((p) => [p.id, p]));
   for (const p of backup.projects) byId.set(p.id, p);
-  write([...byId.values()]);
+  persist(sortByCreated([...byId.values()]));
 }
 
-/** Trenutno stanje kao JSON string (za kopiranje u clipboard). */
 export function backupToJson(): string {
   return JSON.stringify(makeBackup(), null, 2);
+}
+
+// ── Rucna migracija iz admin panela ───────────────────────────────────────
+/** Prisilno posalji sve lokalne projekte u Firebase (prepisuje bazu). */
+export async function forcePushToFirebase(): Promise<{ ok: boolean; count: number; error?: string }> {
+  if (!firebaseReady) return { ok: false, count: 0, error: "Firebase nije konfigurisan." };
+  try {
+    const local = readLocal();
+    await pushAll(local);
+    try {
+      window.localStorage.setItem(MIGRATED_KEY, new Date().toISOString());
+    } catch {
+      /* ignore */
+    }
+    return { ok: true, count: local.length };
+  } catch (e) {
+    return { ok: false, count: 0, error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+/** Koliko projekata ima u Firebase bazi (za prikaz u adminu). */
+export async function countRemote(): Promise<number | null> {
+  if (!firebaseReady) return null;
+  try {
+    const snap = await get(ref(getDb(), DB_PATH));
+    if (!snap.exists()) return 0;
+    return Object.keys(snap.val() as Record<string, unknown>).length;
+  } catch {
+    return null;
+  }
 }

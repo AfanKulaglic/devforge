@@ -9,6 +9,25 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **FIREBASE REALTIME DATABASE — projekti vise nisu samo lokalni (MIGRACIJA USPJESNA)** — korisnik: „zasto kada dodam novu sliku u projekte ona bude samo lokalno tu sacuvana a zelim nelokalno" + „samo te jos jednom upozoravam da podaci koji su sada lokalno i localhost admin ih vidi ima te podatke da te podatke migriras na firebase realtime database".
+  **Instalirano:** `firebase@^13.2.0`.
+  **`src/lib/firebase.ts`** — `firebaseConfig` (projekat `my-game-702f4`, RTDB `my-game-702f4-default-rtdb.firebaseio.com`), `getFirebaseApp()`, `getDb()`, `firebaseReady`.
+  **`src/lib/projectsStore.ts` PREPISAN (~600 linija):** Firebase RTDB je **izvor istine**, `localStorage` je samo **kes** (brz prikaz + offline). Kljuc u bazi: `/projects/{projectId}`.
+  - `startProjectsSync()` — poziva se jednom iz `App.tsx`; prvo prikaze lokalni kes, pa pokrene migraciju, pa `onValue()` real-time slusanje (svaka promjena u bazi azurira sajt svima).
+  - `migrateLocalToFirebase()` — **automatska migracija**: ako je `/projects` prazan a lokalno ima podataka → upisuje SVE lokalne projekte u Firebase. Ako baza vec ima podatke → baza pobijedjuje, lokalno se uskladi.
+  - `persist()`, `saveProject()`, `toggleProjectVisibility()`, `deleteProject()`, `reorderProjects()` — svi pisu i lokalno i u Firebase (`set`/`update`/`remove`).
+  - `forcePushToFirebase()` — rucno slanje lokalnih u bazu (dugme u adminu).
+  - `countRemote()` — broj projekata u bazi (prikaz u adminu).
+  - `getSyncState()` / `subscribeSync()` — status: `live` / `connecting` / `offline` / `error`.
+  - Backup fje zadrzane (`downloadBackup`, `parseBackup`, `restoreBackup`, `backupToJson`).
+  **`src/AdminBackupTools.tsx`** — nova sekcija **„Sigurnosna kopija"** na vrhu taba Projekti, plus **`FirebaseSyncPanel`**: zelena/tamna tackica statusa, broj projekata u bazi, dugme **„Pošalji lokalne u Firebase"**. Dugmad: Izvezi backup / Kopiraj JSON / Uvezi backup.
+  **`src/lib/analytics.ts`** — posjete se sada salju i u Firebase: `/analytics/visits` (zadnjih 100, da baza ne raste). Nove fje `loadRemoteVisits()`, `mergeRemoteVisits()` (spaja lokalno + baza bez duplikata po id-u).
+  **`src/AdminAnalyticsTab.tsx`** — `mergeRemoteVisits()` na mount; info box promijenjen: „Analitika — Firebase + lokalno … vidiš sa svakog uređaja", loader „Učitavam iz baze…".
+  **`src/App.tsx`** — `useEffect(() => startProjectsSync(), [])`.
+  **`database.rules.json`** — pravila: `.read/.write` globalno zabranjeni; `projects` read/write dozvoljen + `indexOn`; `analytics/visits` dozvoljen.
+  **MIGRACIJA POTVRDJENA:** baza `https://my-game-702f4-default-rtdb.firebaseio.com/projects.json` sadrzi **7 projekata** — ukljucujuci korisnikov vlastiti projekt (`createdAt: 1794091410735`), **1 sakriven** (`visible: false`), prosjecan opis 358 znakova, i **korisnikove slike sa `i.ibb.co`** (ne seed slike). Nista nije izgubljeno.
+  **Verifikacija:** `npx tsc --noEmit` → 0; `npm run build` → ✓ 1.016 kB (gzip 274, +170 kB zbog firebase SDK); `/`, `/admin`, `/projekti` → 200; baza GET → 7 projekata.
+  **Korisnik treba:** u Firebase konzoli → Realtime Database → Rules → zalijepiti sadrzaj `database.rules.json` → Publish (trenutno je baza javno pisiva).
 - **Admin login placeholder: `afan` → `admin`** — korisnik: „zasto mi u admin stranici placeholder odma otkriva koji mi je username??? neka umjesto afan pise admin?????? i vise sifri kao za password placeholder". Placeholder je otkrivao stvarno korisnicko ime svakome ko otvori `/admin`. Promijenjeno: username placeholder `"afan"` → `"admin"` (genericki, ne odaje nista); password placeholder `"••••••"` (6) → `"••••••••••••"` (12 — izgleda kao pravi password manager). Stvarni kredencijali (`USERNAME = "afan"`, `PASSWORD = "080513"`) **nisu mijenjani** — rade kao i prije. Verifikacija: `grep 'placeholder="afan"'` → 0; u bundle-u `placeholder:"admin"` + `placeholder:"••••••••••••"`, `placeholder:"afan"` → 0; `npx tsc --noEmit` → 0; build ✓ 845.70 kB.
 - **ISPRAVLJEN VERCEL 404 NA SVIM PODSTRANICAMA** — korisnik: „kada ukucam https://dev-forge-studio.vercel.app/ADMIN dobijem gresku This page doesn't exist 404 NOT_FOUND".
   **Dijagnoza:** na produkciji su **sve podstranice** vracale 404 (`/projekti`, `/cijene`, `/admin`), ne samo `/admin` — dok je `/` radio (200). Headers iz `vercel.json` (HSTS, nosniff) **su radili**, sto dokazuje da Vercel cita fajl, ali `rewrites` nisu.

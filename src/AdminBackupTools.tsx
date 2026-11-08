@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import {
   HiOutlineArrowDownTray,
   HiOutlineArrowUpTray,
@@ -6,7 +6,17 @@ import {
   HiOutlineClipboardDocument,
   HiOutlineExclamationTriangle,
 } from "react-icons/hi2";
-import { BackupFile, backupToJson, downloadBackup, parseBackup, restoreBackup } from "./lib/projectsStore";
+import {
+  BackupFile,
+  backupToJson,
+  countRemote,
+  downloadBackup,
+  forcePushToFirebase,
+  getSyncState,
+  parseBackup,
+  restoreBackup,
+  subscribeSync,
+} from "./lib/projectsStore";
 
 const btnCls =
   "inline-flex items-center gap-2 border border-white/15 px-4 py-2.5 text-xs font-bold text-white/70 transition hover:border-teal-300 hover:text-white";
@@ -122,6 +132,9 @@ export default function BackupTools() {
         </div>
       )}
 
+      {/* Firebase sync status + rucna migracija */}
+      <FirebaseSyncPanel />
+
       {pending && (
         <div className="mt-4 border border-teal-400/30 bg-teal-500/[0.07] p-4">
           <p className="text-sm font-bold text-white">
@@ -155,6 +168,78 @@ export default function BackupTools() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// ── Firebase sync status ──────────────────────────────────────────────────
+function FirebaseSyncPanel() {
+  const state = useSyncExternalStore(subscribeSync, getSyncState, () => "idle" as const);
+  const [remoteCount, setRemoteCount] = useState<number | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  const refresh = async () => {
+    const n = await countRemote();
+    setRemoteCount(n);
+  };
+
+  useEffect(() => {
+    void refresh();
+  }, [state]);
+
+  const onPush = async () => {
+    setBusy(true);
+    const res = await forcePushToFirebase();
+    setBusy(false);
+    if (res.ok) {
+      setMsg(`Poslano ${res.count} projekata u Firebase.`);
+      void refresh();
+    } else {
+      setMsg(`Greška: ${res.error}`);
+    }
+    window.setTimeout(() => setMsg(null), 8000);
+  };
+
+  const label: Record<string, { text: string; cls: string }> = {
+    live: { text: "Povezano sa Firebase", cls: "text-teal-300" },
+    connecting: { text: "Povezivanje…", cls: "text-white/60" },
+    offline: { text: "Samo lokalno (bez baze)", cls: "text-white/40" },
+    error: { text: "Greška u vezi sa bazom", cls: "text-red-300" },
+    idle: { text: "Čeka…", cls: "text-white/40" },
+  };
+  const st = label[state] ?? label.idle;
+
+  return (
+    <div className="mt-4 border-t border-white/10 pt-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span
+            className={`h-2 w-2 rounded-full ${
+              state === "live" ? "bg-teal-400" : state === "error" ? "bg-red-400" : "bg-white/30"
+            }`}
+            aria-hidden="true"
+          />
+          <div>
+            <p className={`text-xs font-bold ${st.cls}`}>{st.text}</p>
+            <p className="mt-0.5 text-[0.68rem] text-white/35">
+              {remoteCount === null
+                ? "Baza nedostupna"
+                : `${remoteCount} ${remoteCount === 1 ? "projekt" : "projekata"} u bazi`}
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={onPush}
+          disabled={busy}
+          className="inline-flex items-center gap-2 border border-teal-400/40 bg-teal-500/10 px-4 py-2 text-xs font-bold text-teal-200 transition hover:bg-teal-500/20 disabled:opacity-50"
+        >
+          <HiOutlineArrowUpTray className="text-sm" aria-hidden="true" />
+          {busy ? "Šaljem…" : "Pošalji lokalne u Firebase"}
+        </button>
+      </div>
+      {msg && <p className="mt-2 text-xs text-teal-200">{msg}</p>}
     </div>
   );
 }
