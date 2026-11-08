@@ -768,22 +768,16 @@ const serviceDetails: Record<"web" | "games" | "mobile", ServiceDetail> = {
 function Logo() {
   return (
     <a href="/" className="group inline-flex items-center gap-2.5" aria-label="DevForge početna">
-      {/* Forge-mark: terminalni prompt >_ , kursor "žari" kao usijani metal = Dev + Forge */}
+      {/* Logo ikona (brend znak) — umjesto starog terminalnog >_ */}
       <span className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border border-white/15 bg-[#0B0B0F] transition duration-300 group-hover:border-teal-400/60">
-        <svg viewBox="0 0 24 24" className="relative z-10 h-[1.3rem] w-[1.3rem]" fill="none" aria-hidden="true">
-          <defs>
-            <linearGradient id="forgeGrad" x1="5" y1="7" x2="19" y2="17" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#2DD4BF" />
-              <stop offset="1" stopColor="#22D3EE" />
-            </linearGradient>
-          </defs>
-          {/* prompt > */}
-          <path d="M6.5 7.5 11 12l-4.5 4.5" stroke="url(#forgeGrad)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-          {/* kursor-ember (usijani metal) */}
-          <rect x="13" y="14.4" width="5" height="2.3" rx="1.15" fill="url(#forgeGrad)" className="origin-center transition-transform duration-500 group-hover:scale-110" />
-        </svg>
-        {/* žar koji se rasplamsa na hover */}
-        <span className="pointer-events-none absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100 bg-[radial-gradient(circle_at_center,rgba(45,212,191,0.3),transparent_65%)]" aria-hidden="true" />
+        <img
+          src="/images/logo-icon.png"
+          alt=""
+          width={40}
+          height={40}
+          className="relative z-10 h-full w-full object-contain p-1 transition duration-500 group-hover:scale-110"
+          aria-hidden="true"
+        />
       </span>
       <span className="text-xl font-extrabold tracking-tight">
         <span className="text-white">Dev</span>
@@ -4262,16 +4256,13 @@ function AdMark({ size = 40 }: { size?: number | string }) {
       className="relative flex items-center justify-center overflow-hidden rounded-[28%] border border-white/15 bg-[#0B0B0F]"
       style={{ height: size, width: size }}
     >
-      <svg viewBox="0 0 24 24" style={{ height: "62%", width: "62%" }} fill="none" aria-hidden="true">
-        <defs>
-          <linearGradient id="adForgeGrad" x1="5" y1="7" x2="19" y2="17" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#2dd4bf" />
-            <stop offset="1" stopColor="#22d3ee" />
-          </linearGradient>
-        </defs>
-        <path d="M6.5 7.5 11 12l-4.5 4.5" stroke="url(#adForgeGrad)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-        <rect x="13" y="14.4" width="5" height="2.3" rx="1.15" fill="url(#adForgeGrad)" />
-      </svg>
+      <img
+        src="/images/logo-icon.png"
+        alt=""
+        className="object-contain"
+        style={{ height: "76%", width: "76%" }}
+        aria-hidden="true"
+      />
     </span>
   );
 }
