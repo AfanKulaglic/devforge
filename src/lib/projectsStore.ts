@@ -322,3 +322,79 @@ export function groupProjects(list: AdminProject[]) {
       .sort((a, b) => a.createdAt - b.createdAt),
   }));
 }
+
+// ───────────────────────────────────────────────────────────────────────────
+// BACKUP / IZVOZ / UVOZ
+//
+// Podaci zive u localStorage, sto znaci da su vezani za JEDAN preglednik na
+// JEDNOM racunaru. Ove funkcije omogucavaju da ih prebacis na drugi uredjaj,
+// sacuvas prije vecе promjene, ili vratis ako nesto krene po zlu.
+// ───────────────────────────────────────────────────────────────────────────
+
+export type BackupFile = {
+  kind: "devforge-projects-backup";
+  version: 1;
+  exportedAt: string;
+  seedVersion: string;
+  projects: AdminProject[];
+};
+
+/** Napravi backup objekat od trenutnih projekata. */
+export function makeBackup(): BackupFile {
+  return {
+    kind: "devforge-projects-backup",
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    seedVersion: SEED_VERSION,
+    projects: getProjects(),
+  };
+}
+
+/** Skini backup kao .json fajl (pokrece download u pregledniku). */
+export function downloadBackup() {
+  const data = makeBackup();
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
+  a.href = url;
+  a.download = `devforge-projekti-backup-${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/** Ucitaj backup iz stringa (sadrzaj .json fajla). Baca gresku ako nije validan. */
+export function parseBackup(text: string): BackupFile {
+  const parsed = JSON.parse(text);
+  if (!parsed || parsed.kind !== "devforge-projects-backup") {
+    throw new Error("Fajl nije DevForge backup.");
+  }
+  if (!Array.isArray(parsed.projects)) {
+    throw new Error("Backup ne sadrzi listu projekata.");
+  }
+  return parsed as BackupFile;
+}
+
+/**
+ * Vrati projekte iz backupa.
+ * `mode: "replace"` — obrisi sve trenutno i upisi iz backupa.
+ * `mode: "merge"`   — zadrzi trenutno, dodaj/azuriraj iz backupa (po id-u).
+ */
+export function restoreBackup(backup: BackupFile, mode: "replace" | "merge") {
+  if (mode === "replace") {
+    write(backup.projects);
+    return;
+  }
+  const current = getProjects();
+  const byId = new Map(current.map((p) => [p.id, p]));
+  for (const p of backup.projects) byId.set(p.id, p);
+  write([...byId.values()]);
+}
+
+/** Trenutno stanje kao JSON string (za kopiranje u clipboard). */
+export function backupToJson(): string {
+  return JSON.stringify(makeBackup(), null, 2);
+}

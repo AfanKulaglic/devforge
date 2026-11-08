@@ -34,6 +34,7 @@ import {
 } from "./lib/projectsStore";
 import PricingTab from "./AdminPricingTab";
 import AnalyticsTab from "./AdminAnalyticsTab";
+import BackupTools from "./AdminBackupTools";
 
 // ───────────────────────────────────────────────────────────────────────────
 // Admin panel — lokalna prijava (sessionStorage) + jedan tab: Projekti.
@@ -657,6 +658,7 @@ function ProjectsTab() {
 
   return (
     <div className="space-y-6">
+      <BackupTools />
       <div className="flex flex-wrap items-end justify-between gap-4 border-b border-white/10 pb-5">
         <div>
           <h2 className="text-xl font-extrabold tracking-tight text-white">Projekti</h2>
