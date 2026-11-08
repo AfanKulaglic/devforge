@@ -103,10 +103,10 @@ const FORM_ENDPOINT = "";
 const CONTACT = {
   phoneDisplay: "+387 62 576 456",
   phoneRaw: "+38762576456", // bez + i razmaka za wa.me
-  email: "info@devforge.ba",
+  email: "devforge.corporation@gmail.com",
   // Instagram DM — najbrzi kanal za mnoge klijente.
-  instagramHandle: "@devforge.ba",
-  instagramUrl: "https://ig.me/m/devforge.ba", // ig.me/m/ = direktno otvara DM
+  instagramHandle: "@devforge.corporation",
+  instagramUrl: "https://ig.me/m/devforge.corporation", // ig.me/m/ = direktno otvara DM
   address: "Maršala Tita 28, Sarajevo",
   street: "Maršala Tita 28",
   city: "71000 Sarajevo",
@@ -1090,14 +1090,14 @@ function Header() {
                 <HiOutlineRocketLaunch className="text-base" aria-hidden="true" />
               </CtaButton>
               <div className="mt-4 flex items-center justify-between px-1">
-                <a className="text-sm font-medium text-white/55 transition hover:text-white" href="mailto:info@devforge.ba">
-                  info@devforge.ba
+                <a className="text-sm font-medium text-white/55 transition hover:text-white" href="mailto:devforge.corporation@gmail.com">
+                  devforge.corporation@gmail.com
                 </a>
                 <div className="flex gap-2">
                   <a className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-white/70 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.linkedin.com/company/devforge" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
                     <FaLinkedinIn className="text-sm" />
                   </a>
-                  <a className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-white/70 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.instagram.com/devforge.ba" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                  <a className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-white/70 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.instagram.com/devforge.corporation" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                     <FaInstagram className="text-sm" />
                   </a>
                 </div>
@@ -2410,7 +2410,7 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
       message || "(nije upisan)",
       "",
       "— — —",
-      "Poslano sa devforge.ba",
+      "Poslano sa devforge-corporation.vercel.app",
     ].join("\n");
     return `mailto:${CONTACT.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
@@ -2681,20 +2681,20 @@ function ContactAndFooter() {
         <div>
           <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl md:text-6xl">Počnimo raditi zajedno!</h2>
           <p className="mt-5 max-w-xl text-lg leading-8 text-[#A7AABB]">Nudimo moderna digitalna rješenja prilagođena vašim potrebama, brzu isporuku i besplatnu gotovu verziju.</p>
-          <a className="mt-8 inline-flex items-center gap-2 rounded-none bg-gradient-to-r from-teal-400 to-[#0891B2] px-7 py-4 text-sm font-extrabold text-white" href="mailto:info@devforge.ba">
+          <a className="mt-8 inline-flex items-center gap-2 rounded-none bg-gradient-to-r from-teal-400 to-[#0891B2] px-7 py-4 text-sm font-extrabold text-white" href="mailto:devforge.corporation@gmail.com">
             <HiOutlineRocketLaunch className="text-lg" aria-hidden="true" />
             Dobijte gotovu verziju
           </a>
           <div className="mt-10 space-y-3 text-[#A7AABB]">
             <p className="flex items-center gap-3"><HiOutlinePhone className="text-lg text-teal-300" aria-hidden="true" /><span className="font-bold text-white">Telefon:</span> (+387) 61 000 000</p>
-            <p className="flex items-center gap-3"><HiOutlineEnvelope className="text-lg text-teal-300" aria-hidden="true" /><span className="font-bold text-white">Email:</span> info@devforge.ba</p>
+            <p className="flex items-center gap-3"><HiOutlineEnvelope className="text-lg text-teal-300" aria-hidden="true" /><span className="font-bold text-white">Email:</span> devforge.corporation@gmail.com</p>
             <p className="flex items-center gap-3"><HiOutlineMapPin className="text-lg text-teal-300" aria-hidden="true" /><span className="font-bold text-white">Lokacija:</span> Marsala Tita 28, Sarajevo, BiH</p>
           </div>
           <div className="mt-6 flex gap-3">
             <a className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.linkedin.com/company/devforge" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
               <FaLinkedinIn />
             </a>
-            <a className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.instagram.com/devforge.ba" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <a className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.instagram.com/devforge.corporation" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
               <FaInstagram />
             </a>
           </div>
@@ -2718,13 +2718,13 @@ function ContactAndFooter() {
             Poruka
             <textarea className="mt-2 min-h-36 w-full border border-white/10 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-teal-300" name="message" required />
           </label>
-          <input type="hidden" name="_subject" value="Nova poruka sa devforge.ba" />
+          <input type="hidden" name="_subject" value="Nova poruka sa devforge-corporation.vercel.app" />
           <button className="inline-flex w-full items-center justify-center gap-2 rounded-none bg-white px-6 py-3 font-extrabold text-black transition hover:bg-teal-200 disabled:cursor-not-allowed disabled:opacity-60" type="submit" disabled={contactSending}>
             <HiOutlinePaperAirplane aria-hidden="true" />
             {contactSending ? "Šaljem..." : "Pošalji poruku"}
           </button>
           {contactSent && <p className="text-sm font-semibold text-teal-200">Hvala! Vaša poruka je poslana — javljamo se uskoro.</p>}
-          {contactError && <p className="text-sm font-semibold text-red-300">Slanje trenutno nije uspjelo. Pokušajte ponovo ili pišite na info@devforge.ba.</p>}
+          {contactError && <p className="text-sm font-semibold text-red-300">Slanje trenutno nije uspjelo. Pokušajte ponovo ili pišite na devforge.corporation@gmail.com.</p>}
         </form>
       </section>
       <section className="border-t border-white/10">
@@ -2753,14 +2753,14 @@ function ContactAndFooter() {
               <p className="mt-4 max-w-xs text-sm leading-6 text-[#A7AABB]">DevForge — web stranice, shopovi i mobilne aplikacije iz Sarajeva. Bez predujma, uz besplatnu gotovu verziju.</p>
               <div className="mt-5 space-y-2 text-sm text-[#A7AABB]">
                 <a className="flex items-center gap-2.5 transition hover:text-white" href="tel:+38761000000"><HiOutlinePhone className="text-teal-300" aria-hidden="true" /> (+387) 61 000 000</a>
-                <a className="flex items-center gap-2.5 transition hover:text-white" href="mailto:info@devforge.ba"><HiOutlineEnvelope className="text-teal-300" aria-hidden="true" /> info@devforge.ba</a>
+                <a className="flex items-center gap-2.5 transition hover:text-white" href="mailto:devforge.corporation@gmail.com"><HiOutlineEnvelope className="text-teal-300" aria-hidden="true" /> devforge.corporation@gmail.com</a>
                 <p className="flex items-center gap-2.5"><HiOutlineMapPin className="text-teal-300" aria-hidden="true" /> Maršala Tita 28, Sarajevo, BiH</p>
               </div>
               <div className="mt-5 flex gap-3">
                 <a className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.linkedin.com/company/devforge" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
                   <FaLinkedinIn />
                 </a>
-                <a className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.instagram.com/devforge.ba" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                <a className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.instagram.com/devforge.corporation" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                   <FaInstagram />
                 </a>
               </div>
@@ -3607,7 +3607,7 @@ function FaqPage() {
 // koja se ionako prikazuje ispod). Svaka kartica je klikabilna (tel/mailto/maps).
 const contactMethods: { icon: IconType; label: string; value: string; href: string; note: string }[] = [
   { icon: HiOutlinePhone, label: "Telefon", value: "(+387) 61 000 000", href: "tel:+38761000000", note: "Pon–Pet, 09–17h" },
-  { icon: HiOutlineEnvelope, label: "Email", value: "info@devforge.ba", href: "mailto:info@devforge.ba", note: "Odgovaramo isti dan" },
+  { icon: HiOutlineEnvelope, label: "Email", value: "devforge.corporation@gmail.com", href: "mailto:devforge.corporation@gmail.com", note: "Odgovaramo isti dan" },
   { icon: HiOutlineMapPin, label: "Lokacija", value: "Maršala Tita 28, Sarajevo", href: "https://maps.google.com/?q=Marsala+Tita+28+Sarajevo", note: "BiH + cijela regija" },
 ];
 
@@ -3652,7 +3652,7 @@ function ContactMethods() {
           <a className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-[#0B0B0F] transition hover:border-teal-500 hover:bg-teal-500 hover:text-white" href="https://www.linkedin.com/company/devforge" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
             <FaLinkedinIn />
           </a>
-          <a className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-[#0B0B0F] transition hover:border-teal-500 hover:bg-teal-500 hover:text-white" href="https://www.instagram.com/devforge.ba" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <a className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-[#0B0B0F] transition hover:border-teal-500 hover:bg-teal-500 hover:text-white" href="https://www.instagram.com/devforge.corporation" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
             <FaInstagram />
           </a>
         </div>
@@ -4009,8 +4009,8 @@ const legalDocs: Record<"privatnost" | "uslovi" | "kolacici", LegalDoc> = {
       { heading: "2. Svrha obrade", body: ["Podatke koristimo isključivo da odgovorimo na vaš upit, pripremimo ponudu, isporučimo dogovorene usluge i, ako ste se pretplatili, šaljemo povremene novosti."] },
       { heading: "3. Pravni osnov", body: ["Obrada se temelji na vašem pristanku i na legitimnom interesu pružanja usluga koje ste zatražili. Pristanak možete povući u svakom trenutku."] },
       { heading: "4. Dijeljenje podataka", body: ["Vaše podatke ne prodajemo niti iznajmljujemo trećim stranama. Možemo ih dijeliti s pouzdanim obrađivačima (npr. hosting i email servisi) isključivo radi pružanja usluge."] },
-      { heading: "5. Vaša prava", body: ["Imate pravo na pristup, ispravku i brisanje svojih podataka, kao i na prigovor na obradu. Za ostvarivanje prava javite se na info@devforge.ba."] },
-      { heading: "6. Kontakt", body: ["Za sva pitanja o privatnosti kontaktirajte nas na info@devforge.ba."] },
+      { heading: "5. Vaša prava", body: ["Imate pravo na pristup, ispravku i brisanje svojih podataka, kao i na prigovor na obradu. Za ostvarivanje prava javite se na devforge.corporation@gmail.com."] },
+      { heading: "6. Kontakt", body: ["Za sva pitanja o privatnosti kontaktirajte nas na devforge.corporation@gmail.com."] },
     ],
   },
   uslovi: {
@@ -4026,7 +4026,7 @@ const legalDocs: Record<"privatnost" | "uslovi" | "kolacici", LegalDoc> = {
       { heading: "4. Intelektualno vlasništvo", body: ["Nakon isporuke i izmirenja dogovorene cijene, kompletan kod, dizajn i prava nad projektom pripadaju klijentu."] },
       { heading: "5. Odgovornost", body: ["Demo verzija projekta je besplatna i za nju se ne plaća ništa. Ne odgovaramo za štetu nastalu nepravilnim korištenjem ili izmjenama izvršenim od strane trećih lica nakon isporuke."] },
       { heading: "6. Izmjene uslova", body: ["Zadržavamo pravo izmjene ovih uslova. Aktuelna verzija uvijek je dostupna na ovoj stranici."] },
-      { heading: "7. Kontakt", body: ["Za pitanja o uslovima korištenja javite se na info@devforge.ba."] },
+      { heading: "7. Kontakt", body: ["Za pitanja o uslovima korištenja javite se na devforge.corporation@gmail.com."] },
     ],
   },
   kolacici: {
@@ -4040,7 +4040,7 @@ const legalDocs: Record<"privatnost" | "uslovi" | "kolacici", LegalDoc> = {
       { heading: "2. Koje kolačiće koristimo", body: ["Neophodni kolačići omogućavaju osnovno funkcionisanje stranice (npr. pamćenje vašeg pristanka na kolačiće).", "Analitički kolačići pomažu nam da razumijemo kako se stranica koristi, isključivo u zbirnom i anonimnom obliku."] },
       { heading: "3. Upravljanje kolačićima", body: ["Kolačiće možete u svakom trenutku obrisati ili blokirati u postavkama svog preglednika. Imajte na umu da bez nekih kolačića dijelovi stranice možda neće raditi ispravno."] },
       { heading: "4. Pristanak", body: ["Nastavkom korištenja stranice i klikom na „Prihvatam” na baneru o kolačićima dajete pristanak na korištenje kolačića opisanih ovdje."] },
-      { heading: "5. Kontakt", body: ["Za pitanja o kolačićima kontaktirajte nas na info@devforge.ba."] },
+      { heading: "5. Kontakt", body: ["Za pitanja o kolačićima kontaktirajte nas na devforge.corporation@gmail.com."] },
     ],
   },
 };
@@ -4313,7 +4313,7 @@ const AD_NARRATION = [
   "Sve na jednom mjestu: web stranice sto pedeset maraka, web shopovi seststo maraka, a mobilne aplikacije i igre po dogovoru.",
   "Uz svaki projekt dobijate vlastiti admin panel — sami mijenjate tekst, slike, proizvode i cijene, bez koda.",
   "Do šezdeset posto jeftinije od agencija — uz isti vrhunski kvalitet i iste provjerene tehnologije.",
-  "Zatražite svoju besplatnu gotovu verziju na devforge.ba.",
+  "Zatražite svoju besplatnu gotovu verziju na devforge corporation tačka vercel tačka app.",
   "DevForge. Bez rizika, bez predujma. Javite nam se na Viber, WhatsApp ili Instagram — dogovor za pet minuta.",
 ];
 
@@ -4499,7 +4499,7 @@ function AdReel({ recordMode = false }: { recordMode?: boolean }) {
         return (
           <div className="ad-box">
             <span className="ad-rise ad-pill">
-              <span className="ad-type">devforge.ba</span>
+              <span className="ad-type">devforge</span>
             </span>
             <div className="ad-pop flex items-center" style={{ gap: "1.8cqh" }}>
               <AdMark size="11cqh" />
@@ -4571,7 +4571,7 @@ function AdReel({ recordMode = false }: { recordMode?: boolean }) {
               </svg>
             </div>
             <p className="ad-rise ad-eyebrow text-white/55" style={{ animationDelay: ".7s" }}>
-              devforge.ba
+              devforge-corporation.vercel.app
             </p>
           </div>
         );
@@ -4879,7 +4879,7 @@ export default function App() {
     };
     document.title = titles[route] ?? titles.home;
     // Canonical + og:url po ruti (čisti URL-ovi → svaka stranica ima svoj kanonski URL).
-    const url = "https://devforge.ba" + (path === "/" ? "/" : path);
+    const url = "https://devforge-corporation.vercel.app" + (path === "/" ? "/" : path);
     document.querySelector('link[rel="canonical"]')?.setAttribute("href", url);
     document.querySelector('meta[property="og:url"]')?.setAttribute("content", url);
   }, [route, path]);
