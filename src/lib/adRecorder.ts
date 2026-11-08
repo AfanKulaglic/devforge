@@ -47,189 +47,90 @@ export async function recordAdToMp4({
 }: Options): Promise<Blob> {
   const totalMs = sceneDurations.reduce((a, b) => a + b, 0);
   const totalFrames = Math.round((totalMs / 1000) * FPS);
-
   onProgress({ phase: "loading", frame: 0, totalFrames, percent: 0 });
   console.info("[adRecorder] start", { totalFrames, totalMs, AD_W, AD_H, FPS });
 
-  // ── A) Skriveni iframe sa reklamom u punoj rezoluciji ──
-  const frame = document.createElement("iframe");
-  frame.src = new URL("/reklama?record=1", window.location.origin).href;
-  frame.setAttribute("aria-hidden", "true");
-  frame.setAttribute("tabindex", "-1");
-  frame.style.cssText = [
-    "position:fixed",
-    "left:0",
-    "top:0",
-    `width:${AD_W}px`,
-    `height:${AD_H}px`,
-    "border:0",
-    "opacity:0",
-    "pointer-events:none",
-    "z-index:-1",
-  ].join(";");
-  document.body.appendChild(frame);
-
+  const frame = await openReelFrame();
   let aborted = false;
-  const onAbort = () => {
-    aborted = true;
-  };
+  const onAbort = () => { aborted = true; };
   signal?.addEventListener("abort", onAbort, { once: true });
 
   try {
-    // Sacekaj da se iframe ucita (React mount + fontovi + ikone).
-    await new Promise<void>((resolve, reject) => {
-      const timer = window.setTimeout(
-        () => reject(new Error("Reklama se nije učitala u 25s. Provjerite da li je /reklama dostupna.")),
-        25000,
-      );
-      frame.onload = () => {
-        window.clearTimeout(timer);
-        resolve();
-      };
-      frame.onerror = () => {
-        window.clearTimeout(timer);
-        reject(new Error("Iframe nije mogao učitati /reklama"));
-      };
-    });
-
-    const doc = frame.contentDocument;
-    const win = frame.contentWindow as (Window & typeof globalThis) | null;
-    if (!doc || !win) throw new Error("Iframe nije dostupan (cross-origin?)");
-
-    console.info("[adRecorder] iframe loaded, waiting for .ad-reel");
-    const reel = await waitForElement(doc, ".ad-reel", 20000);
-    console.info("[adRecorder] reel found", {
-      w: (reel as HTMLElement).offsetWidth,
-      h: (reel as HTMLElement).offsetHeight,
-    });
-    // Ikone su SVG (sinkrone), ali fontovi mogu kasniti — sacekaj ih.
-    await waitForFonts(doc);
-    await sleep(400);
-
-    // ── B) Canvas + mediabunny izlaz ──
-    const canvas = document.createElement("canvas");
-    canvas.width = AD_W;
-    canvas.height = AD_H;
-    const ctx = canvas.getContext("2d", { alpha: false });
-    if (!ctx) throw new Error("Canvas 2D nije dostupan u ovom browseru");
-    ctx.fillStyle = "#040807";
-    ctx.fillRect(0, 0, AD_W, AD_H);
+    const { reel } = await waitForReel(frame);
+    const { canvas, ctx } = makeCanvas();
 
     const output = new Output({
       format: new Mp4OutputFormat(),
       target: new BufferTarget(),
     });
-
     const videoSource = new CanvasSource(canvas, {
       codec: "avc",
       bitrate: new Quality("very-high"),
     });
     output.addVideoTrack(videoSource);
     await output.start();
-    console.info("[adRecorder] output started");
 
-    const frameInterval = 1000 / FPS;
-    const start = performance.now();
-
-    // ── Snimanje sa stvarnim vremenom ──
-    //
-    // Reklama u iframe-u se vrti real-time (setTimeout po sceni). Mi hvatamo
-    // kadar sto brze mozemo, a svakom kadru upisujemo STVARNO proteklo vrijeme
-    // od pocetka snimanja:
-    //
-    //   timestamp = (now - start) / 1000
-    //
-    // Zato video uvijek traje tacno kao pregled (27.6s) — bez obzira na to
-    // koliko brzo/skoro hvatamo kadrove. Ako je uredjaj spor, imat cemo manje
-    // kadrova (nizi efektivni fps), ali BRZINA ostaje ista. Ako je brz, imat
-    // cemo svih 30 fps.
-    //
-    // NAPOMENA: ne koristimo `lastTimestamp += duration` jer bi se greska
-    // nagomilavala i video bi postao spor. Uvijek racunamo iz `start`.
     const maxDuration = totalMs / 1000;
-    let framesWritten = 0;
-    // Vrijeme prethodno upisanog kadra — trajanje se racuna unatrag.
-    let previousTime: number | null = null;
+    const start = performance.now();
+    let written = 0;
+    let prev = 0;
 
-    for (let i = 0; i < totalFrames; i++) {
-      if (aborted || signal?.aborted) throw new Error("Snimanje prekinuto");
+    // Ubrzaj rasterizaciju — skini blur/backdrop-filter tokom snimanja.
+    const restoreEffects = stripHeavyEffects(frame.doc as Document);
 
-      // Stani kad predjemo stvarno trajanje reklame.
-      if ((performance.now() - start) / 1000 >= maxDuration) break;
+    // ── SNAMANJE ──
+    // Kljucno pravilo: timestamp kadra = STVARNO proteklo vrijeme.
+    // Trajanje = razlika do sljedeceg stvarnog kadra. Time video uvijek
+    // traje `maxDuration` sekundi, bez obzira na brzinu toCanvas-a.
+    while (!aborted && !signal?.aborted) {
+      const elapsed = (performance.now() - start) / 1000;
+      if (elapsed >= maxDuration) break;
 
-      // Cekaj da prodje 1/FPS od prethodnog kadra (animacija napreduje).
-      const targetTime = start + i * frameInterval;
-      const wait = targetTime - performance.now();
-      if (wait > 0) await sleep(wait);
-
-      let snapshot: HTMLCanvasElement;
+      // Uhvati kadar (moze potrajati 50-300ms).
+      let snap: HTMLCanvasElement | null = null;
       try {
-        snapshot = await toCanvas(reel as HTMLElement, {
-          canvasWidth: AD_W,
-          canvasHeight: AD_H,
-          width: AD_W,
-          height: AD_H,
-          pixelRatio: 1,
-          backgroundColor: "#040807",
-          // Klonirani cvor se renderuje van toka dokumenta — `position: fixed`
-          // bi mu dao pogresne mere, pa ga forsiramo na relative.
-          style: { position: "relative", left: "0", top: "0", transform: "none" },
-          // Fontovi se ne mijenjaju izmedju kadrova — preskoci ponovno citanje.
-          skipFonts: true,
-          // Preskoci elemente koji mogu rusiti render.
-          filter: (node) => {
-            const name = (node as HTMLElement).nodeName;
-            return name !== "IFRAME" && name !== "SCRIPT";
-          },
-        });
-      } catch (err) {
-        // Nastavi dalje — preskoci kadar, ali ne gubi vrijeme.
-        if (!ctx) throw err;
-        void err;
+        snap = await toCanvas(reel, REEL_SNAPSHOT_OPTS);
+      } catch {
+        snap = null;
+      }
+
+      const now = Math.min((performance.now() - start) / 1000, maxDuration);
+      if (now - prev < 1 / FPS) {
+        // Preblizu prethodnom kadru — sacekaj da prodje barem jedan frame.
+        await sleep(Math.max(1, (1 / FPS - (now - prev)) * 1000));
         continue;
       }
 
-      ctx.fillStyle = "#040807";
-      ctx.fillRect(0, 0, AD_W, AD_H);
-      ctx.drawImage(snapshot, 0, 0, AD_W, AD_H);
-
-      // ── Timing ──
-      // timestamp = stvarno proteklo vrijeme od pocetka (monotono rastuce).
-      // Trajanje kadra = do TRENUTKA SLJEDECEG KADRA (ne do fiksnog i+1 cilja),
-      // jer toCanvas moze potrajati 200ms — tada kadar mora trajati 200ms da
-      // video ne bi imao praznine (sto izgleda kao "presporo").
-      const elapsedSec: number = Math.min((performance.now() - start) / 1000, maxDuration);
-      const stamp: number = previousTime === null ? 0 : previousTime;
-      const duration: number = previousTime === null ? 1 / FPS : Math.max(elapsedSec - previousTime, 1 / FPS);
-      await videoSource.add(stamp, duration);
-      previousTime = elapsedSec;
-      framesWritten++;
-      if (framesWritten === 1) {
-        console.info("[adRecorder] first frame", { snapshot: [snapshot.width, snapshot.height], stamp, duration });
+      if (snap) {
+        ctx.fillStyle = "#040807";
+        ctx.fillRect(0, 0, AD_W, AD_H);
+        ctx.drawImage(snap, 0, 0, AD_W, AD_H);
       }
 
-      if (i % 2 === 0 || i === totalFrames - 1) {
-        onProgress({
-          phase: "recording",
-          frame: i + 1,
-          totalFrames,
-          percent: Math.round(((i + 1) / totalFrames) * 100),
-        });
-      }
+      await videoSource.add(prev, now - prev);
+      prev = now;
+      written++;
+
+      onProgress({
+        phase: "recording",
+        frame: written,
+        totalFrames,
+        percent: Math.min(99, Math.round((now / maxDuration) * 100)),
+      });
     }
 
-    // Ako je zadnji kadar uhvacen prije kraja reklame, produzi ga do maxDuration
-    // da video ne zavrsi prerano (inace se cini da je "presporo" / odsjeceno).
-    if (previousTime !== null && previousTime < maxDuration) {
-      ctx.fillStyle = "#040807";
-      ctx.fillRect(0, 0, AD_W, AD_H);
-      await videoSource.add(previousTime, Math.max(maxDuration - previousTime, 1 / FPS));
+    restoreEffects();
+
+    // Popuni do kraja ako je zadnji kadar ranije uhvacen.
+    if (prev < maxDuration) {
+      await videoSource.add(prev, maxDuration - prev);
     }
 
     console.info("[adRecorder] recording done", {
-      framesWritten,
-      endedAt: previousTime,
-      maxDuration,
+      written,
+      endedAt: Number(prev.toFixed(2)),
+      maxDuration: Number(maxDuration.toFixed(2)),
+      effectiveFps: Number((written / Math.max(prev, 0.001)).toFixed(1)),
     });
 
     onProgress({ phase: "encoding", frame: totalFrames, totalFrames, percent: 100 });
@@ -243,11 +144,137 @@ export async function recordAdToMp4({
     return blob;
   } finally {
     signal?.removeEventListener("abort", onAbort);
-    frame.remove();
+    frame.el.remove();
   }
 }
 
-/** Pretvori bilo kakav "throw" (ukljucujuci objekte) u citljiv string. */
+/** Opcije za toCanvas — iste u MP4 i WebM putanji. */
+const REEL_SNAPSHOT_OPTS = {
+  width: AD_W,
+  height: AD_H,
+  canvasWidth: AD_W,
+  canvasHeight: AD_H,
+  pixelRatio: 1,
+  backgroundColor: "#040807",
+  style: { position: "relative", left: "0", top: "0", transform: "none" },
+  skipFonts: true,
+  filter: (node: Node) => {
+    const name = (node as HTMLElement).nodeName;
+    return name !== "IFRAME" && name !== "SCRIPT";
+  },
+} as const;
+
+/**
+ * Ukloni skupe CSS efekte prije snimanja (blur/backdrop-filter).
+ *
+ * Zasto: `toCanvas` mora da rasterizuje 1080x1920 sa 13 `filter: blur()` i
+ * nekoliko `backdrop-filter` slojeva. To traje 100-300ms po kadru, pa snimak
+ * ima malo kadrova i izgleda trzawo/sporo. Bez blura rasterizacija je 5-10x
+ * brza, a razlika u izgledu je minimalna (blur je ionako suptilan).
+ *
+ * Vraca funkciju za vracanje originalnih vrijednosti.
+ */
+function stripHeavyEffects(root: Document | HTMLElement): () => void {
+  const restore: Array<() => void> = [];
+  const nodes = root.querySelectorAll<HTMLElement>("*");
+  nodes.forEach((el) => {
+    const cs = (root as Document).defaultView?.getComputedStyle(el) ?? window.getComputedStyle(el);
+    const filter = cs.filter;
+    const backdrop = cs.backdropFilter || (cs as unknown as { webkitBackdropFilter?: string }).webkitBackdropFilter;
+    if (filter && filter !== "none" && filter.includes("blur")) {
+      const prev = el.style.filter;
+      el.style.filter = "none";
+      restore.push(() => { el.style.filter = prev; });
+    }
+    if (backdrop && backdrop !== "none" && backdrop.includes("blur")) {
+      const prev = el.style.backdropFilter;
+      el.style.backdropFilter = "none";
+      restore.push(() => { el.style.backdropFilter = prev; });
+    }
+  });
+  return () => restore.forEach((fn) => fn());
+}
+
+function makeCanvas() {
+  const canvas = document.createElement("canvas");
+  canvas.width = AD_W;
+  canvas.height = AD_H;
+  const ctx = canvas.getContext("2d", { alpha: false });
+  if (!ctx) throw new Error("Canvas 2D nije dostupan u ovom browseru");
+  ctx.fillStyle = "#040807";
+  ctx.fillRect(0, 0, AD_W, AD_H);
+  return { canvas, ctx };
+}
+
+/** Napravi skriveni iframe 1080x1920 sa reklamom u record modu. */
+async function openReelFrame() {
+  const el = document.createElement("iframe");
+  el.src = new URL("/reklama?record=1", window.location.origin).href;
+  el.setAttribute("aria-hidden", "true");
+  el.setAttribute("tabindex", "-1");
+  el.style.cssText = [
+    "position:fixed",
+    "left:0",
+    "top:0",
+    `width:${AD_W}px`,
+    `height:${AD_H}px`,
+    "border:0",
+    "opacity:0",
+    "pointer-events:none",
+    "z-index:-1",
+  ].join(";");
+  document.body.appendChild(el);
+
+  await new Promise<void>((resolve, reject) => {
+    const timer = window.setTimeout(
+      () => reject(new Error("Reklama se nije učitala u 25s. Provjerite /reklama.")),
+      25000,
+    );
+    el.onload = () => {
+      window.clearTimeout(timer);
+      resolve();
+    };
+    el.onerror = () => {
+      window.clearTimeout(timer);
+      reject(new Error("Iframe nije mogao učitati /reklama"));
+    };
+  });
+
+  return { el, doc: el.contentDocument, win: el.contentWindow };
+}
+
+async function waitForReel(frame: { doc: Document | null; win: Window | null }) {
+  const doc = frame.doc;
+  if (!doc) throw new Error("Iframe nije dostupan (cross-origin?)");
+  const reel = await waitForElement(doc, ".ad-reel", 20000);
+  await waitForFonts(doc);
+
+  // Vrati reklamu na scenu 0 da snimak pocne od pocetka. Bez ovoga bismo
+  // uhvatili reklamu koja je vec odmakla (npr. 600ms) i snimak bi izgledao
+  // "presporo" jer bi prva scena bila skracena.
+  try {
+    frame.win?.postMessage({ type: "ad:reset" }, window.location.origin);
+  } catch {
+    /* postMessage nije kriticno */
+  }
+  // Sacekaj da React obradi reset i da se prva animacija pokrene od nule.
+  const firstScene = doc.querySelector(".ad-scene-enter");
+  if (firstScene) {
+    // Ukloni i vrati animaciju da krene ispocetka.
+    (firstScene as HTMLElement).style.animation = "none";
+    void (firstScene as HTMLElement).offsetWidth;
+    (firstScene as HTMLElement).style.animation = "";
+  }
+  await sleep(120);
+
+  console.info("[adRecorder] reel ready", {
+    w: (reel as HTMLElement).offsetWidth,
+    h: (reel as HTMLElement).offsetHeight,
+  });
+  return { reel: reel as HTMLElement };
+}
+
+/** Pretvori bilo kakav throw (ukljucujuci goli objekat) u citljiv string. */
 export function describeError(err: unknown): string {
   if (err instanceof Error) return `${err.name}: ${err.message}`;
   if (typeof err === "string") return err;
@@ -367,35 +394,14 @@ export async function recordAdToWebm({
   const totalFrames = Math.round((totalMs / 1000) * FPS);
   onProgress({ phase: "loading", frame: 0, totalFrames, percent: 0 });
 
-  const frame = document.createElement("iframe");
-  frame.src = new URL("/reklama?record=1", window.location.origin).href;
-  frame.setAttribute("aria-hidden", "true");
-  frame.style.cssText = ["position:fixed", "left:0", "top:0", `width:${AD_W}px`, `height:${AD_H}px`, "border:0", "opacity:0", "pointer-events:none", "z-index:-1"].join(";");
-  document.body.appendChild(frame);
-
+  const frame = await openReelFrame();
   let aborted = false;
   const onAbort = () => { aborted = true; };
   signal?.addEventListener("abort", onAbort, { once: true });
 
   try {
-    await new Promise<void>((resolve, reject) => {
-      const timer = window.setTimeout(() => reject(new Error("Reklama se nije učitala u 25s.")), 25000);
-      frame.onload = () => { window.clearTimeout(timer); resolve(); };
-    });
-
-    const doc = frame.contentDocument;
-    if (!doc) throw new Error("Iframe nije dostupan");
-    const reel = await waitForElement(doc, ".ad-reel", 20000);
-    await waitForFonts(doc);
-    await sleep(400);
-
-    const canvas = document.createElement("canvas");
-    canvas.width = AD_W;
-    canvas.height = AD_H;
-    const ctx = canvas.getContext("2d", { alpha: false });
-    if (!ctx) throw new Error("Canvas 2D nije dostupan");
-    ctx.fillStyle = "#040807";
-    ctx.fillRect(0, 0, AD_W, AD_H);
+    const { reel } = await waitForReel(frame);
+    const { canvas, ctx } = makeCanvas();
 
     const stream = canvas.captureStream(FPS);
     const mime = ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm"].find((m) =>
@@ -408,40 +414,31 @@ export async function recordAdToWebm({
     recorder.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
     recorder.start();
 
-    const frameInterval = 1000 / FPS;
-    const start = performance.now();
+    // MediaRecorder sam radi u realnom vremenu, pa samo crtamo sto brze mozemo.
     const maxDuration = totalMs / 1000;
+    const start = performance.now();
+    let written = 0;
 
-    for (let i = 0; i < totalFrames; i++) {
-      if (aborted || signal?.aborted) throw new Error("Snimanje prekinuto");
-      // Stani kad predjemo stvarno trajanje reklame (kao u MP4 putanji).
-      if ((performance.now() - start) / 1000 >= maxDuration) break;
-      // 33ms ritam: animacija u iframe-u napreduje, a MediaRecorder hvata
-      // canvas u svom tempu (captureStream(30)) pa je brzina uvijek ista.
-      const wait = start + i * frameInterval - performance.now();
-      if (wait > 0) await sleep(wait);
+    while (!aborted && !signal?.aborted) {
+      const elapsed = (performance.now() - start) / 1000;
+      if (elapsed >= maxDuration) break;
 
       try {
-        const snap = await toCanvas(reel as HTMLElement, {
-          canvasWidth: AD_W,
-          canvasHeight: AD_H,
-          width: AD_W,
-          height: AD_H,
-          pixelRatio: 1,
-          backgroundColor: "#040807",
-          style: { position: "relative", left: "0", top: "0", transform: "none" },
-          skipFonts: true,
-        });
+        const snap = await toCanvas(reel, REEL_SNAPSHOT_OPTS);
         ctx.fillStyle = "#040807";
         ctx.fillRect(0, 0, AD_W, AD_H);
         ctx.drawImage(snap, 0, 0, AD_W, AD_H);
+        written++;
       } catch {
-        /* drzi prethodni kadar */
+        /* zadrzi prethodni kadar */
       }
 
-      if (i % 2 === 0 || i === totalFrames - 1) {
-        onProgress({ phase: "recording", frame: i + 1, totalFrames, percent: Math.round(((i + 1) / totalFrames) * 100) });
-      }
+      onProgress({
+        phase: "recording",
+        frame: written,
+        totalFrames,
+        percent: Math.min(99, Math.round((elapsed / maxDuration) * 100)),
+      });
     }
 
     onProgress({ phase: "encoding", frame: totalFrames, totalFrames, percent: 100 });
@@ -449,13 +446,14 @@ export async function recordAdToWebm({
       recorder.onstop = () => resolve();
       recorder.stop();
     });
+    stream.getTracks().forEach((t) => t.stop());
 
     const blob = new Blob(chunks, { type: mime.split(";")[0] });
-    stream.getTracks().forEach((t) => t.stop());
+    console.info("[adRecorder] webm done", { written, size: blob.size });
     onProgress({ phase: "done", frame: totalFrames, totalFrames, percent: 100 });
     return blob;
   } finally {
     signal?.removeEventListener("abort", onAbort);
-    frame.remove();
+    frame.el.remove();
   }
 }

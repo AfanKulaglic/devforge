@@ -4307,6 +4307,19 @@ function AdReel({ recordMode = false }: { recordMode?: boolean }) {
     return () => window.clearTimeout(t);
   }, [scene, paused]);
 
+  // Record mod: roditelj (snimac) moze resetovati reklamu na scenu 0.
+  useEffect(() => {
+    if (!recordMode) return;
+    const onMessage = (e: MessageEvent) => {
+      if (e.data?.type === "ad:reset") {
+        setScene(0);
+        setPaused(false);
+      }
+    };
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, [recordMode]);
+
   // voice-over: izgovori naraciju trenutne scene (bs/hr/sr glas ako postoji).
   // Chromium zna baciti odbijeni Promise iz cancel()/speak() kad nema govora
   // u redu ("Uncaught (in promise) Object"), pa sve ide kroz try/catch.
