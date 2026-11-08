@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://devforge-corporation.vercel.app/sitemap.xml
+Sitemap: https://dev-forge-studio.vercel.app/sitemap.xml
