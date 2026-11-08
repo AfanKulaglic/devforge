@@ -131,9 +131,31 @@ export async function recordAdToMp4({
     const frameInterval = 1000 / FPS;
     const start = performance.now();
 
+    // ── Snimanje u stvarnom vremenu ──
+    //
+    // Reklama u iframe-u se vrti real-time (setTimeout po sceni). Ako bismo
+    // samo upisivali N kadrova u niz sa fiksnim 1/FPS razmakom, a toCanvas je
+    // sporiji od 1/FPS, snimak bi "preskocio" vrijeme i video bi bio brzi od
+    // pregleda.
+    //
+    // Zato svaki kadar dobije timestamp iz STVARNOG proteklog vremena:
+    //   timestamp = (now - start) / 1000
+    // i trajanje = razlika do sljedeceg timestampa. Tako video traje tacno
+    // onoliko koliko je snimanje trajalo — a toCanvas ne moze "ubrzati" video.
+    //
+    // Da video ne bi bio predugacak na sporim uredjajima, ogranicavamo
+    // ukupno trajanje na `totalMs` (trajanje reklame u pregledu).
+    let lastTimestamp = 0;
+    const maxDuration = totalMs / 1000;
+
     for (let i = 0; i < totalFrames; i++) {
       if (aborted || signal?.aborted) throw new Error("Snimanje prekinuto");
 
+      const elapsed = (performance.now() - start) / 1000;
+      // Stani kad predjemo stvarno trajanje reklame.
+      if (elapsed >= maxDuration) break;
+
+      // Cekaj da prodje 1/FPS od prethodnog kadra (animacija napreduje).
       const targetTime = start + i * frameInterval;
       const wait = targetTime - performance.now();
       if (wait > 0) await sleep(wait);
@@ -159,9 +181,9 @@ export async function recordAdToMp4({
           },
         });
       } catch (err) {
-        // Nastavi dalje sa prethodnim kadrom umjesto da sve propadne.
+        // Nastavi dalje — preskoci kadar, ali ne gubi vrijeme.
         if (!ctx) throw err;
-        await videoSource.add(i / FPS, 1 / FPS);
+        void err;
         continue;
       }
 
@@ -169,7 +191,13 @@ export async function recordAdToMp4({
       ctx.fillRect(0, 0, AD_W, AD_H);
       ctx.drawImage(snapshot, 0, 0, AD_W, AD_H);
 
-      await videoSource.add(i / FPS, 1 / FPS);
+      // Stvarni timestamp + trajanje do sljedeceg kadra.
+      // Timestampi moraju biti monotono rastuci i ne smiju se preklapati,
+      // pa trajanje racunamo iz razlike stvarnog vremena, uz minimalni 1/FPS.
+      const now = Math.min((performance.now() - start) / 1000, maxDuration);
+      const duration = Math.max(now - lastTimestamp, 1 / FPS);
+      await videoSource.add(lastTimestamp, duration);
+      lastTimestamp = lastTimestamp + duration;
       if (i === 0) console.info("[adRecorder] first frame added", snapshot.width, snapshot.height);
 
       if (i % 2 === 0 || i === totalFrames - 1) {
@@ -360,9 +388,12 @@ export async function recordAdToWebm({
 
     const frameInterval = 1000 / FPS;
     const start = performance.now();
+    const maxDuration = totalMs / 1000;
 
     for (let i = 0; i < totalFrames; i++) {
       if (aborted || signal?.aborted) throw new Error("Snimanje prekinuto");
+      // Stani kad predjemo stvarno trajanje reklame (kao u MP4 putanji).
+      if ((performance.now() - start) / 1000 >= maxDuration) break;
       const wait = start + i * frameInterval - performance.now();
       if (wait > 0) await sleep(wait);
 
