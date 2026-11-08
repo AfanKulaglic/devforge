@@ -4170,7 +4170,7 @@ const AD_PARTICLES = [
 const AD_NARRATION = [
   "DevForge — izrađujemo web stranice, mobilne aplikacije i igre po vašoj mjeri.",
   "Gotovu verziju vašeg projekta izrađujemo za pet dana, a plaćate tek kad ste zadovoljni. Bez predujma.",
-  "Sve na jednom mjestu: web stranice trideset devet, web shopovi sto devedeset devet maraka, a mobilne aplikacije i igre po dogovoru.",
+  "Sve na jednom mjestu: web stranice sto pedeset maraka, web shopovi seststo maraka, a mobilne aplikacije i igre po dogovoru.",
   "Uz svaki projekt dobijate vlastiti admin panel — sami mijenjate tekst, slike, proizvode i cijene, bez koda.",
   "Do šezdeset posto jeftinije od agencija — uz isti vrhunski kvalitet i iste provjerene tehnologije.",
   "Zatražite svoju besplatnu gotovu verziju na devforge.ba.",
