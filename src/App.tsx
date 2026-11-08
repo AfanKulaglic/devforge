@@ -4392,9 +4392,10 @@ function AdReel({ recordMode = false }: { recordMode?: boolean }) {
               <AdMark size="9cqh" />
               <AdWordmark className="ad-wm-xl" />
             </div>
-            <p className="ad-rise ad-eyebrow text-teal-300/70" style={{ animationDelay: ".35s" }}>
-              Bez rizika · Bez predujma
-            </p>
+            <div className="ad-rise text-center" style={{ animationDelay: ".35s" }}>
+              <p className="ad-eyebrow text-teal-300/70">Bez rizika</p>
+              <p className="ad-eyebrow mt-[0.5cqh] text-teal-300/70">Bez predujma</p>
+            </div>
           </div>
         );
     }
