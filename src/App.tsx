@@ -336,8 +336,7 @@ const serviceList: { icon: IconType; title: string; description: string }[] = [
   { icon: HiOutlineRectangleGroup, title: "Admin paneli (CMS)", description: "Vlastiti panel za samostalno uređivanje sadržaja, slika i proizvoda." },
   { icon: HiOutlineCodeBracketSquare, title: "API razvoj i integracije", description: "REST i GraphQL API-ji te povezivanje s vanjskim alatima (CRM, ERP, dostava)." },
   { icon: HiOutlineBanknotes, title: "Online plaćanje", description: "Povezujemo vašu trgovinu sa Stripe, PayPal i sličnim servisima koje već koristite." },
-  { icon: HiOutlineCpuChip, title: "AI sistemi", description: "AI chat na sajtu i AI telefonski recepcionar koji odgovaraju kupcima 24/7 — bez Vašeg učešća." },
-  { icon: HiOutlineMicrophone, title: "AI recepcionar", description: "Glasovni asistent koji prima pozive, odgovara na pitanja i zakazuje termine — i dok spavate." },
+  { icon: HiOutlineCpuChip, title: "AI sistemi", description: "AI chat na sajtu, AI telefonski recepcionar i baza znanja — asistent koji odgovara kupcima 24/7 umjesto Vas." },
   { icon: HiOutlineSwatch, title: "UI/UX dizajn", description: "Wireframing, prototyping i moderan dizajn usmjeren na konverziju." },
   { icon: HiOutlineSparkles, title: "Logo i vizualni identitet", description: "Logo, boje i tipografija — usklađen brend koji izgleda profesionalno." },
   { icon: HiOutlineChartBar, title: "SEO i Google Analytics", description: "Tehnička SEO osnova i mjerenje posjeta da lakše budete pronađeni i znate šta radi." },
@@ -4515,7 +4514,7 @@ const AD_SERVICES = [
   { icon: HiOutlineDevicePhoneMobile, label: "Mobilne aplikacije", price: "Po dogovoru" },
   { icon: HiOutlinePuzzlePiece, label: "2D igrice", price: "Po dogovoru" },
   { icon: HiOutlineCpuChip, label: "AI sistemi", price: "Po dogovoru" },
-  { icon: HiOutlineMicrophone, label: "AI recepcionar", price: "Mjesečno" },
+  { icon: HiOutlineRectangleGroup, label: "Admin panel", price: "Uključeno" },
 ];
 
 // Scena "Usluge" — ćelije se pojave JEDNA PO JEDNA, a cijena (pečat) dolazi ODMAH sa ikonom (ne poslije).
