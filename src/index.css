@@ -1227,7 +1227,11 @@ button {
 }
 
 /* Slajd "Sve na jednom mjestu" — 2×2 grid (ikona + naziv), umjesto reda koji se lomi */
-.ad-svc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4cqh 5cqh; width: 100%; place-items: center; }
+.ad-svc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 3.4cqh 4cqh; width: 100%; place-items: center; }
+/* 6 usluga (3 reda) — malo gušće da sve stane u 9:16 bez rezanja */
+.ad-svc-grid.is-six { gap: 2.6cqh 3.2cqh; }
+.ad-svc-grid.is-six .ad-svc-label { font-size: 2.05cqh; }
+.ad-svc-grid.is-six .ad-stamp { font-size: 1.7cqh; padding: 0.45cqh 1.1cqh; }
 .ad-svc-cell { display: flex; flex-direction: column; align-items: center; gap: 2cqh; }
 .ad-svc-label { font-size: 2.3cqh; font-weight: 700; color: #fff; line-height: 1.15; text-align: center; }
 

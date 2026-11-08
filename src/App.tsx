@@ -336,6 +336,8 @@ const serviceList: { icon: IconType; title: string; description: string }[] = [
   { icon: HiOutlineRectangleGroup, title: "Admin paneli (CMS)", description: "Vlastiti panel za samostalno uređivanje sadržaja, slika i proizvoda." },
   { icon: HiOutlineCodeBracketSquare, title: "API razvoj i integracije", description: "REST i GraphQL API-ji te povezivanje s vanjskim alatima (CRM, ERP, dostava)." },
   { icon: HiOutlineBanknotes, title: "Online plaćanje", description: "Povezujemo vašu trgovinu sa Stripe, PayPal i sličnim servisima koje već koristite." },
+  { icon: HiOutlineCpuChip, title: "AI sistemi", description: "AI chat na sajtu i AI telefonski recepcionar koji odgovaraju kupcima 24/7 — bez Vašeg učešća." },
+  { icon: HiOutlineMicrophone, title: "AI recepcionar", description: "Glasovni asistent koji prima pozive, odgovara na pitanja i zakazuje termine — i dok spavate." },
   { icon: HiOutlineSwatch, title: "UI/UX dizajn", description: "Wireframing, prototyping i moderan dizajn usmjeren na konverziju." },
   { icon: HiOutlineSparkles, title: "Logo i vizualni identitet", description: "Logo, boje i tipografija — usklađen brend koji izgleda profesionalno." },
   { icon: HiOutlineChartBar, title: "SEO i Google Analytics", description: "Tehnička SEO osnova i mjerenje posjeta da lakše budete pronađeni i znate šta radi." },
@@ -453,6 +455,11 @@ const faqs = [
     question: "Koje tehnologije koristite?",
     answer:
       "Koristimo moderne, provjerene tehnologije: Next.js i React za frontend, Laravel i Node.js za backend, Flutter i React Native za mobilne aplikacije. Odabiremo stack prema specifičnim zahtjevima projekta, fokusirajući se na performance, scalability i maintainability. Sve što razvijamo je u skladu sa aktuelnim industry standardima.",
+  },
+  {
+    question: "Radite li AI sisteme i AI chat?",
+    answer:
+      "Da. Pravimo AI chat asistente na sajtu i AI telefonske recepcionare koji odgovaraju kupcima 24 sata dnevno, na osnovu podataka o Vašoj firmi — usluge, cijene, radno vrijeme. Asistent može primati narudžbe, zakazivati termine i preusmjeriti poziv na Vas. AI sistemi se naplaćuju izradom plus mjesečnom naknadom, jer razgovori imaju stalne troškove.",
   },
   {
     question: "Koliko košta izrada projekta?",
@@ -1550,7 +1557,7 @@ function Hero() {
           {/* SEO H1: jedini <h1> na stranici, sa kljucnim rijecima za pretragu.
               Vizuelno skriven (sr-only) — dizajn zadrzava animirani naslov ispod. */}
           <h1 className="sr-only">
-            Izrada web stranica, web shopova, mobilnih aplikacija i 2D igara u Sarajevu — DevForge
+            Izrada web stranica, web shopova, mobilnih aplikacija, 2D igara i AI sistema u Sarajevu — DevForge
           </h1>
           <p className="hero-headline text-[2rem] font-extrabold leading-[1.08] tracking-tight text-white sm:text-5xl md:text-6xl md:leading-[1.03] lg:text-7xl">
             {slide.title}
@@ -2273,7 +2280,7 @@ function Pricing({ groups, subtitle, note }: { groups?: PricingGroup[]; subtitle
           ))}
         </div>
         <div className="mt-12 border-t border-white/10 pt-7 text-sm leading-7 text-[#A7AABB]">
-          <p>{note ?? "Hosting i domena se plaćaju dodatno (ako ih nemate): plaćate direktno provideru otprilike 50–100 KM godišnje ovisno o domeni (uključuje poslovni email i ostalo), bez naše marže. Osnovna SEO podešavanja (meta naslovi i opisi) uključena su kao dodatak. Dodatne usluge: logo i identitet od 100 KM · 2D igrice i mobilne aplikacije po dogovoru · održavanje po dogovoru."}</p>
+          <p>{note ?? "Hosting i domena se plaćaju dodatno (ako ih nemate): plaćate direktno provideru otprilike 50–100 KM godišnje ovisno o domeni (uključuje poslovni email i ostalo), bez naše marže. Osnovna SEO podešavanja (meta naslovi i opisi) uključena su kao dodatak. Dodatne usluge: logo i identitet od 100 KM · 2D igrice, mobilne aplikacije i AI sistemi po dogovoru · održavanje po dogovoru."}</p>
           <p className="mt-2">Dizajn je uvijek uključen, bez skrivenih troškova. Izmjene dizajna možete zatražiti u bilo koje vrijeme tokom razvoja.</p>
         </div>
       </div>
@@ -3041,7 +3048,7 @@ function AboutStory() {
 }
 
 function ServicesHero() {
-  const chips = ["Web stranice", "Web shopovi", "Mobilne aplikacije", "2D igrice", "UI/UX dizajn", "API razvoj"];
+  const chips = ["Web stranice", "Web shopovi", "Mobilne aplikacije", "2D igrice", "AI sistemi", "UI/UX dizajn", "API razvoj"];
   return (
     <section className="relative overflow-hidden bg-[#060606] pt-32 pb-12 md:pt-36 md:pb-16">
       <div className="absolute inset-0" aria-hidden="true">
@@ -3290,7 +3297,7 @@ function SeoLocalText() {
         </h2>
         <div className="mt-6 space-y-5 text-sm leading-7 text-[#9CA3AF] md:text-[0.95rem] md:leading-8">
           <p>
-            DevForge je digitalna agencija iz Sarajeva koja izrađuje <strong className="font-semibold text-white/90">web stranice, web shopove, mobilne aplikacije i 2D igrice</strong> za firme, obrtnike, udruženja i pojedince u Bosni i Hercegovini i regionu. Web stranica počinje od 150 KM, web shop od 600 KM, dok se mobilne aplikacije i igre rade po dogovoru — ovisno o broju ekrana, funkcionalnosti i mehanika.
+            DevForge je digitalna agencija iz Sarajeva koja izrađuje <strong className="font-semibold text-white/90">web stranice, web shopove, mobilne aplikacije, 2D igrice i AI sisteme</strong> za firme, obrtnike, udruženja i pojedince u Bosni i Hercegovini i regionu. Web stranica počinje od 150 KM, web shop od 600 KM, dok se mobilne aplikacije, igre i AI sistemi rade po dogovoru — ovisno o broju ekrana, funkcionalnosti i mehanika.
           </p>
           <p>
             Svaki projekat dobija <strong className="font-semibold text-white/90">vlastiti admin panel</strong> (CMS), tako da sami mijenjate tekst, slike, proizvode i cijene — bez programera i bez mjesečnih troškova za sitne izmjene. Stranice su responzivne (prilagođene mobitelu), brze i pripremljene za Google pretragu: uredne meta naslove i opise, strukturirane podatke, sitemap i čiste URL-ove.
@@ -3361,7 +3368,7 @@ function ProjectsHero() {
             Naši projekti
           </h1>
           <p className="mt-4 text-base leading-7 text-[#A7AABB] md:text-lg">
-            Pogledajte šta smo gradili — web stranice i shopovi, mobilne aplikacije i 2D igrice. Svaki
+            Pogledajte šta smo gradili — web stranice i shopovi, mobilne aplikacije, 2D igrice i AI sistemi. Svaki
             projekt je krenuo besplatnom gotovom verzijom u 5 dana, bez predujma i bez rizika za klijenta.
           </p>
         </Reveal>
@@ -4178,7 +4185,7 @@ const legalDocs: Record<"privatnost" | "uslovi" | "kolacici", LegalDoc> = {
     updated: "18.06.2026.",
     intro: "Korištenjem ove stranice i naših usluga prihvatate sljedeće uslove.",
     sections: [
-      { heading: "1. Opšte odredbe", body: ["DevForge pruža usluge izrade web stranica, web shopova, mobilnih aplikacija i 2D igara. Korištenjem stranice potvrđujete da ste pročitali i prihvatili ove uslove."] },
+      { heading: "1. Opšte odredbe", body: ["DevForge pruža usluge izrade web stranica, web shopova, mobilnih aplikacija, 2D igara i AI sistema. Korištenjem stranice potvrđujete da ste pročitali i prihvatili ove uslove."] },
       { heading: "2. Usluge i ponuda", body: ["Svaki projekat započinje besplatnom konsultacijom i gotovom verzijom. Tačan obim, rok i cijena definišu se ponudom prije početka rada."] },
       { heading: "3. Cijene i plaćanje", body: ["Ne tražimo predujam — plaćate tek kada ste zadovoljni rezultatom. Cijene su navedene u KM i mogu varirati ovisno o obimu projekta. Hosting i domena plaćaju se direktno provideru."] },
       { heading: "4. Intelektualno vlasništvo", body: ["Nakon isporuke i izmirenja dogovorene cijene, kompletan kod, dizajn i prava nad projektom pripadaju klijentu."] },
@@ -4443,7 +4450,7 @@ function AdWordmark({ className = "text-xl" }: { className?: string }) {
 
 const AD_SCENES = 7;
 const AD_SVC_STEP = 720; // ms po koraku scene Usluge (build-up usluga, pa pečati cijena)
-const AD_DUR = [3800, 3800, 4800, 3800, 3800, 3800, 3800]; // ms po sceni; scena 2 (Usluge) malo duža: 4 usluge (ikona+cijena zajedno)
+const AD_DUR = [3800, 3800, 6200, 3800, 3800, 3800, 3800]; // ms po sceni; scena 2 (Usluge) duža: 6 usluga × 720ms build-up + rezerva
 
 // Tip prijelazne animacije (zavjesa/iris/wipe/blinds) koji se odigra na ULASKU u svaku scenu.
 // Različiti tipovi → reklama "diše", svaka scena se otkriva drugačije. Re-okida se preko key={scene}.
@@ -4463,9 +4470,9 @@ const AD_PARTICLES = [
 
 // Bosanski voice-over tekst po sceni (prati ono što se prikazuje).
 const AD_NARRATION = [
-  "DevForge — izrađujemo web stranice, mobilne aplikacije i igre po vašoj mjeri.",
+  "DevForge — izrađujemo web stranice, mobilne aplikacije, igre i AI sisteme po vašoj mjeri.",
   "Gotovu verziju vašeg projekta izrađujemo za pet dana, a plaćate tek kad ste zadovoljni. Bez predujma.",
-  "Sve na jednom mjestu: web stranice sto pedeset maraka, web shopovi seststo maraka, a mobilne aplikacije i igre po dogovoru.",
+  "Sve na jednom mjestu: web stranice sto pedeset maraka, web shopovi seststo maraka, mobilne aplikacije, igre i AI sistemi po dogovoru.",
   "Uz svaki projekt dobijate vlastiti admin panel — sami mijenjate tekst, slike, proizvode i cijene, bez koda.",
   "Do šezdeset posto jeftinije od agencija — uz isti vrhunski kvalitet i iste provjerene tehnologije.",
   "Zatražite svoju besplatnu gotovu verziju na devforge corporation tačka vercel tačka app.",
@@ -4507,6 +4514,8 @@ const AD_SERVICES = [
   { icon: HiOutlineShoppingCart, label: "Web shopovi", price: "600 KM" },
   { icon: HiOutlineDevicePhoneMobile, label: "Mobilne aplikacije", price: "Po dogovoru" },
   { icon: HiOutlinePuzzlePiece, label: "2D igrice", price: "Po dogovoru" },
+  { icon: HiOutlineCpuChip, label: "AI sistemi", price: "Po dogovoru" },
+  { icon: HiOutlineMicrophone, label: "AI recepcionar", price: "Mjesečno" },
 ];
 
 // Scena "Usluge" — ćelije se pojave JEDNA PO JEDNA, a cijena (pečat) dolazi ODMAH sa ikonom (ne poslije).
@@ -4524,7 +4533,7 @@ function AdServices({ paused }: { paused: boolean }) {
       <h3 className="ad-h3 text-white">
         <AdWords parts={[{ t: "Sve" }, { t: "na" }, { t: "jednom", grad: true }, { t: "mjestu", grad: true }]} />
       </h3>
-      <div className="ad-svc-grid">
+      <div className={`ad-svc-grid${N > 4 ? " is-six" : ""}`}>
         {AD_SERVICES.map((s, i) => (
           <div key={i} className={`ad-svc-cell ad-cell ${i <= step ? "is-in" : ""}`}>
             <span className="ad-svc-iconwrap">
@@ -4664,8 +4673,8 @@ function AdReel({ recordMode = false }: { recordMode?: boolean }) {
               <AdWords
                 start={0.4}
                 parts={[
-                  { t: "Izrađujemo" }, { t: "web" }, { t: "stranice," }, { t: "mobilne" }, { t: "aplikacije" }, { t: "i" }, { t: "igre" },
-                  { t: "po", grad: true }, { t: "vašoj", grad: true }, { t: "mjeri.", grad: true },
+                  { t: "Izrađujemo" }, { t: "web" }, { t: "stranice," }, { t: "aplikacije" }, { t: "i" }, { t: "AI" },
+                  { t: "sisteme", grad: true }, { t: "po", grad: true }, { t: "vašoj", grad: true }, { t: "mjeri.", grad: true },
                 ]}
               />
             </h2>
@@ -5098,15 +5107,15 @@ export default function App() {
     const SEO: Record<string, SeoEntry> = {
       home: {
         title: "Izrada web stranica Sarajevo od 150 KM | Web shopovi i aplikacije — DevForge",
-        desc: "Izrada web stranica u Sarajevu od 150 KM, web shopova od 600 KM, mobilnih aplikacija i 2D igara. Gotova verzija za 5 dana, bez predujma — plaćate tek kad ste zadovoljni.",
+        desc: "Izrada web stranica u Sarajevu od 150 KM, web shopova od 600 KM, mobilnih aplikacija, 2D igara i AI sistema. Gotova verzija za 5 dana, bez predujma.",
       },
       about: {
         title: "O nama — digitalna agencija iz Sarajeva | DevForge",
-        desc: "DevForge je digitalna agencija iz Sarajeva. Gradimo web stranice, web shopove, mobilne aplikacije i 2D igre — bez predujma i uz admin panel u svakom projektu.",
+        desc: "DevForge je digitalna agencija iz Sarajeva. Gradimo web stranice, web shopove, mobilne aplikacije, 2D igre i AI sisteme — bez predujma i uz admin panel u svakom projektu.",
       },
       services: {
         title: "Usluge — web stranice, shopovi, aplikacije i 2D igre | DevForge",
-        desc: "Web stranice od 150 KM, web shopovi od 600 KM, mobilne aplikacije i 2D igrice po dogovoru. Sve s admin panelom, bez predujma, gotovo za 5 dana.",
+        desc: "Web stranice od 150 KM, web shopovi od 600 KM, mobilne aplikacije, 2D igrice i AI sistemi po dogovoru. Sve s admin panelom, bez predujma.",
       },
       "svc-web": {
         title: "Izrada web stranica od 150 KM — Sarajevo i BiH | DevForge",
@@ -5126,11 +5135,11 @@ export default function App() {
       },
       projects: {
         title: "Projekti — web stranice, shopovi i igre koje smo izradili | DevForge",
-        desc: "Pregled realizovanih projekata: web shopovi, korporativne stranice, mobilne aplikacije i 2D igrice. Svaki projekt dolazi s admin panelom.",
+        desc: "Pregled realizovanih projekata: web shopovi, korporativne stranice, mobilne aplikacije, 2D igrice i AI sistemi. Svaki projekt dolazi s admin panelom.",
       },
       cijene: {
         title: "Cijene — web stranice od 150 KM, web shopovi od 600 KM | DevForge",
-        desc: "Transparentne cijene bez skrivenih troškova: web stranice 150–250 KM, web shopovi 600–1.000 KM, aplikacije i igre po dogovoru. Bez predujma.",
+        desc: "Transparentne cijene bez skrivenih troškova: web stranice 150–250 KM, web shopovi 600–1.000 KM, aplikacije, igre i AI sistemi po dogovoru. Bez predujma.",
       },
       faq: {
         title: "Česta pitanja o izradi sajta, cijenama i plaćanju | DevForge",
