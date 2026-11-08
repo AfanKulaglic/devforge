@@ -131,29 +131,31 @@ export async function recordAdToMp4({
     const frameInterval = 1000 / FPS;
     const start = performance.now();
 
-    // ── Snimanje u stvarnom vremenu ──
+    // ── Snimanje sa stvarnim vremenom ──
     //
-    // Reklama u iframe-u se vrti real-time (setTimeout po sceni). Ako bismo
-    // samo upisivali N kadrova u niz sa fiksnim 1/FPS razmakom, a toCanvas je
-    // sporiji od 1/FPS, snimak bi "preskocio" vrijeme i video bi bio brzi od
-    // pregleda.
+    // Reklama u iframe-u se vrti real-time (setTimeout po sceni). Mi hvatamo
+    // kadar sto brze mozemo, a svakom kadru upisujemo STVARNO proteklo vrijeme
+    // od pocetka snimanja:
     //
-    // Zato svaki kadar dobije timestamp iz STVARNOG proteklog vremena:
     //   timestamp = (now - start) / 1000
-    // i trajanje = razlika do sljedeceg timestampa. Tako video traje tacno
-    // onoliko koliko je snimanje trajalo — a toCanvas ne moze "ubrzati" video.
     //
-    // Da video ne bi bio predugacak na sporim uredjajima, ogranicavamo
-    // ukupno trajanje na `totalMs` (trajanje reklame u pregledu).
-    let lastTimestamp = 0;
+    // Zato video uvijek traje tacno kao pregled (27.6s) — bez obzira na to
+    // koliko brzo/skoro hvatamo kadrove. Ako je uredjaj spor, imat cemo manje
+    // kadrova (nizi efektivni fps), ali BRZINA ostaje ista. Ako je brz, imat
+    // cemo svih 30 fps.
+    //
+    // NAPOMENA: ne koristimo `lastTimestamp += duration` jer bi se greska
+    // nagomilavala i video bi postao spor. Uvijek racunamo iz `start`.
     const maxDuration = totalMs / 1000;
+    let framesWritten = 0;
+    // Vrijeme prethodno upisanog kadra — trajanje se racuna unatrag.
+    let previousTime: number | null = null;
 
     for (let i = 0; i < totalFrames; i++) {
       if (aborted || signal?.aborted) throw new Error("Snimanje prekinuto");
 
-      const elapsed = (performance.now() - start) / 1000;
       // Stani kad predjemo stvarno trajanje reklame.
-      if (elapsed >= maxDuration) break;
+      if ((performance.now() - start) / 1000 >= maxDuration) break;
 
       // Cekaj da prodje 1/FPS od prethodnog kadra (animacija napreduje).
       const targetTime = start + i * frameInterval;
@@ -191,14 +193,20 @@ export async function recordAdToMp4({
       ctx.fillRect(0, 0, AD_W, AD_H);
       ctx.drawImage(snapshot, 0, 0, AD_W, AD_H);
 
-      // Stvarni timestamp + trajanje do sljedeceg kadra.
-      // Timestampi moraju biti monotono rastuci i ne smiju se preklapati,
-      // pa trajanje racunamo iz razlike stvarnog vremena, uz minimalni 1/FPS.
-      const now = Math.min((performance.now() - start) / 1000, maxDuration);
-      const duration = Math.max(now - lastTimestamp, 1 / FPS);
-      await videoSource.add(lastTimestamp, duration);
-      lastTimestamp = lastTimestamp + duration;
-      if (i === 0) console.info("[adRecorder] first frame added", snapshot.width, snapshot.height);
+      // ── Timing ──
+      // timestamp = stvarno proteklo vrijeme od pocetka (monotono rastuce).
+      // Trajanje kadra = do TRENUTKA SLJEDECEG KADRA (ne do fiksnog i+1 cilja),
+      // jer toCanvas moze potrajati 200ms — tada kadar mora trajati 200ms da
+      // video ne bi imao praznine (sto izgleda kao "presporo").
+      const elapsedSec: number = Math.min((performance.now() - start) / 1000, maxDuration);
+      const stamp: number = previousTime === null ? 0 : previousTime;
+      const duration: number = previousTime === null ? 1 / FPS : Math.max(elapsedSec - previousTime, 1 / FPS);
+      await videoSource.add(stamp, duration);
+      previousTime = elapsedSec;
+      framesWritten++;
+      if (framesWritten === 1) {
+        console.info("[adRecorder] first frame", { snapshot: [snapshot.width, snapshot.height], stamp, duration });
+      }
 
       if (i % 2 === 0 || i === totalFrames - 1) {
         onProgress({
@@ -209,6 +217,20 @@ export async function recordAdToMp4({
         });
       }
     }
+
+    // Ako je zadnji kadar uhvacen prije kraja reklame, produzi ga do maxDuration
+    // da video ne zavrsi prerano (inace se cini da je "presporo" / odsjeceno).
+    if (previousTime !== null && previousTime < maxDuration) {
+      ctx.fillStyle = "#040807";
+      ctx.fillRect(0, 0, AD_W, AD_H);
+      await videoSource.add(previousTime, Math.max(maxDuration - previousTime, 1 / FPS));
+    }
+
+    console.info("[adRecorder] recording done", {
+      framesWritten,
+      endedAt: previousTime,
+      maxDuration,
+    });
 
     onProgress({ phase: "encoding", frame: totalFrames, totalFrames, percent: 100 });
     await output.finalize();
@@ -394,6 +416,8 @@ export async function recordAdToWebm({
       if (aborted || signal?.aborted) throw new Error("Snimanje prekinuto");
       // Stani kad predjemo stvarno trajanje reklame (kao u MP4 putanji).
       if ((performance.now() - start) / 1000 >= maxDuration) break;
+      // 33ms ritam: animacija u iframe-u napreduje, a MediaRecorder hvata
+      // canvas u svom tempu (captureStream(30)) pa je brzina uvijek ista.
       const wait = start + i * frameInterval - performance.now();
       if (wait > 0) await sleep(wait);
 
