@@ -18,12 +18,10 @@ export type PricingGroupData = {
   subtitle: string;
   note: string;
   plans: PricingPlanData[];
+  // Redoslijed grupe u bazi (Firebase cuva objekat, ne niz — `order` cuva red).
+  order?: number;
 };
 
-const STORAGE_KEY = "devforge-pricing-v1";
-const EVENT = "devforge:pricing-changed";
-
-// ── Početne vrijednosti (identične onome što je bilo u kodu) ────────────────
 export const DEFAULT_PRICING: PricingGroupData[] = [
   {
     id: "web-sites",
@@ -155,28 +153,183 @@ export const DEFAULT_PRICING: PricingGroupData[] = [
   },
 ];
 
-// ── Interno ────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────
+// STORE CIJENA — Firebase Realtime Database + lokalni kes.
+//
+// Isti princip kao projectsStore: baza je izvor istine, localStorage je kes
+// (brz prikaz + offline). Prvi put se lokalne cijene automatski migriraju.
+// Kljuc u bazi: /pricing/{groupId} = PricingGroupData
+// ───────────────────────────────────────────────────────────────────────────
+
+import { get, onValue, ref, set, remove } from "firebase/database";
+import { getDb, firebaseReady } from "./firebase";
+
+const STORAGE_KEY = "devforge-pricing-v1";
+const MIGRATED_KEY = "devforge-pricing-migrated-v1";
+const DB_PATH = "pricing";
+
 function isBrowser() {
   return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
 }
 
+// ── Stanje ────────────────────────────────────────────────────────────────
 let cache: PricingGroupData[] | null = null;
+const listeners = new Set<() => void>();
 
-function readRaw(): PricingGroupData[] {
+export type PricingSyncState = "idle" | "connecting" | "live" | "offline" | "error";
+let syncState: PricingSyncState = "idle";
+let syncError: string | null = null;
+const syncListeners = new Set<() => void>();
+
+function notify() {
+  listeners.forEach((l) => l());
+}
+function notifySync() {
+  syncListeners.forEach((l) => l());
+}
+function setSync(next: PricingSyncState, err?: string) {
+  syncState = next;
+  if (err !== undefined) syncError = err;
+  notifySync();
+}
+
+export function getPricingSyncState(): PricingSyncState {
+  return syncState;
+}
+export function getPricingSyncError(): string | null {
+  return syncError;
+}
+export function subscribePricingSync(cb: () => void) {
+  syncListeners.add(cb);
+  return () => {
+    syncListeners.delete(cb);
+  };
+}
+
+// ── Lokalni kes ───────────────────────────────────────────────────────────
+function readLocal(): PricingGroupData[] {
   if (!isBrowser()) return DEFAULT_PRICING;
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (raw === null) return DEFAULT_PRICING;
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed) || parsed.length === 0) return DEFAULT_PRICING;
-    return parsed.filter((g): g is PricingGroupData => !!g && typeof g.id === "string" && Array.isArray(g.plans));
+    return parsed.filter(
+      (g): g is PricingGroupData => !!g && typeof g.id === "string" && Array.isArray(g.plans),
+    );
   } catch {
     return DEFAULT_PRICING;
   }
 }
 
+function writeLocal(next: PricingGroupData[]) {
+  cache = next;
+  if (isBrowser()) {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    } catch {
+      /* pun localStorage */
+    }
+  }
+  notify();
+}
+
+// ── Konverzija ────────────────────────────────────────────────────────────
+// Grupe imaju eksplicitni `order` da bi redoslijed bio isti svima. Ako ga
+// stari zapis nema, koristimo indeks u listi (lokalna baza je vec uredjena).
+function withOrder(list: PricingGroupData[]): PricingGroupData[] {
+  return list.map((g, i) => ({ ...g, order: typeof g.order === "number" ? g.order : i }));
+}
+
+function fromDbObject(obj: Record<string, PricingGroupData> | null): PricingGroupData[] {
+  if (!obj) return [];
+  return Object.entries(obj)
+    .filter(([, v]) => v && typeof v === "object" && Array.isArray((v as PricingGroupData).plans))
+    .map(([id, v], i) => ({ ...v, id, order: typeof v.order === "number" ? v.order : i }))
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+}
+
+// ── Firebase upis cijele liste ────────────────────────────────────────────
+async function pushAll(next: PricingGroupData[]) {
+  if (!firebaseReady) return;
+  try {
+    const db = getDb();
+    const payload: Record<string, PricingGroupData> = {};
+    withOrder(next).forEach((g, i) => {
+      payload[g.id] = { ...g, order: i };
+    });
+    await set(ref(db, DB_PATH), payload);
+  } catch (e) {
+    setSync("error", e instanceof Error ? e.message : String(e));
+  }
+}
+
+// ── MIGRACIJA lokalno → Firebase ──────────────────────────────────────────
+async function migrateLocalToFirebase(): Promise<PricingGroupData[] | null> {
+  if (!firebaseReady || !isBrowser()) return null;
+  try {
+    const snap = await get(ref(getDb(), DB_PATH));
+    const remote = snap.exists() ? (snap.val() as Record<string, PricingGroupData>) : null;
+    const remoteCount = remote ? Object.keys(remote).length : 0;
+    if (remoteCount > 0) return null; // baza vec ima cijene
+
+    const local = readLocal();
+    if (local.length === 0) return null;
+
+    await pushAll(local);
+    try {
+      window.localStorage.setItem(MIGRATED_KEY, new Date().toISOString());
+    } catch {
+      /* ignore */
+    }
+    return local;
+  } catch (e) {
+    setSync("error", e instanceof Error ? e.message : String(e));
+    return null;
+  }
+}
+
+// ── Start sync ────────────────────────────────────────────────────────────
+let started = false;
+
+export function startPricingSync() {
+  if (started || !isBrowser()) return;
+  started = true;
+
+  cache = readLocal();
+  notify();
+
+  if (!firebaseReady) {
+    setSync("offline");
+    return;
+  }
+
+  setSync("connecting");
+
+  void (async () => {
+    const migrated = await migrateLocalToFirebase();
+    if (migrated) writeLocal(migrated);
+
+    try {
+      onValue(
+        ref(getDb(), DB_PATH),
+        (snap) => {
+          const list = fromDbObject(snap.exists() ? (snap.val() as Record<string, PricingGroupData>) : null);
+          const resolved = list.length > 0 ? list : DEFAULT_PRICING;
+          setSync("live");
+          writeLocal(resolved);
+        },
+        (err) => setSync("error", err.message),
+      );
+    } catch (e) {
+      setSync("error", e instanceof Error ? e.message : String(e));
+    }
+  })();
+}
+
+// ── Snapshot za useSyncExternalStore ──────────────────────────────────────
 export function getPricing(): PricingGroupData[] {
-  if (cache === null) cache = readRaw();
+  if (cache === null) cache = readLocal();
   return cache;
 }
 
@@ -184,29 +337,40 @@ export function getServerPricing(): PricingGroupData[] {
   return DEFAULT_PRICING;
 }
 
-function write(next: PricingGroupData[]) {
-  cache = next;
-  if (isBrowser()) {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    } catch {
-      /* localStorage pun / blokiran */
-    }
-    window.dispatchEvent(new Event(EVENT));
-  }
-}
-
 export function subscribePricing(listener: () => void) {
   if (!isBrowser()) return () => {};
-  const handler = () => listener();
-  window.addEventListener(EVENT, handler);
+  listeners.add(listener);
+  const handler = () => {
+    cache = readLocal();
+    notify();
+  };
   window.addEventListener("storage", handler);
   return () => {
-    window.removeEventListener(EVENT, handler);
+    listeners.delete(listener);
     window.removeEventListener("storage", handler);
   };
 }
 
+// ── Upis (lokalno + Firebase) ─────────────────────────────────────────────
+function persist(next: PricingGroupData[]) {
+  const ordered = withOrder(next).map((g, i) => ({ ...g, order: i }));
+  writeLocal(ordered);
+
+  if (firebaseReady) {
+    void (async () => {
+      try {
+        const db = getDb();
+        const payload: Record<string, PricingGroupData> = {};
+        for (const g of ordered) payload[g.id] = g;
+        await set(ref(db, DB_PATH), payload);
+      } catch (e) {
+        setSync("error", e instanceof Error ? e.message : String(e));
+      }
+    })();
+  }
+}
+
+// ── CRUD ──────────────────────────────────────────────────────────────────
 export function newPricingId(prefix = "pg"): string {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
@@ -214,11 +378,20 @@ export function newPricingId(prefix = "pg"): string {
 export function saveGroup(group: PricingGroupData) {
   const list = getPricing();
   const exists = list.some((g) => g.id === group.id);
-  write(exists ? list.map((g) => (g.id === group.id ? group : g)) : [...list, group]);
+  persist(exists ? list.map((g) => (g.id === group.id ? group : g)) : [...list, group]);
 }
 
 export function deleteGroup(id: string) {
-  write(getPricing().filter((g) => g.id !== id));
+  persist(getPricing().filter((g) => g.id !== id));
+  if (firebaseReady) {
+    void (async () => {
+      try {
+        await remove(ref(getDb(), `${DB_PATH}/${id}`));
+      } catch (e) {
+        setSync("error", e instanceof Error ? e.message : String(e));
+      }
+    })();
+  }
 }
 
 export function moveGroup(id: string, direction: -1 | 1) {
@@ -227,19 +400,51 @@ export function moveGroup(id: string, direction: -1 | 1) {
   const j = i + direction;
   if (i < 0 || j < 0 || j >= list.length) return;
   [list[i], list[j]] = [list[j], list[i]];
-  write(list);
+  persist(list);
 }
 
 export function resetPricing() {
   if (isBrowser()) {
     try {
       window.localStorage.removeItem(STORAGE_KEY);
+      window.localStorage.removeItem(MIGRATED_KEY);
     } catch {
       /* ignore */
     }
   }
   cache = DEFAULT_PRICING;
-  if (isBrowser()) window.dispatchEvent(new Event(EVENT));
+  notify();
+  if (firebaseReady) void pushAll(DEFAULT_PRICING);
+}
+
+// ── Rucna migracija / status ──────────────────────────────────────────────
+/** Prisilno posalji lokalne cijene u Firebase (prepisuje bazu). */
+export async function forcePushPricingToFirebase(): Promise<{ ok: boolean; count: number; error?: string }> {
+  if (!firebaseReady) return { ok: false, count: 0, error: "Firebase nije konfigurisan." };
+  try {
+    const local = readLocal();
+    await pushAll(local);
+    try {
+      window.localStorage.setItem(MIGRATED_KEY, new Date().toISOString());
+    } catch {
+      /* ignore */
+    }
+    return { ok: true, count: local.length };
+  } catch (e) {
+    return { ok: false, count: 0, error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+/** Koliko grupa cijena ima u bazi. */
+export async function countRemotePricing(): Promise<number | null> {
+  if (!firebaseReady) return null;
+  try {
+    const snap = await get(ref(getDb(), DB_PATH));
+    if (!snap.exists()) return 0;
+    return Object.keys(snap.val() as Record<string, unknown>).length;
+  } catch {
+    return null;
+  }
 }
 
 // Mapiranje grupe na ključ usluge (za /usluge/* stranice) — po id-u.

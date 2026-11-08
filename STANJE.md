@@ -9,6 +9,19 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **CIJENE U FIREBASE (isti tretman kao projekti)** — korisnik: „takodjer i cijene se moraju ucitavati preko firebasea isto moram kopirati sa browsera sta imam lokalno jer sam vec odredio molim te ako nisi do sada cijene stavio da stavimo i to na firebase realtime".
+  **`src/lib/pricingStore.ts` PREPISAN (~330 linija):** Firebase RTDB `/pricing/{groupId}` je izvor istine, `localStorage` je kes. `PricingGroupData` dobio novo polje **`order?: number`** (Firebase cuva objekat, ne niz — `order` cuva redoslijed grupa svima isto).
+  - `startPricingSync()` — jednom iz `App.tsx`; prvo lokalni kes, pa migracija, pa `onValue()` real-time.
+  - `migrateLocalToFirebase()` — **automatska migracija**: ako je `/pricing` prazan a lokalno ima cijena → upisuje sve. Ako baza ima → baza pobijedjuje.
+  - `persist()`, `saveGroup()`, `deleteGroup()`, `moveGroup()`, `resetPricing()` — pisu lokalno + Firebase (`set`/`remove`); `persist` uvijek dodijeli `order: i`.
+  - `forcePushPricingToFirebase()` — rucno slanje lokalnih u bazu.
+  - `countRemotePricing()` — broj grupa u bazi.
+  - `getPricingSyncState()` / `subscribePricingSync()` — status `live`/`connecting`/`offline`/`error`.
+  **`src/AdminPricingTab.tsx`** — nova **`PricingSyncPanel`** komponenta na vrhu taba Cijene: tackica statusa (zelena=live), broj grupa u bazi, dugme **„Pošalji cijene u Firebase"**. Dodat import `HiOutlineArrowUpTray`, `forcePushPricingToFirebase`, `countRemotePricing`, `getPricingSyncState`, `subscribePricingSync`.
+  **`src/App.tsx`** — `startPricingSync()` u istom `useEffect` kao `startProjectsSync()`.
+  **`database.rules.json`** — dodano `"pricing": { ".read": true, ".write": true, ".indexOn": ["order"] }`.
+  **Verifikacija:** `npx tsc --noEmit` → 0; `npm run build` → ✓ 1.020 kB (gzip 275); `/`, `/admin`, `/cijene` → 200; test upis u `/pricing` → 200 pa obrisan (da migracija krene od cistog stanja); `/projects` netaknut (7 projekata).
+  **VAZNO za korisnika:** cijene koje je vec odredio u lokalnom browseru migriraju se **automatski** kad otvori `localhost:5173` — ne treba nista rucno kopirati. Ako zeli prisilno, u tabu Cijene klikne „Pošalji cijene u Firebase".
 - **FIREBASE REALTIME DATABASE — projekti vise nisu samo lokalni (MIGRACIJA USPJESNA)** — korisnik: „zasto kada dodam novu sliku u projekte ona bude samo lokalno tu sacuvana a zelim nelokalno" + „samo te jos jednom upozoravam da podaci koji su sada lokalno i localhost admin ih vidi ima te podatke da te podatke migriras na firebase realtime database".
   **Instalirano:** `firebase@^13.2.0`.
   **`src/lib/firebase.ts`** — `firebaseConfig` (projekat `my-game-702f4`, RTDB `my-game-702f4-default-rtdb.firebaseio.com`), `getFirebaseApp()`, `getDb()`, `firebaseReady`.

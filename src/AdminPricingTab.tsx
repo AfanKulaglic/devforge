@@ -3,6 +3,7 @@ import {
   HiOutlineArrowDown,
   HiOutlineArrowTopRightOnSquare,
   HiOutlineArrowUp,
+  HiOutlineArrowUpTray,
   HiOutlineBanknotes,
   HiOutlineCheck,
   HiOutlineChevronRight,
@@ -23,6 +24,10 @@ import {
   resetPricing,
   saveGroup,
   subscribePricing,
+  forcePushPricingToFirebase,
+  countRemotePricing,
+  getPricingSyncState,
+  subscribePricingSync,
 } from "./lib/pricingStore";
 
 // ───────────────────────────────────────────────────────────────────────────
@@ -456,6 +461,8 @@ export default function PricingTab() {
         </a>
       </div>
 
+      <PricingSyncPanel />
+
       <div className="border border-teal-400/20 bg-teal-500/[0.05] px-4 py-3">
         <p className="text-[0.72rem] leading-5 text-teal-100/80">
           <HiOutlineBanknotes className="mr-1.5 inline text-sm text-teal-300" aria-hidden="true" />
@@ -535,6 +542,78 @@ export default function PricingTab() {
           </button>
         )}
       </div>
+    </div>
+  );
+}
+
+// ── Firebase sync status za cijene ────────────────────────────────────────
+function PricingSyncPanel() {
+  const state = useSyncExternalStore(subscribePricingSync, getPricingSyncState, () => "idle" as const);
+  const [remoteCount, setRemoteCount] = useState<number | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  const refresh = async () => {
+    const n = await countRemotePricing();
+    setRemoteCount(n);
+  };
+
+  useEffect(() => {
+    void refresh();
+  }, [state]);
+
+  const onPush = async () => {
+    setBusy(true);
+    const res = await forcePushPricingToFirebase();
+    setBusy(false);
+    setMsg(
+      res.ok
+        ? `Poslano ${res.count} ${res.count === 1 ? "grupa" : "grupe"} cijena u Firebase.`
+        : `Greška: ${res.error}`,
+    );
+    void refresh();
+    window.setTimeout(() => setMsg(null), 8000);
+  };
+
+  const label: Record<string, { text: string; cls: string }> = {
+    live: { text: "Povezano sa Firebase", cls: "text-teal-300" },
+    connecting: { text: "Povezivanje…", cls: "text-white/60" },
+    offline: { text: "Samo lokalno (bez baze)", cls: "text-white/40" },
+    error: { text: "Greška u vezi sa bazom", cls: "text-red-300" },
+    idle: { text: "Čeka…", cls: "text-white/40" },
+  };
+  const st = label[state] ?? label.idle;
+
+  return (
+    <div className="border border-white/10 bg-white/[0.02] p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span
+            className={`h-2 w-2 rounded-full ${
+              state === "live" ? "bg-teal-400" : state === "error" ? "bg-red-400" : "bg-white/30"
+            }`}
+            aria-hidden="true"
+          />
+          <div>
+            <p className={`text-xs font-bold ${st.cls}`}>{st.text}</p>
+            <p className="mt-0.5 text-[0.68rem] text-white/35">
+              {remoteCount === null
+                ? "Baza nedostupna"
+                : `${remoteCount} ${remoteCount === 1 ? "grupa" : "grupe"} u bazi`}
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={onPush}
+          disabled={busy}
+          className="inline-flex items-center gap-2 border border-teal-400/40 bg-teal-500/10 px-4 py-2 text-xs font-bold text-teal-200 transition hover:bg-teal-500/20 disabled:opacity-50"
+        >
+          <HiOutlineArrowUpTray className="text-sm" aria-hidden="true" />
+          {busy ? "Šaljem…" : "Pošalji cijene u Firebase"}
+        </button>
+      </div>
+      {msg && <p className="mt-2 text-xs text-teal-200">{msg}</p>}
     </div>
   );
 }

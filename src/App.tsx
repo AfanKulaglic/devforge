@@ -66,6 +66,7 @@ import { FaLinkedinIn, FaInstagram } from "react-icons/fa6";
 import AdminPanel from "./AdminPanel";
 import { initAnalytics, trackPageView } from "./lib/analytics";
 import { startProjectsSync } from "./lib/projectsStore";
+import { startPricingSync } from "./lib/pricingStore";
 import { Analytics as VercelAnalytics } from "@vercel/analytics/react";
 import {
   getProjects as getStoredProjects,
@@ -5109,9 +5110,10 @@ export default function App() {
     initAnalytics();
   }, []);
 
-  // Firebase: pokreni sync projekata (migracija lokalnog u bazu + real-time).
+  // Firebase: pokreni sync projekata i cijena (migracija lokalnog u bazu + real-time).
   useEffect(() => {
     startProjectsSync();
+    startPricingSync();
   }, []);
 
   // Reklama: samostalan 9:16 okvir bez headera/footera/kursora (čist za snimanje).
