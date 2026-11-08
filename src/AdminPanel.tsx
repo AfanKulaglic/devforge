@@ -173,7 +173,7 @@ function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
                 autoFocus
                 value={user}
                 onChange={(e) => setUser(e.target.value)}
-                placeholder="afan"
+                placeholder="admin"
               />
             </label>
 
@@ -187,7 +187,7 @@ function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
                   autoComplete="current-password"
                   value={pass}
                   onChange={(e) => setPass(e.target.value)}
-                  placeholder="••••••"
+                  placeholder="••••••••••••"
                 />
                 <button
                   type="button"
