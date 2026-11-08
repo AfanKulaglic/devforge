@@ -107,8 +107,9 @@ const FORM_ENDPOINT = "";
 // ── Kontakt podaci (promijeni ovdje — koristi se svuda) ───────────────────
 // Telefon mora biti u međunarodnom formatu bez razmaka za tel:/viber:/wa.me linkove.
 const CONTACT = {
-  phoneDisplay: "+387 62 576 456",
-  phoneRaw: "+38762576456", // bez + i razmaka za wa.me
+  // Javno se broj NE prikazuje. Linkovi (tel:, viber:, wa.me) i dalje rade.
+  phoneLabel: "Pozovite nas", // stoji umjesto broja na sajtu
+  phoneRaw: "+38762576456", // koristi se SAMO unutar href, nikad kao tekst
   email: "devforge.studio@gmail.com",
   // Instagram DM — najbrzi kanal za mnoge klijente.
   instagramHandle: "@devforge_studio",
@@ -1589,7 +1590,7 @@ function Hero() {
               className="inline-flex items-center gap-1.5 font-bold text-white/80 transition hover:text-teal-200"
             >
               <HiOutlinePhone className="text-sm text-teal-300" aria-hidden="true" />
-              {CONTACT.phoneDisplay}
+              {CONTACT.phoneLabel}
             </a>
             <span className="h-3 w-px bg-white/20" aria-hidden="true" />
             <a
@@ -2338,7 +2339,7 @@ function ContactChannels() {
     {
       href: `tel:${CONTACT.phoneRaw}`,
       icon: HiOutlinePhone,
-      label: CONTACT.phoneDisplay,
+      label: CONTACT.phoneLabel,
       note: "Pon–Pet, 09–17h",
       accent: "text-teal-300",
       ring: "hover:border-teal-300/60",
@@ -2462,7 +2463,7 @@ const footerColumns: { title: string; links: { label: string; href?: string; soo
     // jer Google vidi NAP (Name-Address-Phone) konzistentnost.
     title: "Kontakt",
     links: [
-      { label: "+387 62 576 456", href: "tel:+38762576456" },
+      { label: "Pozovite nas", href: "tel:+38762576456" },
       { label: "devforge.studio@gmail.com", href: "mailto:devforge.studio@gmail.com" },
       { label: "WhatsApp", href: "https://wa.me/38762576456" },
       { label: "Instagram DM", href: "https://ig.me/m/devforge_studio" },
@@ -2559,7 +2560,7 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
     { key: "viber", label: "Viber", sub: "Najbrži odgovor", icon: HiOutlineChatBubbleLeftRight, ring: "border-[#7360F2]/50", bg: "bg-[#7360F2]/15 hover:bg-[#7360F2]/25" },
     { key: "whatsapp", label: "WhatsApp", sub: "Odmah na telefonu", icon: HiOutlineChatBubbleOvalLeftEllipsis, ring: "border-[#25D366]/50", bg: "bg-[#25D366]/15 hover:bg-[#25D366]/25" },
     { key: "instagram", label: "Instagram", sub: "DM — javimo se brzo", icon: HiOutlineCamera, ring: "border-[#E1306C]/50", bg: "bg-[#E1306C]/15 hover:bg-[#E1306C]/25" },
-    { key: "call", label: "Pozovi", sub: CONTACT.phoneDisplay, icon: HiOutlinePhone, ring: "border-white/20", bg: "bg-white/[0.05] hover:bg-white/[0.1]" },
+    { key: "call", label: "Pozovi", sub: "Odmah na telefonu", icon: HiOutlinePhone, ring: "border-white/20", bg: "bg-white/[0.05] hover:bg-white/[0.1]" },
   ];
 
   return (
@@ -2676,7 +2677,7 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
                 <input
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder={CONTACT.phoneDisplay}
+                  placeholder="+387 6X XXX XXX"
                   inputMode="tel"
                   className="w-full border border-white/12 bg-white/[0.03] px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:border-teal-300/60 focus:outline-none"
                 />
@@ -2811,7 +2812,7 @@ function ContactAndFooter() {
             Dobijte gotovu verziju
           </a>
           <div className="mt-10 space-y-3 text-[#A7AABB]">
-            <p className="flex items-center gap-3"><HiOutlinePhone className="text-lg text-teal-300" aria-hidden="true" /><span className="font-bold text-white">Telefon:</span> {CONTACT.phoneDisplay}</p>
+            <p className="flex items-center gap-3"><HiOutlinePhone className="text-lg text-teal-300" aria-hidden="true" /><span className="font-bold text-white">Telefon:</span> <a className="text-teal-300 underline-offset-4 hover:underline" href={`tel:${CONTACT.phoneRaw}`}>Pozovite nas</a></p>
             <p className="flex items-center gap-3"><HiOutlineEnvelope className="text-lg text-teal-300" aria-hidden="true" /><span className="font-bold text-white">Email:</span> devforge.studio@gmail.com</p>
             <p className="flex items-center gap-3"><HiOutlineMapPin className="text-lg text-teal-300" aria-hidden="true" /><span className="font-bold text-white">Lokacija:</span> Marsala Tita 28, Sarajevo, BiH</p>
           </div>
@@ -2877,7 +2878,7 @@ function ContactAndFooter() {
               <Logo />
               <p className="mt-4 max-w-xs text-sm leading-6 text-[#A7AABB]">DevForge — web stranice, shopovi i mobilne aplikacije iz Sarajeva. Bez predujma, uz besplatnu gotovu verziju.</p>
               <div className="mt-5 space-y-2 text-sm text-[#A7AABB]">
-                <a className="flex items-center gap-2.5 transition hover:text-white" href={`tel:${CONTACT.phoneRaw}`}><HiOutlinePhone className="text-teal-300" aria-hidden="true" /> {CONTACT.phoneDisplay}</a>
+                <a className="flex items-center gap-2.5 transition hover:text-white" href={`tel:${CONTACT.phoneRaw}`}><HiOutlinePhone className="text-teal-300" aria-hidden="true" /> Pozovite nas</a>
                 <a className="flex items-center gap-2.5 transition hover:text-white" href="mailto:devforge.studio@gmail.com"><HiOutlineEnvelope className="text-teal-300" aria-hidden="true" /> devforge.studio@gmail.com</a>
                 <p className="flex items-center gap-2.5"><HiOutlineMapPin className="text-teal-300" aria-hidden="true" /> Maršala Tita 28, Sarajevo, BiH</p>
               </div>
@@ -3351,7 +3352,7 @@ function SeoLocalText() {
         </h3>
         <p className="mt-3 text-sm leading-7 text-[#9CA3AF]">
           Radimo iz <strong className="font-semibold text-white/90">Sarajeva</strong>, a klijente primamo i online — cijela Bosna i Hercegovina, Hrvatska, Srbija i Crna Gora. Za klijente iz Sarajeva moguć je i sastanak uživo.
-          Kontakt: telefon <a className="text-teal-300 underline-offset-4 hover:underline" href={`tel:${CONTACT.phoneRaw}`}>{CONTACT.phoneDisplay}</a>,
+          Kontakt: <a className="text-teal-300 underline-offset-4 hover:underline" href={`tel:${CONTACT.phoneRaw}`}>telefon</a>,
           email <a className="text-teal-300 underline-offset-4 hover:underline" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>,
           ili Instagram DM <a className="text-teal-300 underline-offset-4 hover:underline" href={CONTACT.instagramUrl} target="_blank" rel="noopener noreferrer">{CONTACT.instagramHandle}</a>.
         </p>
@@ -3793,7 +3794,7 @@ function FaqPage() {
 // NOVA sekcija — direktni načini kontakta u karticama (distinktno od forme u footeru
 // koja se ionako prikazuje ispod). Svaka kartica je klikabilna (tel/mailto/maps).
 const contactMethods: { icon: IconType; label: string; value: string; href: string; note: string }[] = [
-  { icon: HiOutlinePhone, label: "Telefon", value: CONTACT.phoneDisplay, href: `tel:${CONTACT.phoneRaw}`, note: "Pon–Pet, 09–17h" },
+  { icon: HiOutlinePhone, label: "Telefon", value: "Pozovite nas", href: `tel:${CONTACT.phoneRaw}`, note: "Pon–Pet, 09–17h" },
   { icon: HiOutlineEnvelope, label: "Email", value: "devforge.studio@gmail.com", href: "mailto:devforge.studio@gmail.com", note: "Odgovaramo isti dan" },
   { icon: HiOutlineMapPin, label: "Lokacija", value: "Maršala Tita 28, Sarajevo", href: "https://maps.google.com/?q=Marsala+Tita+28+Sarajevo", note: "BiH + cijela regija" },
 ];
@@ -4797,7 +4798,7 @@ function AdReel({ recordMode = false }: { recordMode?: boolean }) {
               <span className="ad-contact-card">
                 <HiOutlinePhone className="ad-contact-card-icon" aria-hidden="true" />
                 <span className="ad-contact-card-title">Pozovi</span>
-                <span className="ad-contact-card-action">{CONTACT.phoneDisplay}</span>
+                <span className="ad-contact-card-action">Pozovite nas</span>
               </span>
             </div>
 
@@ -5169,7 +5170,7 @@ export default function App() {
       },
       kontakt: {
         title: "Kontakt — zatražite besplatnu gotovu verziju | DevForge Sarajevo",
-        desc: "Javite nam se na Viber, WhatsApp, Instagram DM ili telefon +387 62 576 456. Odgovaramo u roku od 10 minuta. Besplatna gotova verzija bez obaveza.",
+        desc: "Javite nam se na Viber, WhatsApp ili Instagram DM. Odgovaramo u roku od 10 minuta. Besplatna gotova verzija bez obaveza.",
       },
       privatnost: {
         title: "Politika privatnosti | DevForge",

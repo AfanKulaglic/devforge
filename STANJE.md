@@ -9,6 +9,12 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **BROJ TELEFONA SKLONJEN SA SAJTA (javno)** — korisnik: „skloni sa stranice moj broj telefona ipak ide javno nemoj bas da stoji broj. ako pritisne da ide na viber ili whatsapp okej onda mu daj to ali nemoj broj pisati".
+  **`src/App.tsx` — `CONTACT`:** `phoneDisplay` **uklonjen**, dodano `phoneLabel: "Pozovite nas"` (tekst koji stoji umjesto broja). `phoneRaw` ostaje ali se koristi **isključivo unutar `href`** (`tel:`, `viber:`, `wa.me`), nikad kao vidljivi tekst.
+  **Zamijenjen prikaz na 10 mjesta:** hero kontakt linija, kontakt kartice (`label`), modal „Pozovi" (`sub` → „Odmah na telefonu"), placeholder u formi (→ `+387 6X XXX XXX`), kontakt blok „Telefon:", footer link, SEO tekst (`telefon` kao link bez broja), `contactMethods`, ad reel end card (→ „Pozovite nas"), footer kontakt kolona (→ „Pozovite nas"), SEO meta opis za `/kontakt` (broj uklonjen iz `desc`).
+  **`index.html`:** uklonjen `<meta property="og:phone_number">` i `"telephone"` iz JSON-LD LocalBusiness; `<noscript>` kontakt blok → `Pozovite nas` kao link.
+  **Rezultat:** svugdje piše **„Pozovite nas"**, a `tel:`/`viber:`/`wa.me` linkovi **i dalje rade** i vode na pravi broj. NAP konzistentnost za SEO djelimično očuvana kroz linkove.
+  **Verifikacija:** `npx tsc --noEmit` → 0; build ✓ 1.042 kB; `/`, `/cijene`, `/admin`, `/reklama`, `/kontakt` → 200; `grep "+387 62 576 456"` u `src/` i `dist/index.html` → **0 pojava kao tekst**.
 - **AI SISTEMI U ADMINU + /cijene — 5 paketa od najjednostavnijeg do najkompleksnijeg** — korisnik: „zasto ai sistemi nemam u admin pageu ni na stranici cijene??? mora biti i po dogovoru svi paketi za ai sisteme od najjednostavnijih do najkompleksinijih i moraju se moc editovati kroz admin page".
   **UZROK (dva nezavisna buga — oba popravljena):**
   1. **`readLocal()`/`fromDbObject()`** — ako je `localStorage` ili Firebase vec imao 4 stare grupe, `DEFAULT_PRICING` (koja sadrzi `ai`) se **uopste nije citao**, pa se AI grupa nikad nije pojavila ni na sajtu ni u adminu.
