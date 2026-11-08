@@ -9,6 +9,12 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **ANALITIKA — DRUGI KRIVAC NADJEN (`v.pages.length` u tabeli)** — korisnik ponovo: „opet ne radi tab za analitiku … m.pages is not iterable".
+  Prva popravka (`normalizeVisit` + `Array.isArray` u `summarize`) nije bila dovoljna jer je **`AdminAnalyticsTab.tsx` tabela „Nedavne posjete" pristupala `v.pages.length` i `v.pages.map()` DIREKTNO** — a `s.recent` dolazi iz `[...visits]` koji nije prolazio kroz normalizaciju kad zapisi dodju iz starog localStorage kesa ili SEED-a.
+  **Konacna popravka (dva mjesta):**
+  1. `summarize(rawVisits)` sada **normalizuje SVE na ulazu**: `const visits = (Array.isArray(rawVisits) ? rawVisits : []).map((v,i) => normalizeVisit(v, `n_${i}`)).filter(Boolean)` — time `s.recent`, `byPage`, `byCountry` i sve ostalo dobijaju garantirano potpune zapise.
+  2. `AdminAnalyticsTab.tsx` tabela: `{!v.pages || v.pages.length === 0 ? ... : ...}` — dodatna zastita na mjestu prikaza.
+  **Verifikacija:** `npx tsc --noEmit` → 0; build ✓ 1.028 kB; provera bundlea — svih **9 pojava `.pages`** su sada iza `Array.isArray(...)` ili `!v.pages ||`, nema golog `[...v.pages]`; funkcijski test s 6 pokvarenih zapisa (bez `pages`, `pages: null`, `pages: "string"`, bez `id`, bez `startedAt`, `null`) → svi iteriraju bez greske, 1 ispravno odbacen.
 - **ANALITIKA PADALA („m.pages is not iterable") + MANIFEST IKONE** — korisnik: „analitika tab mi opet ne radi?? … Uncaught TypeError: m.pages is not iterable".
   **PRAVI UZROK:** u bazi `/analytics/visits` postojao je zapis **bez polja `pages`** (`v_mw89e0dq_tgvwa`, country „Engleski govorno podrucje"). Firebase izostavlja prazna polja iz JSON-a, pa `summarize()` pukao na `[...v.pages]` i srusio cijeli tab.
   **POPRAVKA — `normalizeVisit()` u `src/lib/analytics.ts`:** nova funkcija koja svaki zapis (iz baze ili localStorage) propusta kroz provjeru i vraca **potpun `Visit`** sa svim poljima; `pages` uvijek postaje **niz** (prazan ako fali), `device`/`referrerSource`/`country` dobijaju defaultne vrijednosti, zapisi bez `startedAt` se odbacuju. Koriste je i `loadRemoteVisits()` i `readVisits()`.

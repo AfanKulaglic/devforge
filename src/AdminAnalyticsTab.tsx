@@ -342,7 +342,7 @@ export default function AnalyticsTab() {
                       </span>
                     </td>
                     <td className="px-2 py-3 text-xs text-white/55">
-                      {v.pages.length === 0 ? (
+                      {!v.pages || v.pages.length === 0 ? (
                         <span className="text-white/30">—</span>
                       ) : (
                         <div className="space-y-1">

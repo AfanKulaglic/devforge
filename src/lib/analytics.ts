@@ -379,7 +379,13 @@ export type AnalyticsSummary = {
   daily: { day: string; visits: number }[];
 };
 
-export function summarize(visits: Visit[]): AnalyticsSummary {
+export function summarize(rawVisits: Visit[]): AnalyticsSummary {
+  // Normalizuj SVE na ulazu — bez ovoga nepotpun zapis (bez `pages`) prodje
+  // do tabele "Nedavne posjete" i srusi tab na `v.pages.length`.
+  const visits = (Array.isArray(rawVisits) ? rawVisits : [])
+    .map((v, i) => normalizeVisit(v, `n_${i}`))
+    .filter((v): v is Visit => v !== null);
+
   const totalVisits = visits.length;
   const totalTimeMs = visits.reduce((s, v) => s + v.totalMs, 0);
   const avgSessionMs = totalVisits ? Math.round(totalTimeMs / totalVisits) : 0;
