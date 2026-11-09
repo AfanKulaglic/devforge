@@ -9,6 +9,19 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **OBJAVE v15 — NOVI DIZAJN ZA `figure` I `blocks`** — korisnik: „ima par dizajnova koje bih volio da malo korigujes da izgledaju ljepse a to je dizajn kakav ima 150km web stranica vec od 150 km... takve dizajnove i ove koje su kao kod posta tri paketa tri jasne cijene dosadno je izgelda kao kviz taj dizajn kao i dizajn koji ima post cetiri koraka nula unaprijed... napravi ljepse mozda i jednostavnije ali logo mora imati".
+  **`formFigure` (post 3 „150 KM", svi `number` postovi):**
+  - broj je **čist, bez ikakvog okvira** i bez tackica — samo veliki teal broj
+  - letter-spacing se skalira s velicinom (`-vsize*0.03`) — veliki broj vise nije razvucen
+  - naslov **odmah ispod** broja, povecan `48 → 54px`, `letter-spacing -1.4`
+  - nota je tiha siva (`font-weight 500`), bez kvacica i bez ikona
+  - uklonjene sve „items“ tackice sa dnom (bilo je 14×14 kvadrat + 30px tekst = izgledalo kao lista zadataka)
+  **`formBlocks` (post 9 „tri paketa", post 22 „cetiri koraka", sve liste):**
+  - **uklonjene kartice** (`fill=card`, `stroke=line`, `01/02/03` brojevi) — to je bio „kviz" izgled
+  - sada: naslov → **tanka teal crtica 96×7** → prozracna lista
+  - svaki red: **kratka teal crtica 26×7** + tekst 34–38px, bez okvira i bez brojeva
+  - visina reda se racuna iz raspolozivog prostora (`rowH = avail/n`, 64–112px) — nikad ne prelazi
+  **Verifikacija:** `npx tsc --noEmit` 0; **40 objava / 69 slika / 0 prekoracenja / 0 fontova < 24px**; logo prisutan na **svih 69 slika** (provjera `rect 96,92,84,84` + `>Dev</tspan>`); regex provjera „kviz" brojeva (`01/02/03`) → **0 preostalih**; Playwright 40/40 ucitano, 0 gresaka; build ✓.
 - **OBJAVE v14 — 40 OBJAVA U REDOSLIJEDU SAJTA** — korisnik: „opet su losi tekstovi postova i sve je lose organizovano... napravi ovako: sekciju 1. bez predujma 2.pokrecu biznis web usluge 3.web stranica vec od 150km 4. zasto devforge (galerija) 5.nase usluge 6.nase usluge galerija 7.sve ostalo sto vas projekat treba... 8.cijene (galerija) 9.cijene 10.kako radimo (galerija) 11.kako radimo 12.nasi projekti (galerija) 13... cesta pitanja 14.javite nam se. 14. devforge vs tipicna agencija 15. nas put do danas (galerija)".
   **Broj objava 60 → 40.** Svih 40 prati tacan redoslijed koji je korisnik zadao. **7 galerija** (cover + slike).
   **Izvor = `src/App.tsx`:** `benefits`, `services`, `serviceList`, `deliverables`, `comparison`, `processSteps`, `faqs`, `pricing`, `milestones`, `industries`, `techGroups`. Nista izmisljeno.

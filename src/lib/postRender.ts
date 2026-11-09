@@ -351,88 +351,72 @@ function formHero(c: Colors, p: PostSlide): Block {
  */
 function formFigure(c: Colors, p: PostSlide): Block {
   const val = p.value ?? "";
-  const reserved = 300;
-  const maxByH = (CONTENT_H - reserved) / 0.86;
-  const base = val.length <= 2 ? 320 : val.length <= 4 ? 250 : val.length <= 7 ? 165 : 116;
-  const vsize = Math.max(72, Math.min(fit(val, W, base), maxByH));
+  const base = val.length <= 2 ? 260 : val.length <= 4 ? 210 : val.length <= 7 ? 150 : 112;
+  const vsize = Math.max(70, Math.min(fit(val, W, base), 250));
 
   let svg = `<text x="0" y="${vsize * 0.78}" font-family="${FONT}" font-size="${vsize}"
-    font-weight="900" letter-spacing="-10" fill="${c.accent}">${esc(val)}</text>`;
+    font-weight="900" letter-spacing="${(-vsize * 0.03).toFixed(1)}" fill="${c.accent}">${esc(val)}</text>`;
   let h = vsize;
 
-  // naslov = posljedica broja (mora biti rečenica, ne etiketa)
-  const ts = fit(p.title ?? "", W, 48);
+  const ts = fit(p.title ?? "", W, 54);
   const tl = wrap(p.title ?? "", ts, W, 3);
+  h += 44;
   tl.forEach((l, i) => {
-    svg += `<text x="0" y="${h + 52 + ts * 0.78 + i * ts * 1.16}" font-family="${FONT}"
-      font-size="${ts}" font-weight="800" letter-spacing="-1" fill="${c.ink}">${esc(l)}</text>`;
+    svg += `<text x="0" y="${h + ts * 0.78 + i * ts * 1.1}" font-family="${FONT}"
+      font-size="${ts}" font-weight="800" letter-spacing="-1.4" fill="${c.ink}">${esc(l)}</text>`;
   });
-  h += 52 + ts * 0.78 + (tl.length - 1) * ts * 1.16 + ts * 0.22;
+  h += (tl.length - 1) * ts * 1.1 + ts;
 
   if (p.valueNote) {
-    h += 30;
-    wrap(p.valueNote, 30, W, 2).forEach((l, i) => {
-      svg += `<text x="0" y="${h + 12 + i * 38}" font-family="${FONT}" font-size="30"
-        font-weight="600" fill="${c.soft}">${esc(l)}</text>`;
-      h += 38;
+    const nl = wrap(p.valueNote, 30, W, 2);
+    h += 34;
+    nl.forEach((l, i) => {
+      svg += `<text x="0" y="${h + 24 + i * 38}" font-family="${FONT}" font-size="30"
+        font-weight="500" fill="${c.soft}">${esc(l)}</text>`;
     });
+    h += (nl.length - 1) * 38 + 24;
   }
-
-  (p.items ?? []).slice(0, 2).forEach((it) => {
-    h += 52;
-    svg += `<rect x="0" y="${h}" width="${W}" height="2" fill="${c.line}"/>`;
-    svg += `<rect x="0" y="${h + 20}" width="14" height="14" fill="${c.accent}"/>`;
-    svg += `<text x="32" y="${h + 34}" font-family="${FONT}" font-size="30" font-weight="700"
-      fill="${c.ink}">${esc(wrap(it, 30, W - 36, 1)[0] ?? it)}</text>`;
-    h += 30;
-  });
 
   return { svg, h };
 }
 
-/**
- * BLOCKS — 2–4 numerisane stvari. Svaka mora biti kratka i konkretna
- * (max ~34 znaka po redu). Dugačke rečenice se režu, ne prelamaju u 3 reda.
- */
 function formBlocks(c: Colors, p: PostSlide): Block {
   const items = (p.items ?? []).slice(0, 4);
-  const ts = fit(p.title ?? "", W, 56);
+  const ts = fit(p.title ?? "", W, 60);
   const tl = wrap(p.title ?? "", ts, W, 2);
 
   let svg = tl
     .map(
       (l, i) =>
         `<text x="0" y="${ts * 0.78 + i * ts * 1.08}" font-family="${FONT}" font-size="${ts}"
-          font-weight="900" letter-spacing="-2" fill="${c.ink}">${esc(l)}</text>`,
+          font-weight="900" letter-spacing="-2.2" fill="${c.ink}">${esc(l)}</text>`,
     )
     .join("");
-  let y = (tl.length - 1) * ts * 1.08 + ts * 0.78 + 42;
+  let y = (tl.length - 1) * ts * 1.08 + ts;
 
-  const gap = 14;
-  const rowH = items.length >= 3 ? 96 : 116;
+  y += 40;
+  svg += `<rect x="0" y="${y}" width="96" height="7" fill="${c.accent}"/>`;
+  y += 7;
+
+  const n = items.length || 1;
+  const avail = CONTENT_H - y - 10;
+  const rowH = Math.max(64, Math.min(112, avail / n));
+  const fs = n >= 4 ? 34 : 38;
+
+  y += Math.max(18, (avail - rowH * n) * 0.28);
   items.forEach((it, i) => {
-    const last = items.length % 2 === 1 && i === items.length - 1;
-    const bw = last ? W : (W - gap) / 2;
-    const bx = last ? 0 : i % 2 === 0 ? 0 : (W + gap) / 2;
-    const by = y + Math.floor(i / 2) * (rowH + gap);
-
-    svg += `<rect x="${bx}" y="${by}" width="${bw}" height="${rowH}" fill="${c.card}"
-      stroke="${c.line}" stroke-width="1.5"/>`;
-    svg += `<rect x="${bx}" y="${by}" width="6" height="${rowH}" fill="${c.accent}"/>`;
-    // broj + tekst u istom redu kad staje
-    svg += `<text x="${bx + 24}" y="${by + 40}" font-family="${FONT}" font-size="26"
-      font-weight="900" letter-spacing="1.4" fill="${c.accent}">${String(i + 1).padStart(2, "0")}</text>`;
-    wrap(it, 30, bw - 54, 2).forEach((l, li) => {
-      svg += `<text x="${bx + 24}" y="${by + 70 + li * 32}" font-family="${FONT}" font-size="30"
-        font-weight="700" fill="${c.ink}">${esc(l)}</text>`;
+    const ry = y + i * rowH;
+    svg += `<rect x="0" y="${ry + rowH * 0.30}" width="26" height="7" fill="${c.accent}"/>`;
+    const lines = wrap(it, fs, W - 54, 2);
+    lines.forEach((l, li) => {
+      svg += `<text x="54" y="${ry + rowH * 0.34 + fs * 0.78 + li * (fs + 8)}" font-family="${FONT}"
+        font-size="${fs}" font-weight="700" letter-spacing="-0.6" fill="${c.ink}">${esc(l)}</text>`;
     });
-    y = by;
   });
+  y += rowH * n;
 
-  return { svg, h: y + rowH };
+  return { svg, h: y };
 }
-
-/** DUO — PRIJE (✗) / POSLIJE (✓). Uvijek ista količina lijevo i desno. */
 function formDuo(c: Colors, p: PostSlide): Block {
   const items = p.items ?? [];
   const half = Math.ceil(items.length / 2);
