@@ -593,6 +593,22 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide, total: number) => stri
       <g transform="translate(${M}, ${y})">${b.svg}</g>`;
   },
 
+  // Zrcalo `photoTop`: fotografija je DOLJE, tekst u gornjoj zoni.
+  // Koristi se kad broj/cifra treba da dominira gore, a slika da zatvori sliku dolje.
+  photoBot: (c, p, total) => {
+    const ph = p.photo ?? "hero";
+    const imgH = Math.round(SIZE_H * 0.38);
+    const zoneTop = CONTENT_TOP();
+    const zoneBot = SIZE_H - imgH;
+    const b = buildFitting(c, p, zoneBot - 16, total);
+    // Tekst CENTRIRAN u gornjoj zoni — ne lijepi se za sliku.
+    const y = zoneTop + Math.max(0, (zoneBot - zoneTop - b.h) / 2);
+    return `<image href="${PHOTOS[ph]}" x="0" y="${SIZE_H - imgH}" width="${SIZE}" height="${imgH}"
+        preserveAspectRatio="xMidYMid slice" aria-label="${esc(PHOTO_ALT[ph])}"/>
+      <rect x="0" y="${SIZE_H - imgH}" width="${SIZE}" height="100" fill="url(#fadeTop)"/>
+      <g transform="translate(${M}, ${y})">${b.svg}</g>`;
+  },
+
   photoTop: (c, p, total) => {
     const ph = p.photo ?? "hero";
     // Visina slike raste s formatom: u 3:4 proporcionalno vise, ali ne

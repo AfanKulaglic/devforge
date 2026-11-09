@@ -85,6 +85,7 @@ export type PostLayout =
   | "stamp"
   | "photo"    // fotografija desno, tekst lijevo
   | "photoTop" // fotografija gore, tekst dolje
+  | "photoBot" // fotografija dolje, tekst gore (zrcalo photoTop)
   | "photoBg"; // fotografija preko cijele pozadine
 
 /** Fotografije dostupne za postove (vidi postPhotos.ts). */

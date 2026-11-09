@@ -9,6 +9,14 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **OBJAVE v28 — NOVI LAYOUT `photoBot` ZA p03 (150 KM)** — korisnik: „post broj 3 150km moramo promjeniti. ruzno mi na tom postu izgleda ovaj border … isto kao sto smo imali fol sa onom na vrhu stranice slikom isto tako ovdje na dno stavi sliku i zeleni prostor da bude centar tekstu 150 km“.
+  **Novi layout:** `photoBot` — zrcalo `photoTop`. Dodat u `PostLayout` (`postsData.ts`) i u `PLACE` (`postRender.ts`):
+  - fotografija **DOLJE**: `<image y="${SIZE_H - imgH}" height="${imgH}">` gdje `imgH = round(SIZE_H * 0.38)`
+  - `fadeTop` gradijent 100px iznad slike da se tekst ne sudara s ivicom
+  - tekst `buildFitting(c, p, zoneBot - 16, total)` i **centriran** u gornjoj zoni: `y = zoneTop + max(0, (zoneBot - zoneTop - b.h) / 2)`
+  **`p03` promijenjen:** `layout: "band"` → **`"photoBot"`**, dodano `photo: "web"` (uklonjen okvir `card` + `stroke` sa `accent` trakom koji je korisniku bio ruzan).
+  **Mjereno:** 1:1 → `imgH 410`, zona `250..670` (420px), tekst `288..632`, razmak **38 gore / 38 dole**. 3:4 → `imgH 547`, zona `250..893` (643px), tekst `400..744`, razmak **150 gore / 150 dole**. Slika pocinje na **60%** visine (ocekivano ~62%).
+  **Verifikacija:** 69 slika × oba formata → **0 prekoracenja**, 0 fontova < 24px, 0 slika bez loga. Layouti: `photoBg 9, center 11, photoBot 1, photo 3, band 6, photoTop 4, split 4, stamp 2`. Playwright 40/40 u 3:4, 0 gresaka. `tsc` 0, build ✓.
 - **OBJAVE v27 — CRNA GORNJA TRAKA + INVERTUJUĆI LOGO NA ZELENOJ** — korisnik: „na tim postovima napravi da bijela traka koja ima svaki post bude crne boje na vrhu posta i da Dev u logotipu bude bijelog fonta a Forge crnog … za postove koji su nekada bili bijele boje pozadinske sada su #4DEAE0“.
   **1) Gornja traka:** `<rect ... fill="${BRAND}"/>` → `fill="${c.ink === "#0A0A0A" ? "#0A0A0A" : BRAND}"`. Na zelenim paletama (`teal`, `light`) traka je **crna `#0A0A0A`**, na tamnim ostaje `#4DEAE0`. Izmjereno: `y=0..11` kroz cijelu sirinu = **RGB(10,10,10)**.
   **2) Invertujц́и logo:** `brandMark()` dobio 4. parametar `forgeColor` (default `BRAND`). `header()` racuna `onGreen = c.ink === "#0A0A0A"` i salje:
