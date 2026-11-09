@@ -21,7 +21,15 @@ import { CATEGORY_LABEL, TEMPLATE_LABEL, ALL_POSTS } from "./lib/postsIndex";
 import type { AdPost, PostCategory } from "./lib/postsData";
 import { postSvgDataUri, renderPostSlides, svgToPngBlob } from "./lib/postRender";
 
-const FILTERS: (PostCategory | "sve")[] = ["sve", "sadrzaj", "edukacija", "ponuda", "dokaz", "brend"];
+const FILTERS: (PostCategory | "sve")[] = [
+  "sve",
+  "edukacija",
+  "savjet",
+  "izakulisa",
+  "dokaz",
+  "ponuda",
+  "brend",
+];
 
 // ── Preuzimanje SVG-a kao fajl ────────────────────────────────────────────
 async function downloadPng(post: AdPost, slideIdx = 0) {

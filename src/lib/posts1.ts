@@ -1,453 +1,402 @@
-// ───────────────────────────────────────────────────────────────────────────
-// OBJAVE 1–20 — SADRZAJ & PONUDA
-// Prva trecina: upoznavanje, sta radimo, cijene, proces.
-// Namjena: privuci ljude koji nas ne znaju i odmah im reci sta nudimo.
-// ───────────────────────────────────────────────────────────────────────────
-
 import type { AdPost } from "./postsData";
+
+// ───────────────────────────────────────────────────────────────────────────
+// OBJAVE 1–20 — SADRŽAJ KOJI FIRME STVARNO KAČE
+//
+// Princip: kao da vodiš profil firme, ne prodajni katalog.
+//   • edukacija ("zašto je stranica spora")
+//   • iza kulisa ("ovako izgleda naš ponedjeljak")
+//   • savjeti ("3 stvari koje klijenti najčešće zaborave")
+//   • mišljenje ("ne slažemo se s ovim")
+//   • rezultati ("prije / poslije")
+//
+// Prodaja postoji, ali kao svaka 5–6. objava, nikad kao pravilo.
+// ───────────────────────────────────────────────────────────────────────────
 
 export const POSTS_1: AdPost[] = [
   {
     id: "p01",
     template: "title",
-    category: "brend",
-    layout: "center",
+    category: "edukacija",
+    layout: "photoBg",
+    photo: "code1",
     palette: "dark",
-    eyebrow: "DevForge",
-    title: "Vaša firma nema web stranicu?",
-    subtitle: "Napravimo Vam gotovu verziju — prije nego što platite ijednu marku.",
+    eyebrow: "Edukacija",
+    title: "Stranica koja se učitava 6 sekundi",
+    subtitle: "Izgubi 4 od 10 posjetilaca prije nego što vidi prvu rečenicu.",
+    slides: [
+      { template: "title", eyebrow: "Edukacija", title: "Stranica koja se učitava 6 sekundi", subtitle: "Izgubi 4 od 10 posjetilaca." },
+      { template: "number", eyebrow: "Podatak", title: "posjetilaca odustane nakon 3 sekunde", value: "53%", valueNote: "Google, mobilna verzija.", palette: "ink" },
+      { template: "list", eyebrow: "Tri krivca", title: "Zašto je stranica spora", items: ["Slike od 4 MB", "12 plugina koji se blokiraju", "Hosting za 2 KM mjesečno"], palette: "sun" },
+      { template: "cta", eyebrow: "Rješenje", title: "Sve tri stvari se rješavaju u jednom danu.", subtitle: "Testirajte svoju na PageSpeed-u.", palette: "teal" },
+    ],
     caption:
-      "Ako Vaša firma još nema web stranicu, ili ima onu koja ne radi na mobitelu — ovo je za Vas.\n\n" +
-      "Napravimo Vam gotovu, radnu verziju stranice. Vidite je, prođete kroz nju, kažete šta mijenjati. Tek onda pričamo o plaćanju.\n\n" +
-      "Bez predujma.\n" +
-      "Bez rizika.\n\n" +
-      "Javite nam se u DM — odgovaramo u roku od 10 minuta.",
-    tags: ["webstranica", "webdizajn", "bosna", "sarajevo", "digitalnamarketing", "malibiznis", "devforge"],
+      "Prosječan posjetilac čeka 2-3 sekunde. Nakon toga odlazi.\n\n" +
+      "Najčešći krivci:\n" +
+      "— slike od 4 MB koje niko ne optimizuje\n" +
+      "— 12 plugina koji se međusobno blokiraju\n" +
+      "— hosting za 2 KM mjesečno\n\n" +
+      "Sve tri stvari se rješavaju u jednom danu.\n\n" +
+      "Koja je Vaša stranica na PageSpeed testu?",
+    tags: ["webstranica", "brzinastranice", "seo", "webdizajn", "sarajevo", "devforge"],
   },
   {
     id: "p02",
-    template: "price",
-    category: "ponuda",
-    layout: "split",
-    palette: "teal",
-    eyebrow: "Cijene",
-    title: "Web stranice",
-    value: "150 KM",
-    items: ["Dizajn uključen", "Radi na mobitelu", "Osnovni SEO", "Kontakt forma", "Brzo učitavanje"],
-    slides: [
-      { template: "price", eyebrow: "Cijene", title: "Web stranice", value: "150 KM", items: ["Dizajn uključen", "Radi na mobitelu"] },
-      { template: "list", eyebrow: "Šta je uključeno", title: "Bez doplate", items: ["Profesionalni dizajn", "Mobilna i tablet verzija", "Osnovni SEO", "Kontakt forma", "Brzo učitavanje"], palette: "light" },
-      { template: "cta", eyebrow: "Besplatno", title: "Prva verzija Vas ne košta ništa.", subtitle: "Hosting i domena idu direktno provideru — bez naše marže." },
-    ],
+    template: "list",
+    category: "izakulisa",
+    layout: "center",
+    palette: "ink",
+    eyebrow: "Iza kulisa",
+    title: "Naš ponedjeljak",
+    items: ["3 stranice u izradi", "1 shop pred launchom", "2 poziva s novim klijentima", "0 neodgovorenih poruka"],
     caption:
-      "Web stranica od 150 KM.\n\n" +
-      "To nije promotivna cijena koja nestane sutra — to je naša stvarna početna cijena.\n\n" +
-      "Ono što je UVIJEK uključeno, bez doplate:\n" +
-      "• Profesionalni dizajn\n" +
-      "• Prilagođeno mobitelu i tabletu\n" +
-      "• Osnovna SEO podešavanja\n" +
-      "• Kontakt forma\n" +
-      "• Brzo učitavanje\n\n" +
-      "Hosting i domena se plaćaju direktno provideru, oko 50–100 KM godišnje. Bez naše marže.\n\n" +
-      "Javite nam se u DM i napravimo Vam prvu verziju besplatno.",
-    tags: ["cijene", "webstranica", "webdizajn", "sarajevo", "bosna", "malibiznis", "devforge"],
+      "Ovako izgleda jedan naš ponedjeljak.\n\n" +
+      "Tri stranice su u izradi. Jedan shop čeka zadnje provjere prije objave. Dva poziva s novim ljudima koji tek razmišljaju da li im treba stranica.\n\n" +
+      "I nula neodgovorenih poruka — to nam je pravilo, ne cilj.\n\n" +
+      "Šta je na Vašoj listi ove sedmice?",
+    tags: ["izakulisa", "agencija", "webdizajn", "produktivnost", "sarajevo", "devforge"],
   },
   {
     id: "p03",
-    template: "price",
-    category: "ponuda",
-    layout: "photoBg",
-    photo: "ai1",
-    palette: "ink",
-    eyebrow: "Cijene",
-    title: "Web shopovi",
-    value: "600 KM",
-    items: ["Proizvodi i kategorije", "Korpa i naplata", "Upravljanje narudžbama", "Plaćanje karticom", "Dostava"],
+    template: "title",
+    category: "savjet",
+    layout: "photo",
+    photo: "desk1",
+    palette: "teal",
+    eyebrow: "Savjet",
+    title: "Tri stvari koje klijenti zaborave",
+    subtitle: "I onda ih skupljaju mjesecima nakon objave.",
     caption:
-      "Web shop od 600 KM.\n\n" +
-      "Za one koji stvarno prodaju online — ne samo prikazuju.\n\n" +
-      "Šta dobijate:\n" +
-      "• Proizvodi i kategorije\n" +
-      "• Korpa i checkout\n" +
-      "• Plaćanje karticom ili pouzećem\n" +
-      "• Upravljanje narudžbama\n" +
-      "• Integracija dostave\n" +
-      "• Sve iz web stranice (dizajn, SEO, mobilna verzija)\n\n" +
-      "Isti princip — prvo vidite radnu verziju, tek onda plaćate.\n\n" +
-      "DM za detalje.",
-    tags: ["webshop", "onlineshop", "ecommerce", "sarajevo", "bosna", "malibiznis", "prodaja", "devforge"],
+      "Prije nego što pustite stranicu u javnost, provjerite:\n\n" +
+      "1. Da li imate pristup domeni i hostingu — na SVOJE ime, ne na agencijino.\n" +
+      "2. Da li je Google Analytics povezan (inače nemate pojma ko dolazi).\n" +
+      "3. Da li kontakt forma stvarno dostavlja poruke — testirajte sami.\n\n" +
+      "Najgori scenario koji smo vidjeli: firma je platila stranicu, a domenu drži bivši izvođač. Godinu dana nisu mogli ništa mijenjati.\n\n" +
+      "Provjerite danas. Traje 5 minuta.",
+    tags: ["savjeti", "webstranica", "domena", "hosting", "malibiznis", "devforge"],
   },
   {
     id: "p04",
-    template: "process",
-    category: "sadrzaj",
-    layout: "offset",
-    palette: "mint",
-    eyebrow: "Kako radimo",
-    title: "Četiri koraka do stranice",
-    items: ["Javite se na DM ili Viber", "Napravimo besplatnu verziju", "Pregledate i tražite izmjene", "Tek onda plaćate"],
-    slides: [
-      { template: "process", eyebrow: "Kako radimo", title: "Četiri koraka", items: ["Javite se na DM ili Viber", "Napravimo besplatnu verziju", "Pregledate i tražite izmjene", "Tek onda plaćate"] },
-      { template: "compare", eyebrow: "Zašto ovako", title: "Rizik je na nama", items: ["Platite pa vidite", "Bez probne verzije", "Iznenađenja na kraju", "Nema povratka", "Vidite pa platite", "Radna verzija", "Fiksna cijena", "Bez predujma"], palette: "sun" },
-      { template: "cta", eyebrow: "Krenimo", title: "Prva verzija je besplatna.", subtitle: "Ne plaćate ništa dok ne kažete da je dobro.", palette: "dark" },
-    ],
+    template: "compare",
+    category: "dokaz",
+    layout: "band",
+    palette: "sun",
+    eyebrow: "Prije i poslije",
+    title: "Ista firma, dvije stranice",
+    items: ["6.2s učitavanje", "Ne radi na mobitelu", "Nema kontakt forme", "Niko ne zna za njih", "0.9s učitavanje", "Radi svuda", "Forma i poziv", "14 upita mjesečno"],
     caption:
-      "Naš proces je namjerno okrenut — vi prvo vidite, pa plaćate.\n\n" +
-      "1. Javite se\n" +
-      "DM, Viber, WhatsApp ili telefon. Kažete nam čime se bavite i šta Vam treba.\n\n" +
-      "2. Besplatna verzija\n" +
-      "U 2–5 dana napravimo radnu stranicu s Vašim imenom, bojama i sadržajem.\n\n" +
-      "3. Pregled\n" +
-      "Skrolate, klikate, kažete šta mijenjati. Bez žurbe.\n\n" +
-      "4. Plaćanje\n" +
-      "Tek kad ste zadovoljni.\n\n" +
-      "Bez predujma, bez rizika.",
-    tags: ["proces", "webdizajn", "transparentnost", "sarajevo", "bosna", "malibiznis", "devforge"],
+      "Ovo je stvarna razlika kod jedne iste firme.\n\n" +
+      "Prije: stranica napravljena 2016., učitava se 6 sekundi, na mobitelu se raspada, nema načina da Vas kontaktiraju osim ako negdje nađu broj.\n\n" +
+      "Poslije: 0.9 sekundi, radi na svemu, forma je na vrhu.\n\n" +
+      "Rezultat: 14 upita u prvom mjesecu. Nije magija — samo je stranica napravljena da radi.\n\n" +
+      "Kako izgleda Vaša?",
+    tags: ["prijeiposlije", "webdizajn", "rezultati", "malibiznis", "sarajevo", "devforge"],
   },
   {
     id: "p05",
-    template: "compare",
-    category: "edukacija",
+    template: "quote",
+    category: "brend",
     layout: "stamp",
-    palette: "teal",
-    eyebrow: "Razlika",
-    title: "Šta dobijate, a šta ne",
-    items: ["Dizajn posebno naplaćen", "Ne radi na mobitelu", "Sporo se učitava", "Bez SEO podešavanja", "Dizajn uključen", "Radi na svakom ekranu", "Brzo učitavanje", "Osnovni SEO uključen"],
+    palette: "dark",
+    eyebrow: "Naš stav",
+    title: "„Prezentacija“ nije isto što i stranica.",
+    subtitle: "Jedna donosi posao. Druga stoji na vizit karti.",
     caption:
-      "Većina agencija naplaćuje dizajn kao dodatnu stavku. Mi ne.\n\n" +
-      "PRIJE (klasična ponuda):\n" +
-      "✕ Dizajn se plaća posebno\n" +
-      "✕ Ne radi na mobitelu\n" +
-      "✕ Sporo se učitava\n" +
-      "✕ Bez SEO podešavanja\n\n" +
-      "KOD NAS:\n" +
-      "✓ Dizajn uključen u cijenu\n" +
-      "✓ Radi na svakom ekranu\n" +
-      "✓ Brzo učitavanje\n" +
-      "✓ Osnovni SEO uključen\n\n" +
-      "Nema skrivenih troškova. Cijena koju vidite je cijena koju plaćate.",
-    tags: ["webdizajn", "transparentnost", "cijene", "sarajevo", "bosna", "malibiznis", "devforge"],
+      "Često dobijemo upit: „Treba mi prezentacija firme.“\n\n" +
+      "Pitamo: šta ta stranica treba da uradi?\n\n" +
+      "Ako je odgovor „da se nađe na Google-u i da ljudi nas kontaktiraju“ — to je jedna stvar, i radi se drugačije.\n\n" +
+      "Ako je odgovor „da imamo nešto da pošaljemo“ — to može biti i PDF.\n\n" +
+      "Stranica bez cilja je trošak. Stranica s ciljem je alat.\n\n" +
+      "Znate li koji je cilj Vaše?",
+    tags: ["brend", "webdizajn", "strategija", "malibiznis", "sarajevo", "devforge"],
   },
   {
     id: "p06",
-    template: "number",
-    category: "dokaz",
-    layout: "center",
-    palette: "light",
-    eyebrow: "Portfolio",
-    title: "gotovih projekata",
-    value: "8",
-    valueNote: "web stranice, shopovi i AI sistemi",
+    template: "list",
+    category: "edukacija",
+    layout: "split",
+    palette: "mint",
+    eyebrow: "Edukacija",
+    title: "Šta Google stvarno gleda",
+    items: ["Brzinu učitavanja", "Mobilnu verziju", "Jasnu strukturu naslova", "Tekst koji neko pročita"],
     caption:
-      "Osam gotovih projekata — i svaki je stvarno objavljen, ne samo „demo na slici”.\n\n" +
-      "Web stranice, web shopovi, mobilne aplikacije i AI sistemi.\n\n" +
-      "Ne pričamo o tome šta možemo. Pokazujemo šta smo napravili.\n\n" +
-      "Pogledajte ih na našem sajtu → /projekti\n\n" +
-      "Ako želite da i Vaš rad bude tu — DM.",
-    tags: ["portfolio", "webdizajn", "radovi", "sarajevo", "bosna", "devforge", "agencija"],
+      "SEO nije magija i nije 200 faktora koje morate znati.\n\n" +
+      "Za lokalnu firmu u Bosni, Google praktično gleda četiri stvari:\n\n" +
+      "1. Koliko brzo se stranica učita\n" +
+      "2. Da li radi na mobitelu\n" +
+      "3. Da li ima jasne naslove (H1, H2)\n" +
+      "4. Da li tekst ima smisla čovjeku\n\n" +
+      "Sve ostalo je nijansa. Ako ova četiri nisu riješena, ništa drugo ne pomaže.\n\n" +
+      "Provjerite svoju stranicu na ove četiri stvari.",
+    tags: ["seo", "google", "webstranica", "edukacija", "malibiznis", "devforge"],
   },
   {
     id: "p07",
-    template: "quote",
-    category: "brend",
-    layout: "photo",
-    photo: "office",
-    palette: "ink",
-    eyebrow: "Naš princip",
-    title: "Ne prodajemo obećanja. Pokazujemo rezultat.",
-    subtitle: "Zato prva verzija uvijek ide besplatno.",
+    template: "number",
+    category: "edukacija",
+    layout: "center",
+    palette: "light",
+    eyebrow: "Podatak",
+    title: "ljudi otvori stranicu na mobitelu",
+    value: "76%",
+    valueNote: "A mnoge firme je prave samo za računar.",
     caption:
-      "„Ne prodajemo obećanja. Pokazujemo rezultat.”\n\n" +
-      "To nije marketinška fraza — to je razlog zašto radimo ovako:\n\n" +
-      "Prije nego što platite, dobijate stvarnu, radnu stranicu. Ne mockup na slici, ne „koncept u Figmi”. Prava stranica u browseru.\n\n" +
-      "Možete je otvoriti na svom mobitelu. Poslati kolegi. Pokazati mušterijama.\n\n" +
-      "Ako Vam se ne svidi — ne plaćate ništa.\n\n" +
-      "DM kad ste spremni.",
-    tags: ["webdizajn", "povjerenje", "transparentnost", "sarajevo", "bosna", "devforge"],
+      "76% ljudi koji dođu na Vašu stranicu to rade s mobitela.\n\n" +
+      "Znači: ako stranica na mobitelu ne radi dobro, tri od četiri posjetioca ne vide ono što ste platili.\n\n" +
+      "Najčešći problem: tekst koji se ne može pročitati bez zoom-a, dugmad koja su premala za prst, meni koji se ne otvara.\n\n" +
+      "Otvorite svoju stranicu na mobitelu sad. Ako morate zoom-ati — imate problem.",
+    tags: ["mobilni", "webdizajn", "podaci", "statistika", "malibiznis", "devforge"],
   },
   {
     id: "p08",
-    template: "list",
-    category: "edukacija",
-    layout: "band",
-    palette: "mint",
-    eyebrow: "Zašto mobitel",
-    title: "Šta mora imati svaka stranica",
-    items: ["Radi besprijekorno na mobitelu", "Učita se za manje od 3 sekunde", "Naslovna govori šta radite u 5 sekundi", "Kontakt je vidljiv bez skrolanja", "Ima jasan poziv na akciju"],
+    template: "process",
+    category: "izakulisa",
+    layout: "photoTop",
+    photo: "team1",
+    palette: "ink",
+    eyebrow: "Kako radimo",
+    title: "Kako izgleda prva sedmica",
+    items: ["Poziv od 15 minuta", "Vi pošaljete materijal", "Mi napravimo prvu verziju", "Vi kažete šta mijenjati"],
     caption:
-      "Pet stvari koje stranica MORA imati — bez njih ste izgubili posjetioca u prvoj sekundi.\n\n" +
-      "1. Radi na mobitelu\n" +
-      "Više od 70% ljudi otvori stranicu na telefonu. Ako je neuredna — otišli su.\n\n" +
-      "2. Učita se za manje od 3 sekunde\n" +
-      "Svaka sekunda čekanja = ljudi koji odustaju.\n\n" +
-      "3. Naslovna govori šta radite\n" +
-      "U 5 sekundi mora biti jasno čime se bavite.\n\n" +
-      "4. Kontakt je odmah vidljiv\n" +
-      "Ako moraju tražiti broj — tražiće kod konkurencije.\n\n" +
-      "5. Jasan poziv na akciju\n" +
-      "Šta da urade? PISATI im.\n\n" +
-      "Sve ovo je kod nas uvijek uključeno.",
-    tags: ["webdizajn", "savjeti", "mobitelt", "uxdesign", "sarajevo", "bosna", "devforge"],
+      "Kad se javite, ne počinjemo s ugovorom.\n\n" +
+      "Prvo: poziv od 15 minuta. Vi kažete čime se bavite, mi pitamo ko Vam je kupac i šta stranica treba da uradi.\n\n" +
+      "Drugo: Vi pošaljete logo, slike i tekst koji imate. Ako nemate tekst — napišemo ga mi na osnovu razgovora.\n\n" +
+      "Treće: u 2–5 dana napravimo radnu verziju. Vidite je na linku, nije screenshot.\n\n" +
+      "Četvrto: kažete šta mijenjati. Radimo dok ne bude kako treba.\n\n" +
+      "Tek onda pričamo o plaćanju.",
+    tags: ["proces", "kakoradimo", "webdizajn", "izakulisa", "sarajevo", "devforge"],
   },
   {
     id: "p09",
     template: "list",
-    category: "sadrzaj",
-    layout: "offset",
-    palette: "sun",
-    eyebrow: "Usluge",
-    title: "Čime se bavimo",
-    items: ["Web stranice — od 150 KM", "Web shopovi — od 600 KM", "Mobilne aplikacije — po dogovoru", "2D igrice — po dogovoru", "AI sistemi — po dogovoru"],
-    slides: [
-      { template: "list", eyebrow: "Usluge", title: "Čime se bavimo", items: ["Web stranice", "Web shopovi", "Mobilne aplikacije", "2D igrice", "AI sistemi"] },
-      { template: "price", eyebrow: "Cijene", title: "Web stranice", value: "150 KM", items: ["Dizajn uključen", "Mobilna verzija"], palette: "dark" },
-      { template: "price", eyebrow: "Cijene", title: "Web shopovi", value: "600 KM", items: ["Korpa i naplata", "Upravljanje narudžbama"] },
-      { template: "cta", eyebrow: "Ostalo", title: "App, igrice i AI — po dogovoru.", subtitle: "Recite nam šta Vam treba, dajemo tačnu cijenu.", palette: "teal" },
-    ],
+    category: "savjet",
+    layout: "band",
+    palette: "teal",
+    eyebrow: "Savjet",
+    title: "Znakovi da Vam treba nova stranica",
+    items: ["Sramota Vas je poslati link", "Ne radi na mobitelu", "Ne možete sami ništa mijenjati", "Nema upita već mjesecima"],
     caption:
-      "Pet stvari radimo — i svaku radimo do kraja.\n\n" +
-      "🌐 Web stranice — od 150 KM\n" +
-      "Prezentacije, portfolio, landing stranice.\n\n" +
-      "🛒 Web shopovi — od 600 KM\n" +
-      "Online prodavnice s korpom, plaćanjem i dostavom.\n\n" +
-      "📱 Mobilne aplikacije — po dogovoru\n" +
-      "Android i iOS, od ideje do objave na store.\n\n" +
-      "🎮 2D igrice — po dogovoru\n" +
-      "Web i mobilne igre s custom grafikom.\n\n" +
-      "🤖 AI sistemi — po dogovoru\n" +
-      "Chat asistenti i AI recepcionar koji prima pozive 24/7.\n\n" +
-      "DM za ono što Vas zanima.",
-    tags: ["usluge", "webdizajn", "webshop", "mobilneaplikacije", "aisistemi", "sarajevo", "devforge"],
+      "Ne treba Vam nova stranica jer je stara „ružna“.\n\n" +
+      "Treba Vam nova stranica ako:\n\n" +
+      "— je ne šaljete nikome jer Vas je sramota kako izgleda\n" +
+      "— je otvorite na mobitelu i pola stvari se ne vidi\n" +
+      "— za svaku sitnicu morate zvati izvođača\n" +
+      "— mjesecima nema nijednog upita s nje\n\n" +
+      "Ako ste prepoznali dva ili više — vrijeme je.\n\n" +
+      "Ako nijedan — ne dirajte je, radi posao.",
+    tags: ["savjeti", "webstranica", "redizajn", "malibiznis", "sarajevo", "devforge"],
   },
   {
     id: "p10",
     template: "quote",
     category: "brend",
-    layout: "stamp",
-    palette: "light",
-    eyebrow: "Naš pristup",
-    title: "Nije gotovo dok Vi ne kažete da je gotovo.",
-    subtitle: "Izmjene dizajna tokom razvoja su uvijek besplatne.",
+    layout: "center",
+    palette: "sun",
+    eyebrow: "Naš stav",
+    title: "Ne prodajemo obećanja. Pokazujemo rezultat.",
+    subtitle: "Prva verzija uvijek ide prije plaćanja.",
     caption:
-      "Mnoge agencije naplaćuju „dodatne izmjene”. Mi ne.\n\n" +
-      "Tokom razvoja možete tražiti koliko god izmjena želite — boje, raspored, tekstovi, slike. Sve je uključeno.\n\n" +
-      "Zašto? Jer stranica je Vaša. Ako Vama nije dobra, nije dobra ni nama.\n\n" +
-      "Gotovo je tek kad Vi kažete da je gotovo.\n\n" +
-      "DM da počnemo.",
-    tags: ["webdizajn", "kvalitet", "transparentnost", "sarajevo", "bosna", "devforge"],
+      "Najveći strah kad neko naručuje stranicu: „Šta ako platim i ne bude kako sam zamislio?“\n\n" +
+      "Razumijemo. Zato radimo obrnuto.\n\n" +
+      "Prvo napravimo radnu verziju. Vidite je na pravom linku, ne na slici. Prođete kroz nju, pošaljete prijatelju, pogledate na mobitelu.\n\n" +
+      "Ako ne valja — ne plaćate ništa i idemo dalje.\n\n" +
+      "Ako valja — plaćate i objavljujemo.\n\n" +
+      "Rizik je na nama. To je jedini način da ljudi mirno spavaju.",
+    tags: ["brend", "bezrizika", "webdizajn", "povjerenje", "sarajevo", "devforge"],
   },
   {
     id: "p11",
-    template: "number",
+    template: "list",
     category: "edukacija",
-    layout: "photoTop",
-    photo: "ai1",
-    palette: "ink",
-    eyebrow: "Statistika",
-    title: "ljudi otvori stranicu na mobitelu",
-    value: "70%",
-    valueNote: "zato mobilna verzija nije opcija",
+    layout: "split",
+    palette: "light",
+    eyebrow: "Edukacija",
+    title: "Zašto Vam stranica ne dolazi na Google",
+    items: ["Nije nigdje linkovana", "Nema Google Business profil", "Nema ni jedne lokacije u tekstu", "Objavljena prije 3 dana"],
     caption:
-      "Sedam od deset ljudi će Vašu stranicu otvoriti na telefonu.\n\n" +
-      "Ako na telefonu izgleda loše — izgubili ste 70% posjetilaca prije nego što su pročitali prvu rečenicu.\n\n" +
-      "Zato kod nas mobilna verzija nije „dodatna usluga”. Nije „premium paket”. Uvijek je uključena.\n\n" +
-      "Otvori svoju stranicu na telefonu. Ako moraš zumirati da pročitaš tekst — vrijeme je za novu.\n\n" +
-      "DM za besplatnu procjenu.",
-    tags: ["mobitelt", "webdizajn", "statistika", "uxdesign", "sarajevo", "bosna", "devforge"],
+      "„Napravili smo stranicu prije mjesec dana i nema nas na Google-u.“\n\n" +
+      "Četiri najčešća razloga:\n\n" +
+      "1. Nigdje nije linkovana — Google ne zna da postoji. Treba barem Google Business profil i društvene mreže.\n" +
+      "2. Nemate Google Business profil — bez njega se ne pojavljujete na mapi, a to je 80% lokalnih pretraga.\n" +
+      "3. U tekstu nigdje ne piše Vaš grad. Google ne zna gdje ste.\n" +
+      "4. Prošla su 3 dana. Indeksiranje traje 1–4 sedmice.\n\n" +
+      "Stranica sama nije dovoljna. Treba joj put do Google-a.",
+    tags: ["seo", "google", "lokalni", "malibiznis", "edukacija", "devforge"],
   },
   {
     id: "p12",
-    template: "process",
-    category: "ponuda",
-    layout: "split",
-    palette: "mint",
-    eyebrow: "Bez rizika",
-    title: "Zašto besplatna verzija",
-    items: ["Vidite stvarnu stranicu, ne sliku", "Možete je otvoriti na mobitelu", "Pokažete je kolegama i mušterijama", "Ako ne valja — ne plaćate"],
+    template: "number",
+    category: "dokaz",
+    layout: "photo",
+    photo: "office",
+    palette: "dark",
+    eyebrow: "Rezultat",
+    title: "sekundi — prosječno učitavanje naših stranica",
+    value: "0.9",
+    valueNote: "Mjereno na PageSpeed-u, mobilna verzija.",
     caption:
-      "Zašto radimo besplatnu verziju prije plaćanja?\n\n" +
-      "Zato što slika na ekranu nije isto što i stranica u browseru.\n\n" +
-      "1. Stvarna stranica, ne mockup\n" +
-      "Možete je skrolati, klikati, testirati.\n\n" +
-      "2. Na svom mobitelu\n" +
-      "Vidite tačno kako će izgledati Vašim mušterijama.\n\n" +
-      "3. Pokažete drugima\n" +
-      "Pošaljite link kolegi ili porodici. Neka kažu šta misle.\n\n" +
-      "4. Ako ne valja — ništa ne plaćate\n" +
-      "Bez predujma. Bez obaveze.\n\n" +
-      "Tako se gradi povjerenje.",
-    tags: ["besplatno", "webdizajn", "povjerenje", "sarajevo", "bosna", "malibiznis", "devforge"],
+      "Naše stranice se u prosjeku učitavaju za 0.9 sekundi na mobitelu.\n\n" +
+      "Zašto je to važno:\n" +
+      "— Google rangira brže stranice više\n" +
+      "— ljudi ne odlaze prije nego što pročitaju prvu rečenicu\n" +
+      "— na slaboj vezi (koja je česta u Bosni) stranica i dalje radi\n\n" +
+      "Kako postižemo: bez teških plugina, kompresovane slike, minimalan kod.\n\n" +
+      "Testirajte svoju na PageSpeed Insights. Ako je preko 3 sekunde — imate posla.",
+    tags: ["brzina", "rezultati", "webdizajn", "pagespeed", "devforge"],
   },
   {
     id: "p13",
-    template: "title",
-    category: "edukacija",
-    layout: "band",
-    palette: "sun",
+    template: "list",
+    category: "savjet",
+    layout: "center",
+    palette: "ink",
     eyebrow: "Savjet",
-    title: "Instagram profil nije web stranica.",
-    subtitle: "I nikad ga ne može zamijeniti — evo zašto.",
+    title: "Šta staviti na naslovnu",
+    items: ["Čime se bavite — jednom rečenicom", "Za koga radite", "Šta da uradi posjetilac", "Kako da Vas kontaktira"],
     caption:
-      "Često čujemo: „Ma imam Instagram, dovoljno mi je.”\n\n" +
-      "Nije. Evo razlike:\n\n" +
-      "Instagram profil:\n" +
-      "• Nestaje ako platforma padne ili ugasi profil\n" +
-      "• Ne pojavljuje se u Google pretrazi\n" +
-      "• Nema mjesta za cijene, usluge, opis\n" +
-      "• Konkurencija je uvijek pored\n\n" +
-      "Web stranica:\n" +
-      "• Vaša je, zauvijek\n" +
-      "• Google je nalazi\n" +
-      "• Sve informacije na jednom mjestu\n" +
-      "• Radite šta želite\n\n" +
-      "Instagram je izlog. Web stranica je kuća.",
-    tags: ["instagram", "webstranica", "savjeti", "sarajevo", "bosna", "malibiznis", "devforge"],
+      "Naslovna stranica ima jedan posao: da u 5 sekundi odgovori na tri pitanja.\n\n" +
+      "1. Šta ova firma radi?\n" +
+      "2. Da li je to za mene?\n" +
+      "3. Šta treba da uradim sad?\n\n" +
+      "Ako posjetilac ne nađe odgovore u prvom ekranu, skrola dalje ili odlazi.\n\n" +
+      "Najčešća greška: velika slika, logo, i nigdje živa rečenica šta firma radi.\n\n" +
+      "Napišite svoju prvu rečenicu. Ako je duža od 12 riječi — skratite.",
+    tags: ["savjeti", "webdizajn", "naslovna", "ux", "malibiznis", "devforge"],
   },
   {
     id: "p14",
-    template: "list",
-    category: "ponuda",
-    layout: "offset",
-    palette: "dark",
-    eyebrow: "Uključeno",
-    title: "Šta dobijate za 150 KM",
-    items: ["Profesionalni dizajn", "Mobilna i tablet verzija", "Osnovni SEO (meta naslovi i opisi)", "Kontakt forma", "Brzo učitavanje", "Besplatne izmjene tokom razvoja"],
+    template: "compare",
+    category: "edukacija",
+    layout: "band",
+    palette: "mint",
+    eyebrow: "Poređenje",
+    title: "Šablonska vs. rađena stranica",
+    items: ["Gotova za dan", "0 KM mjesečno", "Sve firme izgledaju isto", "Ne možete ništa mijenjati", "3–5 dana", "Kod je Vaš", "Izgleda kao Vi", "Mijenjate sami"],
     caption:
-      "Da ne bude zabune — evo šta 150 KM stvarno pokriva.\n\n" +
-      "✓ Profesionalni dizajn\n" +
-      "Ne template. Dizajn prilagođen Vašoj firmi.\n\n" +
-      "✓ Mobilna i tablet verzija\n" +
-      "Radi na svakom ekranu.\n\n" +
-      "✓ Osnovni SEO\n" +
-      "Meta naslovi i opisi — da Vas Google može naći.\n\n" +
-      "✓ Kontakt forma\n" +
-      "Da Vam ljudi mogu pisati direktno.\n\n" +
-      "✓ Brzo učitavanje\n" +
-      "Bez čekanja.\n\n" +
-      "✓ Besplatne izmjene\n" +
-      "Tokom razvoja — koliko god treba.\n\n" +
-      "Šta NIJE uključeno: hosting i domena (oko 50–100 KM/god, direktno provideru).\n\n" +
-      "DM.",
-    tags: ["cijene", "webdizajn", "webstranica", "sarajevo", "bosna", "malibiznis", "devforge"],
+      "Nije da je šablon loš. Nekad je ispravna odluka.\n\n" +
+      "Šablon je dobar ako:\n" +
+      "— tek počinjete i nemate budžet\n" +
+      "— Vam stranica treba danas\n" +
+      "— Vam je svejedno kako izgleda\n\n" +
+      "Šablon je loš ako:\n" +
+      "— se takmičite s firmama koje izgledaju ozbiljno\n" +
+      "— Vam treba nešto što šablon ne može\n" +
+      "— želite sami mijenjati tekst\n\n" +
+      "Iskreno pitanje: koliko Vas košta to što izgledate kao 50 drugih firmi?",
+    tags: ["poredjenje", "sablon", "webdizajn", "odluka", "malibiznis", "devforge"],
   },
   {
     id: "p15",
-    template: "compare",
-    category: "edukacija",
-    layout: "photoBg",
-    photo: "office",
+    template: "quote",
+    category: "brend",
+    layout: "stamp",
     palette: "teal",
-    eyebrow: "Razlika",
-    title: "Logo nije brend",
-    items: ["Samo slika", "Nema pravila korištenja", "Nema paletu boja", "Nema ton komunikacije", "Cijeli vizualni sistem", "Pravila korištenja", "Paleta boja i fontova", "Jasan ton glasa"],
+    eyebrow: "Naš stav",
+    title: "Dobra stranica nije ona koja je lijepa.",
+    subtitle: "Nego ona nakon koje neko podigne telefon.",
     caption:
-      "Logo je dio brenda. Nije cijeli brend.\n\n" +
-      "Logo bez sistema:\n" +
-      "✕ Samo slika\n" +
-      "✕ Nema pravila korištenja\n" +
-      "✕ Nema palete boja\n" +
-      "✕ Nema tona komunikacije\n\n" +
-      "Brend:\n" +
-      "✓ Cijeli vizualni sistem\n" +
-      "✓ Pravila korištenja\n" +
-      "✓ Paleta boja i fontova\n" +
-      "✓ Jasan ton glasa\n\n" +
-      "Ipak — većini malih firmi prvo treba stranica, ne brend priručnik. Zato dizajn radimo uz stranicu, od 100 KM.\n\n" +
-      "DM.",
-    tags: ["brending", "logo", "design", "sarajevo", "bosna", "malibiznis", "devforge"],
+      "Možemo Vam napraviti najljepšu stranicu u Bosni. Ako niko ne pozove — promašili smo posao.\n\n" +
+      "Zato prije dizajna pitamo:\n" +
+      "— Ko je Vaš kupac?\n" +
+      "— Šta ga trenutno sprječava da Vas pozove?\n" +
+      "— Šta mora vidjeti da bi Vam vjerovao?\n\n" +
+      "Tekst, raspored i dugmad se rade prema tim odgovorima. Boje i fontovi dolaze na kraju.\n\n" +
+      "Ljepota je posljedica. Ne cilj.",
+    tags: ["brend", "webdizajn", "strategija", "konverzija", "devforge"],
   },
   {
     id: "p16",
-    template: "quote",
-    category: "sadrzaj",
-    layout: "center",
-    palette: "light",
-    eyebrow: "Naš pristup",
-    title: "Brzo je važnije od savršenog.",
-    subtitle: "Stranica koja je online danas vrijedi više od one koja je „savršena” za mjesec.",
+    template: "list",
+    category: "izakulisa",
+    layout: "photoBg",
+    photo: "code2",
+    palette: "dark",
+    eyebrow: "Iza kulisa",
+    title: "Alati koje koristimo svaki dan",
+    items: ["React za sučelje", "Node i PHP za pozadinu", "Figma za dizajn", "Firebase za podatke"],
     caption:
-      "Beskrajno dotjerivanje je najčešći razlog zašto firma nikad ne dobije stranicu.\n\n" +
-      "Mjesecima se čeka „pravi trenutak”, „bolji tekst”, „ljepša slika”.\n\n" +
-      "A konkurencija je već online. Primaju pozive dok Vaš sajt još ne postoji.\n\n" +
-      "Zato radimo ovako: napravimo radnu verziju u 2–5 dana, pustimo je online, i dotjerujemo u hodu.\n\n" +
-      "Bolje online danas, nego savršeno nikad.\n\n" +
-      "DM — krećemo ove sedmice.",
-    tags: ["webdizajn", "produktivnost", "sarajevo", "bosna", "malibiznis", "devforge"],
+      "Ljudi nas često pitaju u čemu radimo.\n\n" +
+      "Sučelje: React i TypeScript. Razlog — brzo se učitava i lako se održava.\n" +
+      "Pozadina: Node.js ili PHP, zavisno od projekta. Ne forsiramo jedno.\n" +
+      "Dizajn: Figma. Prvo maketa, pa kod. Nikad obrnuto.\n" +
+      "Podaci: Firebase kad treba brzo, PostgreSQL kad treba ozbiljno.\n\n" +
+      "Alati nisu važni klijentu. Ali su važni kad za godinu tražite nekog da nastavi raditi na stranici.\n\n" +
+      "Zato je kod uvijek Vaš.",
+    tags: ["alati", "tehnologije", "react", "webdizajn", "izakulisa", "devforge"],
   },
   {
     id: "p17",
-    template: "list",
+    template: "number",
     category: "edukacija",
-    layout: "split",
-    palette: "ink",
-    eyebrow: "Greške",
-    title: "Četiri greške koje koštaju mušterija",
-    items: ["Broj telefona nije vidljiv", "Nema cijene ni okvira", "Stranica se ne otvara na mobitelu", "Nema poziva na akciju"],
+    layout: "offset",
+    palette: "light",
+    eyebrow: "Podatak",
+    title: "posjetilaca napusti stranicu ako se ne učita za 3 sekunde",
+    value: "53%",
+    valueNote: "Google, mobilna verzija.",
     caption:
-      "Četiri greške koje sam vidio na desetinama stranica u BiH:\n\n" +
-      "1. Broj telefona nije vidljiv\n" +
-      "Ako moraju tražiti kontakt — tražit će kod konkurencije.\n\n" +
-      "2. Nema cijene ni okvira\n" +
-      "„Kontaktirajte nas za ponudu” plaši ljude. Okvirna cijena gradí povjerenje.\n\n" +
-      "3. Ne otvara se na mobitelu\n" +
-      "70% ljudi dolazi s telefona. Ako se raspada — izgubili ste ih.\n\n" +
-      "4. Nema poziva na akciju\n" +
-      "Posjetilac ne zna šta da uradi. Zato ode.\n\n" +
-      "Sve četiri popravljamo u startu.",
-    tags: ["savjeti", "webdizajn", "greske", "sarajevo", "bosna", "malibiznis", "devforge"],
+      "Više od polovine ljudi ode prije nego što stranica pokaže prvi sadržaj.\n\n" +
+      "To znači: ako se Vaša stranica učitava 5 sekundi, pola budžeta za marketing bacate na ljude koji nikad nisu vidjeli šta prodajete.\n\n" +
+      "Najbrža popravka koju možete uraditi sami: smanjite slike.\n" +
+      "— slika od 3 MB → 300 KB, ne vidi se razlika\n" +
+      "— koristite WebP umjesto JPG\n" +
+      "— provjerite na tinypng.com\n\n" +
+      "Traje 20 minuta. Uštedi sekunde.",
+    tags: ["brzina", "podaci", "webdizajn", "statistika", "malibiznis", "devforge"],
   },
   {
     id: "p18",
-    template: "cta",
-    category: "ponuda",
-    layout: "band",
-    palette: "mint",
-    eyebrow: "Besplatno",
-    title: "Vaša stranica. Besplatno.",
-    subtitle: "Napravimo gotovu verziju — vidite je prije nego što platite.",
+    template: "process",
+    category: "izakulisa",
+    layout: "center",
+    palette: "sun",
+    eyebrow: "Iza kulisa",
+    title: "Šta radimo prije nego napišemo liniju koda",
+    items: ["Razgovor o kupcu", "Pregled konkurencije", "Struktura stranica na papiru", "Tekst prije dizajna"],
     caption:
-      "Evo kako počinjemo: napravimo Vašu stranicu. Besplatno.\n\n" +
-      "Bez ugovora. Bez predujma. Bez „potpišite pa da vidite”.\n\n" +
-      "Dobijete radnu stranicu s Vašim imenom, bojama i sadržajem. Otvorite je, pokažete mušterijama, kažete šta mijenjati.\n\n" +
-      "Ako Vam se svidi — nastavljamo.\n" +
-      "Ako ne — nema problema, ništa ne plaćate.\n\n" +
-      "Javite nam se u DM s imenom firme. Odgovaramo u 10 minuta.",
-    tags: ["besplatno", "webdizajn", "sarajevo", "bosna", "malibiznis", "devforge"],
+      "Redoslijed je važan. Ovako izgleda naš početak:\n\n" +
+      "1. Razgovor — 30 minuta o tome ko je kupac i šta ga muči.\n" +
+      "2. Konkurencija — gledamo 5 firmi koje rade isto. Šta im rade dobro, šta loše.\n" +
+      "3. Struktura — nacrtamo stranice na papiru. Koja vodi gdje, šta je na svakoj.\n" +
+      "4. Tekst — pišemo prvo tekst, pa dizajn. Obrnuto nikad ne radi.\n\n" +
+      "Tek onda Figma. Tek onda kod.\n\n" +
+      "Zato prva verzija obično bude dobra iz prve — jer je pola posla urađeno prije nego što se vidi.",
+    tags: ["proces", "izakulisa", "webdizajn", "priprema", "devforge"],
   },
   {
     id: "p19",
-    template: "number",
-    category: "sadrzaj",
-    layout: "photo",
-    photo: "ai1",
-    palette: "dark",
-    eyebrow: "Brzina",
-    title: "dana do prve verzije",
-    value: "2–5",
-    valueNote: "ne sedmica, ne mjeseci",
+    template: "list",
+    category: "savjet",
+    layout: "band",
+    palette: "ink",
+    eyebrow: "Savjet",
+    title: "Kako da Vam Google Business profil radi",
+    items: ["Stavite tačnu adresu i radno vrijeme", "Dodajte 10 stvarnih fotografija", "Tražite recenzije od kupaca", "Objavljujte jednom mjesečno"],
     caption:
-      "Gotova verzija u 2 do 5 dana.\n\n" +
-      "Ne mjesecima. Ne „javimo se za dvije sedmice”.\n\n" +
-      "Zašto tako brzo? Zato što ne krećemo od nule — imamo sistem, komponente i dizajn jezik koji već radi. Vaše vrijeme trošimo na ono što je stvarno Vaše: sadržaj, boje, slike.\n\n" +
-      "U 2–5 dana dobijate link koji možete otvoriti.\n\n" +
-      "DM danas, stranica za par dana.",
-    tags: ["brzina", "webdizajn", "sarajevo", "bosna", "devforge"],
+      "Za lokalnu firmu, Google Business profil donosi više poziva nego stranica.\n\n" +
+      "Četiri stvari koje većina ne uradi:\n\n" +
+      "1. Radno vrijeme — ako je pogrešno, ljudi dolaze kad ste zatvoreni i ostavljaju lošu recenziju.\n" +
+      "2. Fotografije — 10 stvarnih slika prostora i tima. Ne stock.\n" +
+      "3. Recenzije — pitajte svakog zadovoljnog kupca. 20 recenzija mijenja sve.\n" +
+      "4. Objave — jednom mjesečno nešto novo. Google to vidi.\n\n" +
+      "Sve je besplatno. Samo traži vrijeme.",
+    tags: ["google", "lokalni", "seo", "savjeti", "malibiznis", "devforge"],
   },
   {
     id: "p20",
-    template: "title",
+    template: "quote",
     category: "brend",
-    layout: "stamp",
+    layout: "split",
     palette: "dark",
-    eyebrow: "DevForge",
-    title: "Sarajevo. Radimo online. Cijela regija.",
-    subtitle: "BiH, Hrvatska, Srbija, Crna Gora — sve na daljinu.",
+    eyebrow: "Naš stav",
+    title: "Ako Vam ne možemo pomoći — reći ćemo Vam to.",
+    subtitle: "Bolje izgubiti posao nego uraditi ga loše.",
     caption:
-      "Radimo iz Sarajeva, ali lokacija nije prepreka.\n\n" +
-      "Klijente primamo online — cijela Bosna i Hercegovina, Hrvatska, Srbija i Crna Gora. Sve ide na daljinu: dogovor, dizajn, odobrenje, objava.\n\n" +
-      "Za klijente iz Sarajeva moguć je i sastanak uživo, uz kafu.\n\n" +
-      "Sve ostalo — poruke, pozivi, video poziv ako treba.\n\n" +
-      "DM bez obzira odakle ste.",
-    tags: ["sarajevo", "bosna", "hrvatska", "srbija", "crnagora", "onlineposlovanje", "devforge"],
+      "Dešava se da nas pitaju za nešto što ne radimo dobro.\n\n" +
+      "Na primjer: veliki web shop s 5000 proizvoda i integracijom s 3 sistema. To nije naš teren.\n\n" +
+      "Kažemo to odmah, u prvom razgovoru. I preporučimo nekog ko to radi.\n\n" +
+      "Zašto? Jer loše urađen posao košta više od izgubljenog. Košta reputaciju, košta vrijeme, i na kraju moraš ga ispravljati besplatno.\n\n" +
+      "Ako Vam neko kaže da može sve — pitajte ga šta ne može.",
+    tags: ["brend", "iskrenost", "povjerenje", "agencija", "devforge"],
   },
 ];

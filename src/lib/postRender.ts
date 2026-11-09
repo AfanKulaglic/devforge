@@ -446,11 +446,14 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide) => string> = {
     const ph = p.photo ?? "code1";
     const b = build(c, p);
     const y = CONTENT_TOP + Math.max(0, (CONTENT_H - b.h) / 2);
+    // Fotografija je u punoj svjetlini — ona NOSI sliku.
+    // Samo blagi tamni veo (28%) da bijeli tekst ostane čitljiv, i mekše
+    // iznad/dolje da se ivice stopе sa platnom.
     return `<image href="${PHOTOS[ph]}" x="0" y="0" width="${SIZE}" height="${SIZE}"
-        preserveAspectRatio="xMidYMid slice" opacity="0.30" aria-label="${esc(PHOTO_ALT[ph])}"/>
-      <rect x="0" y="0" width="${SIZE}" height="${SIZE}" fill="${c.bg}" opacity="0.62"/>
-      <rect x="0" y="${CONTENT_TOP - 60}" width="${SIZE}" height="${CONTENT_H + 120}"
-        fill="url(#fadeV)"/>
+        preserveAspectRatio="xMidYMid slice" aria-label="${esc(PHOTO_ALT[ph])}"/>
+      <rect x="0" y="0" width="${SIZE}" height="${SIZE}" fill="#04060A" opacity="0.12"/>
+      <rect x="0" y="0" width="${SIZE}" height="200" fill="url(#fadeTopSoft)"/>
+      <rect x="0" y="${SIZE - 200}" width="${SIZE}" height="200" fill="url(#fadeDownSoft)"/>
       <g transform="translate(${M}, ${y})">${b.svg}</g>`;
   },
 
@@ -459,15 +462,14 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide) => string> = {
     const ph = p.photo ?? "code1";
     // Fotografija zauzima gornjih 400px; tekst ide ispod nje i mora stati
     // do CONTENT_BOTTOM — ako ne staje, tekst se skalira (vidi buildSkaled).
-    const imgH = 400;
-    const areaTop = imgH + 26;
+    const imgH = 380;
+    const areaTop = imgH + 20;
     const areaH = CONTENT_BOTTOM - areaTop;
     const b = buildFitting(c, p, areaH);
     const y = areaTop;
     return `<image href="${PHOTOS[ph]}" x="0" y="0" width="${SIZE}" height="${imgH}"
-        preserveAspectRatio="xMidYMid slice" opacity="0.72" aria-label="${esc(PHOTO_ALT[ph])}"/>
-      <rect x="0" y="0" width="${SIZE}" height="${imgH}" fill="${c.bg}" opacity="0.35"/>
-      <rect x="0" y="${imgH - 100}" width="${SIZE}" height="100" fill="url(#fadeDown)"/>
+        preserveAspectRatio="xMidYMid slice" aria-label="${esc(PHOTO_ALT[ph])}"/>
+      <rect x="0" y="${imgH - 90}" width="${SIZE}" height="90" fill="url(#fadeDown)"/>
       <g transform="translate(${M}, ${y})">${b.svg}</g>`;
   },
 
@@ -478,9 +480,8 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide) => string> = {
     const b = build(c, p);
     const y = CONTENT_TOP + Math.max(0, (CONTENT_H - b.h) / 2);
     return `<image href="${PHOTOS[ph]}" x="${SIZE - imgW}" y="0" width="${imgW}" height="${SIZE}"
-        preserveAspectRatio="xMidYMid slice" opacity="0.65" aria-label="${esc(PHOTO_ALT[ph])}"/>
-      <rect x="${SIZE - imgW}" y="0" width="${imgW}" height="${SIZE}" fill="${c.bg}" opacity="0.42"/>
-      <rect x="${SIZE - imgW - 40}" y="0" width="40" height="${SIZE}" fill="url(#fadeRight)"/>
+        preserveAspectRatio="xMidYMid slice" aria-label="${esc(PHOTO_ALT[ph])}"/>
+      <rect x="${SIZE - imgW - 90}" y="0" width="90" height="${SIZE}" fill="url(#fadeRight)"/>
       <g transform="translate(${M}, ${y})">${b.svg}</g>`;
   },
 
@@ -505,7 +506,12 @@ export function renderSlideSvg(
 ): string {
   const c = PALETTES[slide.palette ?? post.palette] ?? PALETTES.dark;
   const layout = post.layout ?? "center";
-  const content = (PLACE[layout] ?? PLACE.center)(c, slide);
+  let content = (PLACE[layout] ?? PLACE.center)(c, slide);
+  // Na fotografskoj pozadini tekst dobija meku sjenku — čitljiv i na svijetlim
+  // i na tamnim dijelovima fotografije, bez potamnjenja cijele slike.
+  if (layout === "photoBg") {
+    content = `<g style="filter:drop-shadow(0 3px 18px rgba(0,0,0,0.85)) drop-shadow(0 1px 4px rgba(0,0,0,0.9))">${content}</g>`;
+  }
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${SIZE}" height="${SIZE}" viewBox="0 0 ${SIZE} ${SIZE}" role="img" aria-label="${esc(
     slide.title ?? post.title,
@@ -518,6 +524,14 @@ export function renderSlideSvg(
     <linearGradient id="fadeRight" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0%" stop-color="${c.bg}" stop-opacity="0"/>
       <stop offset="100%" stop-color="${c.bg}" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="fadeTopSoft" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#04060A" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#04060A" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="fadeDownSoft" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#04060A" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#04060A" stop-opacity="0.80"/>
     </linearGradient>
     <linearGradient id="fadeV" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="${c.bg}" stop-opacity="0.95"/>

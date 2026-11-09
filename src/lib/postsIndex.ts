@@ -11,11 +11,13 @@ import { POSTS_3 } from "./posts3";
 export const ALL_POSTS: AdPost[] = [...POSTS_1, ...POSTS_2, ...POSTS_3];
 
 export const CATEGORY_LABEL: Record<string, string> = {
-  sadrzaj: "Sadržaj",
   edukacija: "Edukacija",
+  savjet: "Savjet",
+  izakulisa: "Iza kulisa",
+  dokaz: "Rezultati",
   ponuda: "Ponuda",
-  dokaz: "Dokaz",
-  brend: "Brend",
+  brend: "Naš stav",
+  sadrzaj: "Sadržaj",
 };
 
 export const TEMPLATE_LABEL: Record<string, string> = {

@@ -25,7 +25,14 @@ export type PostTemplate =
   | "process" // koraci 1-2-3
   | "cta"; // poziv na akciju
 
-export type PostCategory = "sadrzaj" | "edukacija" | "ponuda" | "dokaz" | "brend";
+export type PostCategory =
+  | "sadrzaj"
+  | "edukacija"
+  | "savjet"
+  | "izakulisa"
+  | "dokaz"
+  | "ponuda"
+  | "brend";
 
 export type PostPalette = "dark" | "teal" | "light" | "ink" | "mint" | "sun";
 

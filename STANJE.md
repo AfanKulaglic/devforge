@@ -9,6 +9,19 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **OBJAVE v5 — SADRZAJ KAO PRAVA FIRMA, NE OGLAŠAVANJE** — korisnik: „mozda su ti glupe objave malo?? daj nesto logicnije sto ide na instagram sto firme kace na instagram".
+  **Problem:** stare objave bile su sve „kupite od nas" — cijene, ponude, „besplatna prva verzija". To nije ono sto firma kaci.
+  **Rjesenje:** svih 60 objava napisano iznova, po principu kako stvarne firme vode profil:
+  - **edukacija (17)** — „Stranica koja se ucitava 6 sekundi", „Sta Google stvarno gleda", „Zasto Vam stranica ne dolazi na Google", „Zasto sabloni izgledaju isto", „Sta covjek trazi vs. sta firme stavljaju"
+  - **savjet (12)** — „Tri stvari koje klijenti zaborave", „Prije nego uvedete AI, uradite ovo", „Pitanja za dobavljaca AI rjesenja", „Sta staviti u podnozje", „Kako da pripremite materijal"
+  - **iza kulisa (10)** — „Nas ponedjeljak", „Alati koje koristimo svaki dan", „Kako testiramo AI asistenta", „Sta radiimo prije nego napisemo liniju koda", „Jedan covjek, jedan projekat"
+  - **rezultati (7)** — stvarni brojevi: 0.9s ucitavanje, 8h usparada sedmicno, 41% upita van radnog vremena, 40+ projekata
+  - **nas stav (14)** — misljenja: „AI je alat. Ne strategija.", „Vas kod je Vas. Uvijek.", „Bolje uraditi jednu stvar dobro.", „Ne trebamo sve klijente."
+  - **ponuda (0)** — nijedna cista prodajna objava. Prodaja je u captionima kao usput, nikad kao tema.
+  **Nova kategorija tipovi:** `PostCategory` dobio `savjet` i `izakulisa`. `CATEGORY_LABEL` azuriran. `FILTERS` u `PostsPage.tsx` prosireni na 6 filtera (`sve/edukacija/savjet/izakulisa/dokaz/ponuda/brend`).
+  **3 karusela** (69 slika ukupno): p01 brzina (4), p22 AI pomaze (4), p48 principi (4).
+  **Popravke:** `photoTop` `imgH 400→380` (4 objave su izlazile 24px prenisko); navodnici unutar TS stringova (`„..."` → `„...“`) u posts1/2/3; template `figure`→`number`.
+  **Verifikacija:** `npx tsc --noEmit` → 0; **60 objava, 3 karusela, 69 slika, 0 prekoracenja**; Playwright: 60 kartica, 60/60 slika ucitano, 3 karusel badgeva, 6 filtera rade (Edukacija 17 / Savjet 12 / Iza kulisa 10 / Rezultati 7 / Ponuda 0 / Nas stav 14), karusel `1/4 → 4/4`, 0 console gresaka; build ✓ 1.503 kB (gzip 596).
 - **OBJAVE v4 — PRAVI LOGO, 6 PALETA, FOTOGRAFIJE KAO HERO** — korisnik: „ima dosta gresaka ajde sada napravi najbolje moguce zanimljive instagram postove zanimljive kombinacije boja... koristi pravi logo koji koristimo u navbaru na home stranici... vidim nije nista u vinklu i fino namjesteno... daj negdje realne slike stavi kao sto je u hero pageu... tamna i uklapa se u pozadinu".
   **1) PRAVI LOGO IZ NAVBARA** — novi `src/lib/postLogo.ts`: `public/images/logo-icon.png` obrezan na sadrzaj (56×24), obojan u brend boju **#4DEAE0** (tacna boja iz navbara) i ugradjen kao **base64 data URI** (646 znakova). Ugradjen u `<image href>` u SVG-u → preuzeti SVG radi samostalno. `DF_LOGO_RATIO = 2.3333`.
   **2) 6 PALETA** (bilo 3): `dark` (#0A0A0E), `teal` (#0C4F4B), `light` (#EFF0F4), **`ink`** (#12102B indigo, akcent #7C6BFF), **`mint`** (#DCF5EF, akcent #0A6E60), **`sun`** (#FFD9A0, akcent #8C2F08). Ravnomjerno: **12 objava po paleti**. Svaka paleta provjerena — **min kontrast 4.8**, sve ≥ WCAG AA.
