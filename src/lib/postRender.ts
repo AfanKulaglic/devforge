@@ -191,7 +191,7 @@ const LOGO_STROKE = 1 * K;     // 2.1
 const LOGO_ICON_H = LOGO_BOX * 0.30;                   // 25.2  (izmjereno na navbaru)
 const LOGO_ICON_W = LOGO_ICON_H * DF_LOGO_RATIO;       // 58.8
 
-function brandMark(x: number, y: number): { svg: string; w: number } {
+function brandMark(x: number, y: number, devColor: string): { svg: string; w: number } {
   const iconX = x + (LOGO_BOX - LOGO_ICON_W) / 2;
   const iconY = y + (LOGO_BOX - LOGO_ICON_H) / 2;      // vertikalno centriran
   const gid = `dfg-${Math.round(x)}-${Math.round(y)}`;
@@ -212,12 +212,12 @@ function brandMark(x: number, y: number): { svg: string; w: number } {
     <image href="${DF_LOGO_DATA_URI}" x="${iconX}" y="${iconY}"
       width="${LOGO_ICON_W}" height="${LOGO_ICON_H}"/>
     <text x="${textX}" y="${textY}" font-family="${FONT}" font-size="${LOGO_FONT}" font-weight="800"
-      letter-spacing="-0.6"><tspan fill="#FFFFFF">Dev</tspan><tspan fill="url(#${gid})">Forge</tspan></text>`,
+      letter-spacing="-0.6"><tspan fill="${devColor}">Dev</tspan><tspan fill="url(#${gid})">Forge</tspan></text>`,
   };
 }
 
 function header(c: Colors, eyebrow: string, category: string, slide: number, total: number): string {
-  const mark = brandMark(M, M - 4);
+  const mark = brandMark(M, M - 4, c.ink);
 
   let dots = "";
   if (total > 1) {
@@ -406,10 +406,16 @@ function formBlocks(c: Colors, p: PostSlide): Block {
   y += Math.max(18, (avail - rowH * n) * 0.28);
   items.forEach((it, i) => {
     const ry = y + i * rowH;
-    svg += `<rect x="0" y="${ry + rowH * 0.30}" width="26" height="7" fill="${c.accent}"/>`;
-    const lines = wrap(it, fs, W - 54, 2);
+    const lines = wrap(it, fs, W - 58, 2);
+    // tekst se vertikalno centrira u svom redu — crtica se poravnava s PRVIM redom teksta
+    const blockH = (lines.length - 1) * (fs + 8) + fs;
+    const top = ry + (rowH - blockH) / 2;
+    const baseline = top + fs * 0.78;
+    // crtica: debela, vizuelno teža od teksta → centrirana na sredinu malih slova
+    svg += `<rect x="0" y="${(baseline - fs * 0.30).toFixed(1)}" width="30" height="8"
+      rx="0" fill="${c.accent}"/>`;
     lines.forEach((l, li) => {
-      svg += `<text x="54" y="${ry + rowH * 0.34 + fs * 0.78 + li * (fs + 8)}" font-family="${FONT}"
+      svg += `<text x="58" y="${(baseline + li * (fs + 8)).toFixed(1)}" font-family="${FONT}"
         font-size="${fs}" font-weight="700" letter-spacing="-0.6" fill="${c.ink}">${esc(l)}</text>`;
     });
   });
