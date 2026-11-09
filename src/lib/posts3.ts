@@ -469,7 +469,7 @@ export const POSTS_3: AdPost[] = [
       "Web shopovi od 600 KM.\n" +
       "Aplikacije, igrice i AI — po dogovoru.\n\n" +
       "Sarajevo. Cijela regija. Online.\n\n" +
-      "Pošaljite nam DM.",
+      "Javite nam se u DM.",
     tags: ["devforge", "webdizajn", "sarajevo", "bosna", "malibiznis", "agencija"],
   },
 ];

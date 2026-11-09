@@ -4500,7 +4500,7 @@ const AD_NARRATION = [
   "Uz svaki projekt dobijate vlastiti admin panel — sami mijenjate tekst, slike, proizvode i cijene, bez koda.",
   "Do šezdeset posto jeftinije od agencija — uz isti vrhunski kvalitet i iste provjerene tehnologije.",
   "Zatražite svoju besplatnu gotovu verziju na devforge corporation tačka vercel tačka app.",
-  "DevForge. Bez rizika, bez predujma. Pošaljite nam direktnu poruku na Instagramu ili Viberu — javljamo se u roku od deset minuta.",
+  "DevForge. Bez rizika, bez predujma. Javite nam se u DM na Instagramu ili Viberu — javljamo se u roku od deset minuta.",
 ];
 
 // Frosted-glass ikona — glavni vizual scene (Spacemail stil). Pop ulaz + lebdenje.
@@ -4773,7 +4773,7 @@ function AdReel({ recordMode = false }: { recordMode?: boolean }) {
 
             {/* Glavni poziv — velika rijec "DM", najjasnija akcija */}
             <h2 className="ad-h2 text-white mt-[1.2cqh]">
-              <AdWords parts={[{ t: "Pošaljite" }, { t: "nam" }, { t: "DM.", grad: true }]} />
+              <AdWords parts={[{ t: "Javite" }, { t: "nam" }, { t: "se u DM.", grad: true }]} />
             </h2>
             <p className="ad-rise ad-lead text-white/60" style={{ animationDelay: ".6s" }}>
               Javljamo se u roku od 10 minuta.
@@ -4784,7 +4784,7 @@ function AdReel({ recordMode = false }: { recordMode?: boolean }) {
               <span className="ad-contact-card">
                 <HiOutlineCamera className="ad-contact-card-icon" aria-hidden="true" />
                 <span className="ad-contact-card-title">Instagram</span>
-                <span className="ad-contact-card-action">Pošalji DM</span>
+                <span className="ad-contact-card-action">Javite se u DM</span>
               </span>
               <span className="ad-contact-card">
                 <HiOutlineChatBubbleLeftRight className="ad-contact-card-icon" aria-hidden="true" />

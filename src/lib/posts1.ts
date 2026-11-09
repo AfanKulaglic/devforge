@@ -21,7 +21,7 @@ export const POSTS_1: AdPost[] = [
       "Napravimo Vam gotovu, radnu verziju stranice. Vidite je, prođete kroz nju, kažete šta mijenjati. Tek onda pričamo o plaćanju.\n\n" +
       "Bez predujma.\n" +
       "Bez rizika.\n\n" +
-      "Pošaljite nam DM — javljamo se u roku od 10 minuta.",
+      "Javite nam se u DM — odgovaramo u roku od 10 minuta.",
     tags: ["webstranica", "webdizajn", "bosna", "sarajevo", "digitalnamarketing", "malibiznis", "devforge"],
   },
   {
@@ -49,7 +49,7 @@ export const POSTS_1: AdPost[] = [
       "• Kontakt forma\n" +
       "• Brzo učitavanje\n\n" +
       "Hosting i domena se plaćaju direktno provideru, oko 50–100 KM godišnje. Bez naše marže.\n\n" +
-      "Pošaljite nam DM i napravimo Vam prvu verziju besplatno.",
+      "Javite nam se u DM i napravimo Vam prvu verziju besplatno.",
     tags: ["cijene", "webstranica", "webdizajn", "sarajevo", "bosna", "malibiznis", "devforge"],
   },
   {
@@ -407,7 +407,7 @@ export const POSTS_1: AdPost[] = [
       "Dobijete radnu stranicu s Vašim imenom, bojama i sadržajem. Otvorite je, pokažete mušterijama, kažete šta mijenjati.\n\n" +
       "Ako Vam se svidi — nastavljamo.\n" +
       "Ako ne — nema problema, ništa ne plaćate.\n\n" +
-      "Pošaljite nam DM s imenom firme. Javljamo se u 10 minuta.",
+      "Javite nam se u DM s imenom firme. Odgovaramo u 10 minuta.",
     tags: ["besplatno", "webdizajn", "sarajevo", "bosna", "malibiznis", "devforge"],
   },
   {

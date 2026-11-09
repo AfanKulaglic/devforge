@@ -9,6 +9,20 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **OBJAVE v3 — POTPUNI REDIZAJN ZA SCREENSHOT** — korisnik: „ne svidja mi se izgled slika potpuni redizajn... ne prodajemo obecanja, pokazujemo rezultate... takodjer zelim da se ne mora skinuti na pc nego cu je screenshottati ti samo napravi sto bolji kvalitet".
+  **1) „POSALJITE NAM DM" → „JAVITE NAM SE U DM"** — svih 5 mjesta: `posts1.ts` (3 captiona), `posts3.ts` (1), `App.tsx` reklama end-card (`Pošaljite nam DM.` → `Javite nam se u DM.`, dugme `Pošalji DM` → `Javite se u DM`, naracija), `postRender.ts` CTA dugme `JAVITE NAM SE U DM`.
+  **2) RENDERER NAPISAN IZ POČETKA** (`postRender.ts` ~430 linija) — stari sabloni (`title/price/quote/list/compare/number/process/cta`) zamijenjeni s **6 FORMI** koje pokazuju rezultat umjesto obecanja:
+  - `formHero` — golemi naslov (font do 132px), akcenat traka, kratki podnaslov
+  - `formFigure` — golemi broj/cijena (do **380px**), pa jedna recenica, pa najvise 3 velika reda
+  - `formBlocks` — 2–4 **velike kartice** (nikad lista sitnog teksta), numerisane 01/02/03
+  - `formDuo` — dvije suprotne ploce `PRIJE` (✕) / `POSLIJE` (✓) — stvarno poredjenje
+  - `formAction` — jedna velika teal ploca `JAVITE NAM SE U DM` (132px visoka)
+  - `formSteps` uklonjen (bio neiskoristen)
+  **3) PRINCIP „ZA SCREENSHOT"** — nema 1px linija (gube se pri kompresiji), krupna tipografija (medijan 32px, max 380px), visok kontrast (min 3.08, provjereno na svih 78 slika), velike pune povrsine boje, bez sitnica/etiketica/mreza.
+  **4) FIX KONTRASTA** — `teal` paleta je imala `accentInk:#062E2B` na `bg:#0B4744` = **kontrast 1.39** (tekst se nije vidio). Popravljeno: `accentInk:#04211E`, `inkSoft:#D6F5F1`, `border:#3D8F88`; `light` `inkSoft:#4B4E5C→#3A3D4A`; `dark` `inkSoft:#C3C6D2→#CDD0DC`. Rezultat: **0 problema s kontrastom**, najgori slucaj 3.08.
+  **5) FULLSCREEN PRIKAZ** (novi `Fullscreen` u `PostsPage.tsx`) — dugme **„Cijeli ekran"** u modalu; slika se prikaze **najveca moguca** (`min(100vw, 100vh-56px)`), crna pozadina, klik bilo gdje ili **ESC** zatvara; natpis „Screenshot sad · ESC za izlaz". Za screenshot umjesto downloada.
+  **6) PREUZIMANJE KAO PNG** — novo `svgToPngBlob()`: SVG → `<canvas 1080x1080>` → PNG blob. `downloadPng()` zamijenio `downloadSvg()`; fallback na SVG ako canvas ne radi.
+  **Verifikacija:** `npx tsc --noEmit` → 0; **78 slika**: 0 prekoracenja po sirini, **0 po visini**, 0 slabo popunjenih (prosjecno zauzece 86%); **kontrast 0 problema**; Playwright: 60 kartica, fullscreen 944×944 u 1000px prozoru, ESC zatvara (`2 → 0`), 0 console gresaka; build ✓ 1.114 kB (gzip 304).
 - **OBJAVE v2 — bez broja, pravi logo, 5 layouta, karuseli** — korisnik: „zelim da izbacis koji je broj posta. to ne treba biti na slici... takodjer nekada post moze imati vise slika razmisli o tome... takodjer koristi i pravi devgen logo kao na stranici sto koristis koristi na post slikama. i nemoj da bas svi budu isti daj malo razlicitosti ali konzistentnog dizajna razmisli prvo o svemu".
   **1) BROJ OBJAVE UKLONJEN** — `footer()` vise ne ispisuje `NN / 60`. Umjesto toga: kod karusela se prikazuju **tačkice** (aktivna teal traka 18×7, ostale 6×5), a kod pojedinacne objave samo kategorija lijevo.
   **2) PRAVI LOGO** — novi `src/lib/postBrand.ts`: `dfMark(x,y,h,fill,bg)` crta **DF monogram vektorski** (3 path-a: D vanjski oblik, D rupa, F sa dva reza), `dfMarkWidth(h)` za centriranje. Zašto vektorski a ne `<image href="/images/logo-icon.png">`: (a) preuzeti SVG mora raditi samostalno bez servera, (b) PNG 64px se razvlaci mutno na 1080px, (c) vektorski znak mijenja boju po paleti. Ugradjen u `header()` umjesto teksta „DEVFORGE".

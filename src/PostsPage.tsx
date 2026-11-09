@@ -8,36 +8,42 @@
 //   - kopirati caption + hashtagove jednim klikom
 // ───────────────────────────────────────────────────────────────────────────
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   HiOutlineArrowDownTray,
   HiOutlineCheck,
   HiOutlineClipboardDocument,
   HiOutlineMagnifyingGlassPlus,
   HiOutlineXMark,
+  HiOutlineArrowsPointingOut,
 } from "react-icons/hi2";
 import { CATEGORY_LABEL, TEMPLATE_LABEL, ALL_POSTS } from "./lib/postsIndex";
 import type { AdPost, PostCategory } from "./lib/postsData";
-import { postSvgDataUri, renderPostSlides } from "./lib/postRender";
+import { postSvgDataUri, renderPostSlides, svgToPngBlob } from "./lib/postRender";
 
 const FILTERS: (PostCategory | "sve")[] = ["sve", "sadrzaj", "edukacija", "ponuda", "dokaz", "brend"];
 
 // ── Preuzimanje SVG-a kao fajl ────────────────────────────────────────────
-function downloadSvg(post: AdPost, slideIdx = 0) {
+async function downloadPng(post: AdPost, slideIdx = 0) {
   const slides = renderPostSlides(post);
   const svg = slides[slideIdx] ?? slides[0];
-  const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
+  const total = slides.length;
+  const name =
+    total > 1
+      ? `devforge-${post.id}-${slideIdx + 1}-od-${total}.png`
+      : `devforge-${post.id}.png`;
+
+  const png = await svgToPngBlob(svg);
+  // Ako canvas ne uspije (npr. Safari ogranicenja), vrati SVG kao fallback.
+  const blob = png ?? new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  const total = slides.length;
-  a.download = total > 1
-    ? `devforge-objava-${post.id}-slika-${slideIdx + 1}-od-${total}.svg`
-    : `devforge-objava-${post.id}.svg`;
+  a.download = png ? name : name.replace(/\.png$/, ".svg");
   document.body.appendChild(a);
   a.click();
   a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 2000);
+  setTimeout(() => URL.revokeObjectURL(url), 3000);
 }
 
 // ── Kopiranje teksta objave ───────────────────────────────────────────────
@@ -93,7 +99,7 @@ function PostCard({ post, onOpen }: { post: AdPost; onOpen: () => void }) {
           </button>
           <button
             type="button"
-            onClick={() => downloadSvg(post, 0)}
+            onClick={() => void downloadPng(post, 0)}
             className="border border-white/12 p-1.5 text-white/50 transition hover:border-teal-300 hover:text-teal-300"
             aria-label="Preuzmi sliku"
             title="Preuzmi SVG"
@@ -106,10 +112,63 @@ function PostCard({ post, onOpen }: { post: AdPost; onOpen: () => void }) {
   );
 }
 
+// ── Fullscreen — slika preko cijelog ekrana, za screenshot ────────────────
+// Namenjeno da korisnik napravi screenshot umjesto downloada:
+// slika se prikazuje najveca moguca, centrirana, bez ikakvog UI-a preko nje.
+function Fullscreen({
+  svg,
+  label,
+  onClose,
+}: {
+  svg: string;
+  label: string;
+  onClose: () => void;
+}) {
+  const src = useMemo(() => postSvgDataUri(svg), [svg]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [onClose]);
+
+  return (
+    <div
+      className="fixed inset-0 z-[200] flex cursor-zoom-out flex-col items-center justify-center bg-[#000000]"
+      role="dialog"
+      aria-modal="true"
+      aria-label={label}
+      onClick={onClose}
+    >
+      {/* Slika: uvijek kvadrat, najveca moguca bez skrolanja */}
+      <img
+        src={src}
+        alt={label}
+        className="block"
+        style={{
+          width: "min(100vw, calc(100vh - 56px))",
+          height: "min(100vw, calc(100vh - 56px))",
+        }}
+      />
+      <p className="mt-2 select-none text-center text-[0.7rem] font-bold uppercase tracking-[0.18em] text-white/30">
+        Screenshot sad · ESC za izlaz
+      </p>
+    </div>
+  );
+}
+
 // ── Modal s velikim prikazom ──────────────────────────────────────────────
 function PostModal({ post, onClose }: { post: AdPost; onClose: () => void }) {
   const [copied, setCopied] = useState(false);
   const [slide, setSlide] = useState(0);
+  const [full, setFull] = useState(false);
   const slides = useMemo(() => renderPostSlides(post), [post]);
   const src = useMemo(() => postSvgDataUri(slides[slide] ?? slides[0]), [slides, slide]);
   const total = slides.length;
@@ -209,6 +268,14 @@ function PostModal({ post, onClose }: { post: AdPost; onClose: () => void }) {
           <div className="mt-4 flex flex-wrap gap-2">
             <button
               type="button"
+              onClick={() => setFull(true)}
+              className="inline-flex items-center gap-2 bg-white px-4 py-2.5 text-xs font-extrabold text-black transition hover:bg-teal-300"
+            >
+              <HiOutlineArrowsPointingOut className="text-sm" aria-hidden="true" />
+              Cijeli ekran
+            </button>
+            <button
+              type="button"
               onClick={doCopy}
               className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-400 to-[#0891B2] px-4 py-2.5 text-xs font-extrabold text-white"
             >
@@ -221,7 +288,7 @@ function PostModal({ post, onClose }: { post: AdPost; onClose: () => void }) {
             </button>
             <button
               type="button"
-              onClick={() => downloadSvg(post, slide)}
+              onClick={() => void downloadPng(post, slide)}
               className="inline-flex items-center gap-2 border border-white/20 px-4 py-2.5 text-xs font-bold text-white/80 transition hover:border-teal-300 hover:text-white"
             >
               <HiOutlineArrowDownTray className="text-sm" aria-hidden="true" />
@@ -235,6 +302,14 @@ function PostModal({ post, onClose }: { post: AdPost; onClose: () => void }) {
           </p>
         </div>
       </div>
+
+      {full && (
+        <Fullscreen
+          svg={slides[slide] ?? slides[0]}
+          label={post.title}
+          onClose={() => setFull(false)}
+        />
+      )}
     </div>
   );
 }
