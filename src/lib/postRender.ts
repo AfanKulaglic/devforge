@@ -591,12 +591,18 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide, total: number) => stri
 
   photoTop: (c, p, total) => {
     const ph = p.photo ?? "hero";
-    const imgH = 370;
-    const b = buildFitting(c, p, CONTENT_BOTTOM() - imgH - 24, total);
+    // Visina slike raste s formatom: u 3:4 proporcionalno vise, ali ne
+    // toliko da pojede tekst. 370 je u 1:1 (34% povrsine), u 3:4 ~493 (34%).
+    const imgH = Math.round(SIZE_H * 0.343);
+    const zoneTop = imgH;
+    const zoneBot = CONTENT_BOTTOM();
+    const b = buildFitting(c, p, zoneBot - 24, total);
+    // Tekst se CENTRIRA u tamnoj zoni ispod slike — ne lijepi se za sliku.
+    const y = zoneTop + Math.max(0, (zoneBot - zoneTop - b.h) / 2);
     return `<image href="${PHOTOS[ph]}" x="0" y="0" width="${SIZE}" height="${imgH}"
         preserveAspectRatio="xMidYMid slice" aria-label="${esc(PHOTO_ALT[ph])}"/>
       <rect x="0" y="${imgH - 80}" width="${SIZE}" height="80" fill="url(#fadeBot)"/>
-      <g transform="translate(${M}, ${imgH + 26})">${b.svg}</g>`;
+      <g transform="translate(${M}, ${y})">${b.svg}</g>`;
   },
 
   photo: (c, p, total) => {
