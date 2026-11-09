@@ -66,6 +66,7 @@ import {
 } from "react-icons/si";
 import { FaLinkedinIn, FaInstagram } from "react-icons/fa6";
 import AdminPanel from "./AdminPanel";
+import PostsPage from "./PostsPage";
 import { initAnalytics, trackEvent, trackPageView } from "./lib/analytics";
 import { startProjectsSync } from "./lib/projectsStore";
 import { startPricingSync } from "./lib/pricingStore";
@@ -4993,7 +4994,7 @@ const ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> = {
 function injectRouteSchema(route: string, docTitle: string, desc: string) {
   const ID = "df-route-schema";
   document.getElementById(ID)?.remove();
-  if (route === "notfound" || route === "admin" || route === "reklama") return;
+  if (route === "notfound" || route === "admin" || route === "reklama" || route === "objave") return;
 
   const crumbs = ROUTE_BREADCRUMB[route];
   const graph: Record<string, unknown>[] = [
@@ -5049,6 +5050,7 @@ export default function App() {
     "/uslovi": "uslovi",
     "/kolacici": "kolacici",
     "/reklama": "reklama",
+    "/objave": "objave",
     "/admin": "admin",
   };
   // "/" → home; poznata putanja → njena vrijednost; sve ostalo → 404.
@@ -5185,6 +5187,7 @@ export default function App() {
         desc: "Koje kolačiće koristimo na sajtu, čemu služe i kako ih možete onemogućiti u svom pretraživaču.",
       },
       notfound: { title: "Stranica nije pronađena (404) | DevForge", desc: "Tražena stranica ne postoji. Vratite se na početnu ili pogledajte usluge i cijene.", noindex: true },
+      objave: { title: "Objave za Instagram | DevForge", desc: "Interna galerija 60 marketinških objava.", noindex: true },
     };
 
     const seo = SEO[route] ?? SEO.home;
@@ -5240,6 +5243,9 @@ export default function App() {
 
   // Admin panel: samostalan prikaz bez headera, footera, kursora i cookie banera.
   if (route === "admin") return <AdminPanel />;
+
+  // Objave: interna galerija 60 Instagram objava (bez headera/footera).
+  if (route === "objave") return <PostsPage />;
 
   return (
     <ContactModalCtx.Provider value={() => setContactOpen(true)}>
