@@ -41,6 +41,7 @@ type Colors = {
   accentInk: string;
   card: string;
   line: string;
+  warm: string;
 };
 
 /**
@@ -62,6 +63,7 @@ const PALETTES: Record<PostPalette, Colors> = {
     accentInk: BRAND_INK,
     card: "#111111",
     line: "#2A2A2A",
+    warm: "#4DEAE0",
   },
   // TAMNOSIVA MAT
   ink: {
@@ -72,6 +74,7 @@ const PALETTES: Record<PostPalette, Colors> = {
     accentInk: BRAND_INK,
     card: "#181818",
     line: "#303030",
+    warm: "#4DEAE0",
   },
   // SVJETLOSIVA
   teal: {
@@ -82,6 +85,7 @@ const PALETTES: Record<PostPalette, Colors> = {
     accentInk: "#FFFFFF",
     card: "#FFFFFF",
     line: "#D8D8D8",
+    warm: "#0FA396",
   },
   // BIJELA
   light: {
@@ -92,6 +96,7 @@ const PALETTES: Record<PostPalette, Colors> = {
     accentInk: "#FFFFFF",
     card: "#F5F5F5",
     line: "#E2E2E2",
+    warm: "#0FA396",
   },
   // SKORO CRNA SA BLAGIM ZELENIM TONOM (mat)
   mint: {
@@ -102,6 +107,7 @@ const PALETTES: Record<PostPalette, Colors> = {
     accentInk: BRAND_INK,
     card: "#0E1C1A",
     line: "#1E3130",
+    warm: "#4DEAE0",
   },
   // TAMNA METALIK SIVA
   sun: {
@@ -112,6 +118,7 @@ const PALETTES: Record<PostPalette, Colors> = {
     accentInk: BRAND_INK,
     card: "#1E1E1E",
     line: "#343434",
+    warm: "#4DEAE0",
   },
 };
 
@@ -261,56 +268,45 @@ const GAP_TOP = 176; // iznad ovoga ne smije ništa (logo je do ~130)
  */
 function formCover(c: Colors, p: PostSlide, total: number): Block {
   const title = p.title ?? "";
-  let size = fit(title, W, 104);
+  let size = fit(title, W, 100);
   let lines = wrap(title, size, W, 3);
-  while (lines.length * size * 1.1 > 430 && size > 52) {
+  const budget = CONTENT_H - 200;
+  while (lines.length * size * 1.08 > budget && size > 52) {
     size -= 6;
     lines = wrap(title, size, W, 3);
   }
-  const lh = size * 1.1;
-  const titleH = (lines.length - 1) * lh + size;
+  const lh = size * 1.08;
 
-  // gornja etiketa: "GALERIJA · N slika"
+  // Isti raspored kao formHero — LIJEVO poravnato. Razlika je u pozadini i okviru
+  // (vidi COVER_CHROME), ne u tipografiji.
   const label = `GALERIJA · ${total} ${total === 4 ? "SLIKE" : "SLIKA"}`;
   let svg = `<text x="0" y="0" font-family="${FONT}" font-size="26" font-weight="800"
     letter-spacing="3.4" fill="${c.accent}">${esc(label)}</text>`;
-  let h = 44;
+  let h = 52;
 
-  // naslov — centriran, veći nego bilo gdje drugo u galeriji
   lines.forEach((l, i) => {
-    svg += `<text x="${W / 2}" y="${h + size * 0.80 + i * lh}" text-anchor="middle"
-      font-family="${FONT}" font-size="${size}" font-weight="900" letter-spacing="-3"
-      fill="${c.ink}">${esc(l)}</text>`;
+    svg += `<text x="0" y="${h + size * 0.78 + i * lh}" font-family="${FONT}" font-size="${size}"
+      font-weight="900" letter-spacing="-3.2" fill="${c.ink}">${esc(l)}</text>`;
   });
-  h += titleH;
+  h += (lines.length - 1) * lh + size;
 
-  // kratka linija kao separator (puni akcenat, ne tanka)
-  h += 46;
-  svg += `<rect x="${W / 2 - 56}" y="${h}" width="112" height="7" fill="${c.accent}"/>`;
-  h += 7;
+  // kratka akcenat traka — isti jezik kao hero, samo deblja
+  h += 44;
+  svg += `<rect x="0" y="${h}" width="120" height="8" fill="${c.accent}"/>`;
+  h += 8;
 
   // "šta je unutra" — do tri najave, bez brojeva
-  const inside = (p.items ?? p.subtitle ?? "").toString();
   const parts: string[] = Array.isArray(p.items) ? p.items.slice(0, 3) : [];
-  if (parts.length) {
-    h += 60;
-    const fs2 = fit(parts.join(" · "), W, 36, 28);
-    const joined = parts.join("   ·   ");
-    const jl = wrap(joined, fs2, W + 20, 2);
+  const inside = parts.length ? parts.join("   ·   ") : (p.subtitle ?? "");
+  if (inside) {
+    h += 54;
+    const fs2 = fit(inside, W, 36, 28);
+    const jl = wrap(inside, fs2, W, 2);
     jl.forEach((l, i) => {
-      svg += `<text x="${W / 2}" y="${h + fs2 * 0.8 + i * (fs2 + 12)}" text-anchor="middle"
-        font-family="${FONT}" font-size="${fs2}" font-weight="600" fill="${c.soft}">${esc(l)}</text>`;
+      svg += `<text x="0" y="${h + fs2 * 0.8 + i * (fs2 + 14)}" font-family="${FONT}"
+        font-size="${fs2}" font-weight="600" fill="${c.soft}">${esc(l)}</text>`;
     });
-    h += jl.length * (fs2 + 12);
-  } else if (inside) {
-    h += 60;
-    const fs2 = fit(String(inside), W, 36, 28);
-    const jl = wrap(String(inside), fs2, W, 2);
-    jl.forEach((l, i) => {
-      svg += `<text x="${W / 2}" y="${h + fs2 * 0.8 + i * (fs2 + 12)}" text-anchor="middle"
-        font-family="${FONT}" font-size="${fs2}" font-weight="600" fill="${c.soft}">${esc(l)}</text>`;
-    });
-    h += jl.length * (fs2 + 12);
+    h += jl.length * (fs2 + 14);
   }
 
   return { svg, h };
@@ -574,6 +570,7 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide, total: number) => stri
   photoBg: (c, p, total) => {
     const ph = p.photo ?? "hero";
     const b = build(c, p, total);
+    void total;
     const y = CONTENT_TOP + Math.max(0, (CONTENT_H - b.h) / 2);
     return `<image href="${PHOTOS[ph]}" x="0" y="0" width="${SIZE}" height="${SIZE}"
         preserveAspectRatio="xMidYMid slice" aria-label="${esc(PHOTO_ALT[ph])}"/>
@@ -616,6 +613,34 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide, total: number) => stri
   },
 };
 
+// ── Cover chrome ──────────────────────────────────────────────────────────
+// Cover se razlikuje OD OKVIRA, ne po tipografiji:
+//   • dupli okvir oko cijele slike (debeo spolja, tanak unutra)
+//   • brand traka ide po CIJELOM obodu, ne samo gore
+//   • pozadina ima suptilan vertikalni prelaz (mat, bez sjaja)
+// Sve ostale slike u galeriji: ravna pozadina, traka samo gore.
+function coverChrome(c: Colors): string {
+  return `
+  <defs>
+    <linearGradient id="coverGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${c.card}" stop-opacity="1"/>
+      <stop offset="45%" stop-color="${c.bg}" stop-opacity="1"/>
+      <stop offset="100%" stop-color="${c.bg}" stop-opacity="1"/>
+    </linearGradient>
+  </defs>
+  <rect width="${SIZE}" height="${SIZE}" fill="url(#coverGrad)"/>`;
+}
+
+/** Okviri covera — crtaju se POSLIJE sadržaja, da foto-pozadina ne prekrije ram. */
+function coverFrame(c: Colors): string {
+  const inset = 34;
+  return `
+  <rect x="${inset}" y="${inset}" width="${SIZE - inset * 2}" height="${SIZE - inset * 2}"
+    fill="none" stroke="${c.accent}" stroke-width="8"/>
+  <rect x="10" y="10" width="${SIZE - 20}" height="${SIZE - 20}"
+    fill="none" stroke="${c.accent}" stroke-opacity="0.30" stroke-width="2"/>`;
+}
+
 // ── Render ────────────────────────────────────────────────────────────────
 export function renderSlideSvg(
   post: AdPost,
@@ -625,6 +650,7 @@ export function renderSlideSvg(
 ): string {
   const c = PALETTES[slide.palette ?? post.palette] ?? PALETTES.dark;
   const layout = post.layout ?? "center";
+  const isCover = (slide.template ?? post.template) === "cover" && slideTotal > 1;
   let content = (PLACE[layout] ?? PLACE.center)(c, slide, slideTotal);
 
   if (layout === "photoBg") {
@@ -648,10 +674,11 @@ export function renderSlideSvg(
       <stop offset="100%" stop-color="${c.bg}" stop-opacity="1"/>
     </linearGradient>
   </defs>
-  <rect width="${SIZE}" height="${SIZE}" fill="${c.bg}"/>
+  ${isCover ? coverChrome(c) : `<rect width="${SIZE}" height="${SIZE}" fill="${c.bg}"/>`}
   ${content}
   <!-- Zaglavlje se crta POSLIJE sadržaja: foto-pozadine inače prekriju logo. -->
   ${header(c, slide.eyebrow ?? post.eyebrow, post.category, slideIndex, slideTotal)}
+  ${isCover ? coverFrame(c) : ""}
   <rect x="0" y="0" width="${SIZE}" height="12" fill="${BRAND}"/>
 </svg>`;
 }

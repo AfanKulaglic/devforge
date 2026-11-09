@@ -9,6 +9,14 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **OBJAVE v13 — COVER BEZ CENTRIRANJA, RAZLIKA KROZ OKVIR I POZADINU** — korisnik: „ne valja vrati kako je bilo sto se tice prednje stranice galerija kada sam rekao drugacija nisam mislio da centiras tekst nego naprimjer da ima druge boje pozadinu ili neki border na cijeli post tako nesto a ne ovo".
+  **Pogresno shvaceno:** centrirao sam naslov — to je pokvarilo izgled. **Tekst vracen LIJEVO poravnat**, isti raspored i ista tipografija kao `formHero`. Cover se sada razlikuje samo po **okviru i pozadini**:
+  - **`coverChrome()`** — vertikalni gradijent `card → bg` (mat, bez sjaja) umjesto ravne pozadine
+  - **`coverFrame()`** — **debeli teal okvir 8px** na inset 34px + **tanak okvir 2px** na 10px od ruba (dupli ram oko cijelog posta)
+  - etiketa **„GALERIJA · N SLIKA"** u `#4DEAE0` ostaje (lijeva poravnanje)
+  - akcenat traka 120×8 (deblja nego hero)
+  **Redoslijed crtanja (3 iteracije da radi):** `coverFrame` se mora crtati **NA KRAJU**, poslije `${content}` — `photoBg` layout crta fotografiju preko cijelog platna i inace prekrije ram. Finalno: `chrome → content → header → frame → brand traka`.
+  **Verifikacija:** render p01 → **cover ima teal okvir na rubovima (6px detektovano), slika 2 nema (0)**; `npx tsc --noEmit` 0; 60 objava / 76 slika / 5 karusela / 5 cover; Playwright 60/60 ucitano, `1/5` s 5 tackica, 0 gresaka; build ✓.
 - **OBJAVE v12 — COVER SLIKA GALERIJE + PALETA SAMO #4DEAE0** — korisnik: „svaki post koji ima galeriju slika neka prva slika bude uvod drugacijeg ali slicnog dizajna sa ostalom galerijom... sa naslovom koji predstavlja ono sto se nalazi u galeriji... zelim prvu sliku drugaciju od drugih ali uvod tekst i dobar da privuce ljude. takodjer jedina nijansa zelene koju koristis je #4DEAE0 tako i plave i imas bijelu i crnu. druge boje mogu kao sive svjetlosive tamnosive mat i ostalo".
   **1) PALETA — samo #4DEAE0 + sive/bijela/crna.** Sve 6 paleta prepisano:
   | paleta | bg | ink | accent |
