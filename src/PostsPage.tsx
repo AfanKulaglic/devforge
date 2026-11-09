@@ -18,18 +18,22 @@ import {
 } from "react-icons/hi2";
 import { CATEGORY_LABEL, TEMPLATE_LABEL, ALL_POSTS } from "./lib/postsIndex";
 import type { AdPost, PostCategory } from "./lib/postsData";
-import { postSvgDataUri, renderPostSvg } from "./lib/postRender";
+import { postSvgDataUri, renderPostSlides } from "./lib/postRender";
 
 const FILTERS: (PostCategory | "sve")[] = ["sve", "sadrzaj", "edukacija", "ponuda", "dokaz", "brend"];
 
 // ── Preuzimanje SVG-a kao fajl ────────────────────────────────────────────
-function downloadSvg(post: AdPost, index: number) {
-  const svg = renderPostSvg(post, index);
+function downloadSvg(post: AdPost, slideIdx = 0) {
+  const slides = renderPostSlides(post);
+  const svg = slides[slideIdx] ?? slides[0];
   const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `devforge-objava-${post.id}.svg`;
+  const total = slides.length;
+  a.download = total > 1
+    ? `devforge-objava-${post.id}-slika-${slideIdx + 1}-od-${total}.svg`
+    : `devforge-objava-${post.id}.svg`;
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -43,25 +47,18 @@ function copyCaption(post: AdPost) {
 }
 
 // ── Kartica jedne objave ──────────────────────────────────────────────────
-function PostCard({
-  post,
-  index,
-  onOpen,
-}: {
-  post: AdPost;
-  index: number;
-  onOpen: () => void;
-}) {
-  const svg = useMemo(() => renderPostSvg(post, index), [post, index]);
-  const src = useMemo(() => postSvgDataUri(svg), [svg]);
+function PostCard({ post, onOpen }: { post: AdPost; onOpen: () => void }) {
+  const slides = useMemo(() => renderPostSlides(post), [post]);
+  const src = useMemo(() => postSvgDataUri(slides[0]), [slides]);
+  const total = slides.length;
 
   return (
     <figure className="group relative overflow-hidden border border-white/10 bg-white/[0.02]">
       <button
         type="button"
         onClick={onOpen}
-        className="block w-full focus:outline-none focus:ring-2 focus:ring-teal-300"
-        aria-label={`Otvori objavu ${index + 1}: ${post.title}`}
+        className="relative block w-full focus:outline-none focus:ring-2 focus:ring-teal-300"
+        aria-label={`Otvori objavu: ${post.title}`}
       >
         <img
           src={src}
@@ -74,10 +71,15 @@ function PostCard({
         <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/55 opacity-0 transition group-hover:opacity-100">
           <HiOutlineMagnifyingGlassPlus className="text-3xl text-white" aria-hidden="true" />
         </span>
+        {total > 1 && (
+          <span className="pointer-events-none absolute right-2 top-2 inline-flex items-center gap-1 bg-black/75 px-2 py-1 text-[0.62rem] font-extrabold text-white backdrop-blur-sm">
+            {total} slika
+          </span>
+        )}
       </button>
       <figcaption className="flex items-center justify-between gap-2 border-t border-white/10 px-3 py-2">
         <span className="truncate text-[0.68rem] font-bold uppercase tracking-[0.12em] text-white/45">
-          {String(index + 1).padStart(2, "0")} · {CATEGORY_LABEL[post.category]}
+          {CATEGORY_LABEL[post.category]}
         </span>
         <span className="flex shrink-0 gap-1">
           <button
@@ -91,7 +93,7 @@ function PostCard({
           </button>
           <button
             type="button"
-            onClick={() => downloadSvg(post, index)}
+            onClick={() => downloadSvg(post, 0)}
             className="border border-white/12 p-1.5 text-white/50 transition hover:border-teal-300 hover:text-teal-300"
             aria-label="Preuzmi sliku"
             title="Preuzmi SVG"
@@ -105,18 +107,12 @@ function PostCard({
 }
 
 // ── Modal s velikim prikazom ──────────────────────────────────────────────
-function PostModal({
-  post,
-  index,
-  onClose,
-}: {
-  post: AdPost;
-  index: number;
-  onClose: () => void;
-}) {
+function PostModal({ post, onClose }: { post: AdPost; onClose: () => void }) {
   const [copied, setCopied] = useState(false);
-  const svg = useMemo(() => renderPostSvg(post, index), [post, index]);
-  const src = useMemo(() => postSvgDataUri(svg), [svg]);
+  const [slide, setSlide] = useState(0);
+  const slides = useMemo(() => renderPostSlides(post), [post]);
+  const src = useMemo(() => postSvgDataUri(slides[slide] ?? slides[0]), [slides, slide]);
+  const total = slides.length;
 
   const doCopy = () => {
     copyCaption(post);
@@ -136,13 +132,53 @@ function PostModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div>
-          <img src={src} alt={post.title} className="w-full border border-white/10" width={1080} height={1080} />
+          <img
+            src={src}
+            alt={`${post.title} — slika ${slide + 1}`}
+            className="w-full border border-white/10"
+            width={1080}
+            height={1080}
+          />
+          {total > 1 && (
+            <div className="mt-3 flex items-center justify-center gap-2">
+              <button
+                type="button"
+                onClick={() => setSlide((v) => Math.max(0, v - 1))}
+                disabled={slide === 0}
+                className="border border-white/15 px-3 py-1.5 text-xs font-bold text-white/60 transition hover:border-teal-300 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+                aria-label="Prethodna slika"
+              >
+                ←
+              </button>
+              <div className="flex gap-1.5">
+                {slides.map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setSlide(i)}
+                    aria-label={`Slika ${i + 1}`}
+                    aria-current={i === slide}
+                    className={`h-1.5 transition-all ${i === slide ? "w-7 bg-teal-400" : "w-3 bg-white/25 hover:bg-white/50"}`}
+                  />
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={() => setSlide((v) => Math.min(total - 1, v + 1))}
+                disabled={slide === total - 1}
+                className="border border-white/15 px-3 py-1.5 text-xs font-bold text-white/60 transition hover:border-teal-300 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+                aria-label="Sljedeća slika"
+              >
+                →
+              </button>
+            </div>
+          )}
         </div>
         <div className="flex flex-col">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-[0.68rem] font-extrabold uppercase tracking-[0.16em] text-teal-300">
-                Objava {String(index + 1).padStart(2, "0")} / 60
+                {total > 1 ? `Karusel · slika ${slide + 1} / ${total}` : "Jedna slika"}
               </p>
               <p className="mt-1 text-xs text-white/40">
                 {CATEGORY_LABEL[post.category]} · {TEMPLATE_LABEL[post.template]}
@@ -185,7 +221,7 @@ function PostModal({
             </button>
             <button
               type="button"
-              onClick={() => downloadSvg(post, index)}
+              onClick={() => downloadSvg(post, slide)}
               className="inline-flex items-center gap-2 border border-white/20 px-4 py-2.5 text-xs font-bold text-white/80 transition hover:border-teal-300 hover:text-white"
             >
               <HiOutlineArrowDownTray className="text-sm" aria-hidden="true" />
@@ -261,7 +297,7 @@ export default function PostsPage() {
         {/* Galerija */}
         <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
           {visible.map(({ post, index }) => (
-            <PostCard key={post.id} post={post} index={index} onOpen={() => setOpenIndex(index)} />
+            <PostCard key={post.id} post={post} onOpen={() => setOpenIndex(index)} />
           ))}
         </div>
 
@@ -271,11 +307,7 @@ export default function PostsPage() {
       </div>
 
       {openIndex !== null && ALL_POSTS[openIndex] && (
-        <PostModal
-          post={ALL_POSTS[openIndex]}
-          index={openIndex}
-          onClose={() => setOpenIndex(null)}
-        />
+        <PostModal post={ALL_POSTS[openIndex]} onClose={() => setOpenIndex(null)} />
       )}
     </main>
   );

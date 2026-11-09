@@ -29,11 +29,26 @@ export type PostCategory = "sadrzaj" | "edukacija" | "ponuda" | "dokaz" | "brend
 
 export type PostPalette = "teal" | "dark" | "light";
 
+// Jedan list karusela. Ako ga nema, objava je jedna slika.
+// Kod karusela (2–10 listova) svaki list dobija isti vizuelni ram, ali
+// drugačiji sadržaj — kao pravi Instagram karusel.
+export type PostSlide = {
+  template?: PostTemplate; // ako nije zadato, koristi se template objave
+  eyebrow?: string;
+  title?: string;
+  subtitle?: string;
+  items?: string[];
+  value?: string;
+  valueNote?: string;
+  palette?: PostPalette; // dozvoljeno mijenjati ton unutar karusela
+};
+
 export type AdPost = {
   id: string;
   template: PostTemplate;
   category: PostCategory;
   palette: PostPalette;
+  layout?: PostLayout; // varijanta kompozicije (razlicitost bez lomljenja stila)
   eyebrow: string; // mala etiketa gore
   title: string; // glavni naslov
   subtitle?: string; // podnaslov / objasnjenje
@@ -42,4 +57,13 @@ export type AdPost = {
   valueNote?: string; // sitno ispod broja
   caption: string; // tekst objave za Instagram
   tags: string[]; // hashtagovi
+  slides?: PostSlide[]; // ako postoji → karusel
 };
+
+// Varijante kompozicije — daju raznolikost a da sve ostane u istom sistemu:
+//   "center"   — sadrzaj centriran, mirniji
+//   "split"    — lijevo tekst, desno akcenat-blok
+//   "band"     — sadrzaj u tamnoj/tamnijoj traci preko pozadine
+//   "offset"   — sadrzaj pomjeren gore ili dole, asimetricno
+//   "stamp"    — sadrzaj + veliki poluprovidni "pecat" u pozadini
+export type PostLayout = "center" | "split" | "band" | "offset" | "stamp";
