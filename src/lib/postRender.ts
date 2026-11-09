@@ -137,24 +137,36 @@ function fit(text: string, maxWidth: number, start: number, min = 46): number {
 }
 
 // ── Zaglavlje ─────────────────────────────────────────────────────────────
-// Wordmark je IDENTICAN onome u navbaru (src/App.tsx `Logo`):
-//   • ikona u zaobljenom okviru 1px border, tamna podloga #0B0B0F
-//   • "Dev" bijelo + "Forge" teal→cyan gradijent, font-extrabold, tracking-tight
-// Širina okvira = 40px u navbaru, ovdje srazmjerno (56px) da bude čitljivo na 1080.
-const LOGO_BOX = 62;
-const LOGO_ICON = 46;
+// Wordmark je 1:1 sa navbarom (src/App.tsx `Logo`), uvecan JEDNIM faktorom.
+//
+//   Navbar                         Slika (×2.1)
+//   ─────────────────────────      ─────────────────────────
+//   h-10 .............. 40px   →   84px
+//   gap-2.5 ........... 10px   →   21px
+//   p-1 (padding) ...... 4px   →    8px   ⇒ ikona 68px
+//   text-xl ........... 20px   →   42px
+//   rounded-xl ........ 12px   →   25px
+//   border 1px ........  1px   →    2px
+//
+const K = 2.1;                 // jedan faktor za sve — zato su razmaci tačni
+const LOGO_BOX = 40 * K;       // 84
+const LOGO_GAP = 10 * K;       // 21
+const LOGO_PAD = 4 * K;        // 8.4
+const LOGO_ICON = LOGO_BOX - LOGO_PAD * 2; // 67.2
+const LOGO_RADIUS = 12 * K;    // 25.2
+const LOGO_FONT = 20 * K;      // 42
+const LOGO_STROKE = 1 * K;     // 2.1
 
 function brandMark(x: number, y: number): { svg: string; w: number } {
-  const pad = (LOGO_BOX - LOGO_ICON) / 2;
   const iconW = LOGO_ICON * DF_LOGO_RATIO;
   const iconX = x + (LOGO_BOX - iconW) / 2;
-  const iconY = y + pad;
-  // gradijent za "Forge" — teal-300 → cyan-300, kao bg-gradient-to-r from-teal-300 to-cyan-300
+  const iconY = y + LOGO_PAD;
   const gid = `dfg-${Math.round(x)}-${Math.round(y)}`;
-  const textX = x + LOGO_BOX + 16;
-  const textY = y + LOGO_BOX / 2 + 15; // optički centar, cap-height ~0.72
+  const textX = x + LOGO_BOX + LOGO_GAP;
+  // optički centar: cap-height Inter/Segoe ≈ 0.72 em ⇒ baseline = centar + 0.36 em
+  const textY = y + LOGO_BOX / 2 + LOGO_FONT * 0.36;
   return {
-    w: LOGO_BOX + 16 + 150,
+    w: LOGO_BOX + LOGO_GAP + LOGO_FONT * 3.6,
     svg: `
     <defs>
       <linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="0">
@@ -162,16 +174,16 @@ function brandMark(x: number, y: number): { svg: string; w: number } {
         <stop offset="1" stop-color="#67E8F9"/>
       </linearGradient>
     </defs>
-    <rect x="${x}" y="${y}" width="${LOGO_BOX}" height="${LOGO_BOX}" rx="16"
-      fill="#0B0B0F" stroke="#FFFFFF" stroke-opacity="0.15" stroke-width="1.5"/>
+    <rect x="${x}" y="${y}" width="${LOGO_BOX}" height="${LOGO_BOX}" rx="${LOGO_RADIUS}"
+      fill="#0B0B0F" stroke="#FFFFFF" stroke-opacity="0.15" stroke-width="${LOGO_STROKE}"/>
     <image href="${DF_LOGO_DATA_URI}" x="${iconX}" y="${iconY}" width="${iconW}" height="${LOGO_ICON}"/>
-    <text x="${textX}" y="${textY}" font-family="${FONT}" font-size="42" font-weight="800"
+    <text x="${textX}" y="${textY}" font-family="${FONT}" font-size="${LOGO_FONT}" font-weight="800"
       letter-spacing="-0.6"><tspan fill="#FFFFFF">Dev</tspan><tspan fill="url(#${gid})">Forge</tspan></text>`,
   };
 }
 
 function header(c: Colors, eyebrow: string, category: string, slide: number, total: number): string {
-  const mark = brandMark(M, M - 6);
+  const mark = brandMark(M, M - 4);
 
   let dots = "";
   if (total > 1) {
@@ -459,9 +471,7 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide) => string> = {
     const b = build(c, p);
     const y = CONTENT_TOP + 10;
     return `<g transform="translate(${M}, ${y})">${b.svg}</g>
-      <rect x="${SIZE - M - 120}" y="${CONTENT_BOTTOM - 120}" width="120" height="120" fill="${c.accent}"/>
-      <image href="${DF_LOGO_DATA_URI}" x="${SIZE - M - 120 + 60 - (120 * 0.46 * DF_LOGO_RATIO) / 2}"
-        y="${CONTENT_BOTTOM - 120 + 60 - 120 * 0.23}" width="${120 * 0.46 * DF_LOGO_RATIO}" height="${120 * 0.46}"/>`;
+      <rect x="${SIZE - M - 120}" y="${CONTENT_BOTTOM - 120}" width="120" height="120" fill="${c.accent}"/>`;
   },
 
   photoBg: (c, p) => {
@@ -471,7 +481,8 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide) => string> = {
     return `<image href="${PHOTOS[ph]}" x="0" y="0" width="${SIZE}" height="${SIZE}"
         preserveAspectRatio="xMidYMid slice" aria-label="${esc(PHOTO_ALT[ph])}"/>
       <rect x="0" y="0" width="${SIZE}" height="${SIZE}" fill="#04060A" opacity="0.45"/>
-      <rect x="0" y="0" width="${SIZE}" height="180" fill="url(#fadeTop)"/>
+      <rect x="0" y="0" width="${SIZE}" height="200" fill="url(#fadeTop)"/>
+      <rect x="0" y="0" width="${SIZE}" height="34" fill="${c.bg}" opacity="0.92"/>
       <rect x="0" y="${SIZE - 170}" width="${SIZE}" height="170" fill="url(#fadeBot)"/>
       <g transform="translate(${M}, ${y})">${b.svg}</g>`;
   },
@@ -541,9 +552,10 @@ export function renderSlideSvg(
     </linearGradient>
   </defs>
   <rect width="${SIZE}" height="${SIZE}" fill="${c.bg}"/>
-  <rect x="0" y="0" width="${SIZE}" height="12" fill="${BRAND}"/>
-  ${header(c, slide.eyebrow ?? post.eyebrow, post.category, slideIndex, slideTotal)}
   ${content}
+  <!-- Zaglavlje se crta POSLIJE sadržaja: foto-pozadine inače prekriju logo. -->
+  ${header(c, slide.eyebrow ?? post.eyebrow, post.category, slideIndex, slideTotal)}
+  <rect x="0" y="0" width="${SIZE}" height="12" fill="${BRAND}"/>
 </svg>`;
 }
 

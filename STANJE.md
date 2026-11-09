@@ -9,6 +9,20 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **OBJAVE v10 — LOGO VIDLJIV NA SVIH 63 SLIKE + TACNE RAZMJERE** — korisnik: „nije na istoj udaljenosti jedan od drugog i nije iste velicine kao u navbaru... takodjer nije na svakoj stranici vidljiv logotip jer na primjer na postu 0 km nema logotipa".
+  **BUG 1 (kriticno):** `header()` se crtao PRIJE `${content}`, pa je foto-pozadina (`<image ... 1080×1080>`) prekrila logo. **27 od 63 slika nije imalo vidljiv logo** — ukljucujuci p01 „0 KM predujma" (photoBg). Fix: `${content}` ide prvo, `<rect ... brand traka>` i `${header(...)}` POSLIJE. Komentar u kodu objasnjava zasto.
+  **BUG 2 (razmjere):** okvir je bio 62px (faktor 1.55), a font 42px (faktor 2.1) → **nesrazmjerno**. Uveden **jedan faktor `K = 2.1`** za SVE dimenzije, 1:1 sa `Logo()` u `App.tsx`:
+  | Navbar (Tailwind) | px | Slika (×2.1) |
+  |---|---|---|
+  | `h-10` | 40 | **84** |
+  | `gap-2.5` | 10 | **21** |
+  | `p-1` | 4 | **8.4** → ikona 67.2 |
+  | `text-xl` | 20 | **42** |
+  | `rounded-xl` | 12 | **25.2** |
+  | `border` | 1 | **2.1** |
+  `LOGO_BOX/LOGO_GAP/LOGO_PAD/LOGO_ICON/LOGO_RADIUS/LOGO_FONT/LOGO_STROKE` svi iz `K`. Logo `y = M-4 = 92`, donji rub 176, `CONTENT_TOP 250` → 74px razmak.
+  **BUG 3:** `offset` layout je imao **drugi** logo u donjem desnom uglu — uklonjen (wordmark je vec gore).
+  **Verifikacija:** `npx tsc --noEmit` 0; provjera redoslijeda crtanja po svakoj slici → **0 slika s fotom preko loga, 0 bez loga, 0 bez „Dev"/„Forge"**; PIL mjerenje 6 layouta: svih 6 ima bijeli „Dev" + teal „Forge" + tamni okvir; Playwright 60/60 ucitano, karusel `1/4`, 0 gresaka; build ✓.
 - **OBJAVE v9 — WORDMARK KAO U NAVBARU NA SVAKOJ SLICI** — korisnik: „svaki post MORA imati ikonicu devforge. takodjer i natpis kao u navbaru na pocetnoj stranici istim fontom i sve to".
   **Rijeseno:** `brandMark()` u `postRender.ts` crta identican wordmark kao `Logo()` komponenta u `src/App.tsx`:
   - ikona `logo-icon.png` u zaobljenom okviru (`rx=16`), tamna podloga `#0B0B0F`, border `rgba(255,255,255,0.15)` 1.5px
