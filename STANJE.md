@@ -9,6 +9,14 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **OBJAVE v29 — SLIKA U `photoBot` SE STAPA SA ZELENOM** — korisnik: „da slika ne bude samo tako u dnu daj neki fazon neka preko nje prelazi ova boja #4deae0 neka ne bude u full boji i zatamnjena na vrhu“.
+  **Prije:** slika je imala tvrdu ivicu i bila je u punoj boji, sa samo tankim `fadeTop` gradijentom iznad.
+  **Sada tri sloja preko slike u `photoBot`:**
+  - `<rect fill="${c.bg}" opacity="0.28"/>` — **zeleni ton preko cijele slike** (slika nije u full boji)
+  - `blendUp` gradijent (180px od gornje ivice): `bg` @ `1` → `0.55` @ 55% → `0` — **zeleno se rastvara u sliku bez tvrde ivice**
+  - `blendBot` gradijent (cijela visina slike): `#000` @ `0.10` → `0.42` @ 60% → `0.66` @ 100% — **zatamnjenje prema dnu**
+  **Izmjereno na renderu 1080×1440 (slika pocinje y=893):** `y=883` zelena `(77,234,224)` · `y=913` `(81,228,221)` · `y=943` `(86,219,216)` · `y=973` `(90,209,207)` · `y=1003` `(95,195,196)` · `y=1063` `(100,156,161)` → **postepen prelaz, nema skoka**. Zatamnjenje: `lum 168` (y=993) → `122` → `93` → **`44`** (y=1433).
+  **Verifikacija:** 69 slika × oba formata → 0 prekoracenja, 0 fontova < 24px, 0 slika bez loga, `p03 blend=true`. Playwright 40/40, 0 gresaka. `tsc` 0, build ✓.
 - **OBJAVE v28 — NOVI LAYOUT `photoBot` ZA p03 (150 KM)** — korisnik: „post broj 3 150km moramo promjeniti. ruzno mi na tom postu izgleda ovaj border … isto kao sto smo imali fol sa onom na vrhu stranice slikom isto tako ovdje na dno stavi sliku i zeleni prostor da bude centar tekstu 150 km“.
   **Novi layout:** `photoBot` — zrcalo `photoTop`. Dodat u `PostLayout` (`postsData.ts`) i u `PLACE` (`postRender.ts`):
   - fotografija **DOLJE**: `<image y="${SIZE_H - imgH}" height="${imgH}">` gdje `imgH = round(SIZE_H * 0.38)`

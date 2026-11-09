@@ -603,9 +603,13 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide, total: number) => stri
     const b = buildFitting(c, p, zoneBot - 16, total);
     // Tekst CENTRIRAN u gornjoj zoni — ne lijepi se za sliku.
     const y = zoneTop + Math.max(0, (zoneBot - zoneTop - b.h) / 2);
+    // Fotografija se stapa sa zelenom: gore se rastvara u boju podloge
+    // (bez tvrde ivice), a preko nje ide blagi zeleni ton + zatamnjenje.
     return `<image href="${PHOTOS[ph]}" x="0" y="${SIZE_H - imgH}" width="${SIZE}" height="${imgH}"
         preserveAspectRatio="xMidYMid slice" aria-label="${esc(PHOTO_ALT[ph])}"/>
-      <rect x="0" y="${SIZE_H - imgH}" width="${SIZE}" height="100" fill="url(#fadeTop)"/>
+      <rect x="0" y="${SIZE_H - imgH}" width="${SIZE}" height="${imgH}" fill="${c.bg}" opacity="0.28"/>
+      <rect x="0" y="${SIZE_H - imgH}" width="${SIZE}" height="${imgH}" fill="url(#blendBot)"/>
+      <rect x="0" y="${SIZE_H - imgH}" width="${SIZE}" height="180" fill="url(#blendUp)"/>
       <g transform="translate(${M}, ${y})">${b.svg}</g>`;
   },
 
@@ -753,6 +757,16 @@ export function renderSlideSvg(
     <linearGradient id="fadeRight" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0%" stop-color="${c.bg}" stop-opacity="0"/>
       <stop offset="100%" stop-color="${c.bg}" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="blendUp" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${c.bg}" stop-opacity="1"/>
+      <stop offset="55%" stop-color="${c.bg}" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="${c.bg}" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="blendBot" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.10"/>
+      <stop offset="60%" stop-color="#000000" stop-opacity="0.42"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.66"/>
     </linearGradient>
     <linearGradient id="fadeLeft" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0%" stop-color="#000000" stop-opacity="0.94"/>
