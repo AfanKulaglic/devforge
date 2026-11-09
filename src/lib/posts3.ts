@@ -1,244 +1,295 @@
 import type { AdPost } from "./postsData";
 
 // ───────────────────────────────────────────────────────────────────────────
-// OBJAVE 41–60 — ISTE PORUKE SA HOME PAGE-A, TREĆI UGAO
+// OBJAVE 41–60 — REDOSLIJED KAO NA SAJTU (završetak)
 //
-// Samo 4 slike iz hero sekcije: hero · heroMob · web · mobile
+// 41     devforge vs tipična agencija
+// 42     naš put do danas (galerija)
+// 43–60  ostale informacije sa sajta (tehnologije, industrije, način rada,
+//        za koga radimo, stavovi, garancije, kontakt)
 // ───────────────────────────────────────────────────────────────────────────
 
 export const POSTS_3: AdPost[] = [
+  // ── 41. DEVFÖRGE VS TIPIČNA AGENCIJA ─────────────────────────────────────
   {
     id: "p41",
-    template: "title",
-    category: "ponuda",
-    layout: "photoBg",
-    photo: "hero",
-    palette: "ink",
-    eyebrow: "Bez predujma",
-    title: "Rizik smo uzeli na sebe. Doslovno.",
-    subtitle: "Razvoj počinjemo bez da ste dali ijednu marku.",
+    template: "compare",
+    category: "brend",
+    layout: "band",
+    palette: "dark",
+    eyebrow: "DevForge vs.",
+    title: "Tipična agencija vs. DevForge",
+    items: ["Predujam 30-50%", "Platite pa vidite", "Revizije se naplaćuju", "Skrivene stavke", "0 KM predujma", "Vidite pa platite", "4 revizije besplatno", "Cijene javne"],
+    caption:
+      "Ovo nije kritika drugih — samo objašnjenje kako mi radimo drugačije.\n\n" +
+      "PREDUJAM PRIJE POČETKA\n" +
+      "Oni: obavezan, često 30–50%\n" +
+      "Mi: ne — plaćate tek na kraju\n\n" +
+      "BESPLATNA GOTOVA VERZIJA\n" +
+      "Oni: rijetko ili uz naplatu\n" +
+      "Mi: da, za 5 radnih dana\n\n" +
+      "BESPLATNE REVIZIJE\n" +
+      "Oni: naplata po svakoj izmjeni\n" +
+      "Mi: 4 uključene u cijenu\n\n" +
+      "TRANSPARENTNE CIJENE\n" +
+      "Oni: skrivene stavke i doplate\n" +
+      "Mi: javne, od 150 KM\n\n" +
+      "VLASNIŠTVO NAD KODOM\n" +
+      "Oni: ograničeno ili vezano\n" +
+      "Mi: 100% pripada Vama\n\n" +
+      "Isti posao. Drugačija podjela rizika.",
+    tags: ["poredjenje", "agencija", "devforge", "bezpredujma", "sarajevo"],
+  },
+
+  // ── 42. NAŠ PUT DO DANAS — GALERIJA ──────────────────────────────────────
+  {
+    id: "p42",
+    template: "cover",
+    category: "brend",
+    layout: "center",
+    palette: "mint",
+    eyebrow: "Naš put",
+    title: "Naš put do danas",
     slides: [
       {
         template: "cover",
-        eyebrow: "Galerija",
-        title: "Kako izgleda rad bez predujma",
-        items: ["Bez avansa", "Bez ugovora", "Bez rizika"],
-        palette: "ink",
+        eyebrow: "Naš put",
+        title: "Naš put do danas",
+        items: ["2023", "2024", "2025", "Danas"],
+        palette: "mint",
       },
       {
-        template: "process",
-        eyebrow: "Tok",
-        title: "Četiri koraka, nula unaprijed",
-        items: ["Javite se", "Mi radimo", "Vi gledate", "Vi plaćate"],
-        palette: "ink",
+        template: "title",
+        eyebrow: "2023",
+        title: "Osnovan DevForge",
+        subtitle: "Krećemo s jasnom misijom: izrada digitalnih proizvoda bez rizika za klijenta i bez predujma.",
+        palette: "mint",
       },
       {
         template: "number",
-        eyebrow: "Naš gubitak",
-        title: "dana rada ako Vam se ne svidi",
-        value: "5",
-        valueNote: "Toliko potrošimo prije nego što platite ijednu marku.",
+        eyebrow: "2024",
+        title: "prvih 10 projekata",
+        value: "10",
+        valueNote: "Web stranice, shopovi i aplikacije za klijente iz BiH i regiona.",
         palette: "dark",
       },
       {
-        template: "cta",
-        eyebrow: "Počnite",
-        title: "Nemate šta izgubiti osim 15 minuta.",
-        subtitle: "Javite nam se u DM.",
-        palette: "ink",
+        template: "number",
+        eyebrow: "2025",
+        title: "isporučenih projekata",
+        value: "20+",
+        valueNote: "Rastemo na preporukama. 100% klijenata zadovoljno.",
+        palette: "mint",
+      },
+      {
+        template: "title",
+        eyebrow: "Danas",
+        title: "Vaš projekt je sljedeći",
+        subtitle: "Spremni smo preuzeti rizik Vašeg sljedećeg digitalnog koraka — počevši od besplatne gotove verzije.",
+        palette: "dark",
       },
     ],
     caption:
-      "Kad neko kaže „sav rizik je na nama“, obično misli na marketinšku frazu. Kod nas je doslovno.\n\n" +
-      "Kako to izgleda u praksi:\n\n" +
-      "— Ne dajete predujam. Nula.\n" +
-      "— Mi potrošimo 5 dana na gotovu verziju prije bilo kakvog dogovora.\n" +
-      "— Ako Vam se ne svidi — tih 5 dana je naš gubitak, ne Vaš.\n" +
-      "— Ako se svidi — plaćate kad je gotovo.\n\n" +
-      "Zašto to možemo: jer pola posla radimo prije nego što počnemo (struktura, tekst, odluke). Zato prva verzija obično bude dobra iz prve.\n\n" +
-      "Nemate šta izgubiti osim 15 minuta razgovora.",
-    tags: ["bezpredujma", "rizik", "povjerenje", "webdizajn", "sarajevo", "devforge"],
+      "Naš put do danas:\n\n" +
+      "2023 — OSNOVAN DEVFÖRGE. Krećemo s jasnom misijom: izrada digitalnih proizvoda bez rizika za klijenta i bez predujma.\n\n" +
+      "2024 — PRVIH 10 PROJEKATA. Web stranice, shopovi i mobilne aplikacije za klijente iz BiH i regiona. Model bez predujma se pokazao.\n\n" +
+      "2025 — 20+ ISPORUČENIH PROJEKATA. Rastemo na preporukama. 100% klijenata zadovoljno, svaki projekt isporučen prema dogovoru.\n\n" +
+      "DANAS — VAŠ PROJEKT JE SLJEDEĆI. Spremni smo preuzeti rizik Vašeg sljedećeg digitalnog koraka — počevši od besplatne gotove verzije.\n\n" +
+      "Rastemo na preporukama, ne na oglasima. Zato i radimo bez predujma.",
+    tags: ["nasput", "istorija", "milestones", "devforge", "sarajevo"],
   },
-  {
-    id: "p42",
-    template: "number",
-    category: "ponuda",
-    layout: "center",
-    palette: "dark",
-    eyebrow: "Cijena",
-    title: "KM — početna cijena web stranice",
-    value: "150",
-    valueNote: "Uključen dizajn, mobilna verzija i admin panel.",
-    caption:
-      "Web stranica od 150 KM. To je početna cijena i to je na sajtu.\n\n" +
-      "Šta je u tih 150 KM:\n" +
-      "— dizajn prilagođen Vašem brendu\n" +
-      "— mobilna verzija (radi na telefonu)\n" +
-      "— admin panel (sami mijenjate sadržaj)\n" +
-      "— SEO osnova\n" +
-      "— kontakt forma\n" +
-      "— četiri besplatne revizije\n\n" +
-      "Zašto ne „od 150 KM*“ s fusnotom: jer fusnote služe da sakriju konačnu cijenu. Naša je javna.\n\n" +
-      "Konačna cijena zavisi od broja stranica i funkcionalnosti — i dobijate je prije početka, ne poslije.\n\n" +
-      "Web shopovi su od 600 KM.\n\n" +
-      "Šta Vam treba?",
-    tags: ["cijene", "150km", "webstranice", "transparentnost", "sarajevo", "devforge"],
-  },
+
+  // ── 43. TEHNOLOGIJE ──────────────────────────────────────────────────────
   {
     id: "p43",
     template: "list",
-    category: "ponuda",
+    category: "izakulisa",
     layout: "photo",
     photo: "mobile",
-    palette: "teal",
-    eyebrow: "Admin panel",
-    title: "Vaša stranica. Vaša kontrola.",
-    items: ["Mijenjate kad hoćete", "Bez čekanja izvođača", "Bez dodatnih troškova", "Bez znanja koda"],
+    palette: "dark",
+    eyebrow: "Tehnologije",
+    title: "Tehnologije koje koristimo",
+    items: ["React i Next.js", "Node i Laravel", "Flutter i React Native", "PostgreSQL i Firebase"],
     caption:
-      "Najveća razlika između „stranice“ i „stranice koja radi za Vas“ je ko je može mijenjati.\n\n" +
-      "S admin panelom:\n" +
-      "— mijenjate kad hoćete, ne kad izvođač ima vremena\n" +
-      "— ne plaćate svaku sitnicu\n" +
-      "— ne morate znati kod\n" +
-      "— ne čekate da neko odgovori na mejl\n\n" +
-      "Praktično: ako znate koristiti Facebook, znate i ovo.\n\n" +
-      "Zašto je to važno: stranica koja se ne ažurira izgleda napušteno. A napuštena stranica odbija kupce više nego nikakva.\n\n" +
-      "Koliko puta ste htjeli nešto promijeniti i odustali?",
-    tags: ["adminpanel", "cms", "kontrola", "samostalnost", "sarajevo", "devforge"],
+      "Radimo u standardnim tehnologijama — bez egzotike koja se ne može održavati.\n\n" +
+      "FRONTEND: React & Next.js, TypeScript, Tailwind CSS, animacije i interakcije.\n\n" +
+      "BACKEND: Node.js & Laravel, PostgreSQL / MySQL, REST i GraphQL API, autentikacija i sigurnost.\n\n" +
+      "MOBILNE: Flutter & React Native, iOS i Android, push notifikacije, App Store / Google Play.\n\n" +
+      "Zašto Vam je to važno kao klijentu: kad za godinu dana tražite nekog da nastavi raditi na projektu, standardne tehnologije znače da će ga lako naći.\n\n" +
+      "Kod u nekoj egzotičnoj tehnologiji je zatočeništvo, ne zaštita.",
+    tags: ["tehnologije", "react", "flutter", "node", "sarajevo", "devforge"],
   },
+
+  // ── 44. ZA KOGA RADIMO ───────────────────────────────────────────────────
   {
     id: "p44",
-    template: "compare",
-    category: "ponuda",
-    layout: "band",
-    palette: "mint",
-    eyebrow: "Pet dana",
-    title: "Šta dobijete u 5 dana vs. u mjesec",
-    items: ["Čekate odgovor", "Nagađate cijenu", "Ne vidite ništa", "Mjesec prođe", "Vidite stranicu", "Znate cijenu", "Kažete šta mijenjati", "Za 5 dana gotovo"],
-    caption:
-      "Razlika između „za 5 dana“ i „za mjesec“ nije u brzini rada. U pripremi je.\n\n" +
-      "MJESEC (standardno):\n" +
-      "— pošaljete upit, čekate odgovor\n" +
-      "— dobijete „po dogovoru“, pa nagađate\n" +
-      "— nedjeljama ne vidite ništa\n" +
-      "— prva verzija dođe i pola stvari nije kako treba\n\n" +
-      "PET DANA (kod nas):\n" +
-      "— 15 minuta razgovora, isti dan\n" +
-      "— struktura i tekst prije dizajna (pola posla)\n" +
-      "— stranica na pravom linku u 5 dana\n" +
-      "— kažete šta mijenjati, radimo izmjene\n\n" +
-      "Brzo nije brzopleto. Brzo znači: priprema prije, rad poslije.",
-    tags: ["5dana", "brzina", "proces", "poredjenje", "sarajevo", "devforge"],
-  },
-  {
-    id: "p45",
-    template: "quote",
-    category: "brend",
-    layout: "stamp",
-    palette: "sun",
-    eyebrow: "Naš stav",
-    title: "Kupac koji mora pitati cijenu ne kupuje.",
-    subtitle: "Zato su naše cijene na sajtu.",
-    caption:
-      "Kad neko mora poslati upit da bi saznao okvirnu cijenu, dvije stvari se dese:\n\n" +
-      "1. Nagađa. Obično pogriješi u Visočiju smjeru i odustane.\n" +
-      "2. Čeka. I u međuvremenu nađe nekog ko je cijenu objavio.\n\n" +
-      "Zato su naše cijene javne: web stranice od 150 KM, shopovi od 600 KM.\n\n" +
-      "Šta to ne pokriva: konačnu cijenu za Vaš konkretni projekt. Ona zavisi od broja stranica i funkcionalnosti — i dobijate je prije početka, ne poslije.\n\n" +
-      "Transparentnost nije marketinška riječ. To je jedan broj na sajtu.",
-    tags: ["cijene", "transparentnost", "povjerenje", "webdizajn", "devforge"],
-  },
-  {
-    id: "p46",
-    template: "title",
-    category: "ponuda",
-    layout: "photoTop",
-    photo: "web",
-    palette: "dark",
-    eyebrow: "Šta dobijate",
-    title: "Stranica, panel i četiri revizije. Sve uključeno.",
-    subtitle: "Bez doplata i bez naknadnih stavki na kraju.",
-    caption:
-      "Sve što Vam treba za početak — u jednoj cijeni.\n\n" +
-      "Uključeno:\n" +
-      "— UI/UX dizajn\n" +
-      "— razvoj i kod\n" +
-      "— mobilna verzija\n" +
-      "— admin panel\n" +
-      "— SEO osnova\n" +
-      "— analitika (znate ko dolazi)\n" +
-      "— četiri revizije\n" +
-      "— besplatna prva verzija\n\n" +
-      "Nije uključeno: domena i hosting. Njih plaćate direktno provideru, bez naše marže.\n\n" +
-      "Zašto je to važno: kod većine agencija osnovna cijena je početak. Dizajn se doplaćuje, mobilna verzija se doplaćuje, izmjene se doplaćuju.\n\n" +
-      "Ovdje nema doplata jer nema stavki.",
-    tags: ["ukljuceno", "cijene", "webdizajn", "revizije", "sarajevo", "devforge"],
-  },
-  {
-    id: "p47",
     template: "list",
     category: "ponuda",
     layout: "split",
     palette: "light",
-    eyebrow: "AI sistemi",
-    title: "AI koji odgovara umjesto Vas",
-    items: ["Na pitanja o cijenama", "Na pitanja o terminima", "Na pitanja o dostavi", "Na pitanja o lokaciji"],
+    eyebrow: "Za koga",
+    title: "Za koga radimo najbolje",
+    items: ["E-commerce i trgovine", "Startupi i agencije", "Lokalni biznisi i obrti", "Uslužne djelatnosti"],
     caption:
-      "Četiri pitanja koja dobijate svaki dan — AI odgovara umjesto Vas:\n\n" +
-      "— „Koliko košta?“ → zna Vaš cjenovnik\n" +
-      "— „Imate li termin u srijedu?“ → zna raspored\n" +
-      "— „Dostavljate li u Zenicu?“ → zna područje\n" +
-      "— „Gdje se nalazite?“ → zna adresu i radno vrijeme\n\n" +
-      "Odgovara 24 sata, bez pauze. Za sve komplikovano prosljeđuje Vama s cijelim razgovorom.\n\n" +
-      "Šta to znači praktično: 41% upita dolazi van radnog vremena. Dosad su ti ljudi otišli konkurenciji.\n\n" +
-      "AI ide kao dio projekta stranice.",
-    tags: ["aisistemi", "automatizacija", "upiti", "odgovori", "sarajevo", "devforge"],
+      "Ne radimo za svakoga. Najbolji smo za:\n\n" +
+      "— e-commerce i trgovine — shopovi s katalogom i online plaćanjem\n" +
+      "— startupi i agencije — MVP i prve verzije proizvoda\n" +
+      "— lokalni biznisi i obrti — stranice koje donose pozive\n" +
+      "— edukacija i 2D igre — educational i marketing igrice\n" +
+      "— uslužne djelatnosti — zakazivanje termina i kontakt forme\n" +
+      "— SaaS i digitalni proizvodi — web aplikacije i dashboardi\n\n" +
+      "Ne radimo: velike enterprise sisteme, shopove s 5000 proizvoda i integracijom na tri ERP-a.\n\n" +
+      "Ako ne možemo — reći ćemo Vam odmah, u prvom razgovoru, i preporučiti nekog drugog.",
+    tags: ["zakoga", "malibiznis", "industrije", "sarajevo", "devforge"],
   },
+
+  // ── 45. AI SISTEMI ───────────────────────────────────────────────────────
   {
-    id: "p48",
+    id: "p45",
     template: "number",
     category: "ponuda",
-    layout: "center",
+    layout: "photoBg",
+    photo: "hero",
     palette: "ink",
-    eyebrow: "Naš rad",
-    title: "besplatne revizije, uvijek uključene",
-    value: "4",
-    valueNote: "Bez doplata i bez brojanja izmjena.",
+    eyebrow: "AI sistemi",
+    title: "sata dnevno dostupan AI recepcionar",
+    value: "24",
+    valueNote: "Prima pozive, odgovara, zakazuje termine.",
     caption:
-      "Četiri revizije su uključene u svaku cijenu. Bez doplata i bez „ovo je peta izmjena, to se dodatno plaća“.\n\n" +
-      "Zašto četiri: jer prva verzija nikad nije savršena.\n" +
-      "— Prva i druga revizija su obično sitnice: boja, raspored, tekst.\n" +
-      "— Treća i četvrta su one koje stvarno poprave stvar.\n\n" +
-      "Ako i poslije četiri treba još — sjeli bismo i vidjeli šta nije u redu u startu. To je onda naš propust, ne Vaš.\n\n" +
-      "U praksi: 90% projekata završi u dvije revizije.\n\n" +
-      "Koliko revizija Vam je trebalo na prošlom projektu?",
-    tags: ["revizije", "dorada", "kvalitet", "webdizajn", "sarajevo", "devforge"],
+      "AI recepcionar i chat asistent koji primaju pozive 24 sata, odgovaraju kupcima, zakazuju termine i bilježe narudžbe — bez Vašeg učešća.\n\n" +
+      "Šta radi:\n" +
+      "— prima pozive i poruke u svako doba\n" +
+      "— odgovara na osnovu podataka o Vašoj firmi: usluge, cijene, radno vrijeme\n" +
+      "— zakazuje termine i šalje potvrde\n" +
+      "— bilježi narudžbe iz poruka\n" +
+      "— preusmjerava poziv na Vas kad treba\n\n" +
+      "AI sistemi se naplaćuju izradom plus mjesečnom naknadom, jer razgovori imaju stalne troškove.\n\n" +
+      "AI ide kao dio projekta stranice, ne odvojeno.",
+    tags: ["aisistemi", "airecepcionar", "24sata", "automatizacija", "sarajevo"],
   },
+
+  // ── 46. GARANCIJA / BEZ RIZIKA ───────────────────────────────────────────
+  {
+    id: "p46",
+    template: "quote",
+    category: "brend",
+    layout: "stamp",
+    palette: "teal",
+    eyebrow: "Bez rizika",
+    title: "Vaš jedini rizik su 15 minuta razgovora.",
+    subtitle: "Sve ostalo ide poslije Vaše potvrde.",
+    caption:
+      "Uložite 15 minuta razgovora. Ništa više.\n\n" +
+      "Ne tražimo predujam. Ne tražimo da potpišete išta. Ne tražimo pristup Vašim računima.\n\n" +
+      "Samo razgovor: čime se bavite, ko Vas zove, šta stranica treba da uradi.\n\n" +
+      "Ako poslije razgovora odlučite da ne radimo — to je sasvim u redu i nema cijene.\n\n" +
+      "Ako se dogovorimo — napravimo gotovu verziju u 5 dana i vidite je prije bilo kakve obaveze.\n\n" +
+      "Vrijedi li probati?",
+    tags: ["bezrizika", "bezpredujma", "konsultacija", "sarajevo", "devforge"],
+  },
+
+  // ── 47. ADMIN PANEL ──────────────────────────────────────────────────────
+  {
+    id: "p47",
+    template: "list",
+    category: "ponuda",
+    layout: "photoTop",
+    photo: "web",
+    palette: "dark",
+    eyebrow: "Admin panel",
+    title: "Sami mijenjate tekst, slike i cijene",
+    items: ["Bez koda", "Bez developera", "Bez mjesečnih naknada"],
+    caption:
+      "Uz svaki projekt dobijate vlastiti admin panel (CMS) kroz koji sami mijenjate sadržaj.\n\n" +
+      "Šta možete sami:\n" +
+      "— tekst na bilo kojoj stranici\n" +
+      "— slike i fotografije\n" +
+      "— proizvode i cijene u shopu\n" +
+      "— objave i novosti\n" +
+      "— radno vrijeme i kontakt podatke\n\n" +
+      "Sve bez koda i bez plaćanja developeru za svaku sitnicu.\n\n" +
+      "Ako znate koristiti Facebook, znate koristiti i ovo.\n\n" +
+      "Koliko puta ste htjeli nešto promijeniti i odustali jer „ne znate kako“?",
+    tags: ["adminpanel", "cms", "kontrola", "webdizajn", "devforge"],
+  },
+
+  // ── 48. 2D IGRICE ────────────────────────────────────────────────────────
+  {
+    id: "p48",
+    template: "title",
+    category: "ponuda",
+    layout: "center",
+    palette: "light",
+    eyebrow: "2D igrice",
+    title: "Igra drži pažnju duže od banera",
+    subtitle: "2D igrice za web i mobilne — s Vašim brendom.",
+    caption:
+      "Banner ljudi gledaju 1.7 sekundi. U igri provedu minute.\n\n" +
+      "Razvijamo engaging 2D igrice za mobilne platforme i web:\n" +
+      "— marketing igre — kao dio kampanje ili promocije\n" +
+      "— edukacijske igre — za zaposlene ili klijente\n" +
+      "— casual igre — s Vašim brendom, za zabavu\n\n" +
+      "Od jednostavne igre s jasnim ciljem do složenije mehanike. Radi na webu i na mobilnom.\n\n" +
+      "Kad se kupac igra s Vašim brendom 3 minute, sjeća ga se. Kad gleda baner 2 sekunde — ne.\n\n" +
+      "Imate ideju?",
+    tags: ["2digrice", "gamedev", "marketing", "brend", "sarajevo"],
+  },
+
+  // ── 49. MOBILNE APLIKACIJE ───────────────────────────────────────────────
   {
     id: "p49",
     template: "list",
     category: "ponuda",
     layout: "band",
-    palette: "teal",
-    eyebrow: "Usluge",
-    title: "Četiri stvari koje radimo",
-    items: ["Web stranice i shopovi", "2D igrice", "Mobilne aplikacije", "AI sistemi"],
+    palette: "ink",
+    eyebrow: "Mobilne aplikacije",
+    title: "Jedan kod. iOS i Android.",
+    items: ["Flutter i React Native", "Push notifikacije", "Backend API", "App Store i Play"],
     caption:
-      "Radimo četiri stvari — i svaku dobro.\n\n" +
-      "1. WEB STRANICE I SHOPOVI. Landing, korporativna, shop — od 150 KM.\n\n" +
-      "2. 2D IGRICE. Za web i mobilne. Marketing, edukacija ili zabava — s Vašim brendom.\n\n" +
-      "3. MOBILNE APLIKACIJE. iOS i Android, jedan kod (Flutter / React Native).\n\n" +
-      "4. AI SISTEMI. Recepcionar i chat koji rade 24/7, zakazuju termine i bilježe narudžbe.\n\n" +
-      "Ne radimo sve. Za velike enterprise sisteme i shopove s 5000 proizvoda preporučimo nekog drugog.\n\n" +
-      "Pogledajte /usluge na sajtu — sve detaljno.",
-    tags: ["usluge", "webstranice", "igrice", "aplikacije", "sarajevo", "devforge"],
+      "Najčešća zabluda: aplikacija košta kao dva projekta jer trebaju Android i iOS.\n\n" +
+      "Ne više. Flutter i React Native omogućavaju jedan kod za obje platforme.\n\n" +
+      "Šta to znači praktično:\n" +
+      "— jedna izrada, jedna cijena\n" +
+      "— iste funkcionalnosti na oba sistema\n" +
+      "— jedna baza podataka\n" +
+      "— brže objavljivanje i na App Store i na Google Play\n\n" +
+      "Šta dobijate: push notifikacije, korisničke račune, backend i bazu, objavu u trgovinama, dokumentaciju.\n\n" +
+      "Ista pravila kao za stranice: besplatna prva verzija, plaćate kad ste zadovoljni.",
+    tags: ["mobilneaplikacije", "flutter", "ios", "android", "sarajevo"],
   },
+
+  // ── 50. PONUDA / KONTAKT ─────────────────────────────────────────────────
   {
     id: "p50",
-    template: "quote",
-    category: "brend",
+    template: "cta",
+    category: "ponuda",
     layout: "photoBg",
     photo: "hero",
+    palette: "dark",
+    eyebrow: "Počnite",
+    title: "Recite čime se bavite. Prva verzija je besplatna.",
+    subtitle: "Web od 150 KM · Shopovi od 600 KM · 0 KM predujma",
+    caption:
+      "Web, mobilne aplikacije i igre koje pokreću Vaš biznis.\n\n" +
+      "Od ideje do gotovog proizvoda za nekoliko sedmica. Izrađujemo besplatnu gotovu verziju za 5 dana — plaćate tek kada budete zadovoljni.\n\n" +
+      "Šta dobijate:\n" +
+      "— besplatnu gotovu verziju za 5 dana\n" +
+      "— 0 KM predujma\n" +
+      "— fiksnu cijenu prije početka\n" +
+      "— četiri besplatne revizije\n" +
+      "— vlastiti admin panel\n" +
+      "— domenu i kod na Vaše ime\n\n" +
+      "Javite nam se u DM — odgovaramo u roku od 10 minuta.\n\n" +
+      "dev-forge-studio.vercel.app",
+    tags: ["kontakt", "pocetak", "webdizajn", "sarajevo", "devforge"],
+  },
+
+  // ── 51. VRIJEDNOSTI / NAŠ STAV ───────────────────────────────────────────
+  {
+    id: "p51",
+    template: "quote",
+    category: "brend",
+    layout: "stamp",
     palette: "dark",
     eyebrow: "Naš stav",
     title: "Ne pravimo stranice za pohvalu. Pravimo ih da Vas zovu.",
@@ -254,116 +305,182 @@ export const POSTS_3: AdPost[] = [
       "Koliko poziva Vam je donijela trenutna stranica?",
     tags: ["brend", "konverzija", "webdizajn", "strategija", "devforge"],
   },
+
+  // ── 52. VLASNIŠTVO ───────────────────────────────────────────────────────
   {
-    id: "p51",
-    template: "process",
-    category: "izakulisa",
-    layout: "photoTop",
-    photo: "mobile",
-    palette: "dark",
-    eyebrow: "Isporuka",
+    id: "p52",
+    template: "list",
+    category: "brend",
+    layout: "photo",
+    photo: "heroMob",
+    palette: "teal",
+    eyebrow: "Vlasništvo",
     title: "Zadnji dan: sve lozinke idu Vama",
     items: ["Domena na Vaše ime", "Hosting je Vaš", "Kod u cjelosti", "Svi pristupi predati"],
     caption:
       "Najvažniji dan projekta nije prvi — zadnji je.\n\n" +
       "Na zadnji dan:\n" +
-      "— domena se prebacuje na Vaše ime (ako nije već bila)\n" +
+      "— domena se prebacuje na Vaše ime\n" +
       "— hosting je Vaš račun, ne naš\n" +
       "— izvorni kod dobijate u cjelosti, dokumentiran\n" +
       "— sve lozinke i pristupi idu Vama\n" +
-      "— povezujemo analitiku, radimo test na tri uređaja\n\n" +
-      "Zašto to naglašavamo: najgori slučaj koji smo vidjeli je firma koja je platila stranicu, a domenu drži bivši izvođač. Godinu dana nisu mogli ništa mijenjati.\n\n" +
+      "— povezujemo analitiku, radimo test na tri uređaja\n" +
+      "— dobijate kratku obuku za korištenje\n\n" +
+      "Zašto to naglašavamo: najgori slučaj koji smo vidjeli je firma koja je platila stranicu, a domenu drži bivši izvođač.\n\n" +
       "Ako nas sutra poželite zamijeniti, uzmete sve i idete.",
-    tags: ["isporuka", "vlasnistvo", "domena", "kod", "sarajevo", "devforge"],
+    tags: ["vlasnistvo", "domena", "kod", "isporuka", "sarajevo"],
   },
-  {
-    id: "p52",
-    template: "title",
-    category: "ponuda",
-    layout: "center",
-    palette: "mint",
-    eyebrow: "Web shop",
-    title: "Shop koji sami punite. Bez developera.",
-    subtitle: "Proizvodi, cijene i narudžbe — sve na jednom mjestu.",
-    caption:
-      "Web shop od 600 KM. Sve uključeno — katalog, korpa, plaćanje i admin panel.\n\n" +
-      "Šta sami radite:\n" +
-      "— dodajete proizvode\n" +
-      "— mijenjate cijene\n" +
-      "— pratite narudžbe\n" +
-      "— upravljate zalihama\n\n" +
-      "Sve kroz panel. Bez koda i bez čekanja da neko drugi to uradi.\n\n" +
-      "Povezujemo s onim što već koristite: Stripe, PayPal, dostavne službe, plaćanje pouzećem.\n\n" +
-      "Prva verzija besplatna, za 5 dana. Plaćate kad ste zadovoljni.\n\n" +
-      "Koliko proizvoda imate?",
-    tags: ["webshop", "ecommerce", "adminpanel", "shop", "sarajevo", "devforge"],
-  },
+
+  // ── 53. CIJENE / TRANSPARENTNOST ─────────────────────────────────────────
   {
     id: "p53",
-    template: "number",
-    category: "dokaz",
-    layout: "band",
-    palette: "light",
-    eyebrow: "Naš rad",
-    title: "projekata isporučeno bez predujma",
-    value: "20+",
-    valueNote: "Nijedan klijent nije platio nešto što nije vidio.",
+    template: "quote",
+    category: "brend",
+    layout: "split",
+    palette: "dark",
+    eyebrow: "Naš stav",
+    title: "Kupac koji mora pitati cijenu ne kupuje.",
+    subtitle: "Zato su naše cijene na sajtu.",
     caption:
-      "Preko 20 isporučenih projekata — i nijedan nije plaćen unaprijed.\n\n" +
-      "Web stranice, shopovi, mobilne aplikacije, igrice, AI sistemi.\n\n" +
-      "Svaki projekt prošao je isti put:\n" +
-      "dogovor → besplatna verzija → Vaš pregled → izmjene → objava → plaćanje.\n\n" +
-      "Zašto to navodimo: jer većina agencija ne bi mogla raditi tako. Traži predujam jer ne vjeruje da će posao biti plaćen. Mi tražimo da prvo vidite — jer vjerujemo da će biti.\n\n" +
-      "Rastemo na preporukama, ne na oglasima. Zato i radimo bez predujma.",
-    tags: ["projekti", "rezultati", "bezpredujma", "iskustvo", "devforge"],
+      "Kad neko mora poslati upit da bi saznao okvirnu cijenu, dvije stvari se dese:\n\n" +
+      "1. Nagađa. Obično pogriješi u većem smjeru i odustane.\n" +
+      "2. Čeka. I u međuvremenu nađe nekog ko je cijenu objavio.\n\n" +
+      "Zato su naše cijene javne: web stranice od 150 KM, shopovi od 600 KM.\n\n" +
+      "Šta to ne pokriva: konačnu cijenu za Vaš konkretni projekt. Ona zavisi od broja stranica i funkcionalnosti — i dobijate je prije početka, ne poslije.\n\n" +
+      "Transparentnost nije marketinška riječ. To je jedan broj na sajtu.",
+    tags: ["cijene", "transparentnost", "povjerenje", "webdizajn", "devforge"],
   },
+
+  // ── 54. ODRŽAVANJE I PODRŠKA ─────────────────────────────────────────────
   {
     id: "p54",
     template: "list",
-    category: "izakulisa",
-    layout: "photo",
-    photo: "web",
-    palette: "ink",
-    eyebrow: "Iza kulisa",
-    title: "Priprema koja ubrza posao duplo",
-    items: ["Razgovor o kupcu", "Pregled konkurencije", "Struktura na papiru", "Tekst prije dizajna"],
+    category: "ponuda",
+    layout: "center",
+    palette: "mint",
+    eyebrow: "Podrška",
+    title: "Ne nestajemo nakon isporuke",
+    items: ["Ažuriranja i sigurnost", "Optimizacija brzine", "Nove funkcionalnosti", "Pomoć kad zapne"],
     caption:
-      "Zadnjih 5 dana nije magija. Magija je u onome što radimo prije prve linije koda.\n\n" +
-      "1. Razgovor — 30 minuta o tome ko je kupac i šta ga muči. Ne o tome šta Vam se sviđa.\n" +
-      "2. Konkurencija — gledamo 5 firmi koje rade isto. Šta im rade dobro, šta loše.\n" +
-      "3. Struktura — nacrtamo stranice na papiru. Koja vodi gdje, šta je na svakoj.\n" +
-      "4. Tekst — pišemo prvo tekst, pa dizajn. Obrnuto nikad ne radi.\n\n" +
-      "Tek onda Figma. Tek onda kod.\n\n" +
-      "Zato prva verzija obično bude dobra iz prve — pola posla je urađeno prije nego što se išta vidi.",
-    tags: ["proces", "priprema", "izakulisa", "webdizajn", "devforge"],
+      "Najčešći problem s agencijama: projekt se preda i telefon se ugasi.\n\n" +
+      "Kod nas ne. Nakon isporuke:\n" +
+      "— ažuriranja i sigurnosne zakrpe\n" +
+      "— optimizacija brzine kad stranica naraste\n" +
+      "— dodavanje novih funkcionalnosti po potrebi\n" +
+      "— pomoć kad nešto zapne u admin panelu\n\n" +
+      "Prvih mjesec dana podrška je uključena. Poslije toga po potrebi — bez ugovora na godinu.\n\n" +
+      "Zašto ovako: jer stranica nije gotova na dan objave. Ona živi dalje.\n\n" +
+      "Imate pitanje o postojećoj stranici? Javite se — i ako nije naša, reći ćemo šta vidimo.",
+    tags: ["podrska", "odrzavanje", "sigurnost", "webdizajn", "devforge"],
   },
+
+  // ── 55. WEB SHOP ─────────────────────────────────────────────────────────
   {
     id: "p55",
-    template: "list",
+    template: "title",
     category: "ponuda",
-    layout: "split",
-    palette: "sun",
-    eyebrow: "Materijal",
-    title: "Šta nam je potrebno od Vas",
-    items: ["Logo ako imate", "Tri rečenice o firmi", "Slike ako imate", "Ništa više"],
+    layout: "photoTop",
+    photo: "web",
+    palette: "ink",
+    eyebrow: "Web shopovi",
+    title: "Shop koji sami punite. Od 600 KM.",
+    subtitle: "Katalog, korpa, online plaćanje i upravljanje narudžbama.",
     caption:
-      "Ljudi misle da nam treba gomila materijala. Ne treba.\n\n" +
-      "Potrebno:\n" +
-      "— logo, ako ga imate (ako nemate — napravimo ga)\n" +
-      "— tri rečenice o tome čime se bavite\n" +
-      "— slike, ako ih imate (ako nemate — koristimo stock ili fotkamo)\n" +
-      "— ime firme i grad\n\n" +
-      "To je sve. Tekst pišemo mi na osnovu razgovora.\n\n" +
-      "Nemate ni to? Javite se i recite čime se bavite — to je dovoljno za prvi razgovor.\n\n" +
-      "Većina razgovora počne s „ne znam šta mi treba“. To je sasvim u redu.",
-    tags: ["materijal", "pocetak", "priprema", "webdizajn", "sarajevo", "devforge"],
+      "Web shop od 600 KM — sve uključeno.\n\n" +
+      "Šta dobijate:\n" +
+      "— kompletan e-commerce sistem\n" +
+      "— katalog proizvoda s kategorijama\n" +
+      "— korpa i checkout\n" +
+      "— online plaćanje (Stripe, PayPal)\n" +
+      "— admin panel\n" +
+      "— inventory management\n" +
+      "— UI/UX dizajn uključen\n" +
+      "— demo se ne plaća\n\n" +
+      "Sami dodajete proizvode, mijenjate cijene i pratite narudžbe. Bez koda i bez zvanja developera.\n\n" +
+      "Koliko proizvoda imate?",
+    tags: ["webshop", "ecommerce", "shop", "katalog", "sarajevo"],
   },
+
+  // ── 56. BEZ SKRIVENIH TROŠKOVA ───────────────────────────────────────────
   {
     id: "p56",
+    template: "number",
+    category: "ponuda",
+    layout: "band",
+    palette: "light",
+    eyebrow: "Transparentnost",
+    title: "skrivenih troškova u svakoj ponudi",
+    value: "0",
+    valueNote: "Cijena koju dobijete je cijena koju platite.",
+    caption:
+      "Nula skrivenih troškova. To je jednostavno pravilo koje većina ne poštuje.\n\n" +
+      "Šta to znači konkretno:\n" +
+      "— cijena na sajtu je cijena u ponudi\n" +
+      "— dizajn, mobilna verzija i admin panel su uključeni\n" +
+      "— 4 revizije su uključene\n" +
+      "— nema „dodatne stavke“ na kraju\n" +
+      "— nema doplate za ono što je dogovoreno\n\n" +
+      "Jedino što ide odvojeno: domena i hosting. Njih plaćate direktno provideru, bez naše marže — i to je jasno napisano prije početka.\n\n" +
+      "Zašto ovako: jer kupac koji ne zna konačnu cijenu ne može planirati.",
+    tags: ["cijene", "transparentnost", "bezskrivenih", "webdizajn", "devforge"],
+  },
+
+  // ── 57. 5 DANA ───────────────────────────────────────────────────────────
+  {
+    id: "p57",
+    template: "number",
+    category: "ponuda",
+    layout: "center",
+    palette: "dark",
+    eyebrow: "Rok",
+    title: "radnih dana do besplatne gotove verzije",
+    value: "5",
+    valueNote: "Prava stranica, na pravom linku, bez obaveze.",
+    caption:
+      "Pet radnih dana. Toliko nam treba da dobijete funkcionalnu verziju.\n\n" +
+      "Ne maketu. Ne PDF. Pravu stranicu na pravom linku koju možete otvoriti na mobitelu i poslati kome hoćete.\n\n" +
+      "Šta dobijete u tih 5 dana:\n" +
+      "— dizajn koji odgovara Vašem brendu\n" +
+      "— strukturu stranica (koja vodi gdje)\n" +
+      "— funkcionalnosti koje ste tražili\n" +
+      "— kontakt formu koja radi\n\n" +
+      "Tek poslije toga razgovaramo o cijeni i nastavku.\n\n" +
+      "Šta bi Vam značilo da vidite stranicu svoje firme ove sedmice?",
+    tags: ["5dana", "rok", "besplatno", "gotovaverzija", "sarajevo"],
+  },
+
+  // ── 58. KONTAKT SAJT ─────────────────────────────────────────────────────
+  {
+    id: "p58",
+    template: "cta",
+    category: "ponuda",
+    layout: "photoBg",
+    photo: "heroMob",
+    palette: "ink",
+    eyebrow: "Kontakt",
+    title: "Sve na jednom mjestu: dev-forge-studio.vercel.app",
+    subtitle: "Usluge, cijene, projekti i česta pitanja — bez zvanja.",
+    caption:
+      "Ako ne volite razgovarati prije nego što vidite brojeve — sve je javno na sajtu.\n\n" +
+      "Šta tamo nađete:\n" +
+      "— usluge detaljno (web, igrice, aplikacije, AI)\n" +
+      "— cijene: web od 150 KM, shopovi od 600 KM\n" +
+      "— projekti koje smo radili\n" +
+      "— česta pitanja s odgovorima\n" +
+      "— način rada, korak po korak\n\n" +
+      "Ne morate nikoga zvati da saznate cijenu.\n\n" +
+      "dev-forge-studio.vercel.app\n\n" +
+      "Ako i poslije toga imate pitanje — javite se u DM.",
+    tags: ["kontakt", "sajt", "cijene", "usluge", "devforge"],
+  },
+
+  // ── 59. NAŠ STAV / MANJA EKIPA ───────────────────────────────────────────
+  {
+    id: "p59",
     template: "quote",
     category: "brend",
-    layout: "stamp",
-    palette: "mint",
+    layout: "center",
+    palette: "sun",
     eyebrow: "Naš stav",
     title: "Ista osoba od prvog razgovora do zadnjeg dana.",
     subtitle: "Ne prelazite iz ruke u ruku.",
@@ -376,71 +493,10 @@ export const POSTS_3: AdPost[] = [
       "— znate kome se javiti i taj čovjek zna Vaš projekt\n" +
       "— odgovor dolazi u 10 minuta, ne u tri dana\n\n" +
       "Manja ekipa nije slabost. To je razlog zašto stvari rade.",
-    tags: ["brend", "manjitim", "komunikacija", "agencija", "devforge"],
+    tags: ["brend", "tim", "komunikacija", "agencija", "devforge"],
   },
-  {
-    id: "p57",
-    template: "list",
-    category: "ponuda",
-    layout: "center",
-    palette: "dark",
-    eyebrow: "Uključeno",
-    title: "SEO osnova u svakom projektu",
-    items: ["Jasni naslovi stranica", "Meta opisi", "Brzo učitavanje", "Google Business profil"],
-    caption:
-      "SEO nije 200 faktora. Za lokalnu firmu praktično četiri:\n\n" +
-      "1. Jasni naslovi (H1, H2) — Google tako razumije o čemu je stranica. Radimo to u svakom projektu.\n" +
-      "2. Meta opisi — tekst koji se vidi u rezultatima pretrage. Radimo za svaku stranicu.\n" +
-      "3. Brzo učitavanje — preko 3 sekunde i gubite poziciju. Naše stranice su ispod 1.5s.\n" +
-      "4. Google Business profil — bez njega se ne pojavljujete na mapi, a to je 80% lokalnih pretraga.\n\n" +
-      "Sve četiri su uključene. Bez doplata.\n\n" +
-      "Sve ostalo je nijansa. Ako ova četiri nisu riješena, ništa drugo ne pomaže.",
-    tags: ["seo", "google", "lokalni", "webdizajn", "malibiznis", "devforge"],
-  },
-  {
-    id: "p58",
-    template: "title",
-    category: "ponuda",
-    layout: "photoTop",
-    photo: "heroMob",
-    palette: "teal",
-    eyebrow: "Mobilne aplikacije",
-    title: "Aplikacija nije skupa ako je jedan kod.",
-    subtitle: "Flutter i React Native — iOS i Android iz jedne izrade.",
-    caption:
-      "Najčešća zabluda: „aplikacija košta kao dva projekta jer trebaju Android i iOS“.\n\n" +
-      "Ne više. Flutter i React Native omogućavaju jedan kod za obje platforme.\n\n" +
-      "Šta to znači praktično:\n" +
-      "— jedna izrada, jedna cijena\n" +
-      "— iste funkcionalnosti na oba sistema\n" +
-      "— jedna baza podataka\n" +
-      "— brže objavljivanje i na App Store i na Google Play\n\n" +
-      "Šta dobijate: push notifikacije, korisničke račune, backend i bazu, objavu u trgovinama.\n\n" +
-      "Ista pravila kao za stranice: besplatna prva verzija, plaćate kad ste zadovoljni.\n\n" +
-      "Imate ideju za aplikaciju?",
-    tags: ["mobilneaplikacije", "flutter", "reactnative", "ios", "sarajevo", "devforge"],
-  },
-  {
-    id: "p59",
-    template: "title",
-    category: "ponuda",
-    layout: "band",
-    palette: "light",
-    eyebrow: "Za 5 dana",
-    title: "Stranica Vaše firme. Ove sedmice.",
-    subtitle: "Besplatna gotova verzija — bez obaveze i bez predujma.",
-    caption:
-      "Ne za mjesec. Ne „kad se nađe vremena“. Ove sedmice.\n\n" +
-      "Kako:\n" +
-      "DAN 1 — razgovor od 15 minuta i materijal koji imate\n" +
-      "DAN 2–3 — struktura i tekst\n" +
-      "DAN 4 — dizajn i kod\n" +
-      "DAN 5 — Vaš pregled\n\n" +
-      "Poslije toga: stranica na pravom linku, koju možete otvoriti na mobitelu i poslati kome hoćete.\n\n" +
-      "Ne plaćate ništa dok ne kažete da je dobro.\n\n" +
-      "Šta Vas sprječava da se javite danas?",
-    tags: ["5dana", "brzina", "besplatno", "webdizajn", "sarajevo", "devforge"],
-  },
+
+  // ── 60. ZAVRŠNI KONTAKT ──────────────────────────────────────────────────
   {
     id: "p60",
     template: "cta",
@@ -448,21 +504,22 @@ export const POSTS_3: AdPost[] = [
     layout: "photoBg",
     photo: "hero",
     palette: "dark",
-    eyebrow: "Počnite",
-    title: "Recite čime se bavite. Prva verzija je besplatna.",
-    subtitle: "Web stranice od 150 KM · Shopovi od 600 KM · 0 KM predujma",
+    eyebrow: "Javite se",
+    title: "Ne morate imati ni ideju.",
+    subtitle: "Dovoljno je da se javite i kažete čime se bavite.",
     caption:
-      "Web, mobilne aplikacije i igre koje pokreću Vaš biznis.\n\n" +
-      "Od ideje do gotovog proizvoda za nekoliko sedmica. Izrađujemo besplatnu gotovu verziju za 5 dana — plaćate tek kada budete zadovoljni.\n\n" +
-      "Šta dobijate:\n" +
-      "— besplatnu gotovu verziju za 5 dana\n" +
-      "— 0 KM predujma\n" +
-      "— fiksnu cijenu prije početka\n" +
-      "— četiri besplatne revizije\n" +
-      "— vlastiti admin panel\n" +
-      "— domenu i kod na Vaše ime\n\n" +
-      "Javite nam se u DM — odgovaramo u roku od 10 minuta.\n\n" +
-      "dev-forge-studio.vercel.app",
-    tags: ["kontakt", "pocetak", "webdizajn", "sarajevo", "devforge"],
+      "Većina razgovora počne ovako: „Radim to i to, ne znam šta mi treba.“\n\n" +
+      "To je sasvim dovoljno.\n\n" +
+      "Ne morate imati:\n" +
+      "— gotov tekst\n" +
+      "— logo\n" +
+      "— ideju kako stranica treba izgledati\n" +
+      "— budžet na papiru\n\n" +
+      "Mi pitamo dalje i kažemo šta ima smisla.\n\n" +
+      "Instagram DM: @devforge_studio\n" +
+      "E-mail: devforge.studio@gmail.com\n" +
+      "Sarajevo · cijela BiH\n\n" +
+      "Odgovaramo u roku od 10 minuta. Bez obaveze i bez predujma.",
+    tags: ["kontakt", "pocetak", "bezobaveze", "sarajevo", "devforge"],
   },
 ];
