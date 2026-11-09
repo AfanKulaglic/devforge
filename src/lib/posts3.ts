@@ -17,6 +17,37 @@ export const POSTS_3: AdPost[] = [
     eyebrow: "Bez predujma",
     title: "Rizik smo uzeli na sebe. Doslovno.",
     subtitle: "Razvoj počinjemo bez da ste dali ijednu marku.",
+    slides: [
+      {
+        template: "cover",
+        eyebrow: "Galerija",
+        title: "Kako izgleda rad bez predujma",
+        items: ["Bez avansa", "Bez ugovora", "Bez rizika"],
+        palette: "ink",
+      },
+      {
+        template: "process",
+        eyebrow: "Tok",
+        title: "Četiri koraka, nula unaprijed",
+        items: ["Javite se", "Mi radimo", "Vi gledate", "Vi plaćate"],
+        palette: "ink",
+      },
+      {
+        template: "number",
+        eyebrow: "Naš gubitak",
+        title: "dana rada ako Vam se ne svidi",
+        value: "5",
+        valueNote: "Toliko potrošimo prije nego što platite ijednu marku.",
+        palette: "dark",
+      },
+      {
+        template: "cta",
+        eyebrow: "Počnite",
+        title: "Nemate šta izgubiti osim 15 minuta.",
+        subtitle: "Javite nam se u DM.",
+        palette: "ink",
+      },
+    ],
     caption:
       "Kad neko kaže „sav rizik je na nama“, obično misli na marketinšku frazu. Kod nas je doslovno.\n\n" +
       "Kako to izgleda u praksi:\n\n" +

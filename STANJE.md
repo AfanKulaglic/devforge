@@ -9,6 +9,34 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **OBJAVE v12 — COVER SLIKA GALERIJE + PALETA SAMO #4DEAE0** — korisnik: „svaki post koji ima galeriju slika neka prva slika bude uvod drugacijeg ali slicnog dizajna sa ostalom galerijom... sa naslovom koji predstavlja ono sto se nalazi u galeriji... zelim prvu sliku drugaciju od drugih ali uvod tekst i dobar da privuce ljude. takodjer jedina nijansa zelene koju koristis je #4DEAE0 tako i plave i imas bijelu i crnu. druge boje mogu kao sive svjetlosive tamnosive mat i ostalo".
+  **1) PALETA — samo #4DEAE0 + sive/bijela/crna.** Sve 6 paleta prepisano:
+  | paleta | bg | ink | accent |
+  |---|---|---|---|
+  | `dark` | `#060606` crna | `#FFFFFF` | **#4DEAE0** |
+  | `ink` | `#0E0E0E` tamnosiva mat | `#FAFAFA` | **#4DEAE0** |
+  | `teal` | `#F2F2F2` svjetlosiva | `#0A0A0A` | `#0FA396` (tamniji brend, citljiv na svijetlom) |
+  | `light` | `#FFFFFF` bijela | `#0A0A0A` | `#0FA396` |
+  | `mint` | `#071312` skoro crna, blag zelen ton | `#FFFFFF` | **#4DEAE0** |
+  | `sun` | `#141414` tamna metalik | `#FFFFFF` | **#4DEAE0** |
+  Uklonjene sve ostale zelene/cyan: `#5EEAD4`, `#67E8F9`, `#22D3EE`, `#19E3C2`, `#2DD4BF`, `#0E7490`. Gradient „Forge" sada `#4DEAE0 → #4DEAE0`. Overlay na fotkama `#04060A` (plav ton) → `#000000`. Logo okvir `#0B0B0F` → `#0A0A0A`.
+  **Verifikacija boja:** regex svih hex u `postRender.ts` → **samo sive/bijela/crna + #4DEAE0 + #0FA396**. Render analiza: **3 piksela** van palete (RGB 12,7,8 — iz fotografija, zanemarljivo).
+  **2) COVER — uvodna slika galerije.** Nova forma `formCover()` + `PostTemplate "cover"`:
+  - gore lijevo etiketa **„GALERIJA · N SLIKA"** u `#4DEAE0`
+  - naslov **centriran** (sve ostale slike su lijevo poravnate) — najveci font u galeriji, do 3 reda
+  - puna akcenat linija 112×7 kao separator
+  - ispod: **„sta je unutra" — 3 kratke najave** razdvojene `·` (bez brojeva)
+  - namjerno drugaciji, ali ista porodica (isti header, ista paleta)
+  **`build(c,p,total)`** + `PLACE[...](c,p,total)` + `buildFitting(...,total)` prosljedjuju broj slika.
+  **3) 5 galerija** (bilo 1, sada 5) — **76 slika ukupno**:
+  | objava | tema | slika |
+  |---|---|---|
+  | p01 | Kako radimo bez predujma | 5 |
+  | p02 | Šta dobijete za 5 dana | 4 |
+  | p03 | Vaša stranica. Vaša kontrola. | 4 |
+  | p21 | Šta sve dobijate besplatno | 4 |
+  | p41 | Kako izgleda rad bez predujma | 4 |
+  **Verifikacija:** `npx tsc --noEmit` 0; **60 objava / 76 slika / 5 karusela / 5 cover / 0 prekoracenja**; Playwright: 60 kartica, 60/60 ucitano, **5 galerija bedzeva**, p01 karusel `1/5` s 5 tackica, 0 console gresaka; build ✓.
 - **OBJAVE v11 — IKONA STANE U OKVIR (contain, ne stretch)** — korisnik: „ikona je prevelika i nije u svom okviru od logotipa".
   **BUG:** ikona se rastezala na `height = LOGO_BOX - 2*PAD = 67.2px`, a ikona je omjer 56:24 (2.333) → sirina bi bila 156px, daleko izvan okvira. U navbaru je `<img className="h-full w-full object-contain p-1">` — **`object-contain` skalira da STANE**, ne da ispuni.
   **Fix:** uveden izmjereni odnos sa stvarnog navbara (Playwright + PIL): ikona zauzima **30% visine okvira** (12px od 40px). Zato:

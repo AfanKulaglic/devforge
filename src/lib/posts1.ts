@@ -29,6 +29,13 @@ export const POSTS_1: AdPost[] = [
     valueNote: "Rizik je na nama, ne na Vama.",
     slides: [
       {
+        template: "cover",
+        eyebrow: "Galerija",
+        title: "Kako radimo bez predujma",
+        items: ["0 KM unaprijed", "Vidite prvo", "Platite na kraju"],
+        palette: "dark",
+      },
+      {
         template: "number",
         eyebrow: "Bez predujma",
         title: "predujma. Plaćate tek kad ste zadovoljni",
@@ -70,11 +77,43 @@ export const POSTS_1: AdPost[] = [
     id: "p02",
     template: "title",
     category: "ponuda",
-    layout: "center",
+    layout: "photoTop",
+    photo: "web",
     palette: "ink",
     eyebrow: "Besplatno",
     title: "Gotova verzija u 5 dana. Besplatno.",
     subtitle: "Vidite stranicu prije nego što potpišete bilo šta.",
+    slides: [
+      {
+        template: "cover",
+        eyebrow: "Galerija",
+        title: "Šta dobijete za 5 dana",
+        items: ["Prava stranica", "Na pravom linku", "Bez predujma"],
+        palette: "ink",
+      },
+      {
+        template: "number",
+        eyebrow: "Rok",
+        title: "radnih dana do gotove verzije",
+        value: "5",
+        valueNote: "Ne maketa. Stranica koju otvorite na mobitelu.",
+        palette: "ink",
+      },
+      {
+        template: "list",
+        eyebrow: "Prvih 5 dana",
+        title: "Kako ide, dan po dan",
+        items: ["Dan 1 — razgovor i materijal", "Dan 2–3 — struktura i tekst", "Dan 4 — dizajn i kod", "Dan 5 — Vaš pregled"],
+        palette: "dark",
+      },
+      {
+        template: "cta",
+        eyebrow: "Bez obaveze",
+        title: "Ako ne valja — ne plaćate ništa.",
+        subtitle: "Javite nam se u DM i počinjemo ove sedmice.",
+        palette: "ink",
+      },
+    ],
     caption:
       "Prije nego što se dogovorimo o bilo čemu, izrađujemo besplatnu, funkcionalnu gotovu verziju Vašeg projekta — u roku od 5 radnih dana.\n\n" +
       "Vidite konkretan dizajn, strukturu i funkcionalnost. Na pravom linku, ne na slici. Možete je otvoriti, poslati prijatelju, pogledati na mobitelu.\n\n" +
@@ -93,6 +132,36 @@ export const POSTS_1: AdPost[] = [
     eyebrow: "Admin panel",
     title: "Sami mijenjate tekst, slike i cijene",
     items: ["Bez koda", "Bez developera", "Bez mjesečnih naknada"],
+    slides: [
+      {
+        template: "cover",
+        eyebrow: "Galerija",
+        title: "Vaša stranica. Vaša kontrola.",
+        items: ["Tekst", "Slike", "Cijene"],
+        palette: "teal",
+      },
+      {
+        template: "list",
+        eyebrow: "Bez ikoga",
+        title: "Šta mijenjate sami",
+        items: ["Tekst i naslove", "Slike i galerije", "Cijene u shopu", "Objave i novosti"],
+        palette: "teal",
+      },
+      {
+        template: "compare",
+        eyebrow: "Razlika",
+        title: "Sa panelom vs. bez panela",
+        items: ["Čekate izvođača", "Plaćate svaku sitnicu", "Stranica stoji", "Zovete i podsjećate", "Mijenjate sami", "Bez doplata", "Uvijek aktuelna", "Bez čekanja"],
+        palette: "light",
+      },
+      {
+        template: "cta",
+        eyebrow: "Kontrola",
+        title: "Ako znate koristiti Facebook, znate i ovo.",
+        subtitle: "Panel dolazi uz svaki projekt — bez doplate.",
+        palette: "dark",
+      },
+    ],
     caption:
       "Uz svaki projekt dobijate vlastiti admin panel (CMS) kroz koji sami mijenjate sadržaj.\n\n" +
       "Šta možete sami:\n" +

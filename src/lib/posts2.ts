@@ -17,6 +17,36 @@ export const POSTS_2: AdPost[] = [
     eyebrow: "Bez rizika",
     title: "Vaš jedini rizik su 15 minuta razgovora.",
     subtitle: "Sve ostalo — besplatna verzija, izmjene, plaćanje — ide poslije.",
+    slides: [
+      {
+        template: "cover",
+        eyebrow: "Galerija",
+        title: "Šta sve dobijate besplatno",
+        items: ["Razgovor", "Gotova verzija", "Tačna cijena"],
+        palette: "dark",
+      },
+      {
+        template: "list",
+        eyebrow: "Bez plaćanja",
+        title: "Četiri stvari prije prve marke",
+        items: ["Razgovor od 15 minuta", "Verziju za 5 dana", "Tačnu cijenu", "Četiri revizije"],
+        palette: "dark",
+      },
+      {
+        template: "compare",
+        eyebrow: "Rizik",
+        title: "Gdje je rizik kod nas vs. drugih",
+        items: ["Vi plaćate prvi", "Vi nagađate", "Vi čekate", "Vi rizikujete", "Mi radimo prvi", "Cijena je javna", "Mi nosimo rizik", "Vi birate"],
+        palette: "ink",
+      },
+      {
+        template: "cta",
+        eyebrow: "Počnite",
+        title: "Uložite 15 minuta. Ništa više.",
+        subtitle: "Javite nam se u DM — odgovaramo u 10 minuta.",
+        palette: "dark",
+      },
+    ],
     caption:
       "Uložite 15 minuta razgovora. Ništa više.\n\n" +
       "Ne tražimo predujam. Ne tražimo da potpišete išta. Ne tražimo pristup Vašim računima.\n\n" +

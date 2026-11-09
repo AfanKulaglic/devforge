@@ -43,61 +43,75 @@ type Colors = {
   line: string;
 };
 
-/** Boje sajta (index.css): #060606, #2DD4BF, #5EEAD4, #0E7490, #19E3C2, #E6FFFB. */
+/**
+ * PALETA — SAMO JEDNA ZELENA: #4DEAE0 (brend boja, ista kao logo).
+ * Sve ostalo je crna, bijela i sive. Nema drugih akcenata.
+ *
+ *   ink    bijelo / skoro-bijelo (za tamne podloge)
+ *   soft   siva (sekundarni tekst)
+ *   line   tamnosiva (linije i okviri)
+ *   card   podignuta tamna površina (mat, bez sjaja)
+ */
 const PALETTES: Record<PostPalette, Colors> = {
+  // CRNA PODLOGA — glavna
   dark: {
     bg: "#060606",
     ink: "#FFFFFF",
-    soft: "#9CA3AF",
-    accent: "#2DD4BF",
-    accentInk: "#04211E",
-    card: "#0E0E12",
-    line: "#24242C",
+    soft: "#A3A3A3",
+    accent: BRAND,
+    accentInk: BRAND_INK,
+    card: "#111111",
+    line: "#2A2A2A",
   },
-  teal: {
-    bg: "#07433B",
-    ink: "#FFFFFF",
-    soft: "#A8F5E8",
-    accent: "#5EEAD4",
-    accentInk: "#04211E",
-    card: "#0A5D52",
-    line: "#1E7A6D",
-  },
-  light: {
-    bg: "#E6FFFB",
-    ink: "#04120F",
-    soft: "#3F6B64",
-    accent: "#0E7490",
-    accentInk: "#FFFFFF",
-    card: "#FFFFFF",
-    line: "#B8E8E0",
-  },
+  // TAMNOSIVA MAT
   ink: {
-    bg: "#0A1412",
-    ink: "#FFFFFF",
-    soft: "#8FB8B2",
-    accent: "#19E3C2",
-    accentInk: "#04211E",
-    card: "#11201D",
-    line: "#254039",
+    bg: "#0E0E0E",
+    ink: "#FAFAFA",
+    soft: "#9E9E9E",
+    accent: BRAND,
+    accentInk: BRAND_INK,
+    card: "#181818",
+    line: "#303030",
   },
-  mint: {
-    bg: "#D9FBF3",
-    ink: "#04211E",
-    soft: "#2E6B60",
-    accent: "#0A7A69",
+  // SVJETLOSIVA
+  teal: {
+    bg: "#F2F2F2",
+    ink: "#0A0A0A",
+    soft: "#5A5A5A",
+    accent: "#0FA396",      // tamnija nijansa brenda — čitljiva na svijetlom
     accentInk: "#FFFFFF",
     card: "#FFFFFF",
-    line: "#A8E4D8",
+    line: "#D8D8D8",
   },
-  sun: {
-    bg: "#0B0B0E",
+  // BIJELA
+  light: {
+    bg: "#FFFFFF",
+    ink: "#0A0A0A",
+    soft: "#6B6B6B",
+    accent: "#0FA396",
+    accentInk: "#FFFFFF",
+    card: "#F5F5F5",
+    line: "#E2E2E2",
+  },
+  // SKORO CRNA SA BLAGIM ZELENIM TONOM (mat)
+  mint: {
+    bg: "#071312",
     ink: "#FFFFFF",
-    soft: "#9CA3AF",
-    accent: "#22D3EE",
-    accentInk: "#04212B",
-    card: "#12161A",
-    line: "#26323A",
+    soft: "#8FA6A3",
+    accent: BRAND,
+    accentInk: BRAND_INK,
+    card: "#0E1C1A",
+    line: "#1E3130",
+  },
+  // TAMNA METALIK SIVA
+  sun: {
+    bg: "#141414",
+    ink: "#FFFFFF",
+    soft: "#9C9C9C",
+    accent: BRAND,
+    accentInk: BRAND_INK,
+    card: "#1E1E1E",
+    line: "#343434",
   },
 };
 
@@ -182,12 +196,12 @@ function brandMark(x: number, y: number): { svg: string; w: number } {
     svg: `
     <defs>
       <linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="#5EEAD4"/>
-        <stop offset="1" stop-color="#67E8F9"/>
+        <stop offset="0" stop-color="#4DEAE0"/>
+        <stop offset="1" stop-color="#4DEAE0"/>
       </linearGradient>
     </defs>
     <rect x="${x}" y="${y}" width="${LOGO_BOX}" height="${LOGO_BOX}" rx="${LOGO_RADIUS}"
-      fill="#0B0B0F" stroke="#FFFFFF" stroke-opacity="0.15" stroke-width="${LOGO_STROKE}"/>
+      fill="#0A0A0A" stroke="#FFFFFF" stroke-opacity="0.15" stroke-width="${LOGO_STROKE}"/>
     <image href="${DF_LOGO_DATA_URI}" x="${iconX}" y="${iconY}"
       width="${LOGO_ICON_W}" height="${LOGO_ICON_H}"/>
     <text x="${textX}" y="${textY}" font-family="${FONT}" font-size="${LOGO_FONT}" font-weight="800"
@@ -233,6 +247,75 @@ const GAP_TOP = 176; // iznad ovoga ne smije ništa (logo je do ~130)
  * HERO — naslov MORA biti tvrdnja. Podnaslov objašnjava.
  * Ako naslov ima više od 3 reda pri 96px, smanjuje se dok ne stane.
  */
+/**
+ * COVER — UVODNA SLIKA GALERIJE.
+ *
+ * Namjerno DRUGAČIJA od ostalih slika u istoj galeriji:
+ *   • brand boja ide preko cijele pozadine (donja trećina) — ostale slike to nikad ne rade
+ *   • naslov je centriran, ne lijevo poravnat
+ *   • ispod naslova je "šta je unutra" — tri kratke najave, ne brojevi
+ *   • gore desno piše "GALERIJA · N slika"
+ *
+ * Cilj: kad neko vidi samo prvu sliku u feedu, zna o čemu je cijela galerija
+ * i ima razlog da prevuče dalje.
+ */
+function formCover(c: Colors, p: PostSlide, total: number): Block {
+  const title = p.title ?? "";
+  let size = fit(title, W, 104);
+  let lines = wrap(title, size, W, 3);
+  while (lines.length * size * 1.1 > 430 && size > 52) {
+    size -= 6;
+    lines = wrap(title, size, W, 3);
+  }
+  const lh = size * 1.1;
+  const titleH = (lines.length - 1) * lh + size;
+
+  // gornja etiketa: "GALERIJA · N slika"
+  const label = `GALERIJA · ${total} ${total === 4 ? "SLIKE" : "SLIKA"}`;
+  let svg = `<text x="0" y="0" font-family="${FONT}" font-size="26" font-weight="800"
+    letter-spacing="3.4" fill="${c.accent}">${esc(label)}</text>`;
+  let h = 44;
+
+  // naslov — centriran, veći nego bilo gdje drugo u galeriji
+  lines.forEach((l, i) => {
+    svg += `<text x="${W / 2}" y="${h + size * 0.80 + i * lh}" text-anchor="middle"
+      font-family="${FONT}" font-size="${size}" font-weight="900" letter-spacing="-3"
+      fill="${c.ink}">${esc(l)}</text>`;
+  });
+  h += titleH;
+
+  // kratka linija kao separator (puni akcenat, ne tanka)
+  h += 46;
+  svg += `<rect x="${W / 2 - 56}" y="${h}" width="112" height="7" fill="${c.accent}"/>`;
+  h += 7;
+
+  // "šta je unutra" — do tri najave, bez brojeva
+  const inside = (p.items ?? p.subtitle ?? "").toString();
+  const parts: string[] = Array.isArray(p.items) ? p.items.slice(0, 3) : [];
+  if (parts.length) {
+    h += 60;
+    const fs2 = fit(parts.join(" · "), W, 36, 28);
+    const joined = parts.join("   ·   ");
+    const jl = wrap(joined, fs2, W + 20, 2);
+    jl.forEach((l, i) => {
+      svg += `<text x="${W / 2}" y="${h + fs2 * 0.8 + i * (fs2 + 12)}" text-anchor="middle"
+        font-family="${FONT}" font-size="${fs2}" font-weight="600" fill="${c.soft}">${esc(l)}</text>`;
+    });
+    h += jl.length * (fs2 + 12);
+  } else if (inside) {
+    h += 60;
+    const fs2 = fit(String(inside), W, 36, 28);
+    const jl = wrap(String(inside), fs2, W, 2);
+    jl.forEach((l, i) => {
+      svg += `<text x="${W / 2}" y="${h + fs2 * 0.8 + i * (fs2 + 12)}" text-anchor="middle"
+        font-family="${FONT}" font-size="${fs2}" font-weight="600" fill="${c.soft}">${esc(l)}</text>`;
+    });
+    h += jl.length * (fs2 + 12);
+  }
+
+  return { svg, h };
+}
+
 function formHero(c: Colors, p: PostSlide): Block {
   const title = p.title ?? "";
   let size = fit(title, W, 116);
@@ -438,8 +521,9 @@ function formAction(c: Colors, p: PostSlide): Block {
   return { svg, h: h + bh };
 }
 
-function build(c: Colors, p: PostSlide): Block {
+function build(c: Colors, p: PostSlide, total = 1): Block {
   const t = p.template ?? "title";
+  if (t === "cover") return formCover(c, p, total);
   if (t === "price" || t === "number") return formFigure(c, p);
   if (t === "list" || t === "process") return formBlocks(c, p);
   if (t === "compare") return formDuo(c, p);
@@ -447,30 +531,30 @@ function build(c: Colors, p: PostSlide): Block {
   return formHero(c, p);
 }
 
-function buildFitting(c: Colors, p: PostSlide, maxH: number): Block {
-  const b = build(c, p);
+function buildFitting(c: Colors, p: PostSlide, maxH: number, total = 1): Block {
+  const b = build(c, p, total);
   if (b.h <= maxH) return b;
   const k = maxH / b.h;
   return { svg: `<g transform="scale(1, ${k.toFixed(4)})">${b.svg}</g>`, h: maxH };
 }
 
 // ── Pozicioniranje ────────────────────────────────────────────────────────
-const PLACE: Record<PostLayout, (c: Colors, p: PostSlide) => string> = {
-  center: (c, p) => {
-    const b = build(c, p);
+const PLACE: Record<PostLayout, (c: Colors, p: PostSlide, total: number) => string> = {
+  center: (c, p, total) => {
+    const b = build(c, p, total);
     const y = b.h >= CONTENT_H ? CONTENT_TOP : CONTENT_TOP + (CONTENT_H - b.h) / 2;
     return `<g transform="translate(${M}, ${y})">${b.svg}</g>`;
   },
 
-  split: (c, p) => {
-    const b = build(c, p);
+  split: (c, p, total) => {
+    const b = build(c, p, total);
     const y = CONTENT_TOP + Math.max(0, (CONTENT_H - b.h) / 2);
     return `<rect x="${M - 40}" y="${CONTENT_TOP}" width="8" height="${CONTENT_H}" fill="${c.accent}"/>
       <g transform="translate(${M}, ${y})">${b.svg}</g>`;
   },
 
-  band: (c, p) => {
-    const b = build(c, p);
+  band: (c, p, total) => {
+    const b = build(c, p, total);
     const bh = Math.min(CONTENT_H, b.h + 120);
     const by = CONTENT_TOP + Math.max(0, (CONTENT_H - bh) / 2);
     const y = by + Math.max(0, (bh - b.h) / 2);
@@ -480,40 +564,40 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide) => string> = {
       <g transform="translate(${M}, ${y})">${b.svg}</g>`;
   },
 
-  offset: (c, p) => {
-    const b = build(c, p);
+  offset: (c, p, total) => {
+    const b = build(c, p, total);
     const y = CONTENT_TOP + 10;
     return `<g transform="translate(${M}, ${y})">${b.svg}</g>
       <rect x="${SIZE - M - 120}" y="${CONTENT_BOTTOM - 120}" width="120" height="120" fill="${c.accent}"/>`;
   },
 
-  photoBg: (c, p) => {
+  photoBg: (c, p, total) => {
     const ph = p.photo ?? "hero";
-    const b = build(c, p);
+    const b = build(c, p, total);
     const y = CONTENT_TOP + Math.max(0, (CONTENT_H - b.h) / 2);
     return `<image href="${PHOTOS[ph]}" x="0" y="0" width="${SIZE}" height="${SIZE}"
         preserveAspectRatio="xMidYMid slice" aria-label="${esc(PHOTO_ALT[ph])}"/>
-      <rect x="0" y="0" width="${SIZE}" height="${SIZE}" fill="#04060A" opacity="0.45"/>
+      <rect x="0" y="0" width="${SIZE}" height="${SIZE}" fill="#000000" opacity="0.45"/>
       <rect x="0" y="0" width="${SIZE}" height="200" fill="url(#fadeTop)"/>
       <rect x="0" y="0" width="${SIZE}" height="34" fill="${c.bg}" opacity="0.92"/>
       <rect x="0" y="${SIZE - 170}" width="${SIZE}" height="170" fill="url(#fadeBot)"/>
       <g transform="translate(${M}, ${y})">${b.svg}</g>`;
   },
 
-  photoTop: (c, p) => {
+  photoTop: (c, p, total) => {
     const ph = p.photo ?? "hero";
     const imgH = 370;
-    const b = buildFitting(c, p, CONTENT_BOTTOM - imgH - 24);
+    const b = buildFitting(c, p, CONTENT_BOTTOM - imgH - 24, total);
     return `<image href="${PHOTOS[ph]}" x="0" y="0" width="${SIZE}" height="${imgH}"
         preserveAspectRatio="xMidYMid slice" aria-label="${esc(PHOTO_ALT[ph])}"/>
       <rect x="0" y="${imgH - 80}" width="${SIZE}" height="80" fill="url(#fadeBot)"/>
       <g transform="translate(${M}, ${imgH + 26})">${b.svg}</g>`;
   },
 
-  photo: (c, p) => {
+  photo: (c, p, total) => {
     const ph = p.photo ?? "hero";
     const imgW = 330;
-    const b = build(c, p);
+    const b = build(c, p, total);
     const y = CONTENT_TOP + Math.max(0, (CONTENT_H - b.h) / 2);
     return `<image href="${PHOTOS[ph]}" x="${SIZE - imgW}" y="0" width="${imgW}" height="${SIZE}"
         preserveAspectRatio="xMidYMid slice" aria-label="${esc(PHOTO_ALT[ph])}"/>
@@ -521,8 +605,8 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide) => string> = {
       <g transform="translate(${M}, ${y})">${b.svg}</g>`;
   },
 
-  stamp: (c, p) => {
-    const b = build(c, p);
+  stamp: (c, p, total) => {
+    const b = build(c, p, total);
     const y = CONTENT_TOP + Math.max(0, (CONTENT_H - b.h) / 2);
     const sh = 360;
     const sw = sh * DF_LOGO_RATIO;
@@ -541,7 +625,7 @@ export function renderSlideSvg(
 ): string {
   const c = PALETTES[slide.palette ?? post.palette] ?? PALETTES.dark;
   const layout = post.layout ?? "center";
-  let content = (PLACE[layout] ?? PLACE.center)(c, slide);
+  let content = (PLACE[layout] ?? PLACE.center)(c, slide, slideTotal);
 
   if (layout === "photoBg") {
     content = `<g style="filter:drop-shadow(0 3px 16px rgba(0,0,0,0.9)) drop-shadow(0 1px 3px rgba(0,0,0,0.95))">${content}</g>`;
@@ -552,12 +636,12 @@ export function renderSlideSvg(
   )}">
   <defs>
     <linearGradient id="fadeTop" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#04060A" stop-opacity="0.85"/>
-      <stop offset="100%" stop-color="#04060A" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
     </linearGradient>
     <linearGradient id="fadeBot" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#04060A" stop-opacity="0"/>
-      <stop offset="100%" stop-color="#04060A" stop-opacity="0.88"/>
+      <stop offset="0%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.88"/>
     </linearGradient>
     <linearGradient id="fadeRight" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0%" stop-color="${c.bg}" stop-opacity="0"/>

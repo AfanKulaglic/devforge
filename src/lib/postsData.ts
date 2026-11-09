@@ -23,7 +23,8 @@ export type PostTemplate =
   | "compare" // prije / poslije, lose / dobro
   | "number" // statistika, veliki broj
   | "process" // koraci 1-2-3
-  | "cta"; // poziv na akciju
+  | "cta" // poziv na akciju
+  | "cover"; // uvodna slika galerije
 
 export type PostCategory =
   | "sadrzaj"
