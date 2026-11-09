@@ -9,6 +9,11 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **OBJAVE v18 — DEKORACIJA SA SAJTA (TEAL BLUR KRUG)** — korisnik: „NA NEKOJ CRNOJ POZADINI POSTA SLOBODNO ISKORISTI DEKORACIJU KAKVU IMAS NA PROJEKTI STRANICI HERO I OSTALIM STRANICAMA ONAJ KRUG DAKLE“.
+  **Izvor:** dekoracija sa sajta je `rounded-full bg-teal-600/10 blur-3xl` (npr. `App.tsx:3007`, `App.tsx:3079`, `App.tsx:3173`) — mekani krug brend boje u pozadini sekcije.
+  **Implementacija:** nova funkcija `decor(c, seed)` u `postRender.ts`. Crtа SVG `radialGradient` (`#4DEAE0`, `0%` opacity 1 → `100%` opacity 0) sa **2 kruga** po slici, `opacity 0.08–0.13`. **3 varijante pozicija** (`seed % 3`) da svaka slika ne izgleda isto. Crtа se **PRIJE sadržaja**, nikad preko teksta. Cover slike je preskacaju (imaju svoj frame+gragradient).
+  **Samo tamne palete:** funkcija vraća `""` kad je `c.ink === "#0A0A0A"` (palete `teal` i `light`). Na bijelom bi krug bio mrlja.
+  **Verifikacija:** 69 slika → **53 sa dekoracijom, 16 bez** (svih 9 svijetlih postova provjereno: `p03 p09 p24 p27 p44 p46 p48 p52 p56` → svi **nema, ispravno**). Zelenkaste boje u svim slikama i dalje **samo `#4DEAE0` (631 pojava)** — dekoracija ne uvodi novu nijansu. 0 prekoracenja, 0 fontova < 24px, **0 slika bez loga**. Build ✓, Playwright 40/40, 0 gresaka.
 - **OBJAVE v17 — SAMO JEDNA ZELENA `#4DEAE0`** — korisnik: „REKAO SAM DA SE SAMO JEDNA ZELENA KORISTI NA BIJELOM POSTU VIDIM VISE ZELENIH NIJANSI“.
   **Problem:** palete `teal` i `light` (svijetle/bijele) koristile su `accent: #0FA396` — **druga, tamnija zelena**. Paleta `mint` koristila je 4 zelenkaste boje: `bg #071312`, `soft #8FA6A3`, `card #0E1C1A`, `line #1E3130`.
   **Fix 1:** `teal` i `light` → `accent: #4DEAE0`, `warm: #4DEAE0`, `accentInk: #0A0A0A` (crn tekst na svijetlom tealu).

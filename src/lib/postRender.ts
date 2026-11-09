@@ -603,6 +603,38 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide, total: number) => stri
   },
 };
 
+// ── Dekoracija ────────────────────────────────────────────────────────────
+// Ista dekoracija kao na sajtu (`rounded-full bg-teal-600/10 blur-3xl`):
+// mekani krug brend boje u pozadini. Samo na TAMNIM paletama — na bijelom
+// bi se vidio kao mrlja. Crtа se PRIJE sadržaja, nikad preko teksta.
+function decor(c: Colors, seed: number): string {
+  const light = c.ink === "#0A0A0A";
+  if (light) return "";
+  // 3 kruga, pozicije variraju po slici da svaka ne izgleda isto
+  const r = seed % 3;
+  const spots = [
+    [{ cx: 900, cy: 210, rad: 300, op: 0.13 }, { cx: 130, cy: 940, rad: 260, op: 0.09 }],
+    [{ cx: 180, cy: 880, rad: 320, op: 0.12 }, { cx: 950, cy: 300, rad: 240, op: 0.08 }],
+    [{ cx: 940, cy: 900, rad: 300, op: 0.12 }, { cx: 150, cy: 200, rad: 250, op: 0.09 }],
+  ][r];
+  const gid = `dglow-${seed}`;
+  return `
+  <defs>
+    <radialGradient id="${gid}">
+      <stop offset="0%" stop-color="${BRAND}" stop-opacity="1"/>
+      <stop offset="100%" stop-color="${BRAND}" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <g>
+    ${spots
+      .map(
+        (s) =>
+          `<circle cx="${s.cx}" cy="${s.cy}" r="${s.rad}" fill="url(#${gid})" opacity="${s.op}"/>`,
+      )
+      .join("")}
+  </g>`;
+}
+
 // ── Cover chrome ──────────────────────────────────────────────────────────
 // Cover se razlikuje OD OKVIRA, ne po tipografiji:
 //   • dupli okvir oko cijele slike (debeo spolja, tanak unutra)
@@ -665,6 +697,7 @@ export function renderSlideSvg(
     </linearGradient>
   </defs>
   ${isCover ? coverChrome(c) : `<rect width="${SIZE}" height="${SIZE}" fill="${c.bg}"/>`}
+  ${isCover ? "" : decor(c, slideIndex + post.id.length)}
   ${content}
   <!-- Zaglavlje se crta POSLIJE sadržaja: foto-pozadine inače prekriju logo. -->
   ${header(c, slide.eyebrow ?? post.eyebrow, post.category, slideIndex, slideTotal)}
