@@ -726,7 +726,16 @@ export function renderPostSlides(post: AdPost): string[] {
     };
     return [renderSlideSvg(post, single, 0, 1)];
   }
-  return (post.slides ?? []).map((s, i) => renderSlideSvg(post, s, i, total));
+  // Slajdovi nasljedjuju `photo` i `layout` od posta kad ih sami ne definisu.
+  // Bez ovoga galerija sa layout:photoBg uvijek padne na default "hero".
+  return (post.slides ?? []).map((s, i) =>
+    renderSlideSvg(
+      post,
+      { ...s, photo: s.photo ?? post.photo } as PostSlide,
+      i,
+      total,
+    ),
+  );
 }
 
 export function renderPostSvg(post: AdPost): string {
