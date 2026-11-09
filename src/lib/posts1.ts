@@ -67,7 +67,7 @@ export const POSTS_1: AdPost[] = [
     template: "cover",
     category: "brend",
     layout: "photoBg",
-    photo: "web",
+    photo: "zasto",
     palette: "dark",
     eyebrow: "Zašto DevForge",
     title: "Zašto DevForge",

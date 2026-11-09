@@ -90,4 +90,4 @@ export type PostLayout =
 /** Fotografije dostupne za postove (vidi postPhotos.ts). */
 export type PhotoKey =
   | "hero" | "heroMob" | "web" | "game" | "mobile"
-  | "ai" | "project1" | "project2" | "project3" | "stvari";
+  | "ai" | "project1" | "project2" | "project3" | "stvari" | "zasto";
