@@ -9,6 +9,12 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **OBJAVE v17 — SAMO JEDNA ZELENA `#4DEAE0`** — korisnik: „REKAO SAM DA SE SAMO JEDNA ZELENA KORISTI NA BIJELOM POSTU VIDIM VISE ZELENIH NIJANSI“.
+  **Problem:** palete `teal` i `light` (svijetle/bijele) koristile su `accent: #0FA396` — **druga, tamnija zelena**. Paleta `mint` koristila je 4 zelenkaste boje: `bg #071312`, `soft #8FA6A3`, `card #0E1C1A`, `line #1E3130`.
+  **Fix 1:** `teal` i `light` → `accent: #4DEAE0`, `warm: #4DEAE0`, `accentInk: #0A0A0A` (crn tekst na svijetlom tealu).
+  **Fix 2:** `mint` → neutralizovana u sivu: `bg #0C0C0C`, `soft #8E8E8E`, `card #161616`, `line #262626`.
+  **Fix 3:** `BRAND_DEEP = "#0FA396"` **obrisan** iz `postBrand.ts` (nigdje se nije koristio).
+  **Verifikacija:** skeniranje svih `#RRGGBB` u **69 renderovanih SVG slika** i filtriranje zelenkastih (`g>r+40 && b>r+40`) → **samo `#4DEAE0`, 525 pojava**. Provjera po paletama: `dark/ink/teal/mint/light/sun` → **svaka koristi isključivo `#4DEAE0`**. `grep 0FA396 src/` → **0**. `tsc` 0; 40 objava / 69 slika / 0 prekoracenja; Playwright 40/40, 0 gresaka; build ✓.
 - **OBJAVE v16 — EMOJI U OPISIMA + CRNICA U RAVNI + CRNI "Dev" NA BIJELOM** — korisnik: „koristi u opisima vise emojie i obrati paznju da se klijenti uhvate na tu reklamu... samo mi crtica nije u ravnici teksta izgelda nestrucno i dosadno takodjer na bijeloj pozadini u logotipu se mora promjneiti da Dev pise crnim slovima umjesto bijelim“.
   **1. Emoji u opisima (154 emojia, svih 40 objava):** svaka objava dobija **hook recenicu** na pocetak koja hvata paznju (`🛑 STOP. Ne plaćajte ništa unaprijed.`, `💸 150 KM. Ne 1500. Ista stvar.`, `🎮 Baner gledaju 2 sekunde. Igru igraju 3 minute.`, `🔑 Zadnji dan: sve lozinke idu Vama. Sve.`). Svaka `— ` stavka u listi dobija svoj emoji (109 dodano). Min 1, max 10 emojia po objavi.
   **2. Crtica u ravnici teksta (`formBlocks`):** prije — crtica na `rowH*0.30` a tekst na `rowH*0.34 + fs*0.78` → nisu bili poravnati. Sada — tekst se **vertikalno centrira u redu** (`top = ry + (rowH-blockH)/2`), crtica se racuna iz **baseline-a prvog reda**: `y = baseline - fs*0.30`. Crtica `30×8` (bila 26×7), tekst `x=58` (bio 54). Poravnato s optickim centrom malih slova.

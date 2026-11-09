@@ -7,7 +7,6 @@
 // ───────────────────────────────────────────────────────────────────────────
 
 export const BRAND = "#4DEAE0";
-export const BRAND_DEEP = "#0FA396";
 export const BRAND_INK = "#04211E";
 
 /**

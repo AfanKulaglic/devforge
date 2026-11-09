@@ -81,32 +81,32 @@ const PALETTES: Record<PostPalette, Colors> = {
     bg: "#F2F2F2",
     ink: "#0A0A0A",
     soft: "#5A5A5A",
-    accent: "#0FA396",      // tamnija nijansa brenda — čitljiva na svijetlom
-    accentInk: "#FFFFFF",
+    accent: "#4DEAE0",      // JEDNA zelena — ista kao logo, bez druge nijanse
+    accentInk: "#0A0A0A",
     card: "#FFFFFF",
     line: "#D8D8D8",
-    warm: "#0FA396",
+    warm: "#4DEAE0",
   },
   // BIJELA
   light: {
     bg: "#FFFFFF",
     ink: "#0A0A0A",
     soft: "#6B6B6B",
-    accent: "#0FA396",
-    accentInk: "#FFFFFF",
+    accent: "#4DEAE0",      // JEDNA zelena — ista kao logo
+    accentInk: "#0A0A0A",
     card: "#F5F5F5",
     line: "#E2E2E2",
-    warm: "#0FA396",
+    warm: "#4DEAE0",
   },
-  // SKORO CRNA SA BLAGIM ZELENIM TONOM (mat)
+  // SKORO CRNA (neutralna — bez zelenog tona, da ne bude druga zelena)
   mint: {
-    bg: "#071312",
+    bg: "#0C0C0C",
     ink: "#FFFFFF",
-    soft: "#8FA6A3",
+    soft: "#8E8E8E",
     accent: BRAND,
     accentInk: BRAND_INK,
-    card: "#0E1C1A",
-    line: "#1E3130",
+    card: "#161616",
+    line: "#262626",
     warm: "#4DEAE0",
   },
   // TAMNA METALIK SIVA
