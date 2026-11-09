@@ -22,3 +22,12 @@ Thumbs.db
 npm-debug.log*
 public/_r/
 .imgs.txt
+
+# privremeni esbuild bundleovi
+.c1.mjs
+.c2.mjs
+chk.mjs
+q.mjs
+v.mjs
+r.mjs
+s.mjs
