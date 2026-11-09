@@ -20,3 +20,5 @@ dev.err.log
 Thumbs.db
 *.local
 npm-debug.log*
+public/_r/
+.imgs.txt

@@ -9,6 +9,18 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **OBJAVE v6 — BOJE SAJTA + HERO FOTOGRAFIJE** — korisnik: „koristi i druge slike u postovima koje koristis na hero sekciji na home pageu. takodjer glupe su mi neke boje na postovima pozadine nemaju boje veze sa mojom stranicom".
+  **1) PALETE PREBACENE NA STVARNE BOJE SAJTA** (prije: proizvoljne ljubicaste/narandzaste). Izvucene iz `src/index.css`: `#060606` (body), `#2DD4BF` i `#5EEAD4` (teal akcent), `#0E7490` (cyan), `#19E3C2`, `#E6FFFB`/`#AAF BEF` (svijetli teal), `#07433B`/`#0A5D52` (petrol), `#0A1412`. **Nema vise ljubicaste (`#7C6BFF`) ni narandzaste (`#FFD9A0`)**:
+  - `dark` — `#060606` + `#2DD4BF` (glavni identitet sajta)
+  - `teal` — `#07433B` + `#5EEAD4` (petrol)
+  - `light` — `#E6FFFB` + `#0E7490` (svijetla varijanta sajta)
+  - `ink` — `#0A1412` + `#19E3C2` (dublji teal)
+  - `mint` — `#D9FBF3` + `#0A7A69` (menta, `#E6FFFB` family)
+  - `sun` — `#0B0B0E` + `#22D3EE` (teal→cyan gradijent)
+  **2) FOTOGRAFIJE = ISTE SLIKE SA SAJTA** — skinuto **9 slika sa istih Pexels adresa koje `App.tsx` koristi** (`images` objekat): `hero` (6804068), `heroMob` (7988081), `web` (16675632), `game` (37694203), `mobile` (12001948), `ai` (lokalna `ai-hero.jpg`), `project1` (7857496), `project2` (37878824), `project3` (20694602). Prije: 8 generickih (kod/tastatura/kancelarija). `PhotoKey` azuriran, `photo:` reference u posts1/2/3 premapirane po temi.
+  **3) OBRADA** — 88% svjetlina (NE 34% kao prije), saturacija 90%, teal ton. Fotografija ostaje **vidljiva kao na sajtu**, ne potamnjena. 560×560 JPEG q72, base64, **394 kB**.
+  **4) KONTRAST** — `mint` je imao `accent/bg=3.1`; `#0E9B86→#0A7A69`, `soft #347A6E→#2E6B60`. Sad **svih 6 paleta ≥ 4.8** (dark 20.3 / teal 11.2 / light 18.3 / ink 18.7 / mint 15.3 / sun 19.7 za ink/bg).
+  **Verifikacija:** `npx tsc --noEmit` → 0; **60 objava, 3 karusela, 69 slika, 0 prekoracenja**; **17 foto objava** koristi svih 8 razlicitih slika; palete ravnomjerne (dark 12 / ink 11 / teal 10 / sun 9 / mint 9 / light 9); svjetlina renderovanih slika 25–80 (tamne) i 235–238 (svijetle) — kako treba; build ✓ (gzip 596).
 - **OBJAVE v5 — SADRZAJ KAO PRAVA FIRMA, NE OGLAŠAVANJE** — korisnik: „mozda su ti glupe objave malo?? daj nesto logicnije sto ide na instagram sto firme kace na instagram".
   **Problem:** stare objave bile su sve „kupite od nas" — cijene, ponude, „besplatna prva verzija". To nije ono sto firma kaci.
   **Rjesenje:** svih 60 objava napisano iznova, po principu kako stvarne firme vode profil:

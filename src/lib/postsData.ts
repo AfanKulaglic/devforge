@@ -88,5 +88,5 @@ export type PostLayout =
 
 /** Fotografije dostupne za postove (vidi postPhotos.ts). */
 export type PhotoKey =
-  | "code1" | "code2" | "code3" | "desk1"
-  | "ai1" | "phone1" | "team1" | "office";
+  | "hero" | "heroMob" | "web" | "game" | "mobile"
+  | "ai" | "project1" | "project2" | "project3";

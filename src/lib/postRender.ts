@@ -42,68 +42,67 @@ type Colors = {
  *   accentInk na accent > 8:1
  */
 const PALETTES: Record<PostPalette, Colors> = {
-  // duboko crna + teal
+  // SAJT: crna podloga (#060606) + teal akcent (#2DD4BF) — glavni identitet
   dark: {
-    bg: "#0A0A0E",
+    bg: "#060606",
     ink: "#FFFFFF",
-    soft: "#A9AEBD",
-    accent: "#4DEAE0",
+    soft: "#9CA3AF",
+    accent: "#2DD4BF",
     accentInk: "#04211E",
-    card: "#17171F",
-    line: "#2E2E3B",
+    card: "#0E0E12",
+    line: "#24242C",
   },
-  // petrol zelena (brend)
+  // SAJT: petrol zelena — duboka varijanta brenda
   teal: {
-    bg: "#0C4F4B",
+    bg: "#07433B",
     ink: "#FFFFFF",
-    soft: "#B7EDE7",
-    accent: "#4DEAE0",
+    soft: "#A8F5E8",
+    accent: "#5EEAD4",
     accentInk: "#04211E",
-    card: "#126761",
-    line: "#2F8781",
+    card: "#0A5D52",
+    line: "#1E7A6D",
   },
-  // svijetlo siva (uredno, "studio")
+  // SAJT: svijetla — ista paleta, invertovana (za tekst i pregled)
   light: {
-    bg: "#EFF0F4",
-    ink: "#0A0A0F",
-    soft: "#545868",
-    accent: "#076B61",
+    bg: "#E6FFFB",
+    ink: "#04120F",
+    soft: "#3F6B64",
+    accent: "#0E7490",
     accentInk: "#FFFFFF",
     card: "#FFFFFF",
-    line: "#D2D5DF",
+    line: "#B8E8E0",
   },
-  // duboko indigo — noćni, premium
+  // SAJT: dublji teal-cyan prelaz (#0E7490 → #14B8A6)
   ink: {
-    bg: "#12102B",
+    bg: "#0A1412",
     ink: "#FFFFFF",
-    soft: "#B0ABD6",
-    accent: "#7C6BFF",
-    accentInk: "#0B0820",
-    card: "#1D1940",
-    line: "#332C63",
+    soft: "#8FB8B2",
+    accent: "#19E3C2",
+    accentInk: "#04211E",
+    card: "#11201D",
+    line: "#254039",
   },
-  // menta — svježe, za edukaciju
+  // SAJT: menta svijetla (#E6FFFB family)
   mint: {
-    bg: "#DCF5EF",
-    ink: "#052622",
-    soft: "#3F6B63",
-    accent: "#0A6E60",
+    bg: "#D9FBF3",
+    ink: "#04211E",
+    soft: "#2E6B60",
+    accent: "#0A7A69",
     accentInk: "#FFFFFF",
     card: "#FFFFFF",
-    line: "#B4DED5",
+    line: "#A8E4D8",
   },
-  // topli sun — energično, za ponude
+  // SAJT: teal → cyan gradijent akcenat na tamnoj podlozi
   sun: {
-    bg: "#FFD9A0",
-    ink: "#241303",
-    soft: "#7A5423",
-    accent: "#8C2F08",
-    accentInk: "#FFFFFF",
-    card: "#FFF0D6",
-    line: "#EFC98F",
+    bg: "#0B0B0E",
+    ink: "#FFFFFF",
+    soft: "#9CA3AF",
+    accent: "#22D3EE",
+    accentInk: "#04212B",
+    card: "#12161A",
+    line: "#26323A",
   },
 };
-
 // ── Pomoćne ───────────────────────────────────────────────────────────────
 function esc(t: string): string {
   return String(t)
@@ -443,7 +442,7 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide) => string> = {
   // FOTOGRAFIJA PREKO CIJELE POZADINE — tamna, stopljena s bojom palete.
   // Tekst ide preko nje; dodaje se gradijent da tekst ostane čitljiv.
   photoBg: (c, p) => {
-    const ph = p.photo ?? "code1";
+    const ph = p.photo ?? "hero";
     const b = build(c, p);
     const y = CONTENT_TOP + Math.max(0, (CONTENT_H - b.h) / 2);
     // Fotografija je u punoj svjetlini — ona NOSI sliku.
@@ -459,7 +458,7 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide) => string> = {
 
   // FOTOGRAFIJA GORE (pola), tekst dolje
   photoTop: (c, p) => {
-    const ph = p.photo ?? "code1";
+    const ph = p.photo ?? "hero";
     // Fotografija zauzima gornjih 400px; tekst ide ispod nje i mora stati
     // do CONTENT_BOTTOM — ako ne staje, tekst se skalira (vidi buildSkaled).
     const imgH = 380;
@@ -475,7 +474,7 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide) => string> = {
 
   // FOTOGRAFIJA DESNO (vertikalna traka), tekst lijevo
   photo: (c, p) => {
-    const ph = p.photo ?? "code1";
+    const ph = p.photo ?? "hero";
     const imgW = 340;
     const b = build(c, p);
     const y = CONTENT_TOP + Math.max(0, (CONTENT_H - b.h) / 2);
