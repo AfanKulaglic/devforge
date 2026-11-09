@@ -90,27 +90,28 @@ const PALETTES: Record<PostPalette, Colors> = {
     line: "#303030",
     warm: "#4DEAE0",
   },
-  // SVJETLOSIVA
+  // ZELENA PODLOGA — brend boja preko cijele slike, crni tekst.
+  // Ne bijelo: bijelo je djelovalo prazno/genericko, zelena nosi brend.
   teal: {
-    bg: "#F2F2F2",
+    bg: "#4DEAE0",
     ink: "#0A0A0A",
-    soft: "#5A5A5A",
-    accent: "#4DEAE0",      // JEDNA zelena — ista kao logo, bez druge nijanse
-    accentInk: "#0A0A0A",
-    card: "#FFFFFF",
-    line: "#D8D8D8",
-    warm: "#4DEAE0",
+    soft: "#0B403B",       // tamna zelena-siva — sekundarni tekst na zelenom
+    accent: "#0A0A0A",     // akcenat je CRN (nema druge zelene)
+    accentInk: "#4DEAE0",
+    card: "#2FCFC3",       // tamnija zelena za podignute povrsine
+    line: "#0A0A0A",       // crne linije na zelenom
+    warm: "#0A0A0A",
   },
-  // BIJELA
+  // SVJETLA ZELENA — ista shema, blago svjetlija za varijaciju
   light: {
-    bg: "#FFFFFF",
+    bg: "#6FEFE6",
     ink: "#0A0A0A",
-    soft: "#6B6B6B",
-    accent: "#4DEAE0",      // JEDNA zelena — ista kao logo
-    accentInk: "#0A0A0A",
-    card: "#F5F5F5",
-    line: "#E2E2E2",
-    warm: "#4DEAE0",
+    soft: "#124F49",
+    accent: "#0A0A0A",
+    accentInk: "#6FEFE6",
+    card: "#4DEAE0",
+    line: "#0A0A0A",
+    warm: "#0A0A0A",
   },
   // SKORO CRNA (neutralna — bez zelenog tona, da ne bude druga zelena)
   mint: {
