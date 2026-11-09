@@ -564,7 +564,8 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide, total: number) => stri
     const y = CONTENT_TOP + Math.max(0, (CONTENT_H - b.h) / 2);
     return `<image href="${PHOTOS[ph]}" x="0" y="0" width="${SIZE}" height="${SIZE}"
         preserveAspectRatio="xMidYMid slice" aria-label="${esc(PHOTO_ALT[ph])}"/>
-      <rect x="0" y="0" width="${SIZE}" height="${SIZE}" fill="#000000" opacity="0.45"/>
+      <rect x="0" y="0" width="${SIZE}" height="${SIZE}" fill="url(#fadeLeft)"/>
+      <rect x="0" y="0" width="${SIZE}" height="${SIZE}" fill="#000000" opacity="0.18"/>
       <rect x="0" y="0" width="${SIZE}" height="200" fill="url(#fadeTop)"/>
       <rect x="0" y="0" width="${SIZE}" height="34" fill="${c.bg}" opacity="0.92"/>
       <rect x="0" y="${SIZE - 170}" width="${SIZE}" height="170" fill="url(#fadeBot)"/>
@@ -694,6 +695,12 @@ export function renderSlideSvg(
     <linearGradient id="fadeRight" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0%" stop-color="${c.bg}" stop-opacity="0"/>
       <stop offset="100%" stop-color="${c.bg}" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="fadeLeft" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.94"/>
+      <stop offset="45%" stop-color="#000000" stop-opacity="0.72"/>
+      <stop offset="75%" stop-color="#000000" stop-opacity="0.34"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.10"/>
     </linearGradient>
   </defs>
   ${isCover ? coverChrome(c) : `<rect width="${SIZE}" height="${SIZE}" fill="${c.bg}"/>`}
