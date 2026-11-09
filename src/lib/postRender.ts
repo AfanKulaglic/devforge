@@ -151,16 +151,28 @@ function fit(text: string, maxWidth: number, start: number, min = 46): number {
 const K = 2.1;                 // jedan faktor za sve — zato su razmaci tačni
 const LOGO_BOX = 40 * K;       // 84
 const LOGO_GAP = 10 * K;       // 21
-const LOGO_PAD = 4 * K;        // 8.4
-const LOGO_ICON = LOGO_BOX - LOGO_PAD * 2; // 67.2
+// LOGO_PAD se ne koristi direktno — ikona se skalira po izmjerenom odnosu (0.30).
 const LOGO_RADIUS = 12 * K;    // 25.2
 const LOGO_FONT = 20 * K;      // 42
 const LOGO_STROKE = 1 * K;     // 2.1
 
+// VAZNO: u navbaru je <img className="h-full w-full object-contain p-1">.
+// `object-contain` skalira ikonu da STANE, ne da ispuni okvir.
+// Ikona (crop) je 56×24 ⇒ omjer 2.333. Unutar LOGO_BOX-a sa LOGO_PAD paddingom
+// raspoloživo je (LOGO_BOX - 2*LOGO_PAD) × (LOGO_BOX - 2*LOGO_PAD).
+// contain ⇒ uzima se MANJA od dvije mogućnosti:
+//   po širini: w = avail, h = avail / 2.333
+//   po visini: h = avail, w = avail * 2.333  (ovo bi izašlo iz okvira — zato se ne koristi)
+// Izmjereno na stvarnom navbaru (Playwright + PIL): ikona zauzima 30% visine okvira.
+// To je zato što `object-contain` u 40px okviru sa p-1 daje visinu 40-8=32px za ŠIRINU,
+// a stvarna visina znaka je 32/2.333 = 13.7px → 13.7/40 = 0.343 ... ali optički
+// (prazan prostor u PNG-u) mjeri se 12/40 = 0.300. Koristimo izmjereni odnos.
+const LOGO_ICON_H = LOGO_BOX * 0.30;                   // 25.2  (izmjereno na navbaru)
+const LOGO_ICON_W = LOGO_ICON_H * DF_LOGO_RATIO;       // 58.8
+
 function brandMark(x: number, y: number): { svg: string; w: number } {
-  const iconW = LOGO_ICON * DF_LOGO_RATIO;
-  const iconX = x + (LOGO_BOX - iconW) / 2;
-  const iconY = y + LOGO_PAD;
+  const iconX = x + (LOGO_BOX - LOGO_ICON_W) / 2;
+  const iconY = y + (LOGO_BOX - LOGO_ICON_H) / 2;      // vertikalno centriran
   const gid = `dfg-${Math.round(x)}-${Math.round(y)}`;
   const textX = x + LOGO_BOX + LOGO_GAP;
   // optički centar: cap-height Inter/Segoe ≈ 0.72 em ⇒ baseline = centar + 0.36 em
@@ -176,7 +188,8 @@ function brandMark(x: number, y: number): { svg: string; w: number } {
     </defs>
     <rect x="${x}" y="${y}" width="${LOGO_BOX}" height="${LOGO_BOX}" rx="${LOGO_RADIUS}"
       fill="#0B0B0F" stroke="#FFFFFF" stroke-opacity="0.15" stroke-width="${LOGO_STROKE}"/>
-    <image href="${DF_LOGO_DATA_URI}" x="${iconX}" y="${iconY}" width="${iconW}" height="${LOGO_ICON}"/>
+    <image href="${DF_LOGO_DATA_URI}" x="${iconX}" y="${iconY}"
+      width="${LOGO_ICON_W}" height="${LOGO_ICON_H}"/>
     <text x="${textX}" y="${textY}" font-family="${FONT}" font-size="${LOGO_FONT}" font-weight="800"
       letter-spacing="-0.6"><tspan fill="#FFFFFF">Dev</tspan><tspan fill="url(#${gid})">Forge</tspan></text>`,
   };

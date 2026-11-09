@@ -9,6 +9,14 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **OBJAVE v11 — IKONA STANE U OKVIR (contain, ne stretch)** — korisnik: „ikona je prevelika i nije u svom okviru od logotipa".
+  **BUG:** ikona se rastezala na `height = LOGO_BOX - 2*PAD = 67.2px`, a ikona je omjer 56:24 (2.333) → sirina bi bila 156px, daleko izvan okvira. U navbaru je `<img className="h-full w-full object-contain p-1">` — **`object-contain` skalira da STANE**, ne da ispuni.
+  **Fix:** uveden izmjereni odnos sa stvarnog navbara (Playwright + PIL): ikona zauzima **30% visine okvira** (12px od 40px). Zato:
+  `LOGO_ICON_H = LOGO_BOX * 0.30` → **25.2px**, `LOGO_ICON_W = LOGO_ICON_H * 2.333` → **58.8px**.
+  Pozicioniranje: `iconX = x + (84-58.8)/2 = 108.6`, `iconY = y + (84-25.2)/2 = 121.4` — centrirano u obje ose.
+  **Izmjereno na renderu (1080px):** ikona **26px visine = 31.0%** okvira (navbar **30.0%**) → pad gore **29px** / dolje **30px**, horizontalno **12.6px**. Ispravno.
+  **Napomena iz analize:** tamni/teal pikseli u donjem lijevom uglu okvira su **antialiasing zaobljenog ugla** (`rx=25.2`), ne ikona.
+  **Verifikacija:** `npx tsc --noEmit` 0; provjera po svih 63 slike — okvir 84×84 postoji, ikona nikad ne izlazi iz granica, omjer 56:24 sacuvan → **0 problema**; Playwright 60/60 ucitano, 0 gresaka; build ✓.
 - **OBJAVE v10 — LOGO VIDLJIV NA SVIH 63 SLIKE + TACNE RAZMJERE** — korisnik: „nije na istoj udaljenosti jedan od drugog i nije iste velicine kao u navbaru... takodjer nije na svakoj stranici vidljiv logotip jer na primjer na postu 0 km nema logotipa".
   **BUG 1 (kriticno):** `header()` se crtao PRIJE `${content}`, pa je foto-pozadina (`<image ... 1080×1080>`) prekrila logo. **27 od 63 slika nije imalo vidljiv logo** — ukljucujuci p01 „0 KM predujma" (photoBg). Fix: `${content}` ide prvo, `<rect ... brand traka>` i `${header(...)}` POSLIJE. Komentar u kodu objasnjava zasto.
   **BUG 2 (razmjere):** okvir je bio 62px (faktor 1.55), a font 42px (faktor 2.1) → **nesrazmjerno**. Uveden **jedan faktor `K = 2.1`** za SVE dimenzije, 1:1 sa `Logo()` u `App.tsx`:
