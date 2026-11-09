@@ -10,12 +10,39 @@
 // referrer, uredjaj, jezik i daje realnu sliku kako se sajt koristi.
 // ───────────────────────────────────────────────────────────────────────────
 
-import { get, ref, set } from "firebase/database";
+import { get, onValue, ref, set, update } from "firebase/database";
 import { getDb, firebaseReady } from "./firebase";
 
 const VISITS_KEY = "devforge-visits-v1";
 const VISITS_DB_PATH = "analytics/visits";
 const MAX_VISITS = 500;
+
+// Sesijska deduplikacija: ako ista osoba osvjezi stranicu ili prekuca
+// kroz sajt u roku od 30 min, to je ISTA posjeta (ne nova). Bez ovoga
+// jedan posjetilac koji osvjezi 5 puta izgleda kao 5 razlicitih ljudi.
+const SESSION_KEY = "devforge-analytics-session-v1";
+const SESSION_TTL_MS = 30 * 60 * 1000; // 30 minuta
+
+function readSessionId(): string | null {
+  try {
+    const raw = window.sessionStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (typeof parsed?.id !== "string" || typeof parsed?.at !== "number") return null;
+    if (Date.now() - parsed.at > SESSION_TTL_MS) return null;
+    return parsed.id;
+  } catch {
+    return null;
+  }
+}
+
+function writeSessionId(id: string) {
+  try {
+    window.sessionStorage.setItem(SESSION_KEY, JSON.stringify({ id, at: Date.now() }));
+  } catch {
+    /* ignore */
+  }
+}
 
 export type DeviceType = "mobile" | "tablet" | "desktop";
 
@@ -202,18 +229,23 @@ function writeVisits(visits: Visit[]) {
   }
   listeners.forEach((l) => l());
 
-  // Upisi i u Firebase (zadnjih 100 — da baza ne raste beskonacno).
-  if (firebaseReady) {
-    void (async () => {
-      try {
-        const recent = capped.slice(-100);
-        const payload: Record<string, Visit> = {};
-        for (const v of recent) payload[v.id] = v;
-        await set(ref(getDb(), VISITS_DB_PATH), payload);
-      } catch {
-        /* offline — lokalni kes ostaje */
-      }
-    })();
+  // Upisi u Firebase — SAMO svoju posjetu, pod njenim kljucem.
+  //
+  // RANIJE: set(ref(db, VISITS_DB_PATH), payload) je PREPISIVAO cijelu
+  // granu svojim lokalnim setom, pa je svaki novi posjetilac brisao tude
+  // posjete. Zato baza nikad nije imala podatke sa svih uredjaja.
+  // SADA: update() po kljucu — svako pise samo svoje, nista se ne brise.
+  if (firebaseReady && activeVisitId) {
+    const mine = capped.find((v) => v.id === activeVisitId);
+    if (mine) {
+      void (async () => {
+        try {
+          await update(ref(getDb(), VISITS_DB_PATH), { [mine.id]: mine });
+        } catch {
+          /* offline — lokalni kes ostaje */
+        }
+      })();
+    }
   }
 }
 
@@ -423,6 +455,20 @@ export function trackPageView(path: string, title: string) {
   pageEnteredAt = Date.now();
 
   if (!activeVisitId) {
+    // Nastavi postojecu sesiju ako je ista osoba (refresh / navigacija).
+    const existingId = readSessionId();
+    if (existingId) {
+      const found = readVisits().find((v) => v.id === existingId);
+      if (found) {
+        // Ista sesija — samo nastavi, ne pravi novu posjetu.
+        activeVisitId = existingId;
+        upsertVisit((v) => ({ ...v, lastSeenAt: Date.now() }));
+        return;
+      }
+      activeVisitId = existingId; // zapis je u bazi, ne u lokalnom kesu
+      return;
+    }
+
     // nova posjeta
     const { device, screen } = detectDevice();
     const geo = detectCountry();
@@ -441,6 +487,7 @@ export function trackPageView(path: string, title: string) {
       isReturning,
     };
     activeVisitId = visit.id;
+    writeSessionId(visit.id);
     invalidate();
     writeVisits([...readVisits(), visit]);
   } else {
@@ -748,7 +795,51 @@ export function clearVisits() {
   }
   activeVisitId = null;
   pageEnteredAt = 0;
+  // Obrisi i u bazi — inace bi se vratile pri sljedecem citanju.
+  if (firebaseReady) {
+    void set(ref(getDb(), VISITS_DB_PATH), null).catch(() => {
+      /* offline */
+    });
+  }
   listeners.forEach((l) => l());
+}
+
+// ── REALTIME SLUSALAC ─────────────────────────────────────────────────────
+// Bez ovoga admin vidi samo ono sto je ucitano pri otvaranju stranice.
+// Sada: cim bilo ko na bilo kojoj mrezi otvori sajt, zapis se pojavi
+// u adminu bez klikanja "Osvjezi".
+let realtimeStarted = false;
+
+/** Slusaj /analytics/visits uzivo (poziva se iz admin panela). */
+export function startVisitsRealtime() {
+  if (!firebaseReady || realtimeStarted) return;
+  realtimeStarted = true;
+  try {
+    onValue(ref(getDb(), VISITS_DB_PATH), (snap) => {
+      if (!snap.exists()) return;
+      const obj = snap.val() as Record<string, unknown>;
+      const remote = Object.entries(obj)
+        .map(([id, raw]) => normalizeVisit(raw, id))
+        .filter((v): v is Visit => v !== null)
+        .sort((a, b) => a.startedAt - b.startedAt);
+
+      // Spoji s lokalnim (lokalni su svjeziji za ovu sesiju).
+      const byId = new Map<string, Visit>();
+      for (const v of remote) byId.set(v.id, v);
+      for (const v of readVisits()) byId.set(v.id, v);
+      const merged = [...byId.values()].sort((a, b) => a.startedAt - b.startedAt).slice(-MAX_VISITS);
+
+      cachedVisits = merged;
+      try {
+        window.localStorage.setItem(VISITS_KEY, JSON.stringify(merged));
+      } catch {
+        /* ignore */
+      }
+      listeners.forEach((l) => l());
+    });
+  } catch {
+    realtimeStarted = false;
+  }
 }
 
 // ── Formatiranje ──────────────────────────────────────────────────────────

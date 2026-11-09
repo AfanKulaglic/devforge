@@ -26,6 +26,7 @@ import {
   getServerVisits,
   getVisits,
   mergeRemoteVisits,
+  startVisitsRealtime,
   subscribeVisits,
   summarize,
 } from "./lib/analytics";
@@ -170,6 +171,8 @@ export default function AnalyticsTab() {
 
   // Ucitaj posjete i iz Firebase (svi uredjaji u istu listu).
   useEffect(() => {
+    // Slusaj bazu uzivo — nove posjete se pojave bez klikanja "Osvjezi".
+    startVisitsRealtime();
     void mergeRemoteVisits().finally(() => setLoading(false));
   }, []);
 
