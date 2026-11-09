@@ -9,6 +9,19 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **OBJAVE v8 — SVE SA HOME PAGE-A, SAMO 4 HERO SLIKE** — korisnik: „rekao sam ti da koristis samo slike iz hero sekcije. jako losi tekstovi istakao si najvece gluposti koje su nebitne za prodati moju uslugu... to mi treba benefite da pokazem zanimljivo marketinski... pogledaj kako je na web stranici opcenito pisano sta je istaknuto sta je bitno... sve sto je kontent home pagea treba biti i moje instagram stranice".
+  **Greska:** pisao sam o brzini ucitavanja, SEO-u, AI filozofiji — teme koje NISU ono sto sajt prodaje. Home page prodaje 4 benefita i 4 usluge.
+  **Izvor sada = `src/App.tsx` `benefits` (4) + `services` (4) + hero + `deliverables`.** Nista izmisljeno.
+  **4 BENEFITA (42 od 60 objava je „ponuda"):**
+  1. **0 KM predujma** — placate tek kad ste zadovoljni (rizik na nama)
+  2. **Besplatna gotova verzija za 5 dana** — bez obaveze
+  3. **Vlastiti admin panel** — sami mijenjate tekst, slike, cijene
+  4. **Transparentne cijene** — web od 150 KM, shopovi od 600 KM, 0 skrivenih
+  **4 USLUGE:** Web stranice · 2D igrice · Mobilne aplikacije · AI sistemi (24/7 recepcionar)
+  **Slike: SAMO cetiri iz hero sekcije** — `hero` (8), `web` (7), `mobile` (6), `heroMob` (3). Uklonjene `project1/2/3`, `ai`, `game`.
+  **Kategorije:** ponuda 42 · brend 9 · izakulisa 5 · dokaz 4 · edukacija 0 · savjet 0 (nema vise edukativnih tekstova — prodajemo uslugu).
+  **Karusel:** 1 (p01 „0 KM predujma" — 4 slike: brojka, poredjenje, koraci, CTA).
+  **Verifikacija:** `npx tsc --noEmit` 0; **60 objava / 63 slike / 0 prekoracenja / 0 fontova < 24px**; Playwright 60 kartica, 60/60 ucitano, karusel `1/4`, 0 gresaka; build ✓.
 - **OBJAVE v7 — NASLOVI SU TVRDNJE, NE TEME** — korisnik: „tekstovi postova su nejasni naprimjer stranica koja se ucitava 6 je boldirano na jednom postu a nista ne znaci... razmislis malo bolje o tome svemu. nejasno je sve dosta".
   **Dijagnoza:** naslovi su IMENOVALI TEMU umjesto da TVRDE nesto. „Stranica koja se učitava 6 sekundi" — boldirano, a ne kaze sta 6 znaci. Covek gleda 2 sekunde i ne zna o cemu je.
   **Pravilo koje sada vodi sve:** ako neko pogleda sliku 2 sekunde i ne moze prepričati o cemu je — tekst je loš. Naslov mora biti **TVRDNJA** sa posljedicom:

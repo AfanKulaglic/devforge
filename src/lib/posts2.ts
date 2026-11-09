@@ -1,405 +1,433 @@
 import type { AdPost } from "./postsData";
 
 // ───────────────────────────────────────────────────────────────────────────
-// OBJAVE 21–40 — AI, tehnologija, edukacija
+// OBJAVE 21–40 — ISTE PORUKE SA HOME PAGE-A, DRUGI UGAO
 //
-// AI nije "magija" — pišemo o tome gdje stvarno pomaže maloj firmi,
-// gdje ne pomaže, i koliko to košta. Bez hype-a.
+// Samo 4 slike iz hero sekcije: hero · heroMob · web · mobile
 // ───────────────────────────────────────────────────────────────────────────
 
 export const POSTS_2: AdPost[] = [
   {
     id: "p21",
     template: "title",
-    category: "edukacija",
+    category: "ponuda",
     layout: "photoBg",
-    photo: "ai",
-    palette: "ink",
-    eyebrow: "AI",
-    title: "AI Vam neće uzeti posao.",
-    subtitle: "Ali firma koja ga koristi hoće.",
+    photo: "hero",
+    palette: "dark",
+    eyebrow: "Bez rizika",
+    title: "Vaš jedini rizik su 15 minuta razgovora.",
+    subtitle: "Sve ostalo — besplatna verzija, izmjene, plaćanje — ide poslije.",
     caption:
-      "Ovo nije prijetnja — to je već stvarnost u Bosni.\n\n" +
-      "Firme koje koriste AI za dosadne stvari (odgovaranje na ista pitanja, pisanje ponuda, prevode) imaju više vremena za ono što donosi novac.\n\n" +
-      "AI ne odlučuje umjesto Vas. Ne prodaje umjesto Vas. Ne gradi odnose umjesto Vas.\n\n" +
-      "Ali odgovori na 40 identičnih pitanja mjesečno? To može.\n\n" +
-      "Pitanje nije „da li ću koristiti AI“ nego „za šta ću ga prvo koristiti“.",
-    tags: ["ai", "umjetnainteligencija", "malibiznis", "automatizacija", "devforge"],
+      "Uložite 15 minuta razgovora. Ništa više.\n\n" +
+      "Ne tražimo predujam. Ne tražimo da potpišete išta. Ne tražimo pristup Vašim računima.\n\n" +
+      "Samo razgovor: čime se bavite, ko Vas zove, šta stranica treba da uradi.\n\n" +
+      "Ako poslije razgovora odlučite da ne radimo — to je sasvim u redu i nema cijene.\n\n" +
+      "Ako se dogovorimo — napravimo gotovu verziju u 5 dana i vidite je prije bilo kakve obaveze.\n\n" +
+      "Vrijedi li probati?",
+    tags: ["bezrizika", "konsultacija", "bezpredujma", "webdizajn", "sarajevo", "devforge"],
   },
   {
     id: "p22",
-    template: "list",
-    category: "edukacija",
+    template: "number",
+    category: "ponuda",
     layout: "center",
-    palette: "mint",
-    eyebrow: "AI",
-    title: "Četiri posla koja AI odradi umjesto Vas",
-    items: ["Odgovori na ista pitanja", "Prve verzije tekstova", "Narudžbe iz poruka", "Prijevod na strani"],
-    slides: [
-      { template: "list", eyebrow: "AI", title: "Gdje AI pomaže", items: ["Odgovara na ista pitanja", "Piše prve verzije tekstova", "Prepoznaje narudžbe iz poruka", "Prevodi tekstove"] },
-      { template: "number", eyebrow: "Primjer", title: "istih pitanja svaki mjesec", value: "50x", valueNote: "Ista četiri pitanja, svaki put.", palette: "ink" },
-      { template: "compare", eyebrow: "Prije / Poslije", title: "Isti upit, dva odgovora", items: ["Čekate do jutra", "Odgovara čovjek", "Neko zaboravi", "Kupac ode", "Odgovor u 5s", "Odgovara asistent", "Uvijek isto", "Kupac ostaje"], palette: "teal" },
-      { template: "cta", eyebrow: "Prvi korak", title: "Počnite s jednim pitanjem.", subtitle: "Ne s deset. Samo ono koje dolazi najviše.", palette: "sun" },
-    ],
+    palette: "ink",
+    eyebrow: "Brzo",
+    title: "radnih dana do gotove verzije",
+    value: "5",
+    valueNote: "Vidite stranicu prije bilo kakve obaveze.",
     caption:
-      "Nema potrebe za složenim rješenjima. Ovo su četiri stvari gdje AI odmah vraća novac:\n\n" +
-      "1. Odgovaranje na pitanja — „imate li na stanju“, „koliko je dostava“, „radite li subotom“. Isto pitanje 50 puta sedmično.\n\n" +
-      "2. Prve verzije tekstova — opisi proizvoda, objave, ponude. Vi doradite.\n\n" +
-      "3. Narudžbe iz poruka — kada kupac pošalje „2x bijela majica L“, sistem to pretvori u narudžbu.\n\n" +
-      "4. Prijevod — ako prodajete van BiH, to je ogromna ušteda.\n\n" +
-      "Ništa od ovoga ne traži veliki budžet.",
-    tags: ["ai", "automatizacija", "malibiznis", "edukacija", "produktivnost", "devforge"],
+      "Pet radnih dana. Toliko nam treba da dobijete funkcionalnu verziju.\n\n" +
+      "Ne maketu. Ne PDF. Pravu stranicu na pravom linku koju možete otvoriti na mobitelu i poslati kome hoćete.\n\n" +
+      "Šta dobijete u tih 5 dana:\n" +
+      "— dizajn koji odgovara Vašem brendu\n" +
+      "— strukturu stranica (koja vodi gdje)\n" +
+      "— funkcionalnosti koje ste tražili\n" +
+      "— kontakt formu koja radi\n\n" +
+      "Tek poslije toga razgovaramo o cijeni i nastavku.\n\n" +
+      "Šta bi Vam značilo da vidite stranicu svoje firme ove sedmice?",
+    tags: ["5dana", "brzina", "gotovaverzija", "besplatno", "sarajevo", "devforge"],
   },
   {
     id: "p23",
-    template: "quote",
-    category: "brend",
-    layout: "stamp",
-    palette: "dark",
-    eyebrow: "Naš stav",
-    title: "AI koji ne zna Vaše cijene izmišlja.",
-    subtitle: "Zato mu trebaju Vaši podaci, ne samo dobar model.",
+    template: "list",
+    category: "ponuda",
+    layout: "photo",
+    photo: "mobile",
+    palette: "teal",
+    eyebrow: "Kontrola",
+    title: "Šta mijenjate sami, bez ikoga",
+    items: ["Tekst i naslove", "Slike i galerije", "Cijene u shopu", "Objave i novosti"],
     caption:
-      "ChatGPT zna napisati tekst. Ali ne zna da Vi radite dostavu samo u Kantonu Sarajevo, da ne primate kartice, i da Vam je najveći kupac firma iz Zenice.\n\n" +
-      "Zato AI asistent za firmu nije „spojite ChatGPT “. To je posao: prikupiti Vaše podatke, srediti ih, i dati modelu da odgovara SAMO iz njih.\n\n" +
-      "Razlika je ogromna:\n" +
-      "— bez podataka: izmišlja i halucinira\n" +
-      "— s podacima: odgovori su tačni i provjerljivi\n\n" +
-      "Prvi korak nije tehnologija. Prvi korak je Vaš cjenovnik i Vaša pravila.",
-    tags: ["ai", "chatbot", "automatizacija", "brend", "devforge"],
+      "Najčešća frustracija s agencijama: za svaku sitnicu morate zvati i čekati.\n\n" +
+      "Zato uz svaki projekt ide admin panel (CMS). Vi mijenjate, niko drugi.\n\n" +
+      "Sami mijenjate:\n" +
+      "— tekst i naslove na bilo kojoj stranici\n" +
+      "— slike i galerije\n" +
+      "— proizvode i cijene u shopu\n" +
+      "— objave i novosti\n" +
+      "— radno vrijeme i kontakt podatke\n\n" +
+      "Sve kroz jednostavan panel, bez koda. Ako znate koristiti Facebook, znate koristiti i ovo.\n\n" +
+      "Koliko Vas košta čekanje da neko drugi promijeni cijenu na Vašoj stranici?",
+    tags: ["adminpanel", "cms", "samostalnost", "shop", "sarajevo", "devforge"],
   },
   {
     id: "p24",
-    template: "list",
-    category: "savjet",
+    template: "title",
+    category: "ponuda",
     layout: "band",
     palette: "sun",
-    eyebrow: "Savjet",
-    title: "Kada Vam AI ne treba",
-    items: ["3 upita mjesečno", "Nema cjenovnika", "Kupci traže čovjeka"],
+    eyebrow: "Web stranice",
+    title: "Landing, korporativna ili shop — od 150 KM.",
+    subtitle: "Ista cijena na sajtu i u ponudi. Bez iznenađenja.",
     caption:
-      "Iskreno: AI nije za svakoga, i nije za svaki problem.\n\n" +
-      "Ne isplati se ako:\n" +
-      "— imate 3 upita mjesečno. Odgovorite sami, traje 2 minute.\n" +
-      "— nemate sredjen cjenovnik. AI ne može odgovarati tačno ako ni Vi ne znate cijene.\n" +
-      "— Vaši kupci traže razgovor s čovjekom (npr. ozbiljne usluge, visoke cijene).\n" +
-      "— je Vaš proces loš. Automatizacija lošeg procesa daje brži loš proces.\n\n" +
-      "Prvo sredite proces. Onda automatizujte.\n\n" +
-      "Ako neko počne s tehnologijom, a nije pitao kako radite — bježite.",
-    tags: ["ai", "savjeti", "kadafunkcionise", "malibiznis", "devforge"],
+      "Web stranice od 150 KM. Web shopovi od 600 KM. To je na sajtu i to dobijete u ponudi.\n\n" +
+      "Šta ulazi u cijenu:\n" +
+      "— UI/UX dizajn\n" +
+      "— mobilna verzija\n" +
+      "— admin panel\n" +
+      "— SEO osnova\n" +
+      "— 4 besplatne revizije\n" +
+      "— besplatna prva verzija\n\n" +
+      "Šta ne ulazi: domena i hosting. Njih plaćate direktno provideru, bez naše marže. Nema skrivenih stavki.\n\n" +
+      "Zašto je cijena javna: jer kupac koji mora pitati cijenu obično nagađa i pogriješi.\n\n" +
+      "Znate broj prije nego što pošaljete poruku.",
+    tags: ["cijene", "webstranice", "javnoc", "transparentnost", "sarajevo", "devforge"],
   },
   {
     id: "p25",
-    template: "number",
-    category: "dokaz",
-    layout: "photo",
-    photo: "ai",
-    palette: "teal",
-    eyebrow: "Rezultat",
-    title: "manje sedmično na istim odgovorima",
-    value: "8h",
-    valueNote: "Klijent s 60–80 upita sedmično.",
+    template: "list",
+    category: "ponuda",
+    layout: "split",
+    palette: "mint",
+    eyebrow: "Uključeno",
+    title: "Ono što drugi naplaćuju dodatno",
+    items: ["Dizajn i UX", "Mobilna verzija", "Admin panel", "Četiri revizije"],
     caption:
-      "Jedan klijent, 60–80 upita sedmično. Ista pitanja: cijena, dostava, na stanju, radno vrijeme.\n\n" +
-      "Prije: dvije osobe po 4 sata sedmično samo na odgovaranje.\n" +
-      "Poslije: AI asistent odgovara na 70% pitanja tačno. Ostatak proslijedi čovjeku.\n\n" +
-      "Ušteda: oko 8 sati sedmično.\n\n" +
-      "Ali evo šta je važnije od sati: kupci dobijaju odgovor u 5 sekundi, ne u 5 sati. To se vidi na konverziji.\n\n" +
-      "Nije riječ o tome da otpustite ljude. Riječ je o tome da rade ono što AI ne može.",
-    tags: ["ai", "rezultati", "usparada", "automatizacija", "devforge"],
+      "Kod većine agencija osnovna cijena je početak. Nakon toga: dizajn se doplaćuje, mobilna verzija se doplaćuje, CMS se doplaćuje, izmjene se doplaćuju.\n\n" +
+      "Kod nas je obrnuto — sve je u osnovnoj cijeni:\n\n" +
+      "1. UI/UX dizajn — uključen\n" +
+      "2. Mobilna verzija — uključena\n" +
+      "3. Admin panel — uključen\n" +
+      "4. Četiri besplatne revizije — uključene\n" +
+      "5. Čist, dokumentiran kod — uključen\n" +
+      "6. SEO osnova — uključena\n\n" +
+      "Zato ne objavljujemo cijenu „od“ s deset zvjezdica. Jedna cijena, sve unutra.\n\n" +
+      "Domena i hosting su jedino što ide odvojeno — i oni idu direktno provideru.",
+    tags: ["ukljuceno", "cijene", "bezskrivenih", "webdizajn", "devforge"],
   },
   {
     id: "p26",
-    template: "process",
-    category: "izakulisa",
-    layout: "center",
-    palette: "light",
-    eyebrow: "Kako radimo",
-    title: "AI asistent se pravi u četiri koraka",
-    items: ["Popis pravila i cijena", "Povezivanje dokumenata", "Test na 50 pitanja", "Mjerenje tačnosti"],
+    template: "title",
+    category: "ponuda",
+    layout: "photoTop",
+    photo: "web",
+    palette: "dark",
+    eyebrow: "2D igrice",
+    title: "Igra drži pažnju duže od banera.",
+    subtitle: "2D igrice za web i mobilne — s Vašim brendom.",
     caption:
-      "AI asistent se ne „uključi“. Pravi se u četiri koraka:\n\n" +
-      "1. Popis — sjednemo i popišemo sve što mu treba znati: cjenovnik, dostava, radno vrijeme, šta ne radite, kako se ponašati kad ne znate odgovor.\n\n" +
-      "2. Povezivanje — Vaši dokumenti, cjenovnik i pravila se ubace u sistem. Asistent odgovara SAMO iz toga.\n\n" +
-      "3. Testiranje — postavimo mu 50 pitanja koja su Vam kupci stvarno slali. Gledamo gdje griješi.\n\n" +
-      "4. Puštanje — mjerimo tačnost prve dvije sedmice. Šta promaši, popravljamo.\n\n" +
-      "Bez koraka 3 nema smisla puštati u rad.",
-    tags: ["ai", "proces", "chatbot", "izakulisa", "devforge"],
+      "Banner ljudi gledaju 1.7 sekundi. U igri provedu minute.\n\n" +
+      "Razvijamo 2D igrice za mobilne platforme i web:\n" +
+      "— marketing igre — kao dio kampanje ili promocije\n" +
+      "— edukacijske igre — za zaposlene ili klijente\n" +
+      "— casual igre — s Vašim brendom, za zabavu\n\n" +
+      "Od jednostavne igre s jasnim ciljem do složenije mehanike. Radi na webu i na mobilnom.\n\n" +
+      "Kad se kupac igra s Vašim brendom 3 minute, sjeća ga se. Kad gleda baner 2 sekunde — ne.\n\n" +
+      "Imate ideju?",
+    tags: ["2digrice", "gamedev", "marketing", "brend", "sarajevo", "devforge"],
   },
   {
     id: "p27",
-    template: "compare",
-    category: "edukacija",
-    layout: "band",
-    palette: "ink",
-    eyebrow: "Poređenje",
-    title: "Stari chatbot vs. AI asistent",
-    items: ["Samo dugmad", "Padne na svako drugo pitanje", "Kupac odustane", "Niko ga ne koristi", "Razumije slobodan tekst", "Odgovara iz Vaših podataka", "Rješava ili prosljeđuje", "Radi 24 sata"],
+    template: "list",
+    category: "ponuda",
+    layout: "center",
+    palette: "light",
+    eyebrow: "Mobilne aplikacije",
+    title: "Jedan kod. iOS i Android.",
+    items: ["Flutter i React Native", "Push notifikacije", "Backend integracija", "App Store i Play"],
     caption:
-      "Stari chatboti su bili drvo odluka: „Pritisnite 1 za cijene, 2 za dostavu“. Ljudi mrze to.\n\n" +
-      "AI asistent razumije šta ste napisali, i ako ne zna, kaže „ne znam, evo kolege“ umjesto da izmišlja.\n\n" +
-      "Ključna razlika: stari chatbot je tjerao kupca da uči kako sistem radi. Novi se prilagođava kupcu.\n\n" +
-      "Zato je stopa korištenja drastično veća. Ljudi pišu kao što pišu prijatelju.\n\n" +
-      "Ako imate chatbot na stranici koji niko ne koristi — znate zašto.",
-    tags: ["ai", "chatbot", "poredjenje", "ux", "devforge"],
+      "Razvijamo native i cross-platform mobilne aplikacije za iOS i Android.\n\n" +
+      "Koristimo Flutter i React Native — jedan kod radi na obje platforme. To praktično znači: jedna izrada, jedna cijena, dva kanala distribucije.\n\n" +
+      "Šta je uključeno:\n" +
+      "— push notifikacije\n" +
+      "— backend i baza podataka\n" +
+      "— korisnički računi i prijava\n" +
+      "— objava na App Store i Google Play\n\n" +
+      "Od MVP-a (prva verzija za testiranje ideje) do potpune aplikacije.\n\n" +
+      "Ista pravila kao za stranice: besplatna prva verzija, plaćate kad ste zadovoljni.\n\n" +
+      "Imate ideju za aplikaciju?",
+    tags: ["mobilneaplikacije", "flutter", "ios", "android", "sarajevo", "devforge"],
   },
   {
     id: "p28",
-    template: "list",
-    category: "edukacija",
-    layout: "photoTop",
-    photo: "game",
-    palette: "dark",
-    eyebrow: "AI",
-    title: "Asistent ne samo priča — radi",
-    items: ["Provjeri stanje", "Napravi narudžbu", "Zakaži termin", "Proslijedi čovjeku"],
+    template: "number",
+    category: "ponuda",
+    layout: "band",
+    palette: "teal",
+    eyebrow: "AI sistemi",
+    title: "sata dnevno dostupan AI recepcionar",
+    value: "24",
+    valueNote: "Prima pozive, odgovara, zakazuje termine.",
     caption:
-      "Ovo je dio koji većina ne zna: AI asistent može raditi stvari, ne samo pričati.\n\n" +
-      "Primjeri iz prakse:\n" +
-      "— Kupac pita „imate li bijelu majicu L“. Asistent provjeri skladište i kaže tačno.\n" +
-      "— Kupac napiše „2x majica, dostava u Travnik“. Asistent napravi narudžbu i pošalje potvrdu.\n" +
-      "— Pacijent pita za termin. Asistent provjeri kalendar i zakaže.\n" +
-      "— Nešto je komplikovano. Asistent prosljeđuje čovjeku s cijelim razgovorom.\n\n" +
-      "To se zove „AI s alatima“ i to je razlika između igračke i alata.",
-    tags: ["ai", "automatizacija", "integracija", "malibiznis", "devforge"],
+      "AI recepcionar i chat asistent rade 24 sata dnevno — bez pauze, bez bolovanja, bez „zatvoreno smo“.\n\n" +
+      "Šta radi:\n" +
+      "— prima pozive i poruke u svako doba\n" +
+      "— odgovara na pitanja o cijenama i uslugama\n" +
+      "— zakazuje termine i šalje potvrde\n" +
+      "— bilježi narudžbe iz poruka\n" +
+      "— sve komplikovano prosljeđuje Vama s cijelim razgovorom\n\n" +
+      "Najveća korist: 41% upita dolazi van radnog vremena. Dosad su ti ljudi otišli konkurenciji. Sad ne odlaze.\n\n" +
+      "AI ide kao dio projekta stranice, ne kao odvojen proizvod.",
+    tags: ["airecepcionar", "aisistemi", "24sata", "automatizacija", "sarajevo", "devforge"],
   },
   {
     id: "p29",
-    template: "number",
-    category: "dokaz",
-    layout: "offset",
-    palette: "mint",
-    eyebrow: "Podatak",
-    title: "kupaca čeka odgovor 5 minuta, ne duže",
-    value: "78%",
-    valueNote: "Prosječna firma odgovori za 12 sati.",
+    template: "quote",
+    category: "brend",
+    layout: "photo",
+    photo: "heroMob",
+    palette: "ink",
+    eyebrow: "Naš stav",
+    title: "Povjerenje ide prije novca.",
+    subtitle: "Zato ne tražimo predujam. Nikad.",
     caption:
-      "Istraživanja su konzistentna: ako kupac pita i ne dobije odgovor brzo, ide dalje. Ne čeka.\n\n" +
-      "78% očekuje odgovor u prvih 5 minuta.\n" +
-      "Prosječna firma u Bosni odgovori za 12 sati (ako odgovori).\n\n" +
-      "To je ogromna praznina, i tu se gubi najviše novca.\n\n" +
-      "Ne treba Vam 24/7 call centar. Treba Vam nešto što odgovori u 5 sekundi na 70% pitanja, i kaže „kolega će se javiti ujutro“ na ostalih 30%.\n\n" +
-      "To je danas rješivo. Prije 3 godine nije bilo.",
-    tags: ["ai", "podaci", "brzinoodgovora", "konverzija", "devforge"],
+      "U većini poslova novac ide prvi — pa povjerenje. Kod nas je obrnuto.\n\n" +
+      "Ne tražimo predujam jer znamo da naša cijena nije najmanja na tržištu. Neko ko plaća unaprijed mora vjerovati na riječ.\n\n" +
+      "Mi ne tražimo da vjerujete na riječ. Napravimo dio posla besplatno, pokažemo ga, i tek onda razgovaramo o novcu.\n\n" +
+      "To je skuplje za nas. Zato radimo manje projekata — ali nijedan klijent nije platio nešto što nije vidio.\n\n" +
+      "Za Vas: nula rizika. Za nas: moramo biti dobri iz prve.",
+    tags: ["povjerenje", "bezpredujma", "ferodnos", "agencija", "devforge"],
   },
   {
     id: "p30",
-    template: "quote",
-    category: "brend",
-    layout: "split",
+    template: "compare",
+    category: "ponuda",
+    layout: "center",
     palette: "sun",
-    eyebrow: "Naš stav",
-    title: "Automatizujte dosadu. Ne odnose.",
-    subtitle: "AI preuzima ponavljanje, Vi razgovor.",
+    eyebrow: "Prije / Poslije",
+    title: "Stranica prije vs. stranica s nama",
+    items: ["Ne radi na mobitelu", "Nema kontakta", "Mijenja samo izvođač", "Nema upita", "Radi svuda", "Forma na vrhu", "Mijenjate sami", "Upiti svaki dan"],
     caption:
-      "Postoji pogrešna ideja da AI treba „voditi“ odnos s kupcem od početka do kraja.\n\n" +
-      "Ne. Odnos je Vaš.\n\n" +
-      "AI treba raditi ono što je dosadno i ponavlja se:\n" +
-      "— „koliko je dostava“\n" +
-      "— „radite li subotom“\n" +
-      "— „imate li na stanju“\n" +
-      "— „koji je IBAN“\n\n" +
-      "A Vi radite ono što donosi novac: razgovor, ponuda, dogovor, rješavanje problema.\n\n" +
-      "Firme koje pokušaju sve automatizovati izgube kupce. One koje automatizuju dosadu — dobiju vrijeme.",
-    tags: ["ai", "brend", "automatizacija", "odnosi", "devforge"],
+      "Razlika nije u bojama. Razlika je u tome radi li stranica svoj posao.\n\n" +
+      "PRIJE:\n" +
+      "— na mobitelu se raspada (a 76% ljudi dolazi s mobitela)\n" +
+      "— nema načina da Vas kontaktiraju osim ako negdje nađu broj\n" +
+      "— za svaku promjenu morate zvati izvođača\n" +
+      "— mjesecima nema upita\n\n" +
+      "POSLIJE:\n" +
+      "— radi na svakom ekranu\n" +
+      "— kontakt forma na vrhu\n" +
+      "— sami mijenjate sadržaj kroz admin panel\n" +
+      "— upiti dolaze jer ih se može poslati\n\n" +
+      "Kako izgleda Vaša?",
+    tags: ["prijeiposlije", "redizajn", "webdizajn", "konverzija", "sarajevo", "devforge"],
   },
   {
     id: "p31",
     template: "list",
-    category: "savjet",
-    layout: "center",
-    palette: "teal",
-    eyebrow: "Savjet",
-    title: "Četiri stvari prije uvođenja AI",
-    items: ["Cjenovnik na jednom mjestu", "20 najčešćih pitanja", "Šta se ne smije reći", "Ko provjerava odgovore"],
+    category: "ponuda",
+    layout: "photoBg",
+    photo: "hero",
+    palette: "dark",
+    eyebrow: "Provjera",
+    title: "Četiri stvari koje dobijate bez plaćanja",
+    items: ["Razgovor od 15 minuta", "Gotovu verziju za 5 dana", "Tačnu cijenu prije početka", "Četiri revizije"],
     caption:
-      "AI projekti propadaju iz organizacijskih razloga, ne tehničkih.\n\n" +
-      "Prije tehničkog dijela, uradite četiri stvari:\n\n" +
-      "1. Cjenovnik na jednom mjestu. Ako je u tri Excel fajla i glavi, AI ne može raditi.\n" +
-      "2. Dvadeset najčešćih pitanja, napisanih kako ih kupci stvarno pišu (s greškama, bez interpunkcije).\n" +
-      "3. Šta se NIKAD ne smije reći — npr. ne obećavaj rokove, ne daj popust bez odobrenja.\n" +
-      "4. Ko provjerava prve dvije sedmice. Svakodnevno, 10 minuta.\n\n" +
-      "Ako ova četiri nisu riješena, tehnologija neće pomoći.",
-    tags: ["ai", "savjeti", "priprema", "automatizacija", "malibiznis", "devforge"],
+      "Prije nego što date ijednu marku, dobijate četiri stvari besplatno:\n\n" +
+      "1. Razgovor od 15 minuta. Bez obaveze, bez prodaje, bez pritiska.\n" +
+      "2. Gotovu verziju za 5 dana. Prava stranica na pravom linku.\n" +
+      "3. Tačnu cijenu prije početka. Ne okvirnu — tačnu.\n" +
+      "4. Četiri revizije uključene. Bez doplata.\n\n" +
+      "Sve to prije nego što platite ijednu marku.\n\n" +
+      "Ako Vam se ne svidi — ne plaćate ništa i idemo dalje. Bez objašnjavanja.\n\n" +
+      "Koji je Vaš rizik? Petnaest minuta.",
+    tags: ["besplatno", "bezrizika", "revizije", "cijene", "sarajevo", "devforge"],
   },
   {
     id: "p32",
-    template: "title",
-    category: "edukacija",
-    layout: "photo",
-    photo: "mobile",
+    template: "process",
+    category: "izakulisa",
+    layout: "band",
     palette: "light",
-    eyebrow: "Edukacija",
-    title: "Stranica bez AI radi na pola.",
-    subtitle: "Asistent nema gdje stajati bez stranice.",
+    eyebrow: "Naš proces",
+    title: "Šta se dešava u prvih pet dana",
+    items: ["Dan 1 — razgovor i materijal", "Dan 2–3 — struktura i tekst", "Dan 4 — dizajn i kod", "Dan 5 — Vaš pregled"],
     caption:
-      "Često nas pitaju odvojeno: „treba mi stranica“ ili „treba mi AI asistent“.\n\n" +
-      "A to je isti projekat.\n\n" +
-      "AI asistent bez stranice nema gdje stajati. Stranica bez AI asistenta propušta upite noću, vikendom, dok ste na terenu.\n\n" +
-      "Kad se rade zajedno:\n" +
-      "— asistent zna šta piše na stranici\n" +
-      "— stranica ima živi element koji odgovara odmah\n" +
-      "— sve ide na jednu adresu i jedan sistem\n\n" +
-      "Zato kod nas AI ide kao dio projekta stranice, ne kao odvojen proizvod.",
-    tags: ["ai", "webstranica", "integracija", "edukacija", "devforge"],
+      "Transparentno — ovako izgleda prvih 5 dana:\n\n" +
+      "DAN 1: razgovor i materijal. 15 minuta poziva, Vi pošaljete logo, slike i tekst koji imate. Ako nemate tekst — pišemo ga mi.\n\n" +
+      "DAN 2–3: struktura i tekst. Nacrtamo koja stranica vodi gdje. Napišemo tekst prije dizajna (obrnuto nikad ne radi).\n\n" +
+      "DAN 4: dizajn i kod. Prva funkcionalna verzija na pravom linku.\n\n" +
+      "DAN 5: Vaš pregled. Kažete šta mijenjati, mi radimo izmjene.\n\n" +
+      "Sve to bez predujma. Plaćanje ide kad ste zadovoljni.",
+    tags: ["proces", "5dana", "izakulisa", "koraci", "sarajevo", "devforge"],
   },
   {
     id: "p33",
-    template: "list",
-    category: "edukacija",
-    layout: "band",
+    template: "title",
+    category: "ponuda",
+    layout: "center",
     palette: "mint",
-    eyebrow: "AI",
-    title: "AI recepcionar radi dok Vi spavate",
-    items: ["Prima pozive i poruke", "Zna cijene i termine", "Zakaže i potvrdi", "Hitno proslijedi"],
+    eyebrow: "Web shopovi",
+    title: "Shop koji sami punite. Od 600 KM.",
+    subtitle: "Katalog, korpa, plaćanje i upravljanje narudžbama.",
     caption:
-      "AI recepcionar je najkorisnija stvar za firme koje ne mogu stalno biti na telefonu.\n\n" +
-      "Šta radi:\n" +
-      "— prima pozive i poruke 24 sata\n" +
-      "— zna Vaš cjenovnik, radno vrijeme i termine\n" +
-      "— zakaže termin i pošalje potvrdu\n" +
-      "— ako je nešto hitno ili komplikovano, proslijedi Vama s cijelim razgovorom\n\n" +
-      "Šta NE radi: ne pregovara o cijeni, ne obećava što Vi niste odobrili, ne izmišlja.\n\n" +
-      "Za frizerske, stomatološke, autoservise i slične — ovo je najveća ušteda.",
-    tags: ["ai", "recepcionar", "automatizacija", "termini", "devforge"],
+      "Web shop od 600 KM — sve uključeno.\n\n" +
+      "Šta dobijate:\n" +
+      "— katalog proizvoda s kategorijama\n" +
+      "— korpa i checkout\n" +
+      "— online plaćanje (kartice, ponuda, plaćanje pouzećem)\n" +
+      "— upravljanje narudžbama i zalihama\n" +
+      "— admin panel za dodavanje proizvoda\n\n" +
+      "Sami dodajete proizvode, mijenjate cijene i pratite narudžbe. Bez koda i bez zvanja developera.\n\n" +
+      "Povezujemo s onim što već koristite — Stripe, PayPal, dostavne službe.\n\n" +
+      "Prva verzija besplatna, za 5 dana. Plaćate kad ste zadovoljni.",
+    tags: ["webshop", "ecommerce", "shop", "katalog", "sarajevo", "devforge"],
   },
   {
     id: "p34",
+    template: "number",
+    category: "dokaz",
+    layout: "photoTop",
+    photo: "web",
+    palette: "dark",
+    eyebrow: "Naš rad",
+    title: "klijenata zadovoljno isporukom",
+    value: "100%",
+    valueNote: "Svaki projekt isporučen prema dogovoru.",
+    caption:
+      "100% klijenata zadovoljno, svaki projekt isporučen prema dogovoru.\n\n" +
+      "Nije marketinška brojka. To je posljedica načina na koji radimo:\n\n" +
+      "— prvo vidite, pa plaćate (pa nema „nije to ono što sam očekivao“)\n" +
+      "— četiri revizije uključene (pa nema „još samo ovo“)\n" +
+      "— fiksna cijena prije početka (pa nema iznenađenja na kraju)\n\n" +
+      "Kad klijent ne rizikuje novac, nema ni razočaranja. Zvuči jednostavno — ali većina radi obrnuto.\n\n" +
+      "Rastemo na preporukama. Preporuka se ne kupuje.",
+    tags: ["rezultati", "zadovoljstvo", "isporuka", "webdizajn", "sarajevo", "devforge"],
+  },
+  {
+    id: "p35",
     template: "quote",
     category: "brend",
     layout: "stamp",
     palette: "ink",
     eyebrow: "Naš stav",
-    title: "Ako ne zna — mora reći ne znam.",
-    subtitle: "Izmišljen odgovor je gori od nikakvog.",
+    title: "Ne prodajemo stranice. Prodajemo mir.",
+    subtitle: "Stranica je posljedica. Mir je ono što klijent želi.",
     caption:
-      "AI modeli imaju naviku izmišljati. To se zove halucinacija i to je najveći rizik u poslu.\n\n" +
-      "Zato u svakom asistentu kojeg napravimo vrijedi pravilo: odgovor mora doći iz Vašeg dokumenta.\n\n" +
-      "Ako asistent kaže „dostava je 5 KM“, to mora biti u Vašem cjenovniku. Ako nije — mora reći „ne znam, provjerit ću“.\n\n" +
-      "Lažno samouvjeren odgovor je gori od „ne znam“.\n\n" +
-      "Kad birate dobavljača AI rješenja, pitajte: „šta se desi kad asistent ne zna odgovor?“\n\n" +
-      "Ako odgovor nije jasan — nemojte potpisati.",
-    tags: ["ai", "povjerenje", "brend", "kvalitet", "devforge"],
-  },
-  {
-    id: "p35",
-    template: "number",
-    category: "dokaz",
-    layout: "center",
-    palette: "dark",
-    eyebrow: "Podatak",
-    title: "upita dođe kad niko ne radi",
-    value: "41%",
-    valueNote: "Večeri, vikendi, praznici.",
-    caption:
-      "Skoro polovina upita dolazi kad niko ne radi.\n\n" +
-      "20:40 u srijedu. Subota ujutro. Nedjelja uveče kad ljudi gledaju telefone.\n\n" +
-      "Ako tada nema odgovora:\n" +
-      "— 78% njih ode konkurenciji\n" +
-      "— ujutro odgovarate na prazan prostor\n\n" +
-      "AI asistent ne mora biti savršen. Dovoljno je da u 20:40 kaže: „Dostava je 5 KM, dostupno odmah. Ostavite broj, javljamo se ujutro.“\n\n" +
-      "To je upit koji bi inače bio izgubljen.\n\n" +
-      "41% je velik broj da ga ignorišete.",
-    tags: ["ai", "podaci", "vanradnogvremena", "konverzija", "devforge"],
+      "Niko ne želi „web stranicu“. Čovjek želi da ga nađu, da ga zovu, i da ne mora razmišljati o tome.\n\n" +
+      "Zato ne počinjemo s dizajnom. Počinjemo s pitanjem: šta Vas trenutno sprječava da dobijete više posla?\n\n" +
+      "Odgovori su obično isti:\n" +
+      "— „ne mogu me naći na Google-u“\n" +
+      "— „pošalju mi link i ne odgovore“\n" +
+      "— „nemam vremena odgovarati na ista pitanja“\n\n" +
+      "Tekst, raspored i funkcionalnosti se rade prema tim odgovorima. Boje dolaze na kraju.\n\n" +
+      "Ljepota je posljedica. Mir je cilj.",
+    tags: ["brend", "strategija", "webdizajn", "konverzija", "devforge"],
   },
   {
     id: "p36",
-    template: "process",
-    category: "izakulisa",
-    layout: "photoTop",
-    photo: "heroMob",
+    template: "list",
+    category: "ponuda",
+    layout: "split",
     palette: "teal",
-    eyebrow: "Iza kulisa",
-    title: "Testiramo ga na 50 stvarnih pitanja",
-    items: ["Stvarna pitanja kupaca", "Traženje izmišljenih", "Provjera tona", "Dvije sedmice uživo"],
+    eyebrow: "Za koga",
+    title: "Za koga radimo najbolje",
+    items: ["Male i srednje firme", "Servisne djelatnosti", "Ordinacije i saloni", "Restorani i shopovi"],
     caption:
-      "Testiranje je najvažniji dio, i najčešće preskočen.\n\n" +
-      "Naš proces:\n\n" +
-      "1. Uzmemo 50 stvarnih pitanja iz Vaših poruka — s greškama, skraćeno, kako ljudi pišu.\n" +
-      "2. Pustimo asistenta kroz njih i tražimo gdje izmišlja. Svaki izmišljeni odgovor je greška.\n" +
-      "3. Provjerimo ton — da ne zvuči kao robot i da nikad ne obećava ono što ne smije.\n" +
-      "4. Prve dvije sedmice gledamo svaki razgovor. Popravljamo.\n\n" +
-      "Nakon toga, asistent radi sam.\n\n" +
-      "Bez koraka 2, pušten asistent izmišlja cijene. To se odmah vidi.",
-    tags: ["ai", "testiranje", "izakulisa", "kvalitet", "devforge"],
+      "Ne radimo za svakoga. Najbolji smo za:\n\n" +
+      "— male i srednje firme koje trebaju ozbiljnu stranicu bez agencijske cijene\n" +
+      "— servisne djelatnosti (majstori, agencije, konsultanti) kojima treba da ih zovu\n" +
+      "— ordinacije, salone i studije kojima treba zakazivanje termina\n" +
+      "— restorane i male shopove kojima treba online prisutnost\n\n" +
+      "Ne radimo: velike enterprise sisteme, web shopove s 5000 proizvoda i integracijom na tri ERP-a. Za to preporučimo nekog drugog.\n\n" +
+      "Ako ne možemo — reći ćemo Vam odmah, u prvom razgovoru.\n\n" +
+      "Bavite se nečim od ovoga?",
+    tags: ["zakoga", "malibiznis", "servisi", "ordinacije", "sarajevo", "devforge"],
   },
   {
     id: "p37",
-    template: "list",
-    category: "savjet",
-    layout: "offset",
-    palette: "sun",
-    eyebrow: "Savjet",
-    title: "Četiri pitanja prije nego potpišete",
-    items: ["Gdje su naši podaci?", "Šta kad ne zna?", "Koliko je stvarno mjesečno?", "Kako prekidamo?"],
+    template: "title",
+    category: "ponuda",
+    layout: "photo",
+    photo: "web",
+    palette: "light",
+    eyebrow: "Sve uključeno",
+    title: "Dizajn, kod, panel i revizije. Jedna cijena.",
+    subtitle: "Bez doplata i bez „to se posebno plaća“.",
     caption:
-      "Prije nego potpišete bilo šta, pitajte ovo:\n\n" +
-      "1. Gdje se čuvaju naši podaci i ko im ima pristup?\n" +
-      "2. Šta asistent radi kad ne zna odgovor? (Ako kaže „snaći će se“ — bježite.)\n" +
-      "3. Koliko je ukupno mjesečno — uključujući sve naknade, ne samo osnovnu cijenu?\n" +
-      "4. Kako prekidamo saradnju i šta dobijamo na kraju? (Vaši podaci moraju biti Vaši.)\n\n" +
-      "Dobra firma odgovori na sva četiri bez okolišanja.\n\n" +
-      "Loša kaže „to je detalj, riješit ćemo“.\n\n" +
-      "Uvijek tražite odgovore napismeno.",
-    tags: ["ai", "savjeti", "dobavljaci", "ugovor", "devforge"],
+      "Jedna cijena. Sve unutra. Bez doplata nakon potpisa.\n\n" +
+      "Uključeno:\n" +
+      "— UI/UX dizajn\n" +
+      "— razvoj (kod)\n" +
+      "— mobilna verzija\n" +
+      "— admin panel\n" +
+      "— SEO osnova\n" +
+      "— analitika\n" +
+      "— četiri revizije\n" +
+      "— besplatna prva verzija\n\n" +
+      "Nije uključeno: domena i hosting — plaćate direktno provideru, bez naše marže. Nema skrivenih stavki jer nema stavki.\n\n" +
+      "Zašto ovako: jer kupac koji ne zna konačnu cijenu ne može planirati. A firma koja ne može planirati ne kupuje.\n\n" +
+      "Znate broj prije nego što počnemo.",
+    tags: ["cijene", "ukljuceno", "transparentnost", "webdizajn", "devforge"],
   },
   {
     id: "p38",
-    template: "quote",
-    category: "brend",
-    layout: "center",
-    palette: "mint",
-    eyebrow: "Naš stav",
-    title: "AI ne popravlja loš poslovni model.",
-    subtitle: "Ubrzava ono što već radite — dobro ili loše.",
+    template: "list",
+    category: "ponuda",
+    layout: "band",
+    palette: "dark",
+    eyebrow: "AI sistemi",
+    title: "Četiri posla koja AI preuzima",
+    items: ["Odgovori na ista pitanja", "Zakazivanje termina", "Bilježenje narudžbi", "Prosljeđivanje hitnog"],
     caption:
-      "Tehnologija ne rješava loš poslovni model.\n\n" +
-      "Ako ne znate ko je Vaš kupac, AI neće to otkriti.\n" +
-      "Ako je cijena pogrešna, AI neće to popraviti.\n" +
-      "Ako Vam proces traje 5 dana, automatizacija traje 4.\n\n" +
-      "AI ubrzava ono što već radite. Dobro ili loše.\n\n" +
-      "Zato prije svakog AI projekta pitamo ista tri pitanja koja pitamo za stranicu:\n" +
-      "— Ko je kupac?\n" +
-      "— Šta ga sprječava da kupi?\n" +
-      "— Šta mjerimo?\n\n" +
-      "Ako na ova tri nema odgovora, tehnologija je odgađanje.",
-    tags: ["ai", "strategija", "brend", "poslovanje", "devforge"],
+      "AI u firmi nije filozofija. To su četiri konkretna posla:\n\n" +
+      "1. Odgovori na ista pitanja. „Imate li na stanju“, „koliko košta“, „radite li subotom“ — 20 pitanja koja ponavljate svaki dan.\n\n" +
+      "2. Zakazivanje termina. Kupac zakaže sam, dobije potvrdu, Vi dobijete zapis.\n\n" +
+      "3. Bilježenje narudžbi iz poruka. Poruka na Instagramu → zapis u tabeli.\n\n" +
+      "4. Prosljeđivanje hitnog. Nešto komplikovano ide Vama, s cijelim razgovorom.\n\n" +
+      "Sve ostalo — ne diramo. AI ne pregovara o cijeni i ne obećava što Vi niste odobrili.\n\n" +
+      "Koliko vremena dnevno potrošite na iste odgovore?",
+    tags: ["aisistemi", "automatizacija", "termini", "upiti", "sarajevo", "devforge"],
   },
   {
     id: "p39",
-    template: "list",
-    category: "edukacija",
-    layout: "band",
-    palette: "light",
-    eyebrow: "AI",
-    title: "Koliko AI stvarno košta",
-    items: ["Bez velikog starta", "Manje od sata rada", "Raste s razgovorima", "Skupo ako stoji"],
+    template: "quote",
+    category: "brend",
+    layout: "center",
+    palette: "sun",
+    eyebrow: "Naš stav",
+    title: "Ako ne možemo — reći ćemo Vam.",
+    subtitle: "Bolje izgubiti posao nego uraditi ga loše.",
     caption:
-      "Transparentno, bez okolišanja:\n\n" +
-      "AI asistent ne traži veliki početni trošak kao nekad softver. Nema licenci, nema servera u Vašoj kancelariji.\n\n" +
-      "Mjesečno: obično manje od jednog sata rada zaposlenog. Zavisno od broja razgovora.\n\n" +
-      "Cijena raste s količinom — više razgovora, više troška. Ali i više posla.\n\n" +
-      "Skupo je samo kad ga niko ne koristi. Zato se mjeri: koliko razgovora, koliko riješeno bez čovjeka, koliko upita pretvoreno u posao.\n\n" +
-      "Ako ta tri broja ne rastu u prvom mjesecu — nešto je pogrešno postavljeno.",
-    tags: ["ai", "cijena", "transparentnost", "malibiznis", "devforge"],
+      "Dešava se da nas pitaju za nešto što ne radimo dobro.\n\n" +
+      "Primjer: veliki web shop s 5000 proizvoda i integracijom na tri sistema. To nije naš teren.\n\n" +
+      "Kažemo odmah, u prvom razgovoru. I preporučimo nekog ko to radi.\n\n" +
+      "Zašto: loše urađen posao košta više od izgubljenog. Košta reputaciju, košta vrijeme, i na kraju ga morate ispravljati besplatno.\n\n" +
+      "Ako Vam neko kaže da može sve — pitajte ga šta ne može.",
+    tags: ["brend", "iskrenost", "povjerenje", "agencija", "devforge"],
   },
   {
     id: "p40",
-    template: "title",
-    category: "edukacija",
+    template: "cta",
+    category: "ponuda",
     layout: "photoBg",
-    photo: "web",
-    palette: "ink",
-    eyebrow: "AI",
-    title: "Počnite s jednim pitanjem. Ne deset.",
-    subtitle: "Preveliki prvi projekat propadne u tri sedmice.",
+    photo: "hero",
+    palette: "dark",
+    eyebrow: "Počnite",
+    title: "Recite čime se bavite. Mi pitamo dalje.",
+    subtitle: "Ne morate imati ni ideju ni materijal.",
     caption:
-      "Firme često krenu s planom: „automatizovat ćemo sve — pozive, poruke, narudžbe, račune, marketing“.\n\n" +
-      "To propadne u 3 sedmice.\n\n" +
-      "Šta radi: uzmete JEDNO pitanje koje Vam dolazi najviše puta. Samo to.\n\n" +
-      "Primjer: „imate li na stanju“. Automatizujete samo to. Mjerite dvije sedmice. Ako radi — dodate sljedeće.\n\n" +
-      "Za mjesec dana imate 5 automatizovanih stvari koje stvarno rade, umjesto 10 koje su „u izradi“.\n\n" +
-      "Malo, ali završeno. To je pravilo.",
-    tags: ["ai", "savjeti", "pocetak", "automatizacija", "devforge"],
+      "Većina razgovora počne ovako: „Radim to i to, ne znam šta mi treba.“\n\n" +
+      "To je sasvim dovoljno.\n\n" +
+      "Ne morate imati:\n" +
+      "— gotov tekst\n" +
+      "— logo u vektoru\n" +
+      "— ideju kako stranica treba izgledati\n" +
+      "— ni odluku da li Vam uopšte treba stranica\n\n" +
+      "Dovoljno je da se javite i kažete čime se bavite. Mi pitamo dalje i kažemo šta ima smisla.\n\n" +
+      "Bez obaveze i bez predujma.\n\n" +
+      "Javite nam se u DM.",
+    tags: ["kontakt", "pocetak", "bezobaveze", "webdizajn", "sarajevo", "devforge"],
   },
 ];
