@@ -29,7 +29,21 @@ import { DF_LOGO_DATA_URI, DF_LOGO_RATIO } from "./postLogo";
 import { PHOTOS, PHOTO_ALT } from "./postPhotos";
 import { BRAND, BRAND_INK } from "./postBrand";
 
+/** Format objave. Instagram: 1:1 (feed) i 3:4 (novi visoki format). */
+export type PostFormat = "1:1" | "3:4";
+export const FORMATS: Record<PostFormat, { w: number; h: number; label: string }> = {
+  "1:1": { w: 1080, h: 1080, label: "1:1 · 1080×1080" },
+  "3:4": { w: 1080, h: 1440, label: "3:4 · 1080×1440" },
+};
+
+/** Aktivni format — mijenja ga `setFormat()` prije rendera. */
+let FORMAT: PostFormat = "1:1";
+
+/** Sirina je uvijek 1080 (Instagram je tako skalira). */
 const SIZE = 1080;
+/** Visina zavisi od formata. */
+let SIZE_H = 1080;
+/** Margina — ista horizontalno i vertikalno. */
 const M = 96;
 const FONT = "'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif";
 
@@ -228,8 +242,8 @@ function header(c: Colors, eyebrow: string, category: string, slide: number, tot
       const x = startX + i * (dw + gap);
       dots +=
         i === slide
-          ? `<rect x="${x}" y="${SIZE - M - 14}" width="${dw}" height="6" rx="3" fill="${c.accent}"/>`
-          : `<rect x="${x}" y="${SIZE - M - 13}" width="${dw}" height="4" rx="2" fill="${c.soft}" opacity="0.35"/>`;
+          ? `<rect x="${x}" y="${SIZE_H - M - 14}" width="${dw}" height="6" rx="3" fill="${c.accent}"/>`
+          : `<rect x="${x}" y="${SIZE_H - M - 13}" width="${dw}" height="4" rx="2" fill="${c.soft}" opacity="0.35"/>`;
     }
   }
 
@@ -238,16 +252,18 @@ function header(c: Colors, eyebrow: string, category: string, slide: number, tot
     <text x="${SIZE - M}" y="${M - 4 + LOGO_BOX / 2 + 28 * 0.36}" text-anchor="end" font-family="${FONT}"
       font-size="28" font-weight="800" letter-spacing="2.6"
       fill="${c.accent}">${esc(eyebrow.toUpperCase())}</text>
-    <text x="${M}" y="${SIZE - M - 6}" font-family="${FONT}" font-size="26" font-weight="800"
+    <text x="${M}" y="${SIZE_H - M - 6}" font-family="${FONT}" font-size="26" font-weight="800"
       letter-spacing="3" fill="${c.soft}">${esc(category.toUpperCase())}</text>
     ${dots}`;
 }
 
 // ── Forme ─────────────────────────────────────────────────────────────────
 type Block = { svg: string; h: number };
-const CONTENT_TOP = 250;
-const CONTENT_BOTTOM = SIZE - M - 84;
-const CONTENT_H = CONTENT_BOTTOM - CONTENT_TOP;
+/** Sadrzajna zona — racuna se iz trenutne visine formata. */
+const CONTENT_TOP = () => 250;
+const CONTENT_BOTTOM = () => SIZE_H - M - 84;
+const CONTENT_H = () => CONTENT_BOTTOM() - CONTENT_TOP();
+/** Horizontalna sirina sadrzaja — ista za sve formate. */
 const W = SIZE - M * 2;
 const GAP_TOP = 176; // iznad ovoga ne smije ništa (logo je do ~130)
 
@@ -271,7 +287,7 @@ function formCover(c: Colors, p: PostSlide, total: number): Block {
   const title = p.title ?? "";
   let size = fit(title, W, 100);
   let lines = wrap(title, size, W, 3);
-  const budget = CONTENT_H - 200;
+  const budget = CONTENT_H() - 200;
   while (lines.length * size * 1.08 > budget && size > 52) {
     size -= 6;
     lines = wrap(title, size, W, 3);
@@ -317,7 +333,7 @@ function formHero(c: Colors, p: PostSlide): Block {
   const title = p.title ?? "";
   let size = fit(title, W, 116);
   let lines = wrap(title, size, W, 3);
-  const budget = p.subtitle ? CONTENT_H - 190 : CONTENT_H;
+  const budget = p.subtitle ? CONTENT_H() - 190 : CONTENT_H();
   while (lines.length * size * 1.08 > budget && size > 54) {
     size -= 6;
     lines = wrap(title, size, W, 3);
@@ -400,7 +416,7 @@ function formBlocks(c: Colors, p: PostSlide): Block {
   y += 7;
 
   const n = items.length || 1;
-  const avail = CONTENT_H - y - 10;
+  const avail = CONTENT_H() - y - 10;
   const rowH = Math.max(64, Math.min(112, avail / n));
   const fs = n >= 4 ? 34 : 38;
 
@@ -475,7 +491,7 @@ function formDuo(c: Colors, p: PostSlide): Block {
 function formAction(c: Colors, p: PostSlide): Block {
   let ts = fit(p.title ?? "", W, 82);
   let tl = wrap(p.title ?? "", ts, W, 3);
-  while (tl.length * ts * 1.08 > CONTENT_H - 230 && ts > 46) {
+  while (tl.length * ts * 1.08 > CONTENT_H() - 230 && ts > 46) {
     ts -= 6;
     tl = wrap(p.title ?? "", ts, W, 3);
   }
@@ -529,21 +545,21 @@ function buildFitting(c: Colors, p: PostSlide, maxH: number, total = 1): Block {
 const PLACE: Record<PostLayout, (c: Colors, p: PostSlide, total: number) => string> = {
   center: (c, p, total) => {
     const b = build(c, p, total);
-    const y = b.h >= CONTENT_H ? CONTENT_TOP : CONTENT_TOP + (CONTENT_H - b.h) / 2;
+    const y = b.h >= CONTENT_H() ? CONTENT_TOP() : CONTENT_TOP() + (CONTENT_H() - b.h) / 2;
     return `<g transform="translate(${M}, ${y})">${b.svg}</g>`;
   },
 
   split: (c, p, total) => {
     const b = build(c, p, total);
-    const y = CONTENT_TOP + Math.max(0, (CONTENT_H - b.h) / 2);
-    return `<rect x="${M - 40}" y="${CONTENT_TOP}" width="8" height="${CONTENT_H}" fill="${c.accent}"/>
+    const y = CONTENT_TOP() + Math.max(0, (CONTENT_H() - b.h) / 2);
+    return `<rect x="${M - 40}" y="${CONTENT_TOP()}" width="8" height="${CONTENT_H()}" fill="${c.accent}"/>
       <g transform="translate(${M}, ${y})">${b.svg}</g>`;
   },
 
   band: (c, p, total) => {
     const b = build(c, p, total);
-    const bh = Math.min(CONTENT_H, b.h + 120);
-    const by = CONTENT_TOP + Math.max(0, (CONTENT_H - bh) / 2);
+    const bh = Math.min(CONTENT_H(), b.h + 120);
+    const by = CONTENT_TOP() + Math.max(0, (CONTENT_H() - bh) / 2);
     const y = by + Math.max(0, (bh - b.h) / 2);
     return `<rect x="${M - 44}" y="${by}" width="${W + 88}" height="${bh}" fill="${c.card}"
       stroke="${c.line}" stroke-width="1.5"/>
@@ -553,30 +569,30 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide, total: number) => stri
 
   offset: (c, p, total) => {
     const b = build(c, p, total);
-    const y = CONTENT_TOP + 10;
+    const y = CONTENT_TOP() + 10;
     return `<g transform="translate(${M}, ${y})">${b.svg}</g>
-      <rect x="${SIZE - M - 120}" y="${CONTENT_BOTTOM - 120}" width="120" height="120" fill="${c.accent}"/>`;
+      <rect x="${SIZE - M - 120}" y="${CONTENT_BOTTOM() - 120}" width="120" height="120" fill="${c.accent}"/>`;
   },
 
   photoBg: (c, p, total) => {
     const ph = p.photo ?? "hero";
     const b = build(c, p, total);
     void total;
-    const y = CONTENT_TOP + Math.max(0, (CONTENT_H - b.h) / 2);
-    return `<image href="${PHOTOS[ph]}" x="0" y="0" width="${SIZE}" height="${SIZE}"
+    const y = CONTENT_TOP() + Math.max(0, (CONTENT_H() - b.h) / 2);
+    return `<image href="${PHOTOS[ph]}" x="0" y="0" width="${SIZE}" height="${SIZE_H}"
         preserveAspectRatio="xMidYMid slice" aria-label="${esc(PHOTO_ALT[ph])}"/>
-      <rect x="0" y="0" width="${SIZE}" height="${SIZE}" fill="url(#fadeLeft)"/>
-      <rect x="0" y="0" width="${SIZE}" height="${SIZE}" fill="#000000" opacity="0.18"/>
+      <rect x="0" y="0" width="${SIZE}" height="${SIZE_H}" fill="url(#fadeLeft)"/>
+      <rect x="0" y="0" width="${SIZE}" height="${SIZE_H}" fill="#000000" opacity="0.18"/>
       <rect x="0" y="0" width="${SIZE}" height="200" fill="url(#fadeTop)"/>
       <rect x="0" y="0" width="${SIZE}" height="34" fill="${c.bg}" opacity="0.92"/>
-      <rect x="0" y="${SIZE - 170}" width="${SIZE}" height="170" fill="url(#fadeBot)"/>
+      <rect x="0" y="${SIZE_H - 170}" width="${SIZE}" height="170" fill="url(#fadeBot)"/>
       <g transform="translate(${M}, ${y})">${b.svg}</g>`;
   },
 
   photoTop: (c, p, total) => {
     const ph = p.photo ?? "hero";
     const imgH = 370;
-    const b = buildFitting(c, p, CONTENT_BOTTOM - imgH - 24, total);
+    const b = buildFitting(c, p, CONTENT_BOTTOM() - imgH - 24, total);
     return `<image href="${PHOTOS[ph]}" x="0" y="0" width="${SIZE}" height="${imgH}"
         preserveAspectRatio="xMidYMid slice" aria-label="${esc(PHOTO_ALT[ph])}"/>
       <rect x="0" y="${imgH - 80}" width="${SIZE}" height="80" fill="url(#fadeBot)"/>
@@ -587,20 +603,20 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide, total: number) => stri
     const ph = p.photo ?? "hero";
     const imgW = 330;
     const b = build(c, p, total);
-    const y = CONTENT_TOP + Math.max(0, (CONTENT_H - b.h) / 2);
-    return `<image href="${PHOTOS[ph]}" x="${SIZE - imgW}" y="0" width="${imgW}" height="${SIZE}"
+    const y = CONTENT_TOP() + Math.max(0, (CONTENT_H() - b.h) / 2);
+    return `<image href="${PHOTOS[ph]}" x="${SIZE - imgW}" y="0" width="${imgW}" height="${SIZE_H}"
         preserveAspectRatio="xMidYMid slice" aria-label="${esc(PHOTO_ALT[ph])}"/>
-      <rect x="${SIZE - imgW - 80}" y="0" width="80" height="${SIZE}" fill="url(#fadeRight)"/>
+      <rect x="${SIZE - imgW - 80}" y="0" width="80" height="${SIZE_H}" fill="url(#fadeRight)"/>
       <g transform="translate(${M}, ${y})">${b.svg}</g>`;
   },
 
   stamp: (c, p, total) => {
     const b = build(c, p, total);
-    const y = CONTENT_TOP + Math.max(0, (CONTENT_H - b.h) / 2);
+    const y = CONTENT_TOP() + Math.max(0, (CONTENT_H() - b.h) / 2);
     const sh = 360;
     const sw = sh * DF_LOGO_RATIO;
     return `<g opacity="0.055"><image href="${DF_LOGO_DATA_URI}" x="${SIZE / 2 - sw / 2}"
-        y="${CONTENT_TOP + (CONTENT_H - sh) / 2}" width="${sw}" height="${sh}"/></g>
+        y="${CONTENT_TOP() + (CONTENT_H() - sh) / 2}" width="${sw}" height="${sh}"/></g>
       <g transform="translate(${M}, ${y})">${b.svg}</g>`;
   },
 };
@@ -652,20 +668,35 @@ function coverChrome(c: Colors): string {
       <stop offset="100%" stop-color="${c.bg}" stop-opacity="1"/>
     </linearGradient>
   </defs>
-  <rect width="${SIZE}" height="${SIZE}" fill="url(#coverGrad)"/>`;
+  <rect width="${SIZE}" height="${SIZE_H}" fill="url(#coverGrad)"/>`;
 }
 
 /** Okviri covera — crtaju se POSLIJE sadržaja, da foto-pozadina ne prekrije ram. */
 function coverFrame(c: Colors): string {
   const inset = 34;
   return `
-  <rect x="${inset}" y="${inset}" width="${SIZE - inset * 2}" height="${SIZE - inset * 2}"
+  <rect x="${inset}" y="${inset}" width="${SIZE - inset * 2}" height="${SIZE_H - inset * 2}"
     fill="none" stroke="${c.accent}" stroke-width="8"/>
-  <rect x="10" y="10" width="${SIZE - 20}" height="${SIZE - 20}"
+  <rect x="10" y="10" width="${SIZE - 20}" height="${SIZE_H - 20}"
     fill="none" stroke="${c.accent}" stroke-opacity="0.30" stroke-width="2"/>`;
 }
 
 // ── Render ────────────────────────────────────────────────────────────────
+/** Postavi format prije rendera. Vraca prethodni (za bezbjedan reset). */
+export function setFormat(f: PostFormat): PostFormat {
+  const prev = FORMAT;
+  FORMAT = f;
+  SIZE_H = FORMATS[f].h;
+  return prev;
+}
+export function getFormat(): PostFormat {
+  return FORMAT;
+}
+/** Sirina x visina trenutnog formata. */
+export function formatSize(): { w: number; h: number } {
+  return { w: SIZE, h: SIZE_H };
+}
+
 export function renderSlideSvg(
   post: AdPost,
   slide: PostSlide,
@@ -681,7 +712,7 @@ export function renderSlideSvg(
     content = `<g style="filter:drop-shadow(0 3px 16px rgba(0,0,0,0.9)) drop-shadow(0 1px 3px rgba(0,0,0,0.95))">${content}</g>`;
   }
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${SIZE}" height="${SIZE}" viewBox="0 0 ${SIZE} ${SIZE}" role="img" aria-label="${esc(
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${SIZE}" height="${SIZE_H}" viewBox="0 0 ${SIZE} ${SIZE_H}" role="img" aria-label="${esc(
     slide.title ?? post.title,
   )}">
   <defs>
@@ -704,7 +735,7 @@ export function renderSlideSvg(
       <stop offset="100%" stop-color="#000000" stop-opacity="0.10"/>
     </linearGradient>
   </defs>
-  ${isCover ? coverChrome(c) : `<rect width="${SIZE}" height="${SIZE}" fill="${c.bg}"/>`}
+  ${isCover ? coverChrome(c) : `<rect width="${SIZE}" height="${SIZE_H}" fill="${c.bg}"/>`}
   ${isCover ? "" : decor(c, slideIndex + post.id.length)}
   ${content}
   <!-- Zaglavlje se crta POSLIJE sadržaja: foto-pozadine inače prekriju logo. -->
@@ -764,10 +795,10 @@ export async function svgToPngBlob(svg: string): Promise<Blob | null> {
     });
     const canvas = document.createElement("canvas");
     canvas.width = SIZE;
-    canvas.height = SIZE;
+    canvas.height = SIZE_H;
     const ctx = canvas.getContext("2d");
     if (!ctx) return null;
-    ctx.drawImage(img, 0, 0, SIZE, SIZE);
+    ctx.drawImage(img, 0, 0, SIZE, SIZE_H);
     return await new Promise((res) => canvas.toBlob((b) => res(b), "image/png"));
   } catch {
     return null;

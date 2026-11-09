@@ -19,7 +19,14 @@ import {
 } from "react-icons/hi2";
 import { CATEGORY_LABEL, TEMPLATE_LABEL, ALL_POSTS } from "./lib/postsIndex";
 import type { AdPost, PostCategory } from "./lib/postsData";
-import { postSvgDataUri, renderPostSlides, svgToPngBlob } from "./lib/postRender";
+import {
+  postSvgDataUri,
+  renderPostSlides,
+  svgToPngBlob,
+  setFormat,
+  FORMATS,
+  type PostFormat,
+} from "./lib/postRender";
 
 const FILTERS: (PostCategory | "sve")[] = [
   "sve",
@@ -61,8 +68,8 @@ function copyCaption(post: AdPost) {
 }
 
 // ── Kartica jedne objave ──────────────────────────────────────────────────
-function PostCard({ post, onOpen }: { post: AdPost; onOpen: () => void }) {
-  const slides = useMemo(() => renderPostSlides(post), [post]);
+function PostCard({ post, format, onOpen }: { post: AdPost; format: PostFormat; onOpen: () => void }) {
+  const slides = useMemo(() => renderPostSlides(post), [post, format]);
   const src = useMemo(() => postSvgDataUri(slides[0]), [slides]);
   const total = slides.length;
 
@@ -77,8 +84,8 @@ function PostCard({ post, onOpen }: { post: AdPost; onOpen: () => void }) {
         <img
           src={src}
           alt={post.title}
-          width={1080}
-          height={1080}
+          width={FORMATS[format].w}
+          height={FORMATS[format].h}
           loading="lazy"
           className="block w-full transition group-hover:opacity-85"
         />
@@ -173,11 +180,11 @@ function Fullscreen({
 }
 
 // ── Modal s velikim prikazom ──────────────────────────────────────────────
-function PostModal({ post, onClose }: { post: AdPost; onClose: () => void }) {
+function PostModal({ post, format, onClose }: { post: AdPost; format: PostFormat; onClose: () => void }) {
   const [copied, setCopied] = useState(false);
   const [slide, setSlide] = useState(0);
   const [full, setFull] = useState(false);
-  const slides = useMemo(() => renderPostSlides(post), [post]);
+  const slides = useMemo(() => renderPostSlides(post), [post, format]);
   const src = useMemo(() => postSvgDataUri(slides[slide] ?? slides[0]), [slides, slide]);
   const total = slides.length;
 
@@ -326,6 +333,12 @@ function PostModal({ post, onClose }: { post: AdPost; onClose: () => void }) {
 export default function PostsPage() {
   const [filter, setFilter] = useState<PostCategory | "sve">("sve");
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [format, setFmt] = useState<PostFormat>("1:1");
+
+  // Format zivi kao modul-nivo stanje u postRender.ts, pa ga moramo postaviti
+  // prije nego sto se bilo koji SVG izracuna. `format` je zato u dependencies
+  // svih useMemo blokova ispod.
+  setFormat(format);
 
   const visible = useMemo(
     () =>
@@ -353,8 +366,35 @@ export default function PostsPage() {
           </p>
         </header>
 
+        {/* Format — Instagram 1:1 (feed) ili 3:4 (visoki format) */}
+        <div className="mt-8">
+          <p className="text-[0.7rem] font-extrabold uppercase tracking-[0.22em] text-[#8E8E8E]">
+            Format objave
+          </p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {(["1:1", "3:4"] as PostFormat[]).map((f) => {
+              const active = format === f;
+              return (
+                <button
+                  key={f}
+                  type="button"
+                  onClick={() => setFmt(f)}
+                  aria-pressed={active}
+                  className={
+                    active
+                      ? "border border-teal-300 bg-teal-300/15 px-4 py-2 text-sm font-bold text-teal-200"
+                      : "border border-white/10 px-4 py-2 text-sm font-bold text-[#A7AABB] transition hover:border-white/25 hover:text-white"
+                  }
+                >
+                  {f === "1:1" ? "1:1 · 1080×1080" : "3:4 · 1080×1440"}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Filter po kategoriji */}
-        <div className="mt-8 flex flex-wrap gap-2">
+        <div className="mt-6 flex flex-wrap gap-2">
           {FILTERS.map((f) => {
             const active = filter === f;
             const count = f === "sve" ? ALL_POSTS.length : ALL_POSTS.filter((p) => p.category === f).length;
@@ -380,7 +420,7 @@ export default function PostsPage() {
         {/* Galerija */}
         <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
           {visible.map(({ post, index }) => (
-            <PostCard key={post.id} post={post} onOpen={() => setOpenIndex(index)} />
+            <PostCard key={post.id} post={post} format={format} onOpen={() => setOpenIndex(index)} />
           ))}
         </div>
 
@@ -390,7 +430,7 @@ export default function PostsPage() {
       </div>
 
       {openIndex !== null && ALL_POSTS[openIndex] && (
-        <PostModal post={ALL_POSTS[openIndex]} onClose={() => setOpenIndex(null)} />
+        <PostModal post={ALL_POSTS[openIndex]} format={format} onClose={() => setOpenIndex(null)} />
       )}
     </main>
   );
