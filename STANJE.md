@@ -9,6 +9,14 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **OBJAVE v27 — CRNA GORNJA TRAKA + INVERTUJUĆI LOGO NA ZELENOJ** — korisnik: „na tim postovima napravi da bijela traka koja ima svaki post bude crne boje na vrhu posta i da Dev u logotipu bude bijelog fonta a Forge crnog … za postove koji su nekada bili bijele boje pozadinske sada su #4DEAE0“.
+  **1) Gornja traka:** `<rect ... fill="${BRAND}"/>` → `fill="${c.ink === "#0A0A0A" ? "#0A0A0A" : BRAND}"`. Na zelenim paletama (`teal`, `light`) traka je **crna `#0A0A0A`**, na tamnim ostaje `#4DEAE0`. Izmjereno: `y=0..11` kroz cijelu sirinu = **RGB(10,10,10)**.
+  **2) Invertujц́и logo:** `brandMark()` dobio 4. parametar `forgeColor` (default `BRAND`). `header()` racuna `onGreen = c.ink === "#0A0A0A"` i salje:
+  - zelena podloga → `Dev = #FFFFFF`, `Forge = #0A0A0A`
+  - tamna podloga → `Dev = c.ink` (bijelo), `Forge = BRAND`
+  Gradient za `Forge` koristi `${forgeColor}` na oba stopa (prije hardkodirano `#4DEAE0`).
+  **Izmjereno na renderu `p03` (teal):** gornja traka **RGB(10,10,10)** na svih 5 tacaka ×1080px. Wordmark: `Dev` **1236 bijelih** piksela / `Forge` **1444 crnih** piksela, pozadina `RGB(77,234,224)`.
+  **Verifikacija oba formata:** zelenih **9** (p03,p09,p24,p27,p44,p46,p48,p52,p56) — svi `dev=#FFFFFF grad=#0A0A0A top=#0A0A0A`; tamnih **60** netaknuto `grad=#4DEAE0 top=#4DEAE0`. **0 gresaka** u 1:1 i 3:4. Playwright 40/40, 0 gresaka. `tsc` 0, build ✓.
 - **OBJAVE v26 — ZELENA PODLOGA UMIJESTO BIJELE** — korisnik: „bijeli postovi su mi nekako ruzni … mozda da umjesto bijele boje koristis zelenu koju koristimo #4deae0 i da to bude pozadina na tim postovima a druga boja crna na tom postu“.
   **Paleta `teal` (bilo `#F2F2F2`):** `bg #4DEAE0` (brend zelena), `ink #0A0A0A` (crn tekst), `soft #0B403B` (tamna zelena-siva za sekundarni tekst), `accent #0A0A0A` (akcenat je CRN — nema druge zelene), `accentInk #4DEAE0`, `card #2FCFC3`, `line #0A0A0A`.
   **Paleta `light` (bilo `#FFFFFF`):** `bg #6FEFE6` (blago svjetlija zelena za varijaciju), `ink #0A0A0A`, `soft #124F49`, `accent #0A0A0A`, `accentInk #6FEFE6`, `card #4DEAE0`, `line #0A0A0A`.

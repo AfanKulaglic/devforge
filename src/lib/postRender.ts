@@ -206,7 +206,7 @@ const LOGO_STROKE = 1 * K;     // 2.1
 const LOGO_ICON_H = LOGO_BOX * 0.30;                   // 25.2  (izmjereno na navbaru)
 const LOGO_ICON_W = LOGO_ICON_H * DF_LOGO_RATIO;       // 58.8
 
-function brandMark(x: number, y: number, devColor: string): { svg: string; w: number } {
+function brandMark(x: number, y: number, devColor: string, forgeColor: string = "#4DEAE0"): { svg: string; w: number } {
   const iconX = x + (LOGO_BOX - LOGO_ICON_W) / 2;
   const iconY = y + (LOGO_BOX - LOGO_ICON_H) / 2;      // vertikalno centriran
   const gid = `dfg-${Math.round(x)}-${Math.round(y)}`;
@@ -218,8 +218,8 @@ function brandMark(x: number, y: number, devColor: string): { svg: string; w: nu
     svg: `
     <defs>
       <linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="#4DEAE0"/>
-        <stop offset="1" stop-color="#4DEAE0"/>
+        <stop offset="0" stop-color="${forgeColor}"/>
+        <stop offset="1" stop-color="${forgeColor}"/>
       </linearGradient>
     </defs>
     <rect x="${x}" y="${y}" width="${LOGO_BOX}" height="${LOGO_BOX}" rx="${LOGO_RADIUS}"
@@ -232,7 +232,10 @@ function brandMark(x: number, y: number, devColor: string): { svg: string; w: nu
 }
 
 function header(c: Colors, eyebrow: string, category: string, slide: number, total: number): string {
-  const mark = brandMark(M, M - 4, c.ink);
+  // Na zelenoj podlozi (ink je crn) logo se invertuje: "Dev" BIJEL, "Forge" CRN —
+  // inace bi oba bila tamna na zelenom i wordmark bi se izgubio.
+  const onGreen = c.ink === "#0A0A0A";
+  const mark = brandMark(M, M - 4, onGreen ? "#FFFFFF" : c.ink, onGreen ? "#0A0A0A" : BRAND);
 
   let dots = "";
   if (total > 1) {
@@ -748,7 +751,7 @@ export function renderSlideSvg(
   <!-- Zaglavlje se crta POSLIJE sadržaja: foto-pozadine inače prekriju logo. -->
   ${header(c, slide.eyebrow ?? post.eyebrow, post.category, slideIndex, slideTotal)}
   ${isCover ? coverFrame(c) : ""}
-  <rect x="0" y="0" width="${SIZE}" height="12" fill="${BRAND}"/>
+  <rect x="0" y="0" width="${SIZE}" height="12" fill="${c.ink === "#0A0A0A" ? "#0A0A0A" : BRAND}"/>
 </svg>`;
 }
 
