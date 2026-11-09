@@ -9,6 +9,13 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **OBJAVE v9 — WORDMARK KAO U NAVBARU NA SVAKOJ SLICI** — korisnik: „svaki post MORA imati ikonicu devforge. takodjer i natpis kao u navbaru na pocetnoj stranici istim fontom i sve to".
+  **Rijeseno:** `brandMark()` u `postRender.ts` crta identican wordmark kao `Logo()` komponenta u `src/App.tsx`:
+  - ikona `logo-icon.png` u zaobljenom okviru (`rx=16`), tamna podloga `#0B0B0F`, border `rgba(255,255,255,0.15)` 1.5px
+  - natpis **„Dev"** `#FFFFFF` + **„Forge"** linearGradient `#5EEAD4 → #67E8F9` (teal-300 → cyan-300, isto kao `bg-gradient-to-r`)
+  - `font-weight 800`, `letter-spacing -0.6`, velicina 42px — isti vizuelni odnos kao `text-xl font-extrabold tracking-tight`
+  **`postLogo.ts` regenerisan:** ikona cropovana na `getbbox()` (56×24) i uvecana 4× LANCZOS → 224×96, base64 PNG ~13 kB. `DF_LOGO_RATIO = 56/24`.
+  **Verifikacija:** `npx tsc --noEmit` 0; **63/63 slika ima ikonu, 63/63 ima „Dev"/„Forge" natpis, 0 fontova < 24px**; Playwright render 6 paleta — wordmark vidljiv (bijeli „Dev" + teal „Forge"), bez preklapanja s eyebrow tekstom; 60 kartica / 60 ucitano / karusel `1/4` / 0 console gresaka; build ✓.
 - **OBJAVE v8 — SVE SA HOME PAGE-A, SAMO 4 HERO SLIKE** — korisnik: „rekao sam ti da koristis samo slike iz hero sekcije. jako losi tekstovi istakao si najvece gluposti koje su nebitne za prodati moju uslugu... to mi treba benefite da pokazem zanimljivo marketinski... pogledaj kako je na web stranici opcenito pisano sta je istaknuto sta je bitno... sve sto je kontent home pagea treba biti i moje instagram stranice".
   **Greska:** pisao sam o brzini ucitavanja, SEO-u, AI filozofiji — teme koje NISU ono sto sajt prodaje. Home page prodaje 4 benefita i 4 usluge.
   **Izvor sada = `src/App.tsx` `benefits` (4) + `services` (4) + hero + `deliverables`.** Nista izmisljeno.

@@ -137,9 +137,41 @@ function fit(text: string, maxWidth: number, start: number, min = 46): number {
 }
 
 // ── Zaglavlje ─────────────────────────────────────────────────────────────
+// Wordmark je IDENTICAN onome u navbaru (src/App.tsx `Logo`):
+//   • ikona u zaobljenom okviru 1px border, tamna podloga #0B0B0F
+//   • "Dev" bijelo + "Forge" teal→cyan gradijent, font-extrabold, tracking-tight
+// Širina okvira = 40px u navbaru, ovdje srazmjerno (56px) da bude čitljivo na 1080.
+const LOGO_BOX = 62;
+const LOGO_ICON = 46;
+
+function brandMark(x: number, y: number): { svg: string; w: number } {
+  const pad = (LOGO_BOX - LOGO_ICON) / 2;
+  const iconW = LOGO_ICON * DF_LOGO_RATIO;
+  const iconX = x + (LOGO_BOX - iconW) / 2;
+  const iconY = y + pad;
+  // gradijent za "Forge" — teal-300 → cyan-300, kao bg-gradient-to-r from-teal-300 to-cyan-300
+  const gid = `dfg-${Math.round(x)}-${Math.round(y)}`;
+  const textX = x + LOGO_BOX + 16;
+  const textY = y + LOGO_BOX / 2 + 15; // optički centar, cap-height ~0.72
+  return {
+    w: LOGO_BOX + 16 + 150,
+    svg: `
+    <defs>
+      <linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#5EEAD4"/>
+        <stop offset="1" stop-color="#67E8F9"/>
+      </linearGradient>
+    </defs>
+    <rect x="${x}" y="${y}" width="${LOGO_BOX}" height="${LOGO_BOX}" rx="16"
+      fill="#0B0B0F" stroke="#FFFFFF" stroke-opacity="0.15" stroke-width="1.5"/>
+    <image href="${DF_LOGO_DATA_URI}" x="${iconX}" y="${iconY}" width="${iconW}" height="${LOGO_ICON}"/>
+    <text x="${textX}" y="${textY}" font-family="${FONT}" font-size="42" font-weight="800"
+      letter-spacing="-0.6"><tspan fill="#FFFFFF">Dev</tspan><tspan fill="url(#${gid})">Forge</tspan></text>`,
+  };
+}
+
 function header(c: Colors, eyebrow: string, category: string, slide: number, total: number): string {
-  const logoH = 46;
-  const logoW = logoH * DF_LOGO_RATIO;
+  const mark = brandMark(M, M - 6);
 
   let dots = "";
   if (total > 1) {
@@ -156,7 +188,7 @@ function header(c: Colors, eyebrow: string, category: string, slide: number, tot
   }
 
   return `
-    <image href="${DF_LOGO_DATA_URI}" x="${M}" y="${M - 12}" width="${logoW}" height="${logoH}"/>
+    ${mark.svg}
     <text x="${SIZE - M}" y="${M + 24}" text-anchor="end" font-family="${FONT}" font-size="28"
       font-weight="800" letter-spacing="2.6" fill="${c.accent}">${esc(eyebrow.toUpperCase())}</text>
     <text x="${M}" y="${SIZE - M - 6}" font-family="${FONT}" font-size="26" font-weight="800"
