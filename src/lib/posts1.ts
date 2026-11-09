@@ -121,7 +121,7 @@ export const POSTS_1: AdPost[] = [
     template: "list",
     category: "ponuda",
     layout: "photo",
-    photo: "mobile",
+    photo: "stvari",
     palette: "ink",
     eyebrow: "Usluge",
     title: "Četiri stvari koje radimo",
