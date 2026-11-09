@@ -16,8 +16,8 @@ export const POSTS_2: AdPost[] = [
     photo: "ai",
     palette: "ink",
     eyebrow: "AI",
-    title: "AI neće zamijeniti Vaš posao",
-    subtitle: "Ali će firma koja ga koristi zamijeniti onu koja ga ne koristi.",
+    title: "AI Vam neće uzeti posao.",
+    subtitle: "Ali firma koja ga koristi hoće.",
     caption:
       "Ovo nije prijetnja — to je već stvarnost u Bosni.\n\n" +
       "Firme koje koriste AI za dosadne stvari (odgovaranje na ista pitanja, pisanje ponuda, prevode) imaju više vremena za ono što donosi novac.\n\n" +
@@ -33,8 +33,8 @@ export const POSTS_2: AdPost[] = [
     layout: "center",
     palette: "mint",
     eyebrow: "AI",
-    title: "Gdje AI stvarno pomaže maloj firmi",
-    items: ["Odgovara na ista pitanja", "Piše prve verzije tekstova", "Prepoznaje narudžbe iz poruka", "Prevodi na engleski i njemački"],
+    title: "Četiri posla koja AI odradi umjesto Vas",
+    items: ["Odgovori na ista pitanja", "Prve verzije tekstova", "Narudžbe iz poruka", "Prijevod na strani"],
     slides: [
       { template: "list", eyebrow: "AI", title: "Gdje AI pomaže", items: ["Odgovara na ista pitanja", "Piše prve verzije tekstova", "Prepoznaje narudžbe iz poruka", "Prevodi tekstove"] },
       { template: "number", eyebrow: "Primjer", title: "istih pitanja svaki mjesec", value: "50x", valueNote: "Ista četiri pitanja, svaki put.", palette: "ink" },
@@ -57,8 +57,8 @@ export const POSTS_2: AdPost[] = [
     layout: "stamp",
     palette: "dark",
     eyebrow: "Naš stav",
-    title: "AI bez podataka o Vašoj firmi je samo pametan đak.",
-    subtitle: "Zna sve općenito, ništa konkretno o Vama.",
+    title: "AI koji ne zna Vaše cijene izmišlja.",
+    subtitle: "Zato mu trebaju Vaši podaci, ne samo dobar model.",
     caption:
       "ChatGPT zna napisati tekst. Ali ne zna da Vi radite dostavu samo u Kantonu Sarajevo, da ne primate kartice, i da Vam je najveći kupac firma iz Zenice.\n\n" +
       "Zato AI asistent za firmu nije „spojite ChatGPT “. To je posao: prikupiti Vaše podatke, srediti ih, i dati modelu da odgovara SAMO iz njih.\n\n" +
@@ -75,8 +75,8 @@ export const POSTS_2: AdPost[] = [
     layout: "band",
     palette: "sun",
     eyebrow: "Savjet",
-    title: "Kada AI NIJE rješenje",
-    items: ["Kad imate 3 upita mjesečno", "Kad nemate sredjen cjenovnik", "Kad kupci traže razgovor", "Kad je proces sam po sebi loš"],
+    title: "Kada Vam AI ne treba",
+    items: ["3 upita mjesečno", "Nema cjenovnika", "Kupci traže čovjeka"],
     caption:
       "Iskreno: AI nije za svakoga, i nije za svaki problem.\n\n" +
       "Ne isplati se ako:\n" +
@@ -96,9 +96,9 @@ export const POSTS_2: AdPost[] = [
     photo: "ai",
     palette: "teal",
     eyebrow: "Rezultat",
-    title: "sati sedmično manje na istim odgovorima",
+    title: "manje sedmično na istim odgovorima",
     value: "8h",
-    valueNote: "Kod klijenta koji ima 60–80 upita sedmično.",
+    valueNote: "Klijent s 60–80 upita sedmično.",
     caption:
       "Jedan klijent, 60–80 upita sedmično. Ista pitanja: cijena, dostava, na stanju, radno vrijeme.\n\n" +
       "Prije: dvije osobe po 4 sata sedmično samo na odgovaranje.\n" +
@@ -115,8 +115,8 @@ export const POSTS_2: AdPost[] = [
     layout: "center",
     palette: "light",
     eyebrow: "Kako radimo",
-    title: "Kako nastaje AI asistent",
-    items: ["Popišemo Vaša pravila i cijene", "Povežemo s Vašim dokumentima", "Testiramo na 50 stvarnih pitanja", "Puštamo i mjerimo tačnost"],
+    title: "AI asistent se pravi u četiri koraka",
+    items: ["Popis pravila i cijena", "Povezivanje dokumenata", "Test na 50 pitanja", "Mjerenje tačnosti"],
     caption:
       "AI asistent se ne „uključi“. Pravi se u četiri koraka:\n\n" +
       "1. Popis — sjednemo i popišemo sve što mu treba znati: cjenovnik, dostava, radno vrijeme, šta ne radite, kako se ponašati kad ne znate odgovor.\n\n" +
@@ -133,7 +133,7 @@ export const POSTS_2: AdPost[] = [
     layout: "band",
     palette: "ink",
     eyebrow: "Poređenje",
-    title: "Chatbot star 10 godina vs. AI asistent",
+    title: "Stari chatbot vs. AI asistent",
     items: ["Samo dugmad", "Padne na svako drugo pitanje", "Kupac odustane", "Niko ga ne koristi", "Razumije slobodan tekst", "Odgovara iz Vaših podataka", "Rješava ili prosljeđuje", "Radi 24 sata"],
     caption:
       "Stari chatboti su bili drvo odluka: „Pritisnite 1 za cijene, 2 za dostavu“. Ljudi mrze to.\n\n" +
@@ -151,8 +151,8 @@ export const POSTS_2: AdPost[] = [
     photo: "game",
     palette: "dark",
     eyebrow: "AI",
-    title: "Šta AI asistent može zvati",
-    items: ["Provjeri stanje u skladištu", "Kreiraj narudžbu", "Zakaži termin", "Proslijedi čovjeku"],
+    title: "Asistent ne samo priča — radi",
+    items: ["Provjeri stanje", "Napravi narudžbu", "Zakaži termin", "Proslijedi čovjeku"],
     caption:
       "Ovo je dio koji većina ne zna: AI asistent može raditi stvari, ne samo pričati.\n\n" +
       "Primjeri iz prakse:\n" +
@@ -170,9 +170,9 @@ export const POSTS_2: AdPost[] = [
     layout: "offset",
     palette: "mint",
     eyebrow: "Podatak",
-    title: "kupaca očekuje odgovor u prvih 5 minuta",
+    title: "kupaca čeka odgovor 5 minuta, ne duže",
     value: "78%",
-    valueNote: "A prosječna firma odgovori za 12 sati.",
+    valueNote: "Prosječna firma odgovori za 12 sati.",
     caption:
       "Istraživanja su konzistentna: ako kupac pita i ne dobije odgovor brzo, ide dalje. Ne čeka.\n\n" +
       "78% očekuje odgovor u prvih 5 minuta.\n" +
@@ -189,8 +189,8 @@ export const POSTS_2: AdPost[] = [
     layout: "split",
     palette: "sun",
     eyebrow: "Naš stav",
-    title: "Automatizujte dosadu, ne odnose.",
-    subtitle: "AI treba da preuzme ponavljanje — ne razgovor s kupcem.",
+    title: "Automatizujte dosadu. Ne odnose.",
+    subtitle: "AI preuzima ponavljanje, Vi razgovor.",
     caption:
       "Postoji pogrešna ideja da AI treba „voditi“ odnos s kupcem od početka do kraja.\n\n" +
       "Ne. Odnos je Vaš.\n\n" +
@@ -210,8 +210,8 @@ export const POSTS_2: AdPost[] = [
     layout: "center",
     palette: "teal",
     eyebrow: "Savjet",
-    title: "Prije nego uvedete AI, uradite ovo",
-    items: ["Napišite cjenovnik na jedno mjesto", "Popišite 20 najčešćih pitanja", "Odredite šta se NIKAD ne smije reći", "Odaberite ko provjerava odgovore"],
+    title: "Četiri stvari prije uvođenja AI",
+    items: ["Cjenovnik na jednom mjestu", "20 najčešćih pitanja", "Šta se ne smije reći", "Ko provjerava odgovore"],
     caption:
       "AI projekti propadaju iz organizacijskih razloga, ne tehničkih.\n\n" +
       "Prije tehničkog dijela, uradite četiri stvari:\n\n" +
@@ -230,8 +230,8 @@ export const POSTS_2: AdPost[] = [
     photo: "mobile",
     palette: "light",
     eyebrow: "Edukacija",
-    title: "Stranica i AI nisu dvije stvari",
-    subtitle: "Jedno bez drugog radi na pola snage.",
+    title: "Stranica bez AI radi na pola.",
+    subtitle: "Asistent nema gdje stajati bez stranice.",
     caption:
       "Često nas pitaju odvojeno: „treba mi stranica“ ili „treba mi AI asistent“.\n\n" +
       "A to je isti projekat.\n\n" +
@@ -250,8 +250,8 @@ export const POSTS_2: AdPost[] = [
     layout: "band",
     palette: "mint",
     eyebrow: "AI",
-    title: "AI recepcionar — šta to znači",
-    items: ["Odgovara na pozive i poruke", "Zna Vaše cijene i termine", "Zakaže i potvrdi termin", "Proslijedi hitno čovjeku"],
+    title: "AI recepcionar radi dok Vi spavate",
+    items: ["Prima pozive i poruke", "Zna cijene i termine", "Zakaže i potvrdi", "Hitno proslijedi"],
     caption:
       "AI recepcionar je najkorisnija stvar za firme koje ne mogu stalno biti na telefonu.\n\n" +
       "Šta radi:\n" +
@@ -270,8 +270,8 @@ export const POSTS_2: AdPost[] = [
     layout: "stamp",
     palette: "ink",
     eyebrow: "Naš stav",
-    title: "Svaki AI odgovor mora imati izvor.",
-    subtitle: "Ako ne može pokazati odakle zna — ne vjerujemo mu.",
+    title: "Ako ne zna — mora reći ne znam.",
+    subtitle: "Izmišljen odgovor je gori od nikakvog.",
     caption:
       "AI modeli imaju naviku izmišljati. To se zove halucinacija i to je najveći rizik u poslu.\n\n" +
       "Zato u svakom asistentu kojeg napravimo vrijedi pravilo: odgovor mora doći iz Vašeg dokumenta.\n\n" +
@@ -288,7 +288,7 @@ export const POSTS_2: AdPost[] = [
     layout: "center",
     palette: "dark",
     eyebrow: "Podatak",
-    title: "upita dolazi van radnog vremena",
+    title: "upita dođe kad niko ne radi",
     value: "41%",
     valueNote: "Večeri, vikendi, praznici.",
     caption:
@@ -310,8 +310,8 @@ export const POSTS_2: AdPost[] = [
     photo: "heroMob",
     palette: "teal",
     eyebrow: "Iza kulisa",
-    title: "Kako testiramo AI asistenta",
-    items: ["50 stvarnih pitanja kupaca", "Tražimo izmišljene odgovore", "Provjeravamo ton i pravila", "Mjerimo 2 sedmice uživo"],
+    title: "Testiramo ga na 50 stvarnih pitanja",
+    items: ["Stvarna pitanja kupaca", "Traženje izmišljenih", "Provjera tona", "Dvije sedmice uživo"],
     caption:
       "Testiranje je najvažniji dio, i najčešće preskočen.\n\n" +
       "Naš proces:\n\n" +
@@ -330,8 +330,8 @@ export const POSTS_2: AdPost[] = [
     layout: "offset",
     palette: "sun",
     eyebrow: "Savjet",
-    title: "Pitanja za dobavljača AI rješenja",
-    items: ["Gdje se čuvaju naši podaci?", "Šta kad asistent ne zna?", "Koliko je mjesečno stvarno?", "Kako prekidamo saradnju?"],
+    title: "Četiri pitanja prije nego potpišete",
+    items: ["Gdje su naši podaci?", "Šta kad ne zna?", "Koliko je stvarno mjesečno?", "Kako prekidamo?"],
     caption:
       "Prije nego potpišete bilo šta, pitajte ovo:\n\n" +
       "1. Gdje se čuvaju naši podaci i ko im ima pristup?\n" +
@@ -350,8 +350,8 @@ export const POSTS_2: AdPost[] = [
     layout: "center",
     palette: "mint",
     eyebrow: "Naš stav",
-    title: "AI je alat. Ne strategija.",
-    subtitle: "Firma bez plana s AI-jem je samo firma bez plana.",
+    title: "AI ne popravlja loš poslovni model.",
+    subtitle: "Ubrzava ono što već radite — dobro ili loše.",
     caption:
       "Tehnologija ne rješava loš poslovni model.\n\n" +
       "Ako ne znate ko je Vaš kupac, AI neće to otkriti.\n" +
@@ -373,7 +373,7 @@ export const POSTS_2: AdPost[] = [
     palette: "light",
     eyebrow: "AI",
     title: "Koliko AI stvarno košta",
-    items: ["Nema velikog početnog troška", "Mjesečno kao jedan zaposleni na sat", "Cijena raste s brojem razgovora", "Skupo je samo ako se ne koristi"],
+    items: ["Bez velikog starta", "Manje od sata rada", "Raste s razgovorima", "Skupo ako stoji"],
     caption:
       "Transparentno, bez okolišanja:\n\n" +
       "AI asistent ne traži veliki početni trošak kao nekad softver. Nema licenci, nema servera u Vašoj kancelariji.\n\n" +
@@ -391,8 +391,8 @@ export const POSTS_2: AdPost[] = [
     photo: "web",
     palette: "ink",
     eyebrow: "AI",
-    title: "Počnite s jednim pitanjem, ne s deset",
-    subtitle: "Najčešća greška je preveliki prvi projekat.",
+    title: "Počnite s jednim pitanjem. Ne deset.",
+    subtitle: "Preveliki prvi projekat propadne u tri sedmice.",
     caption:
       "Firme često krenu s planom: „automatizovat ćemo sve — pozive, poruke, narudžbe, račune, marketing“.\n\n" +
       "To propadne u 3 sedmice.\n\n" +

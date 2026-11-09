@@ -9,6 +9,24 @@ Zadnje ažurirano: 2026-06-15 (CMS / admin panel na /admin)
 - **Akcent boja: TEAL/AQUA** (`teal-*` Tailwind, gradijent teal→cyan). Gl. CTA gradijent `from-teal-400 to-[#0891B2]`. Deep end `#0E7490`. Fokus prsten `#2dd4bf`. (rebrand s ljubičaste).
 
 ## Gotovo (ova sesija)
+- **OBJAVE v7 — NASLOVI SU TVRDNJE, NE TEME** — korisnik: „tekstovi postova su nejasni naprimjer stranica koja se ucitava 6 je boldirano na jednom postu a nista ne znaci... razmislis malo bolje o tome svemu. nejasno je sve dosta".
+  **Dijagnoza:** naslovi su IMENOVALI TEMU umjesto da TVRDE nesto. „Stranica koja se učitava 6 sekundi" — boldirano, a ne kaze sta 6 znaci. Covek gleda 2 sekunde i ne zna o cemu je.
+  **Pravilo koje sada vodi sve:** ako neko pogleda sliku 2 sekunde i ne moze prepričati o cemu je — tekst je loš. Naslov mora biti **TVRDNJA** sa posljedicom:
+  - ✗ „Stranica koja se učitava 6 sekundi" (tema)
+  - ✓ „6 sekundi = 4 kupca odu" (tvrdnja)
+  **Prepisano 60/60 naslova** kroz tri fajla: `posts1.ts` (20, pisano iznova), `posts2.ts` (20, 20/20 zamjena), `posts3.ts` (20, 20/20 zamjena).
+  **Primjeri prije → poslije:**
+  - „Stranica koja se učitava 6 sekundi" → **„6 sekundi = 4 kupca odu"**
+  - „Šta dobijate, a šta ne" → **„Domena mora biti na Vaše ime"**
+  - „AI neće zamijeniti Vaš posao" → **„AI Vam neće uzeti posao. Ali firma koja ga koristi hoće."**
+  - „AI bez podataka je pametan đak" → **„AI koji ne zna Vaše cijene izmišlja"**
+  - „Kako da dobijete tačnu ponudu" → **„Četiri stvari daju tačnu ponudu"**
+  - „Zašto šabloni izgledaju isto" → **„Izgledate kao 30 drugih firmi"**
+  - „Ako ne znate odakle početi" → **„Ne morate imati ni ideju"**
+  - „Šta čovjek traži vs. šta firme stavljaju" → **„Čovjek traži cijenu. Ne Vašu priču."**
+  **Renderer v7** (`postRender.ts` prepisan): `formHero` ogranicava naslov i po visini; `formFigure` naslov je uvijek posljedica broja (nikad etiketa); `formBlocks` max 4 kratka reda; `formDuo` uvijek ista kolicina lijevo/desno. Dodan `GAP_TOP=176` (ispod loga nema nicega).
+  **Popravke:** hero akcenat traka `-44→-34` (p58 je izlazio na 216); **svi fontovi < 24px podignuti na 26px** (`font<24px` bilo 116 → sada **0**); `duo` visina reda `54→58`.
+  **Verifikacija:** `npx tsc --noEmit` → 0; **60 objava, 3 karusela, 69 slika, 0 prekoracenja, 0 fontova < 24px**; Playwright: 60 kartica, 60/60 ucitano, karusel `1/4` s 4 tackice, 0 console gresaka; build ✓.
 - **OBJAVE v6 — BOJE SAJTA + HERO FOTOGRAFIJE** — korisnik: „koristi i druge slike u postovima koje koristis na hero sekciji na home pageu. takodjer glupe su mi neke boje na postovima pozadine nemaju boje veze sa mojom stranicom".
   **1) PALETE PREBACENE NA STVARNE BOJE SAJTA** (prije: proizvoljne ljubicaste/narandzaste). Izvucene iz `src/index.css`: `#060606` (body), `#2DD4BF` i `#5EEAD4` (teal akcent), `#0E7490` (cyan), `#19E3C2`, `#E6FFFB`/`#AAF BEF` (svijetli teal), `#07433B`/`#0A5D52` (petrol), `#0A1412`. **Nema vise ljubicaste (`#7C6BFF`) ni narandzaste (`#FFD9A0`)**:
   - `dark` — `#060606` + `#2DD4BF` (glavni identitet sajta)

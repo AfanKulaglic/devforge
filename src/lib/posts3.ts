@@ -15,8 +15,8 @@ export const POSTS_3: AdPost[] = [
     layout: "stamp",
     palette: "dark",
     eyebrow: "Naš stav",
-    title: "Cijena nije problem. Nejasna cijena je problem.",
-    subtitle: "Kad ne znate koliko košta, ne pitate — odlazite.",
+    title: "Kad cijena nije jasna, ne pitate.",
+    subtitle: "Odlazite. A firma misli da niste zainteresovani.",
     caption:
       "Najčešći razlog zašto ljudi ne pošalju upit: ne znaju koliko će to koštati, a ne žele da ispadnu da nemaju.\n\n" +
       "Zato na sajtu imamo cijene. Nije zato što volimo da ih objavljujemo — zato što ljudi mirnije pitaju kad znaju okvir.\n\n" +
@@ -32,8 +32,8 @@ export const POSTS_3: AdPost[] = [
     photo: "project1",
     palette: "teal",
     eyebrow: "Iza kulisa",
-    title: "Šta smo naučili iz 40+ projekata",
-    items: ["Klijent zna svoj posao, ne dizajn", "Prva verzija nikad nije zadnja", "Najviše vremena ode na sitnice", "Jasna cijena štedi sedmice"],
+    title: "Četiri stvari iz 40+ projekata",
+    items: ["Klijent zna svoj posao", "Prva verzija nije zadnja", "Sitnice odnesu vrijeme", "Jasna cijena štedi"],
     caption:
       "Četiri stvari koje smo naučili radeći, i koje bi svako trebao znati:\n\n" +
       "1. Klijent zna svoj posao bolje od nas. Mi znamo stranice. Zato pitamo, ne pretpostavljamo.\n\n" +
@@ -49,7 +49,7 @@ export const POSTS_3: AdPost[] = [
     layout: "band",
     palette: "sun",
     eyebrow: "Savjet",
-    title: "Šta klijenti misle vs. kako stvarno stoji",
+    title: "Četiri zablude koje Vas koštaju upita",
     items: ["Cijena je previsoka", "Traje mjesecima", "Treba mi firma", "Mobitel je dovoljan", "Cijena je jasna", "2–5 dana", "Treba ideja i kupac", "Mobitel je 76%"],
     caption:
       "Četiri najčešće zablude koje čujemo:\n\n" +
@@ -67,8 +67,8 @@ export const POSTS_3: AdPost[] = [
     layout: "center",
     palette: "light",
     eyebrow: "O nama",
-    title: "Radimo iz Sarajeva, za firme iz cijele BiH",
-    subtitle: "Bez kancelarije u centru i bez velikih režija.",
+    title: "Radimo iz Sarajeva, bez režija",
+    subtitle: "Zato ne plaćate kancelariju u centru.",
     caption:
       "Nismo velika agencija. Nemamo 30 zaposlenih i ne iznajmljujemo sprat u centru.\n\n" +
       "To znači da ne plaćate tu režiju.\n\n" +
@@ -84,8 +84,8 @@ export const POSTS_3: AdPost[] = [
     layout: "split",
     palette: "ink",
     eyebrow: "Savjet",
-    title: "Kako da dobijete tačnu ponudu",
-    items: ["Recite čime se bavite", "Recite ko Vas zove", "Pošaljite 3 primjera koja Vam se sviđaju", "Recite budžet, iskreno"],
+    title: "Četiri stvari daju tačnu ponudu",
+    items: ["Čime se bavite", "Ko Vas zove", "Tri primjera", "Budžet, iskreno"],
     caption:
       "Kad tražite ponudu, ove četiri stvari je razlika između „ne znamo šta hoćete“ i tačne cijene isti dan:\n\n" +
       "1. Čime se bavite i šta prodajete — jedna rečenica.\n" +
@@ -103,9 +103,9 @@ export const POSTS_3: AdPost[] = [
     photo: "project2",
     palette: "mint",
     eyebrow: "Rezultat",
-    title: "projekata urađeno do sada",
+    title: "projekata, nijedan plaćen naslijepo",
     value: "40+",
-    valueNote: "Stranice, shopovi, aplikacije, AI sistemi.",
+    valueNote: "Stranice, shopovi, aplikacije, AI.",
     caption:
       "Preko 40 projekata. Neki veliki, neki jedna stranica za frizerski salon.\n\n" +
       "Ono što nam je važnije od broja: nijedan klijent nije platio nešto što nije vidio.\n\n" +
@@ -121,8 +121,8 @@ export const POSTS_3: AdPost[] = [
     layout: "center",
     palette: "teal",
     eyebrow: "Naš stav",
-    title: "Vaš kod je Vaš. Uvijek.",
-    subtitle: "Domena, hosting, pristupi i izvorni kod — na Vaše ime.",
+    title: "Domena, kod i pristupi su Vaši.",
+    subtitle: "Nikad na naše ime. Bez zatočeništva.",
     caption:
       "Najgori scenario koji smo vidjeli: firma je platila stranicu, a domenu drži bivši izvođač. Godinu dana nisu mogli ništa.\n\n" +
       "Zato radimo drugačije:\n" +
@@ -141,8 +141,8 @@ export const POSTS_3: AdPost[] = [
     layout: "band",
     palette: "dark",
     eyebrow: "Iza kulisa",
-    title: "Naši principi, napisani",
-    items: ["Prvo radna verzija, pa plaćanje", "Fiksna cijena, bez doplata", "Odgovaramo u 10 minuta", "Kažemo ne kad ne znamo"],
+    title: "Četiri pravila po kojima radimo",
+    items: ["Radna verzija prvo", "Fiksna cijena", "Odgovor u 10 min", "Kažemo ne"],
     slides: [
       { template: "list", eyebrow: "Principi", title: "Četiri pravila", items: ["Radna verzija prvo", "Fiksna cijena", "Odgovor u 10 min", "Kažemo ne"] },
       { template: "quote", eyebrow: "Prvo pravilo", title: "Vidite, pa platite.", subtitle: "Ako ne valja — ne plaćate ništa.", palette: "teal" },
@@ -165,8 +165,8 @@ export const POSTS_3: AdPost[] = [
     layout: "offset",
     palette: "sun",
     eyebrow: "Savjet",
-    title: "Šta sami možete uraditi danas",
-    items: ["Provjerite brzinu na PageSpeed-u", "Otvorite stranicu na mobitelu", "Pošaljite test kroz formu", "Provjerite imate li pristup domeni"],
+    title: "Četiri provjere za 30 minuta",
+    items: ["PageSpeed brzina", "Mobitel prikaz", "Test forme", "Pristup domeni"],
     caption:
       "Ne morate nikog platiti da biste popravili najvažnije stvari. Za 30 minuta:\n\n" +
       "1. PageSpeed Insights — upišite svoju adresu. Ako je preko 3 sekunde, imate posla.\n" +
@@ -185,8 +185,8 @@ export const POSTS_3: AdPost[] = [
     photo: "hero",
     palette: "ink",
     eyebrow: "Edukacija",
-    title: "Zašto šabloni izgledaju isto",
-    subtitle: "Jer svi kupe isti šablon.",
+    title: "Izgledate kao 30 drugih firmi.",
+    subtitle: "Jer ste kupili isti šablon kao one.",
     caption:
       "Ako Vam stranica izgleda kao 30 drugih u Bosni, vjerovatno je tako i nastala.\n\n" +
       "Šablon nije loš. Loše je to što isti šablon koristi još hiljade firmi, i svi ostave iste sekcije, iste ikonice, isti raspored.\n\n" +
@@ -202,8 +202,8 @@ export const POSTS_3: AdPost[] = [
     layout: "center",
     palette: "mint",
     eyebrow: "Kako radimo",
-    title: "Šta se dešava kad kažete gotovo je",
-    items: ["Prebacujemo na Vašu domenu", "Povezujemo analitiku", "Radimo test na 3 uređaja", "Predajemo sve pristupe"],
+    title: "Zadnji dan: sve lozinke idu Vama",
+    items: ["Prebacivanje domene", "Povezivanje analitike", "Test na 3 uređaja", "Predaja pristupa"],
     caption:
       "Objava nije samo „pustiti na internet“. Ovako izgleda zadnji dan:\n\n" +
       "1. Prebacivanje — stranica ide s test adrese na Vašu pravu domenu.\n" +
@@ -221,8 +221,8 @@ export const POSTS_3: AdPost[] = [
     layout: "stamp",
     palette: "teal",
     eyebrow: "Naš stav",
-    title: "Bolje uraditi jednu stvar dobro.",
-    subtitle: "Nego pet stvari površno.",
+    title: "Jedna stvar dobro, pet površno.",
+    subtitle: "Zato radimo samo četiri usluge.",
     caption:
       "Mogli bismo raditi i marketing, i društvene mreže, i video produkciju, i SEO za cijelu BiH.\n\n" +
       "Ne radimo.\n\n" +
@@ -240,8 +240,8 @@ export const POSTS_3: AdPost[] = [
     photo: "heroMob",
     palette: "dark",
     eyebrow: "Savjet",
-    title: "Kako da pripremite materijal",
-    items: ["Logo u vektoru (SVG ili AI)", "Tekst u dokumentu, ne na slici", "Slike bez filtera, originalne", "Cjenovnik kao tekst"],
+    title: "Dobar materijal ubrza posao duplo",
+    items: ["Logo u vektoru", "Tekst u dokumentu", "Originalne slike", "Cjenovnik kao tekst"],
     caption:
       "Ako nam pošaljete ovo u startu, projekat ide dvostruko brže:\n\n" +
       "1. Logo u vektoru — SVG, AI ili PDF. Ne screenshot s Facebooka. Ako nemate, pretvorit ćemo ga.\n\n" +
@@ -258,7 +258,7 @@ export const POSTS_3: AdPost[] = [
     layout: "band",
     palette: "light",
     eyebrow: "Podatak",
-    title: "dana — prosječno do prve radne verzije",
+    title: "dana do prve verzije koju vidite",
     value: "4",
     valueNote: "Nakon što dobijemo materijal.",
     caption:
@@ -276,7 +276,7 @@ export const POSTS_3: AdPost[] = [
     layout: "center",
     palette: "sun",
     eyebrow: "Poređenje",
-    title: "Šta čovjek traži vs. šta firme stavljaju",
+    title: "Čovjek traži cijenu. Ne Vašu priču.",
     items: ["Cijenu", "Da li rade to što tražim", "Kako da ih kontaktiram", "Da li su stvarni", "Naša priča od 2009.", "Naša misija i vizija", "Svi naši partneri", "Nagrade"],
     caption:
       "Na stranicu dolazi čovjek koji ima problem. Ne dolazi da čita o Vama.\n\n" +
@@ -294,8 +294,8 @@ export const POSTS_3: AdPost[] = [
     layout: "split",
     palette: "mint",
     eyebrow: "Naš stav",
-    title: "Ne trebamo sve klijente.",
-    subtitle: "I to je dobro za obje strane.",
+    title: "Nekad kažemo ne. Namjerno.",
+    subtitle: "Bolje izgubiti posao nego uraditi ga loše.",
     caption:
       "Nekad kažemo ne.\n\n" +
       "Ne ako je budžet 50 KM a očekivanja kao za veliki shop. Bolje da to kažemo odmah nego poslije tri sedmice.\n\n" +
@@ -313,8 +313,8 @@ export const POSTS_3: AdPost[] = [
     photo: "mobile",
     palette: "ink",
     eyebrow: "Savjet",
-    title: "Šta staviti u podnožje",
-    items: ["Naziv firme i grad", "Kontakt: telefon, e-mail", "Radno vrijeme", "Linkovi na mreže"],
+    title: "Kontakt traže u podnožju. Stavite ga",
+    items: ["Naziv i grad", "Telefon i e-mail", "Radno vrijeme", "Linkovi na mreže"],
     caption:
       "Podnožje je najviše zanemaren dio stranice — a tu ljudi traže kontakt.\n\n" +
       "Obavezno:\n" +
@@ -337,8 +337,8 @@ export const POSTS_3: AdPost[] = [
     layout: "offset",
     palette: "light",
     eyebrow: "Iza kulisa",
-    title: "Jedan čovjek, jedan projekat",
-    subtitle: "Znate s kim razgovarate od početka do kraja.",
+    title: "Ista osoba od početka do kraja.",
+    subtitle: "Ne prelazi iz ruke u ruku.",
     caption:
       "U velikim agencijama projekat prelazi iz ruke u ruku: prodaja → projektni menadžer → dizajner → developer → tester.\n\n" +
       "Svaki prelaz izgubi dio informacija. Na kraju developer dobije „napravi ovako“ bez ikakvog konteksta zašto.\n\n" +
@@ -356,8 +356,8 @@ export const POSTS_3: AdPost[] = [
     photo: "game",
     palette: "dark",
     eyebrow: "Za kraj",
-    title: "Ako ne znate odakle početi — pošaljite poruku.",
-    subtitle: "Ne morate imati ni ideju ni materijal.",
+    title: "Ne morate imati ni ideju.",
+    subtitle: "Dovoljno je da se javite i kažete čime se bavite.",
     caption:
       "Najčešće ljudi ne pišu jer misle da moraju imati sve smišljeno.\n\n" +
       "Ne morate. Većina razgovora počne ovako: „Radim to i to, ne znam šta mi treba.“\n\n" +
@@ -375,8 +375,8 @@ export const POSTS_3: AdPost[] = [
     layout: "center",
     palette: "teal",
     eyebrow: "Sažetak",
-    title: "Sve što treba znati o stranici",
-    items: ["Radi na mobitelu", "Učita se za 3 sekunde", "Kaže čime se bavite", "Ima jasan kontakt"],
+    title: "Stranica koja radi ima četiri stvari",
+    items: ["Radi na mobitelu", "Učita se za 3s", "Kaže čime se bavite", "Ima jasan kontakt"],
     caption:
       "Ako zapamtite samo jednu objavu, neka bude ova.\n\n" +
       "Stranica koja radi ima četiri stvari:\n\n" +
