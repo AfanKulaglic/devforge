@@ -235,8 +235,9 @@ function header(c: Colors, eyebrow: string, category: string, slide: number, tot
 
   return `
     ${mark.svg}
-    <text x="${SIZE - M}" y="${M + 24}" text-anchor="end" font-family="${FONT}" font-size="28"
-      font-weight="800" letter-spacing="2.6" fill="${c.accent}">${esc(eyebrow.toUpperCase())}</text>
+    <text x="${SIZE - M}" y="${M - 4 + LOGO_BOX / 2 + 28 * 0.36}" text-anchor="end" font-family="${FONT}"
+      font-size="28" font-weight="800" letter-spacing="2.6"
+      fill="${c.accent}">${esc(eyebrow.toUpperCase())}</text>
     <text x="${M}" y="${SIZE - M - 6}" font-family="${FONT}" font-size="26" font-weight="800"
       letter-spacing="3" fill="${c.soft}">${esc(category.toUpperCase())}</text>
     ${dots}`;
@@ -279,10 +280,10 @@ function formCover(c: Colors, p: PostSlide, total: number): Block {
 
   // Isti raspored kao formHero — LIJEVO poravnato. Razlika je u pozadini i okviru
   // (vidi COVER_CHROME), ne u tipografiji.
-  const label = `GALERIJA · ${total} ${total === 4 ? "SLIKE" : "SLIKA"}`;
-  let svg = `<text x="0" y="0" font-family="${FONT}" font-size="26" font-weight="800"
-    letter-spacing="3.4" fill="${c.accent}">${esc(label)}</text>`;
-  let h = 52;
+  void total;
+  // Bez "GALERIJA · N SLIKA" natpisa — gledalac to ne treba znati.
+  let svg = "";
+  let h = 0;
 
   lines.forEach((l, i) => {
     svg += `<text x="0" y="${h + size * 0.78 + i * lh}" font-family="${FONT}" font-size="${size}"
