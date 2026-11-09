@@ -1,67 +1,106 @@
 // ───────────────────────────────────────────────────────────────────────────
-// RENDERER v3 — dizajniran za SCREENSHOT, ne za preuzimanje.
+// RENDERER v4 — Instagram postovi 1080×1080.
 //
-// Šta to znači konkretno:
-//   1. Nema tankih linija (1px se izgubi pri skaliranju/kopresiji)
-//   2. Krupna tipografija — čitljiva i na thumbnailu
-//   3. Visok kontrast teksta (nikad sivi tekst na srednjem tonu)
-//   4. Nema sitnica (bez tačkica, bez sitnih etiketa, bez suptilnih mreža)
-//   5. Velike pune površine boje — jasne i na malom ekranu
+// DIZAJN PRINCIP:
+//   1. Stvarni DF logo (#4DEAE0) u zaglavlju — ista boja kao navbar sajta
+//   2. JEDNA dominantna forma po slici — nema natrpanih listi
+//   3. Sve poravnato na mrežu: lijevo 96px, desno 96px, sadržaj vertikalno centriran
+//   4. Krupna tipografija (min 30px), visok kontrast (min 4.5:1)
+//   5. 6 paleta za vizuelnu raznolikost, ista struktura za konzistentnost
 //
-// PRINCIP KOMPOZICIJE (novi, zamjenjuje stare šablone):
-//   Svaka slika ima JEDNU dominantnu formu:
-//     - "hero"   : golemi naslov, jedina stvar na slici
-//     - "figure" : golemi broj/cijena + kratka rečenica
-//     - "blocks" : 2–4 velika bloka (kartice), ne lista teksta
-//     - "duo"    : dvije velike suprotne ploče (prije/poslije)
-//     - "steps"  : vertikalne trake s brojevima
-//     - "action" : jedna velika teal ploča s pozivom
+// FORME (bira se po `template` polju):
+//   hero   → golemi naslov
+//   figure → golemi broj/cijena
+//   blocks → 2–4 velika bloka
+//   duo    → PRIJE (✕) / POSLIJE (✓)
+//   action → velika CTA ploča
 // ───────────────────────────────────────────────────────────────────────────
 
 import type { AdPost, PostLayout, PostPalette, PostSlide } from "./postsData";
-import { dfMark, dfMarkWidth } from "./postBrand";
+import { DF_LOGO_DATA_URI, DF_LOGO_RATIO } from "./postLogo";
+import { BRAND, BRAND_INK } from "./postBrand";
+import { PHOTOS, PHOTO_ALT } from "./postPhotos";
 
 const SIZE = 1080;
-const PAD = 88;
+const M = 96; // margina — sve poravnato na ovo
 const FONT = "'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif";
 
 type Colors = {
   bg: string;
   ink: string;
-  inkSoft: string;
+  soft: string;
   accent: string;
-  accentInk: string; // tekst na akcentu
+  accentInk: string;
   card: string;
-  border: string;
+  line: string;
 };
 
+/**
+ * 6 paleta. Svaka ima garantovan kontrast:
+ *   ink na bg       > 12:1
+ *   soft na bg      > 5:1
+ *   accentInk na accent > 8:1
+ */
 const PALETTES: Record<PostPalette, Colors> = {
+  // duboko crna + teal
   dark: {
-    bg: "#08080B",
+    bg: "#0A0A0E",
     ink: "#FFFFFF",
-    inkSoft: "#CDD0DC",
-    accent: "#14B8A6",
+    soft: "#A9AEBD",
+    accent: "#4DEAE0",
     accentInk: "#04211E",
-    card: "#13131A",
-    border: "#2A2A35",
+    card: "#17171F",
+    line: "#2E2E3B",
   },
+  // petrol zelena (brend)
   teal: {
-    bg: "#0B4744",
+    bg: "#0C4F4B",
     ink: "#FFFFFF",
-    inkSoft: "#D6F5F1", // svjetlije od pozadine — kontrast > 7
-    accent: "#5EEAD4",
-    accentInk: "#04211E", // gotovo crn — kontrast > 12 na #5EEAD4
-    card: "#0E5C57",
-    border: "#3D8F88",
+    soft: "#B7EDE7",
+    accent: "#4DEAE0",
+    accentInk: "#04211E",
+    card: "#126761",
+    line: "#2F8781",
   },
+  // svijetlo siva (uredno, "studio")
   light: {
-    bg: "#F2F3F6",
+    bg: "#EFF0F4",
     ink: "#0A0A0F",
-    inkSoft: "#3A3D4A",
-    accent: "#0E9C8C",
+    soft: "#545868",
+    accent: "#076B61",
     accentInk: "#FFFFFF",
     card: "#FFFFFF",
-    border: "#D4D7E0",
+    line: "#D2D5DF",
+  },
+  // duboko indigo — noćni, premium
+  ink: {
+    bg: "#12102B",
+    ink: "#FFFFFF",
+    soft: "#B0ABD6",
+    accent: "#7C6BFF",
+    accentInk: "#0B0820",
+    card: "#1D1940",
+    line: "#332C63",
+  },
+  // menta — svježe, za edukaciju
+  mint: {
+    bg: "#DCF5EF",
+    ink: "#052622",
+    soft: "#3F6B63",
+    accent: "#0A6E60",
+    accentInk: "#FFFFFF",
+    card: "#FFFFFF",
+    line: "#B4DED5",
+  },
+  // topli sun — energično, za ponude
+  sun: {
+    bg: "#FFD9A0",
+    ink: "#241303",
+    soft: "#7A5423",
+    accent: "#8C2F08",
+    accentInk: "#FFFFFF",
+    card: "#FFF0D6",
+    line: "#EFC98F",
   },
 };
 
@@ -75,8 +114,9 @@ function esc(t: string): string {
     .replace(/'/g, "&#39;");
 }
 
+/** Prelama tekst. Širina slova ≈ 0.58×veličina za Inter Black. */
 function wrap(text: string, size: number, maxWidth: number, maxLines: number): string[] {
-  const perLine = Math.max(5, Math.floor(maxWidth / (size * 0.62)));
+  const perLine = Math.max(6, Math.floor(maxWidth / (size * 0.58)));
   const words = text.split(/\s+/).filter(Boolean);
   const lines: string[] = [];
   let cur = "";
@@ -93,278 +133,366 @@ function wrap(text: string, size: number, maxWidth: number, maxLines: number): s
   return lines.slice(0, maxLines);
 }
 
-/** Najveći font koji staje: najduža riječ mora ući u širinu. */
-function fit(text: string, maxWidth: number, start: number, min = 40): number {
+/** Najveći font pri kojem najduža riječ staje u širinu. */
+function fit(text: string, maxWidth: number, start: number, min = 46): number {
   const longest = Math.max(...text.split(/\s+/).map((w) => w.length), 1);
   let size = start;
-  while (size > min && longest * size * 0.62 > maxWidth) size -= 6;
+  while (size > min && longest * size * 0.58 > maxWidth) size -= 4;
   return size;
 }
 
-// ── Ram: samo monogram + akcenat traka. Nema sitnih etiketa. ──────────────
-function frame(c: Colors, eyebrow: string, category: string, slide: number, total: number): string {
-  const mh = 40;
-  const mw = dfMarkWidth(mh);
-  const dots =
-    total > 1
-      ? Array.from({ length: total })
-          .map((_, i) => {
-            const cx = SIZE - PAD - (total - 1 - i) * 22;
-            return i === slide
-              ? `<rect x="${cx - 11}" y="${SIZE - PAD - 8}" width="22" height="10" fill="${c.accent}"/>`
-              : `<rect x="${cx - 4}" y="${SIZE - PAD - 7}" width="8" height="8" fill="${c.inkSoft}" opacity="0.4"/>`;
-          })
-          .join("")
-      : "";
+// ── Zaglavlje: logo + eyebrow lijevo, kategorija dolje lijevo ─────────────
+function header(c: Colors, eyebrow: string, category: string, slide: number, total: number): string {
+  const logoH = 46;
+  const logoW = logoH * DF_LOGO_RATIO;
+
+  // tačkice za karusel — desno u footeru
+  let dots = "";
+  if (total > 1) {
+    const dw = 26;
+    const gap = 8;
+    const totalW = total * dw + (total - 1) * gap;
+    const startX = SIZE - M - totalW;
+    for (let i = 0; i < total; i++) {
+      const x = startX + i * (dw + gap);
+      dots +=
+        i === slide
+          ? `<rect x="${x}" y="${SIZE - M - 14}" width="${dw}" height="6" rx="3" fill="${c.accent}"/>`
+          : `<rect x="${x}" y="${SIZE - M - 13}" width="${dw}" height="4" rx="2" fill="${c.soft}" opacity="0.35"/>`;
+    }
+  }
+
   return `
-    ${dfMark(SIZE - PAD - mw, PAD - 6, mh, c.ink, c.bg)}
-    <text x="${PAD}" y="${PAD + 22}" font-family="${FONT}" font-size="34" font-weight="900"
-      letter-spacing="3.4" fill="${c.accent}">${esc(eyebrow.toUpperCase())}</text>
-    <text x="${PAD}" y="${SIZE - PAD}" font-family="${FONT}" font-size="26" font-weight="800"
-      letter-spacing="2.8" fill="${c.inkSoft}">${esc(category.toUpperCase())}</text>
+    <image href="${DF_LOGO_DATA_URI}" x="${M}" y="${M - 12}" width="${logoW}" height="${logoH}"/>
+    <text x="${SIZE - M}" y="${M + 24}" text-anchor="end" font-family="${FONT}" font-size="28"
+      font-weight="800" letter-spacing="2.6" fill="${c.accent}">${esc(eyebrow.toUpperCase())}</text>
+    <text x="${M}" y="${SIZE - M - 6}" font-family="${FONT}" font-size="26" font-weight="800"
+      letter-spacing="3" fill="${c.soft}">${esc(category.toUpperCase())}</text>
     ${dots}`;
 }
 
 // ── Forme ─────────────────────────────────────────────────────────────────
+type Block = { svg: string; h: number };
+const CONTENT_TOP = 250;
+const CONTENT_BOTTOM = SIZE - M - 84;
+const CONTENT_H = CONTENT_BOTTOM - CONTENT_TOP;
+const W = SIZE - M * 2;
 
-/** HERO — golemi naslov. Ništa drugo ne smije odvlačiti pažnju. */
-function formHero(c: Colors, p: PostSlide, w: number): { svg: string; h: number } {
-  const size = fit(p.title ?? "", w, 132);
-  const lines = wrap(p.title ?? "", size, w, 4);
-  const lh = size * 1.08;
+/** HERO — golemi naslov, akcenat traka iznad. */
+function formHero(c: Colors, p: PostSlide): Block {
+  const title = p.title ?? "";
+  // Ograniči i po širini i po visini: naslov max 3 reda unutar CONTENT_H.
+  let size = fit(title, W - 20, 128);
+  let lines = wrap(title, size, W - 20, 3);
+  // Ako 3 reda ne stanu u visinu, smanjuj dok ne stanu.
+  while (lines.length * size * 1.06 > (p.subtitle ? CONTENT_H - 200 : CONTENT_H) && size > 52) {
+    size -= 6;
+    lines = wrap(title, size, W - 20, 3);
+  }
+  const lh = size * 1.06;
+
   let svg = "";
-  // akcenatska traka iznad naslova — vizuelni ulaz u tekst
-  svg += `<rect x="0" y="${-lh * 0.86 - 34}" width="88" height="12" fill="${c.accent}"/>`;
   lines.forEach((l, i) => {
-    svg += `<text x="0" y="${i * lh}" font-family="${FONT}" font-size="${size}" font-weight="900"
+    svg += `<text x="0" y="${size * 0.78 + i * lh}" font-family="${FONT}" font-size="${size}" font-weight="900"
       letter-spacing="-4" fill="${c.ink}">${esc(l)}</text>`;
   });
-  let h = (lines.length - 1) * lh + size * 0.2;
+  let h = (lines.length - 1) * lh + size;
+
   if (p.subtitle) {
-    const ss = 40;
-    const sl = wrap(p.subtitle, ss, w, 3);
-    svg += `<rect x="0" y="${h + 46}" width="6" height="${18 + sl.length * 56}" fill="${c.accent}"/>`;
+    const ss = fit(p.subtitle, W - 50, 38);
+    const sl = wrap(p.subtitle, ss, W - 50, 3);
+    h += 72;
+    svg += `<rect x="0" y="${h}" width="5" height="${sl.length * (ss + 14)}" fill="${c.accent}"/>`;
     sl.forEach((l, i) => {
-      svg += `<text x="34" y="${h + 74 + i * 56}" font-family="${FONT}" font-size="${ss}"
-        font-weight="600" fill="${c.inkSoft}">${esc(l)}</text>`;
+      svg += `<text x="30" y="${h + ss * 0.86 + i * (ss + 14)}" font-family="${FONT}" font-size="${ss}"
+        font-weight="600" fill="${c.soft}">${esc(l)}</text>`;
     });
-    h += 74 + sl.length * 56;
+    h += sl.length * (ss + 14);
   }
   return { svg, h };
 }
 
-/** FIGURE — golemi broj/cijena, pa kratka rečenica. */
-function formFigure(c: Colors, p: PostSlide, w: number): { svg: string; h: number } {
+/** FIGURE — golemi broj, pa rečenica, pa najviše 3 reda. */
+function formFigure(c: Colors, p: PostSlide): Block {
   const val = p.value ?? "";
-  const vsize = fit(val, w, val.length <= 2 ? 380 : val.length <= 4 ? 300 : val.length <= 7 ? 190 : 130);
+  // Visina broja je ~0.76*vsize. Ostatak (naslov, nota, do 3 reda) traži ~330px.
+  // Ograniči vsize tako da sve stane u CONTENT_H.
+  const reserved = 330;
+  const maxByHeight = ((CONTENT_H - reserved) / 0.86);
+  const base = val.length <= 2 ? 330 : val.length <= 4 ? 260 : val.length <= 7 ? 168 : 118;
+  const vsize = Math.max(74, Math.min(fit(val, W, base), maxByHeight));
+
+  // baseline = 0.78*vsize da gornja ivica teksta bude tacno na y=0
   let svg = `<text x="0" y="${vsize * 0.78}" font-family="${FONT}" font-size="${vsize}"
-    font-weight="900" letter-spacing="-14" fill="${c.accent}">${esc(val)}</text>`;
-  let h = vsize * 0.9;
-  const tsize = fit(p.title ?? "", w, 54);
-  wrap(p.title ?? "", tsize, w, 3).forEach((l, i) => {
-    svg += `<text x="0" y="${h + 56 + i * tsize * 1.14}" font-family="${FONT}"
-      font-size="${tsize}" font-weight="800" letter-spacing="-1.4" fill="${c.ink}">${esc(l)}</text>`;
-    h += i === 0 ? tsize * 1.14 : tsize * 1.14;
+    font-weight="900" letter-spacing="-10" fill="${c.accent}">${esc(val)}</text>`;
+  let h = vsize;
+
+  const ts = fit(p.title ?? "", W, 52);
+  wrap(p.title ?? "", ts, W, 2).forEach((l, i) => {
+    svg += `<text x="0" y="${h + 48 + i * ts * 1.12}" font-family="${FONT}" font-size="${ts}"
+      font-weight="800" letter-spacing="-1.2" fill="${c.ink}">${esc(l)}</text>`;
   });
+  h += 48 + Math.min(2, Math.ceil((p.title ?? "").length / 34)) * ts * 1.12;
+
   if (p.valueNote) {
-    h += 46;
-    wrap(p.valueNote, 34, w, 2).forEach((l, i) => {
-      svg += `<text x="0" y="${h + 56 + i * 44}" font-family="${FONT}" font-size="34"
-        font-weight="600" fill="${c.inkSoft}">${esc(l)}</text>`;
+    h += 40;
+    wrap(p.valueNote, 30, W, 2).forEach((l, i) => {
+      svg += `<text x="0" y="${h + i * 40}" font-family="${FONT}" font-size="30" font-weight="600"
+        fill="${c.soft}">${esc(l)}</text>`;
     });
+    h += 40;
   }
-  // opcionalna lista ispod — veliki redovi, ne sitni
+
   const items = (p.items ?? []).slice(0, 3);
   items.forEach((it) => {
-    h += 78;
-    svg += `<rect x="0" y="${h + 56}" width="${w}" height="2" fill="${c.border}"/>`;
-    svg += `<rect x="0" y="${h + 76}" width="20" height="20" fill="${c.accent}"/>`;
-    svg += `<text x="40" y="${h + 95}" font-family="${FONT}" font-size="36" font-weight="700"
-      fill="${c.ink}">${esc(wrap(it, 36, w - 40, 1)[0] ?? it)}</text>`;
-    h += 56;
+    h += 58;
+    svg += `<rect x="0" y="${h}" width="${W}" height="2" fill="${c.line}"/>`;
+    svg += `<rect x="0" y="${h + 22}" width="16" height="16" fill="${c.accent}"/>`;
+    svg += `<text x="36" y="${h + 37}" font-family="${FONT}" font-size="32" font-weight="700"
+      fill="${c.ink}">${esc(wrap(it, 32, W - 40, 1)[0] ?? it)}</text>`;
   });
-  return { svg, h: h + 70 };
+
+  return { svg, h };
 }
 
-/** BLOCKS — 2–4 velike kartice umjesto liste teksta. */
-function formBlocks(c: Colors, p: PostSlide, w: number): { svg: string; h: number } {
+/** BLOCKS — 2–4 velika bloka sa brojevima. */
+function formBlocks(c: Colors, p: PostSlide): Block {
   const items = (p.items ?? []).slice(0, 4);
-  const tsize = fit(p.title ?? "", w, 66);
-  const tl = wrap(p.title ?? "", tsize, w, 2);
+  const ts = fit(p.title ?? "", W, 60);
+  const tl = wrap(p.title ?? "", ts, W, 2);
+
   let svg = tl
     .map(
       (l, i) =>
-        `<text x="0" y="${i * tsize * 1.08}" font-family="${FONT}" font-size="${tsize}"
-          font-weight="900" letter-spacing="-2.4" fill="${c.ink}">${esc(l)}</text>`,
+        `<text x="0" y="${ts * 0.78 + i * ts * 1.06}" font-family="${FONT}" font-size="${ts}" font-weight="900"
+          letter-spacing="-2" fill="${c.ink}">${esc(l)}</text>`,
     )
     .join("");
-  let y = (tl.length - 1) * tsize * 1.08 + tsize * 0.3 + 56;
-  const gap = 18;
-  const rowH = items.length >= 3 ? 116 : 148;
+  let y = (tl.length - 1) * ts * 1.06 + ts * 0.78 + 44;
+
+  const gap = 16;
+  const rowH = items.length >= 3 ? 104 : 124;
   items.forEach((it, i) => {
-    const isLast = items.length % 2 === 1 && i === items.length - 1;
-    const bw = isLast ? w : (w - gap) / 2;
-    const bx = isLast ? 0 : i % 2 === 0 ? 0 : (w + gap) / 2;
+    const last = items.length % 2 === 1 && i === items.length - 1;
+    const bw = last ? W : (W - gap) / 2;
+    const bx = last ? 0 : i % 2 === 0 ? 0 : (W + gap) / 2;
     const by = y + Math.floor(i / 2) * (rowH + gap);
-    const text = wrap(it, 36, bw - 76, 2);
+
     svg += `<rect x="${bx}" y="${by}" width="${bw}" height="${rowH}" fill="${c.card}"
-      stroke="${c.border}" stroke-width="2"/>`;
-    svg += `<rect x="${bx}" y="${by}" width="8" height="${rowH}" fill="${c.accent}"/>`;
-    svg += `<text x="${bx + 32}" y="${by + 44}" font-family="${FONT}" font-size="24"
-      font-weight="900" fill="${c.accent}">${String(i + 1).padStart(2, "0")}</text>`;
-    text.forEach((l, li) => {
-      svg += `<text x="${bx + 32}" y="${by + 78 + li * 40}" font-family="${FONT}" font-size="32"
+      stroke="${c.line}" stroke-width="1.5"/>`;
+    svg += `<rect x="${bx}" y="${by}" width="6" height="${rowH}" fill="${c.accent}"/>`;
+    svg += `<text x="${bx + 26}" y="${by + 40}" font-family="${FONT}" font-size="22"
+      font-weight="900" letter-spacing="1.4" fill="${c.accent}">${String(i + 1).padStart(2, "0")}</text>`;
+    wrap(it, 30, bw - 58, 2).forEach((l, li) => {
+      svg += `<text x="${bx + 26}" y="${by + 72 + li * 34}" font-family="${FONT}" font-size="30"
         font-weight="700" fill="${c.ink}">${esc(l)}</text>`;
     });
     y = by;
   });
+
   return { svg, h: y + rowH };
 }
 
-/** DUO — dvije velike suprotne ploče. */
-function formDuo(c: Colors, p: PostSlide, w: number): { svg: string; h: number } {
+/** DUO — PRIJE (✕) / POSLIJE (✓), dvije velike ploče. */
+function formDuo(c: Colors, p: PostSlide): Block {
   const items = p.items ?? [];
   const half = Math.ceil(items.length / 2);
   const left = items.slice(0, half);
   const right = items.slice(half);
-  const tsize = fit(p.title ?? "", w, 62);
-  const tl = wrap(p.title ?? "", tsize, w, 2);
+
+  const ts = fit(p.title ?? "", W, 56);
+  const tl = wrap(p.title ?? "", ts, W, 2);
   let svg = tl
     .map(
       (l, i) =>
-        `<text x="0" y="${i * tsize * 1.08}" font-family="${FONT}" font-size="${tsize}"
-          font-weight="900" letter-spacing="-2" fill="${c.ink}">${esc(l)}</text>`,
+        `<text x="0" y="${ts * 0.78 + i * ts * 1.06}" font-family="${FONT}" font-size="${ts}" font-weight="900"
+          letter-spacing="-2" fill="${c.ink}">${esc(l)}</text>`,
     )
     .join("");
-  const top = (tl.length - 1) * tsize * 1.08 + tsize * 0.3 + 62;
-  const gap = 20;
-  const bw = (w - gap) / 2;
+  const top = (tl.length - 1) * ts * 1.06 + ts * 0.78 + 48;
+
+  const gap = 16;
+  const bw = (W - gap) / 2;
   const rows = Math.max(left.length, right.length);
-  const bh = 78 + rows * 64;
-  // loša strana
-  svg += `<rect x="0" y="${top}" width="${bw}" height="${bh}" fill="${c.card}" stroke="${c.border}" stroke-width="2"/>`;
-  svg += `<text x="26" y="${top + 46}" font-family="${FONT}" font-size="26" font-weight="900"
-    letter-spacing="2.6" fill="${c.inkSoft}">PRIJE</text>`;
+  const bh = 66 + rows * 58;
+
+  // PRIJE
+  svg += `<rect x="0" y="${top}" width="${bw}" height="${bh}" fill="${c.card}" stroke="${c.line}" stroke-width="1.5"/>`;
+  svg += `<text x="24" y="${top + 40}" font-family="${FONT}" font-size="22" font-weight="900"
+    letter-spacing="2.4" fill="${c.soft}">PRIJE</text>`;
   left.forEach((it, i) => {
-    svg += `<text x="26" y="${top + 100 + i * 64}" font-family="${FONT}" font-size="30"
-      font-weight="700" fill="${c.inkSoft}">&#10005;</text>`;
-    svg += `<text x="62" y="${top + 100 + i * 64}" font-family="${FONT}" font-size="30"
-      font-weight="700" fill="${c.inkSoft}">${esc(wrap(it, 30, bw - 90, 1)[0] ?? it)}</text>`;
+    const y = top + 86 + i * 58;
+    svg += `<text x="24" y="${y}" font-family="${FONT}" font-size="28" font-weight="900" fill="${c.soft}">&#10005;</text>`;
+    svg += `<text x="58" y="${y}" font-family="${FONT}" font-size="28" font-weight="600" fill="${c.ink}">${esc(
+      wrap(it, 28, bw - 82, 1)[0] ?? it,
+    )}</text>`;
   });
-  // dobra strana
+
+  // POSLIJE
   svg += `<rect x="${bw + gap}" y="${top}" width="${bw}" height="${bh}" fill="${c.accent}"/>`;
-  svg += `<text x="${bw + gap + 26}" y="${top + 46}" font-family="${FONT}" font-size="26"
-    font-weight="900" letter-spacing="2.6" fill="${c.accentInk}">POSLIJE</text>`;
+  svg += `<text x="${bw + gap + 24}" y="${top + 40}" font-family="${FONT}" font-size="22"
+    font-weight="900" letter-spacing="2.4" fill="${c.accentInk}">POSLIJE</text>`;
   right.forEach((it, i) => {
-    svg += `<text x="${bw + gap + 26}" y="${top + 100 + i * 64}" font-family="${FONT}"
-      font-size="30" font-weight="900" fill="${c.accentInk}">&#10003;</text>`;
-    svg += `<text x="${bw + gap + 62}" y="${top + 100 + i * 64}" font-family="${FONT}"
-      font-size="30" font-weight="700" fill="${c.accentInk}">${esc(wrap(it, 30, bw - 90, 1)[0] ?? it)}</text>`;
+    const y = top + 86 + i * 58;
+    svg += `<text x="${bw + gap + 24}" y="${y}" font-family="${FONT}" font-size="28" font-weight="900" fill="${c.accentInk}">&#10003;</text>`;
+    svg += `<text x="${bw + gap + 58}" y="${y}" font-family="${FONT}" font-size="28" font-weight="700" fill="${c.accentInk}">${esc(
+      wrap(it, 28, bw - 82, 1)[0] ?? it,
+    )}</text>`;
   });
+
   return { svg, h: top + bh };
 }
 
-/** ACTION — jedna velika ploča s pozivom. */
-function formAction(c: Colors, p: PostSlide, w: number): { svg: string; h: number } {
-  const size = fit(p.title ?? "", w, 92);
-  const lines = wrap(p.title ?? "", size, w, 3);
-  const lh = size * 1.06;
-  let svg = lines
+/** ACTION — naslov + velika CTA ploča. */
+function formAction(c: Colors, p: PostSlide): Block {
+  let ts = fit(p.title ?? "", W, 88);
+  let tl = wrap(p.title ?? "", ts, W, 3);
+  while (tl.length * ts * 1.06 > CONTENT_H - 210 && ts > 46) {
+    ts -= 6;
+    tl = wrap(p.title ?? "", ts, W, 3);
+  }
+  const lh = ts * 1.06;
+
+  let svg = tl
     .map(
       (l, i) =>
-        `<text x="0" y="${i * lh}" font-family="${FONT}" font-size="${size}" font-weight="900"
+        `<text x="0" y="${ts * 0.78 + i * lh}" font-family="${FONT}" font-size="${ts}" font-weight="900"
           letter-spacing="-3" fill="${c.ink}">${esc(l)}</text>`,
     )
     .join("");
-  let h = (lines.length - 1) * lh + size * 0.24;
+  let h = (tl.length - 1) * lh + ts * 0.78;
+
   if (p.subtitle) {
-    wrap(p.subtitle, 38, w, 2).forEach((l, i) => {
-      svg += `<text x="0" y="${h + 62 + i * 50}" font-family="${FONT}" font-size="38"
-        font-weight="600" fill="${c.inkSoft}">${esc(l)}</text>`;
-      h += 50;
+    h += 56;
+    wrap(p.subtitle, 34, W, 2).forEach((l, i) => {
+      svg += `<text x="0" y="${h + i * 44}" font-family="${FONT}" font-size="34" font-weight="600"
+        fill="${c.soft}">${esc(l)}</text>`;
     });
-    h += 12;
+    h += 44;
   }
-  // velika teal ploča — jedina "dugmad" stvar na slici
-  const bh = 132;
-  svg += `<rect x="0" y="${h + 46}" width="${w}" height="${bh}" fill="${c.accent}"/>`;
-  svg += `<text x="${w / 2}" y="${h + 46 + bh / 2 + 17}" text-anchor="middle" font-family="${FONT}"
-    font-size="46" font-weight="900" letter-spacing="1.2" fill="${c.accentInk}">JAVITE NAM SE U DM</text>`;
-  return { svg, h: h + 46 + bh };
+
+  const bh = 124;
+  h += 48;
+  svg += `<rect x="0" y="${h}" width="${W}" height="${bh}" fill="${c.accent}"/>`;
+  svg += `<text x="${W / 2}" y="${h + bh / 2 + 16}" text-anchor="middle" font-family="${FONT}"
+    font-size="42" font-weight="900" letter-spacing="1" fill="${c.accentInk}">JAVITE NAM SE U DM</text>`;
+
+  return { svg, h: h + bh };
 }
 
-type Block = { svg: string; h: number };
-
-function build(c: Colors, p: PostSlide, w: number): Block {
+function build(c: Colors, p: PostSlide): Block {
   const t = p.template ?? "title";
-  if (t === "price" || t === "number") return formFigure(c, p, w);
-  if (t === "list" || t === "process") return formBlocks(c, p, w);
-  if (t === "compare") return formDuo(c, p, w);
-  if (t === "cta") return formAction(c, p, w);
-  if (t === "quote") return formHero(c, { ...p, title: p.title ?? "" }, w);
-  return formHero(c, p, w);
+  if (t === "price" || t === "number") return formFigure(c, p);
+  if (t === "list" || t === "process") return formBlocks(c, p);
+  if (t === "compare") return formDuo(c, p);
+  if (t === "cta") return formAction(c, p);
+  return formHero(c, p);
 }
 
-// ── Pozicioniranje: varijante daju raznolikost, ram ostaje isti ───────────
-const TOP = 250;
-const BOTTOM = SIZE - PAD - 84;
-const CONTENT_H = BOTTOM - TOP;
-const FULL_W = SIZE - PAD * 2;
 
-type Placed = { content: string };
+/** Skalira blok vertikalno ako ne staje u zadatu visinu (za photo layoute). */
+function buildFitting(c: Colors, p: PostSlide, maxH: number): Block {
+  const b = build(c, p);
+  if (b.h <= maxH) return b;
+  const k = maxH / b.h;
+  return {
+    svg: `<g transform="scale(1, ${k.toFixed(4)})">${b.svg}</g>`,
+    h: maxH,
+  };
+}
 
-const PLACE: Record<PostLayout, (c: Colors, p: PostSlide) => Placed> = {
-  // centrirano vertikalno — mirno, za jake izjave
+// ── Pozicioniranje ────────────────────────────────────────────────────────
+const PLACE: Record<PostLayout, (c: Colors, p: PostSlide) => string> = {
+  // vertikalno centrirano — mirno
   center: (c, p) => {
-    const b = build(c, p, FULL_W);
-    const y = TOP + Math.max(0, (CONTENT_H - b.h) / 2);
-    return { content: `<g transform="translate(${PAD}, ${y + b.h * 0.02})">${b.svg}</g>` };
+    const b = build(c, p);
+    const y = b.h >= CONTENT_H ? CONTENT_TOP : CONTENT_TOP + (CONTENT_H - b.h) / 2;
+    return `<g transform="translate(${M}, ${y})">${b.svg}</g>`;
   },
-  // lijevo, uz lijevu akcenat traku preko cijele visine
+  // uz lijevu akcenat traku preko cijele visine
   split: (c, p) => {
-    const b = build(c, p, FULL_W - 90);
-    const y = TOP + Math.max(0, (CONTENT_H - b.h) / 2);
-    return {
-      content: `<rect x="${PAD - 40}" y="${TOP}" width="10" height="${CONTENT_H}" fill="${c.accent}"/>
-        <g transform="translate(${PAD + 40}, ${y})">${b.svg}</g>`,
-    };
+    const b = build(c, p);
+    const y = CONTENT_TOP + Math.max(0, (CONTENT_H - b.h) / 2);
+    return `<rect x="${M - 40}" y="${CONTENT_TOP}" width="8" height="${CONTENT_H}" fill="${c.accent}"/>
+      <g transform="translate(${M}, ${y})">${b.svg}</g>`;
   },
-  // sadržaj u velikoj tamnoj ploči
+  // sadržaj u velikoj ploči
   band: (c, p) => {
-    const b = build(c, p, FULL_W - 110);
-    const bh = Math.min(CONTENT_H, b.h + 150);
-    const by = TOP + (CONTENT_H - bh) / 2;
-    const y = by + (bh - b.h) / 2;
-    return {
-      content: `<rect x="${PAD - 55}" y="${by}" width="${FULL_W + 110}" height="${bh}" fill="${c.card}"
-        stroke="${c.border}" stroke-width="2"/>
-        <rect x="${PAD - 55}" y="${by}" width="${FULL_W + 110}" height="9" fill="${c.accent}"/>
-        <g transform="translate(${PAD}, ${y})">${b.svg}</g>`,
-    };
+    const b = build(c, p);
+    const bh = Math.min(CONTENT_H, b.h + 128);
+    const by = CONTENT_TOP + Math.max(0, (CONTENT_H - bh) / 2);
+    const y = by + Math.max(0, (bh - b.h) / 2);
+    return `<rect x="${M - 44}" y="${by}" width="${W + 88}" height="${bh}" fill="${c.card}"
+      stroke="${c.line}" stroke-width="1.5"/>
+      <rect x="${M - 44}" y="${by}" width="${W + 88}" height="8" fill="${c.accent}"/>
+      <g transform="translate(${M}, ${y})">${b.svg}</g>`;
   },
-  // gore poravnato + veliki akcenat blok dolje desno
+  // gore poravnato + logo blok dolje desno
   offset: (c, p) => {
-    const b = build(c, p, FULL_W * 0.86);
-    const y = TOP + 24;
-    const s = 168;
-    const sx = SIZE - PAD - s;
-    const sy = BOTTOM - s;
-    return {
-      content: `<g transform="translate(${PAD}, ${y})">${b.svg}</g>
-        <rect x="${sx}" y="${sy}" width="${s}" height="${s}" fill="${c.accent}"/>
-        ${dfMark(sx + s / 2 - dfMarkWidth(s * 0.44) / 2, sy + s / 2 - s * 0.22, s * 0.44, c.accentInk, c.accent)}`,
-    };
+    const b = build(c, p);
+    const y = CONTENT_TOP + 16;
+    const s = 132;
+    const sx = SIZE - M - s;
+    const sy = CONTENT_BOTTOM - s;
+    const lw = (s * 0.54) * DF_LOGO_RATIO;
+    return `<g transform="translate(${M}, ${y})">${b.svg}</g>
+      <rect x="${sx}" y="${sy}" width="${s}" height="${s}" fill="${c.accent}"/>
+      <image href="${DF_LOGO_DATA_URI}" x="${sx + s / 2 - lw / 2}" y="${sy + s / 2 - s * 0.27}"
+        width="${lw}" height="${s * 0.54}"/>`;
   },
-  // veliki monogram kao vodeni žig — samo na tamnim paletama ima efekta
+  // FOTOGRAFIJA PREKO CIJELE POZADINE — tamna, stopljena s bojom palete.
+  // Tekst ide preko nje; dodaje se gradijent da tekst ostane čitljiv.
+  photoBg: (c, p) => {
+    const ph = p.photo ?? "code1";
+    const b = build(c, p);
+    const y = CONTENT_TOP + Math.max(0, (CONTENT_H - b.h) / 2);
+    return `<image href="${PHOTOS[ph]}" x="0" y="0" width="${SIZE}" height="${SIZE}"
+        preserveAspectRatio="xMidYMid slice" opacity="0.30" aria-label="${esc(PHOTO_ALT[ph])}"/>
+      <rect x="0" y="0" width="${SIZE}" height="${SIZE}" fill="${c.bg}" opacity="0.62"/>
+      <rect x="0" y="${CONTENT_TOP - 60}" width="${SIZE}" height="${CONTENT_H + 120}"
+        fill="url(#fadeV)"/>
+      <g transform="translate(${M}, ${y})">${b.svg}</g>`;
+  },
+
+  // FOTOGRAFIJA GORE (pola), tekst dolje
+  photoTop: (c, p) => {
+    const ph = p.photo ?? "code1";
+    // Fotografija zauzima gornjih 400px; tekst ide ispod nje i mora stati
+    // do CONTENT_BOTTOM — ako ne staje, tekst se skalira (vidi buildSkaled).
+    const imgH = 400;
+    const areaTop = imgH + 26;
+    const areaH = CONTENT_BOTTOM - areaTop;
+    const b = buildFitting(c, p, areaH);
+    const y = areaTop;
+    return `<image href="${PHOTOS[ph]}" x="0" y="0" width="${SIZE}" height="${imgH}"
+        preserveAspectRatio="xMidYMid slice" opacity="0.72" aria-label="${esc(PHOTO_ALT[ph])}"/>
+      <rect x="0" y="0" width="${SIZE}" height="${imgH}" fill="${c.bg}" opacity="0.35"/>
+      <rect x="0" y="${imgH - 100}" width="${SIZE}" height="100" fill="url(#fadeDown)"/>
+      <g transform="translate(${M}, ${y})">${b.svg}</g>`;
+  },
+
+  // FOTOGRAFIJA DESNO (vertikalna traka), tekst lijevo
+  photo: (c, p) => {
+    const ph = p.photo ?? "code1";
+    const imgW = 340;
+    const b = build(c, p);
+    const y = CONTENT_TOP + Math.max(0, (CONTENT_H - b.h) / 2);
+    return `<image href="${PHOTOS[ph]}" x="${SIZE - imgW}" y="0" width="${imgW}" height="${SIZE}"
+        preserveAspectRatio="xMidYMid slice" opacity="0.65" aria-label="${esc(PHOTO_ALT[ph])}"/>
+      <rect x="${SIZE - imgW}" y="0" width="${imgW}" height="${SIZE}" fill="${c.bg}" opacity="0.42"/>
+      <rect x="${SIZE - imgW - 40}" y="0" width="40" height="${SIZE}" fill="url(#fadeRight)"/>
+      <g transform="translate(${M}, ${y})">${b.svg}</g>`;
+  },
+
+  // veliki logo kao vodeni žig
   stamp: (c, p) => {
-    const b = build(c, p, FULL_W);
-    const y = TOP + Math.max(0, (CONTENT_H - b.h) / 2);
-    const sh = 520;
-    const sw = dfMarkWidth(sh);
-    return {
-      content: `<g opacity="0.07">${dfMark(SIZE / 2 - sw / 2, TOP + CONTENT_H / 2 - sh / 2, sh, c.accent, c.bg)}</g>
-        <g transform="translate(${PAD}, ${y})">${b.svg}</g>`,
-    };
+    const b = build(c, p);
+    const y = CONTENT_TOP + Math.max(0, (CONTENT_H - b.h) / 2);
+    const sh = 380;
+    const sw = sh * DF_LOGO_RATIO;
+    return `<g opacity="0.055"><image href="${DF_LOGO_DATA_URI}" x="${SIZE / 2 - sw / 2}"
+        y="${CONTENT_TOP + (CONTENT_H - sh) / 2}" width="${sw}" height="${sh}"/></g>
+      <g transform="translate(${M}, ${y})">${b.svg}</g>`;
   },
 };
 
@@ -375,14 +503,31 @@ export function renderSlideSvg(
   slideIndex: number,
   slideTotal: number,
 ): string {
-  const c = PALETTES[slide.palette ?? post.palette];
+  const c = PALETTES[slide.palette ?? post.palette] ?? PALETTES.dark;
   const layout = post.layout ?? "center";
-  const { content } = PLACE[layout](c, slide);
+  const content = (PLACE[layout] ?? PLACE.center)(c, slide);
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${SIZE}" height="${SIZE}" viewBox="0 0 ${SIZE} ${SIZE}" role="img" aria-label="${esc(slide.title ?? post.title)}">
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${SIZE}" height="${SIZE}" viewBox="0 0 ${SIZE} ${SIZE}" role="img" aria-label="${esc(
+    slide.title ?? post.title,
+  )}">
+  <defs>
+    <linearGradient id="fadeDown" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${c.bg}" stop-opacity="0"/>
+      <stop offset="100%" stop-color="${c.bg}" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="fadeRight" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="${c.bg}" stop-opacity="0"/>
+      <stop offset="100%" stop-color="${c.bg}" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="fadeV" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${c.bg}" stop-opacity="0.95"/>
+      <stop offset="50%" stop-color="${c.bg}" stop-opacity="0.80"/>
+      <stop offset="100%" stop-color="${c.bg}" stop-opacity="0.95"/>
+    </linearGradient>
+  </defs>
   <rect width="${SIZE}" height="${SIZE}" fill="${c.bg}"/>
-  <rect x="0" y="0" width="${SIZE}" height="14" fill="${c.accent}"/>
-  ${frame(c, slide.eyebrow ?? post.eyebrow, post.category, slideIndex, slideTotal)}
+  <rect x="0" y="0" width="${SIZE}" height="12" fill="${BRAND}"/>
+  ${header(c, slide.eyebrow ?? post.eyebrow, post.category, slideIndex, slideTotal)}
   ${content}
 </svg>`;
 }
@@ -417,15 +562,14 @@ export function postSvgDataUri(svg: string): string {
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }
 
-/** 1080×1080 PNG podaci iz SVG-a — za preuzimanje u punoj rezoluciji. */
+/** 1080×1080 PNG iz SVG-a — za preuzimanje u punoj rezoluciji. */
 export async function svgToPngBlob(svg: string): Promise<Blob | null> {
   try {
     const img = new Image();
-    const url = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
     await new Promise<void>((res, rej) => {
       img.onload = () => res();
       img.onerror = () => rej(new Error("svg load"));
-      img.src = url;
+      img.src = postSvgDataUri(svg);
     });
     const canvas = document.createElement("canvas");
     canvas.width = SIZE;
@@ -440,3 +584,4 @@ export async function svgToPngBlob(svg: string): Promise<Blob | null> {
 }
 
 export const LAYOUT_LIST: PostLayout[] = ["center", "split", "band", "offset", "stamp"];
+export { BRAND, BRAND_INK };

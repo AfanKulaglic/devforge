@@ -27,7 +27,7 @@ export type PostTemplate =
 
 export type PostCategory = "sadrzaj" | "edukacija" | "ponuda" | "dokaz" | "brend";
 
-export type PostPalette = "teal" | "dark" | "light";
+export type PostPalette = "dark" | "teal" | "light" | "ink" | "mint" | "sun";
 
 // Jedan list karusela. Ako ga nema, objava je jedna slika.
 // Kod karusela (2–10 listova) svaki list dobija isti vizuelni ram, ali
@@ -41,6 +41,7 @@ export type PostSlide = {
   value?: string;
   valueNote?: string;
   palette?: PostPalette; // dozvoljeno mijenjati ton unutar karusela
+  photo?: PhotoKey; // fotografija za ovaj list
 };
 
 export type AdPost = {
@@ -48,6 +49,8 @@ export type AdPost = {
   template: PostTemplate;
   category: PostCategory;
   palette: PostPalette;
+  /** Fotografija — koristi se u photo/photoTop/photoBg layoutima. */
+  photo?: PhotoKey;
   layout?: PostLayout; // varijanta kompozicije (razlicitost bez lomljenja stila)
   eyebrow: string; // mala etiketa gore
   title: string; // glavni naslov
@@ -66,4 +69,17 @@ export type AdPost = {
 //   "band"     — sadrzaj u tamnoj/tamnijoj traci preko pozadine
 //   "offset"   — sadrzaj pomjeren gore ili dole, asimetricno
 //   "stamp"    — sadrzaj + veliki poluprovidni "pecat" u pozadini
-export type PostLayout = "center" | "split" | "band" | "offset" | "stamp";
+export type PostLayout =
+  | "center"
+  | "split"
+  | "band"
+  | "offset"
+  | "stamp"
+  | "photo"    // fotografija desno, tekst lijevo
+  | "photoTop" // fotografija gore, tekst dolje
+  | "photoBg"; // fotografija preko cijele pozadine
+
+/** Fotografije dostupne za postove (vidi postPhotos.ts). */
+export type PhotoKey =
+  | "code1" | "code2" | "code3" | "desk1"
+  | "ai1" | "phone1" | "team1" | "office";
