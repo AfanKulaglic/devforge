@@ -3,7 +3,7 @@ import type { AdPost } from "./postsData";
 // ───────────────────────────────────────────────────────────────────────────
 // OBJAVE 41–60 — REDOSLIJED KAO NA SAJTU (završetak)
 //
-// 41     devforge vs tipična agencija
+// 41     devlab vs tipična agencija
 // 42     naš put do danas (galerija)
 // 43–60  ostale informacije sa sajta (tehnologije, industrije, način rada,
 //        za koga radimo, stavovi, garancije, kontakt)
@@ -17,12 +17,12 @@ export const POSTS_3: AdPost[] = [
     category: "brend",
     layout: "band",
     palette: "dark",
-    eyebrow: "DevForge vs.",
-    title: "Tipična agencija vs. DevForge",
+    eyebrow: "Dev Lab vs.",
+    title: "Tipična agencija vs. Dev Lab",
     items: ["Predujam 30-50%", "Platite pa vidite", "Revizije se naplaćuju", "Skrivene stavke", "0 KM predujma", "Vidite pa platite", "4 revizije besplatno", "Cijene javne"],
     caption:
       "⚖️ Isti posao, drugačija podjela rizika.\n\nOvo nije kritika drugih — samo objašnjenje kako mi radimo drugačije.\n\nPREDUJAM PRIJE POČETKA\nOni: obavezan, često 30–50%\nMi: ne — plaćate tek na kraju\n\nBESPLATNA GOTOVA VERZIJA\nOni: rijetko ili uz naplatu\nMi: da, za 5 radnih dana\n\nBESPLATNE REVIZIJE\nOni: naplata po svakoj izmjeni\nMi: 4 uključene u cijenu\n\nTRANSPARENTNE CIJENE\nOni: skrivene stavke i doplate\nMi: javne, od 150 KM\n\nVLASNIŠTVO NAD KODOM\nOni: ograničeno ili vezano\nMi: 100% pripada Vama\n\nIsti posao. Drugačija podjela rizika.",
-    tags: ["poredjenje", "agencija", "devforge", "bezpredujma", "sarajevo"],
+    tags: ["poredjenje", "agencija", "devlab", "bezpredujma", "sarajevo"],
   },
 
   // ── 42. NAŠ PUT DO DANAS — GALERIJA ──────────────────────────────────────
@@ -45,7 +45,7 @@ export const POSTS_3: AdPost[] = [
       {
         template: "title",
         eyebrow: "2023",
-        title: "Osnovan DevForge",
+        title: "Osnovan Dev Lab",
         subtitle: "Krećemo s jasnom misijom: izrada digitalnih proizvoda bez rizika za klijenta i bez predujma.",
         palette: "mint",
       },
@@ -54,7 +54,7 @@ export const POSTS_3: AdPost[] = [
         eyebrow: "2024",
         title: "prvih 10 projekata",
         value: "10",
-        valueNote: "Web stranice, shopovi i aplikacije za klijente iz BiH i regiona.",
+        valueNote: "Stranice, shopovi i aplikacije za klijente iz BiH i regiona.",
         palette: "dark",
       },
       {
@@ -75,7 +75,7 @@ export const POSTS_3: AdPost[] = [
     ],
     caption:
       "🌱 Od nule do 20+ projekata.\n\nNaš put do danas:\n\n2023 — OSNOVAN DEVFÖRGE. Krećemo s jasnom misijom: izrada digitalnih proizvoda bez rizika za klijenta i bez predujma.\n\n2024 — PRVIH 10 PROJEKATA. Web stranice, shopovi i mobilne aplikacije za klijente iz BiH i regiona. Model bez predujma se pokazao.\n\n2025 — 20+ ISPORUČENIH PROJEKATA. Rastemo na preporukama. 100% klijenata zadovoljno, svaki projekt isporučen prema dogovoru.\n\nDANAS — VAŠ PROJEKT JE SLJEDEĆI. Spremni smo preuzeti rizik Vašeg sljedećeg digitalnog koraka — počevši od besplatne gotove verzije.\n\nRastemo na preporukama, ne na oglasima. Zato i radimo bez predujma.",
-    tags: ["nasput", "istorija", "milestones", "devforge", "sarajevo"],
+    tags: ["nasput", "istorija", "milestones", "devlab", "sarajevo"],
   },
 
   // ── 43. TEHNOLOGIJE ──────────────────────────────────────────────────────
@@ -91,7 +91,7 @@ export const POSTS_3: AdPost[] = [
     items: ["React i Next.js", "Node i Laravel", "Flutter i React Native", "PostgreSQL i Firebase"],
     caption:
       "⚛️ Standardne tehnologije, da Vas niko ne drži u šaci.\n\nRadimo u standardnim tehnologijama — bez egzotike koja se ne može održavati.\n\nFRONTEND: React & Next.js, TypeScript, Tailwind CSS, animacije i interakcije.\n\nBACKEND: Node.js & Laravel, PostgreSQL / MySQL, REST i GraphQL API, autentikacija i sigurnost.\n\nMOBILNE: Flutter & React Native, iOS i Android, push notifikacije, App Store / Google Play.\n\nZašto Vam je to važno kao klijentu: kad za godinu dana tražite nekog da nastavi raditi na projektu, standardne tehnologije znače da će ga lako naći.\n\nKod u nekoj egzotičnoj tehnologiji je zatočeništvo, ne zaštita.",
-    tags: ["tehnologije", "react", "flutter", "node", "sarajevo", "devforge"],
+    tags: ["tehnologije", "react", "flutter", "node", "sarajevo", "devlab"],
   },
 
   // ── 44. ZA KOGA RADIMO ───────────────────────────────────────────────────
@@ -106,7 +106,7 @@ export const POSTS_3: AdPost[] = [
     items: ["E-commerce i trgovine", "Startupi i agencije", "Lokalni biznisi i obrti", "Uslužne djelatnosti"],
     caption:
       "🎯 Najbolji smo za ove ljude. Za ostale preporučimo nekog.\n\nNe radimo za svakoga. Najbolji smo za:\n\n— ✅ e-commerce i trgovine — shopovi s katalogom i online plaćanjem\n— 🔥 startupi i agencije — MVP i prve verzije proizvoda\n— 💡 lokalni biznisi i obrti — stranice koje donose pozive\n— ⚡ edukacija i 2D igre — educational i marketing igrice\n— 🎯 uslužne djelatnosti — zakazivanje termina i kontakt forme\n— 💰 SaaS i digitalni proizvodi — web aplikacije i dashboardi\n\nNe radimo: velike enterprise sisteme, shopove s 5000 proizvoda i integracijom na tri ERP-a.\n\nAko ne možemo — reći ćemo Vam odmah, u prvom razgovoru, i preporučiti nekog drugog.",
-    tags: ["zakoga", "malibiznis", "industrije", "sarajevo", "devforge"],
+    tags: ["zakoga", "malibiznis", "industrije", "sarajevo", "devlab"],
   },
 
   // ── 45. AI SISTEMI ───────────────────────────────────────────────────────
@@ -138,7 +138,7 @@ export const POSTS_3: AdPost[] = [
     subtitle: "Sve ostalo ide poslije Vaše potvrde.",
     caption:
       "🤝 Vaš rizik? 15 minuta razgovora. To je sve.\n\nUložite 15 minuta razgovora. Ništa više.\n\nNe tražimo predujam. Ne tražimo da potpišete išta. Ne tražimo pristup Vašim računima.\n\nSamo razgovor: čime se bavite, ko Vas zove, šta stranica treba da uradi.\n\nAko poslije razgovora odlučite da ne radimo — to je sasvim u redu i nema cijene.\n\nAko se dogovorimo — napravimo gotovu verziju u 5 dana i vidite je prije bilo kakve obaveze.\n\nVrijedi li probati?",
-    tags: ["bezrizika", "bezpredujma", "konsultacija", "sarajevo", "devforge"],
+    tags: ["bezrizika", "bezpredujma", "konsultacija", "sarajevo", "devlab"],
   },
 
   // ── 47. ADMIN PANEL ──────────────────────────────────────────────────────
@@ -154,7 +154,7 @@ export const POSTS_3: AdPost[] = [
     items: ["Bez koda", "Bez developera", "Bez mjesečnih naknada"],
     caption:
       "⚙️ Mijenjate sami, bez zvanja developera za svaku sitnicu.\n\nUz svaki projekt dobijate vlastiti admin panel (CMS) kroz koji sami mijenjate sadržaj.\n\nŠta možete sami:\n— ✅ tekst na bilo kojoj stranici\n— 🔥 slike i fotografije\n— 💡 proizvode i cijene u shopu\n— ⚡ objave i novosti\n— 🎯 radno vrijeme i kontakt podatke\n\nSve bez koda i bez plaćanja developeru za svaku sitnicu.\n\nAko znate koristiti Facebook, znate koristiti i ovo.\n\nKoliko puta ste htjeli nešto promijeniti i odustali jer „ne znate kako“?",
-    tags: ["adminpanel", "cms", "kontrola", "webdizajn", "devforge"],
+    tags: ["adminpanel", "cms", "kontrola", "webdizajn", "devlab"],
   },
 
   // ── 48. 2D IGRICE ────────────────────────────────────────────────────────
@@ -197,10 +197,10 @@ export const POSTS_3: AdPost[] = [
     palette: "dark",
     eyebrow: "Počnite",
     title: "Recite čime se bavite. Prva verzija je besplatna.",
-    subtitle: "Web od 150 KM · Shopovi od 600 KM · 0 KM predujma",
+    subtitle: "Stranice od 150 KM · Shopovi od 600 KM · 0 KM predujma",
     caption:
-      "🚀 Recite čime se bavite. To je dovoljno.\n\nWeb, mobilne aplikacije i igre koje pokreću Vaš biznis.\n\nOd ideje do gotovog proizvoda za nekoliko sedmica. Izrađujemo besplatnu gotovu verziju za 5 dana — plaćate tek kada budete zadovoljni.\n\nŠta dobijate:\n— ✅ besplatnu gotovu verziju za 5 dana\n— 🔥 0 KM predujma\n— 💡 fiksnu cijenu prije početka\n— ⚡ četiri besplatne revizije\n— 🎯 vlastiti admin panel\n— 💰 domenu i kod na Vaše ime\n\nJavite nam se u DM — odgovaramo u roku od 10 minuta.\n\ndev-forge-studio.vercel.app",
-    tags: ["kontakt", "pocetak", "webdizajn", "sarajevo", "devforge"],
+      "🚀 Recite čime se bavite. To je dovoljno.\n\nStranice, mobilne aplikacije i igre koje pokreću Vaš biznis.\n\nOd ideje do gotovog proizvoda za nekoliko sedmica. Izrađujemo besplatnu gotovu verziju za 5 dana — plaćate tek kada budete zadovoljni.\n\nŠta dobijate:\n— ✅ besplatnu gotovu verziju za 5 dana\n— 🔥 0 KM predujma\n— 💡 fiksnu cijenu prije početka\n— ⚡ četiri besplatne revizije\n— 🎯 vlastiti admin panel\n— 💰 domenu i kod na Vaše ime\n\nJavite nam se u DM — odgovaramo u roku od 10 minuta.\n\ndev-forge-studio.vercel.app",
+    tags: ["kontakt", "pocetak", "webdizajn", "sarajevo", "devlab"],
   },
 
   // ── 51. VRIJEDNOSTI / NAŠ STAV ───────────────────────────────────────────
@@ -215,7 +215,7 @@ export const POSTS_3: AdPost[] = [
     subtitle: "Ako niko ne pozove — promašili smo posao.",
     caption:
       "🎯 Lijepa stranica bez poziva je umjetnost, ne biznis.\n\nMožemo Vam napraviti najljepšu stranicu u Bosni. Ako niko ne pozove — promašili smo posao.\n\nZato prije dizajna pitamo tri stvari:\n— ✅ Ko je Vaš kupac?\n— 🔥 Šta ga trenutno sprječava da Vas pozove?\n— 💡 Šta mora vidjeti da bi Vam vjerovao?\n\nTekst, raspored i dugmad se rade prema tim odgovorima. Boje i fontovi dolaze na kraju.\n\nLjepota je posljedica. Poziv je cilj.\n\nKoliko poziva Vam je donijela trenutna stranica?",
-    tags: ["brend", "konverzija", "webdizajn", "strategija", "devforge"],
+    tags: ["brend", "konverzija", "webdizajn", "strategija", "devlab"],
   },
 
   // ── 52. VLASNIŠTVO ───────────────────────────────────────────────────────
@@ -246,7 +246,7 @@ export const POSTS_3: AdPost[] = [
     subtitle: "Zato su naše cijene na sajtu.",
     caption:
       "💬 Ako morate pitati cijenu, nećete kupiti.\n\nKad neko mora poslati upit da bi saznao okvirnu cijenu, dvije stvari se dese:\n\n1. Nagađa. Obično pogriješi u većem smjeru i odustane.\n2. Čeka. I u međuvremenu nađe nekog ko je cijenu objavio.\n\nZato su naše cijene javne: web stranice od 150 KM, shopovi od 600 KM.\n\nŠta to ne pokriva: konačnu cijenu za Vaš konkretni projekt. Ona zavisi od broja stranica i funkcionalnosti — i dobijate je prije početka, ne poslije.\n\nTransparentnost nije marketinška riječ. To je jedan broj na sajtu.",
-    tags: ["cijene", "transparentnost", "povjerenje", "webdizajn", "devforge"],
+    tags: ["cijene", "transparentnost", "povjerenje", "webdizajn", "devlab"],
   },
 
   // ── 54. ODRŽAVANJE I PODRŠKA ─────────────────────────────────────────────
@@ -261,7 +261,7 @@ export const POSTS_3: AdPost[] = [
     items: ["Ažuriranja i sigurnost", "Optimizacija brzine", "Nove funkcionalnosti", "Pomoć kad zapne"],
     caption:
       "🛡️ Ne nestajemo nakon isporuke.\n\nNajčešći problem s agencijama: projekt se preda i telefon se ugasi.\n\nKod nas ne. Nakon isporuke:\n— ✅ ažuriranja i sigurnosne zakrpe\n— 🔥 optimizacija brzine kad stranica naraste\n— 💡 dodavanje novih funkcionalnosti po potrebi\n— ⚡ pomoć kad nešto zapne u admin panelu\n\nPrvih mjesec dana podrška je uključena. Poslije toga po potrebi — bez ugovora na godinu.\n\nZašto ovako: jer stranica nije gotova na dan objave. Ona živi dalje.\n\nImate pitanje o postojećoj stranici? Javite se — i ako nije naša, reći ćemo šta vidimo.",
-    tags: ["podrska", "odrzavanje", "sigurnost", "webdizajn", "devforge"],
+    tags: ["podrska", "odrzavanje", "sigurnost", "webdizajn", "devlab"],
   },
 
   // ── 55. WEB SHOP ─────────────────────────────────────────────────────────
@@ -293,7 +293,7 @@ export const POSTS_3: AdPost[] = [
     valueNote: "Cijena koju dobijete je cijena koju platite.",
     caption:
       "🚫 Nula skrivenih troškova. Doslovno nula.\n\nNula skrivenih troškova. To je jednostavno pravilo koje većina ne poštuje.\n\nŠta to znači konkretno:\n— ✅ cijena na sajtu je cijena u ponudi\n— 🔥 dizajn, mobilna verzija i admin panel su uključeni\n— 💡 4 revizije su uključene\n— ⚡ nema „dodatne stavke“ na kraju\n— 🎯 nema doplate za ono što je dogovoreno\n\nJedino što ide odvojeno: domena i hosting. Njih plaćate direktno provideru, bez naše marže — i to je jasno napisano prije početka.\n\nZašto ovako: jer kupac koji ne zna konačnu cijenu ne može planirati.",
-    tags: ["cijene", "transparentnost", "bezskrivenih", "webdizajn", "devforge"],
+    tags: ["cijene", "transparentnost", "bezskrivenih", "webdizajn", "devlab"],
   },
 
   // ── 57. 5 DANA ───────────────────────────────────────────────────────────
@@ -325,7 +325,7 @@ export const POSTS_3: AdPost[] = [
     subtitle: "Usluge, cijene, projekti i česta pitanja — bez zvanja.",
     caption:
       "🌐 Sve je javno. Ne morate nikoga zvati.\n\nAko ne volite razgovarati prije nego što vidite brojeve — sve je javno na sajtu.\n\nŠta tamo nađete:\n— ✅ usluge detaljno (web, igrice, aplikacije, AI)\n— 🔥 cijene: web od 150 KM, shopovi od 600 KM\n— 💡 projekti koje smo radili\n— ⚡ česta pitanja s odgovorima\n— 🎯 način rada, korak po korak\n\nNe morate nikoga zvati da saznate cijenu.\n\ndev-forge-studio.vercel.app\n\nAko i poslije toga imate pitanje — javite se u DM.",
-    tags: ["kontakt", "sajt", "cijene", "usluge", "devforge"],
+    tags: ["kontakt", "sajt", "cijene", "usluge", "devlab"],
   },
 
   // ── 59. NAŠ STAV / MANJA EKIPA ───────────────────────────────────────────
@@ -340,7 +340,7 @@ export const POSTS_3: AdPost[] = [
     subtitle: "Ne prelazite iz ruke u ruku.",
     caption:
       "🤝 Ista osoba od prvog razgovora do zadnjeg dana.\n\nU većim agencijama projekat prelazi kroz pet ruku: prodaja, projektni voditelj, dizajner, developer, podrška.\n\nKod nas: jedna osoba od početka do kraja.\n\nŠta to znači praktično:\n— ✅ ne objašnjavate istu stvar pet puta\n— 🔥 ne gubite ništa u „proslijedio sam kolegi“\n— 💡 znate kome se javiti i taj čovjek zna Vaš projekt\n— ⚡ odgovor dolazi u 10 minuta, ne u tri dana\n\nManja ekipa nije slabost. To je razlog zašto stvari rade.",
-    tags: ["brend", "tim", "komunikacija", "agencija", "devforge"],
+    tags: ["brend", "tim", "komunikacija", "agencija", "devlab"],
   },
 
   // ── 60. ZAVRŠNI KONTAKT ──────────────────────────────────────────────────
@@ -356,6 +356,6 @@ export const POSTS_3: AdPost[] = [
     subtitle: "Dovoljno je da se javite i kažete čime se bavite.",
     caption:
       "👋 Ne morate imati ni ideju, samo se javite.\n\nVećina razgovora počne ovako: „Radim to i to, ne znam šta mi treba.“\n\nTo je sasvim dovoljno.\n\nNe morate imati:\n— ✅ gotov tekst\n— 🔥 logo\n— 💡 ideju kako stranica treba izgledati\n— ⚡ budžet na papiru\n\nMi pitamo dalje i kažemo šta ima smisla.\n\nInstagram DM: @devforge_studio\nE-mail: devforge.studio@gmail.com\nSarajevo · cijela BiH\n\nOdgovaramo u roku od 10 minuta. Bez obaveze i bez predujma.",
-    tags: ["kontakt", "pocetak", "bezobaveze", "sarajevo", "devforge"],
+    tags: ["kontakt", "pocetak", "bezobaveze", "sarajevo", "devlab"],
   },
 ];

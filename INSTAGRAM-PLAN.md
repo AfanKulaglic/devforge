@@ -1,4 +1,4 @@
-# DevForge — Instagram plan objavljivanja
+# Dev Lab — Instagram plan objavljivanja
 
 > Praktičan plan za `@devforge_studio`. Cilj: **prvi klijenti kroz Instagram**,
 > bez plaćanja reklama na početku. Sve je prilagođeno BiH tržištu i tvom
@@ -25,14 +25,14 @@ Ne „što više pratilaca". Nego:
 
 | Element | Vrijednost |
 |---|---|
-| Ime profila | **DevForge — izrada sajtova** (ne samo „DevForge") |
+| Ime profila | **Dev Lab — izrada sajtova** (ne samo „Dev Lab") |
 | Bio red 1 | Web stranice, shopovi, aplikacije |
 | Bio red 2 | Od 150 KM · gotovo za 5 dana |
 | Bio red 3 | 0 KM predujma — plaćate kad ste zadovoljni |
 | Link | `dev-forge-studio.vercel.app` |
 | CTA dugme | Pošalji poruku (ne „Kontakt") |
 
-**Ime profila je najvažniji SEO na Instagramu** — ljudi pretražuju „izrada sajta sarajevo", ne „DevForge".
+**Ime profila je najvažniji SEO na Instagramu** — ljudi pretražuju „izrada sajta sarajevo", ne „Dev Lab".
 
 ---
 
@@ -417,7 +417,7 @@ Prve 3 sedmice. Algoritam treba vremena da te „smjesti".
 
 ## 16. Šta radiš SUTRA (konkretno)
 
-- [ ] Promijeni ime profila u **„DevForge — izrada sajtova"**
+- [ ] Promijeni ime profila u **„Dev Lab — izrada sajtova"**
 - [ ] Prepravi bio po tripleti iz sekcije 2
 - [ ] Postavi CTA dugme na **„Pošalji poruku"**
 - [ ] Napravi 5 Highlights (Radovi, Cijene, Proces, Pitanja, O nama)

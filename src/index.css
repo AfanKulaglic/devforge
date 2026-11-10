@@ -940,7 +940,7 @@ button {
 .ad-float { animation: adFloat 5s ease-in-out infinite; }
 @keyframes adFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-/* ── Mockup proizvoda: mini DevForge landing u telefonu (product shot) ── */
+/* ── Mockup proizvoda: mini Dev Lab landing u telefonu (product shot) ── */
 .ad-phone {
   position: relative; width: 62%; border-radius: 30px; padding: 8px;
   background: linear-gradient(160deg, #1c2b29, #0a1412);
@@ -1145,8 +1145,8 @@ button {
 @keyframes adCtaPress { 0%,40%,62%,100% { transform: scale(1); } 50% { transform: scale(0.96); } }
 
 /* Wordmark veličine za reklamu (umjesto Tailwind arbitrary cqh) */
-.ad-wm-lg { font-size: 5.5cqh; }
-.ad-wm-xl { font-size: 6.5cqh; }
+.ad-wm-lg { font-size: 6.0cqh; }
+.ad-wm-xl { font-size: 7.2cqh; }
 
 /* ── Animacije po uzoru na Spacemail video ── */
 /* Naslov: riječ-po-riječ (fade + rise + blur), stagger preko animation-delay */

@@ -518,17 +518,17 @@ const deliverables: { icon: IconType; title: string; text: string }[] = [
   { icon: HiOutlineArrowPath, title: "4 besplatne revizije", text: "Doradjujemo dizajn i funkcionalnosti dok rezultat ne odgovara točno vašoj viziji." },
 ];
 
-const comparison: { feature: string; devforge: string; others: string }[] = [
-  { feature: "Predujam prije početka", devforge: "Ne — plaćate tek na kraju", others: "Obavezan, često 30–50%" },
-  { feature: "Besplatna gotova verzija", devforge: "Da, za 5 radnih dana", others: "Rijetko ili uz naplatu" },
-  { feature: "Besplatne revizije", devforge: "4 uključene u cijenu", others: "Naplata po svakoj izmjeni" },
-  { feature: "Transparentne cijene", devforge: "Javne, od 150 KM", others: "Skrivene stavke i doplate" },
-  { feature: "Demo verzija", devforge: "Ne plaća se", others: "Rijetko ili uz naplatu" },
-  { feature: "Vlasništvo nad kodom", devforge: "100% pripada vama", others: "Ograničeno ili vezano" },
+const comparison: { feature: string; devlab: string; others: string }[] = [
+  { feature: "Predujam prije početka", devlab: "Ne — plaćate tek na kraju", others: "Obavezan, često 30–50%" },
+  { feature: "Besplatna gotova verzija", devlab: "Da, za 5 radnih dana", others: "Rijetko ili uz naplatu" },
+  { feature: "Besplatne revizije", devlab: "4 uključene u cijenu", others: "Naplata po svakoj izmjeni" },
+  { feature: "Transparentne cijene", devlab: "Javne, od 150 KM", others: "Skrivene stavke i doplate" },
+  { feature: "Demo verzija", devlab: "Ne plaća se", others: "Rijetko ili uz naplatu" },
+  { feature: "Vlasništvo nad kodom", devlab: "100% pripada vama", others: "Ograničeno ili vezano" },
 ];
 
 const milestones: { year: string; title: string; text: string }[] = [
-  { year: "2023", title: "Osnovan DevForge", text: "Krećemo s jasnom misijom: izrada digitalnih proizvoda bez rizika za klijenta i bez predujma." },
+  { year: "2023", title: "Osnovan Dev Lab", text: "Krećemo s jasnom misijom: izrada digitalnih proizvoda bez rizika za klijenta i bez predujma." },
   { year: "2024", title: "Prvih 10 projekata", text: "Web stranice, shopovi i mobilne aplikacije za klijente iz BiH i regiona — model bez predujma se pokazao." },
   { year: "2025", title: "20+ isporučenih projekata", text: "Rastemo na preporukama. 100% klijenata zadovoljno, svaki projekt isporučen prema dogovoru." },
   { year: "Danas", title: "Vaš projekt je sljedeći", text: "Spremni smo preuzeti rizik vašeg sljedećeg digitalnog koraka — počevši od besplatne gotove verzije." },
@@ -854,9 +854,14 @@ const serviceDetails: Record<"web" | "games" | "mobile" | "ai", ServiceDetail> =
   },
 };
 
+// Ikonica zauzima 70% SPOLJNOG okvira na svim mjestima. Okviri imaju 1px
+// border, pa `calc(70% + 1.4px)` kompenzuje content box (2 x 0.70 x 1px).
+// Wordmark je 55% okvira, pa je odnos ikona/tekst uvijek 70/55 = 1.273.
+const LOGO_ICON_SCALE = "calc(70% + 1.4px)";
+
 function Logo() {
   return (
-    <a href="/" className="group inline-flex items-center gap-2.5" aria-label="DevForge početna">
+    <a href="/" className="group inline-flex items-center gap-2.5" aria-label="Dev Lab početna">
       {/* Logo ikona (brend znak) — umjesto starog terminalnog >_ */}
       <span className="relative flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border border-white/15 bg-[#0B0B0F] transition duration-300 group-hover:border-teal-400/60">
         <img
@@ -864,13 +869,14 @@ function Logo() {
           alt=""
           width={40}
           height={40}
-          className="relative z-10 h-full w-full object-contain p-1 transition duration-500 group-hover:scale-110"
+          className="relative z-10 object-contain transition duration-500 group-hover:scale-110"
+          style={{ width: LOGO_ICON_SCALE, height: LOGO_ICON_SCALE }}
           aria-hidden="true"
         />
       </span>
-      <span className="text-xl font-extrabold tracking-tight">
+      <span className="text-[22px] font-extrabold tracking-tight">
         <span className="text-white">Dev</span>
-        <span className="bg-gradient-to-r from-teal-300 to-cyan-300 bg-clip-text text-transparent">Forge</span>
+        <span className="bg-gradient-to-r from-teal-300 to-cyan-300 bg-clip-text text-transparent">Lab</span>
       </span>
     </a>
   );
@@ -1181,7 +1187,7 @@ function Header() {
                   devforge.studio@gmail.com
                 </a>
                 <div className="flex gap-2">
-                  <a className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-white/70 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.linkedin.com/company/devforge" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                  <a className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-white/70 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.linkedin.com/company/devlab" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
                     <FaLinkedinIn className="text-sm" />
                   </a>
                   <a className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-white/70 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.instagram.com/devforge_studio" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
@@ -1234,7 +1240,7 @@ function Preloader() {
       <span className="preloader-panel preloader-panel-left" aria-hidden="true" />
       <span className="preloader-panel preloader-panel-right" aria-hidden="true" />
       <div className="preloader-inner">
-        <p className="preloader-logo">DevForge</p>
+        <p className="preloader-logo">Dev Lab</p>
         <div className="preloader-bar">
           <span className="preloader-bar-fill" style={{ width: `${progress}%` }} />
         </div>
@@ -1435,8 +1441,8 @@ function Hero() {
       {
         image: images.hero,
         imageMobile: images.heroMobile,
-        imageAlt: "Web dizajn i razvoj digitalnih proizvoda u Sarajevu — DevForge digitalna agencija",
-        eyebrow: "DevForge · Digitalna agencija iz BiH",
+        imageAlt: "Web dizajn i razvoj digitalnih proizvoda u Sarajevu — Dev Lab digitalna agencija",
+        eyebrow: "Dev Lab · Digitalna agencija iz BiH",
         title: (
           <>
             Web, mobilne aplikacije i igre koje <span className="bg-gradient-to-r from-teal-300 to-cyan-300 bg-clip-text text-transparent">pokreću vaš biznis</span>
@@ -1564,7 +1570,7 @@ function Hero() {
           {/* SEO H1: jedini <h1> na stranici, sa kljucnim rijecima za pretragu.
               Vizuelno skriven (sr-only) — dizajn zadrzava animirani naslov ispod. */}
           <h1 className="sr-only">
-            Izrada web stranica, web shopova, mobilnih aplikacija, 2D igara i AI sistema u Sarajevu — DevForge
+            Izrada web stranica, web shopova, mobilnih aplikacija, 2D igara i AI sistema u Sarajevu — Dev Lab
           </h1>
           <p className="hero-headline text-[2rem] font-extrabold leading-[1.08] tracking-tight text-white sm:text-5xl md:text-6xl md:leading-[1.03] lg:text-7xl">
             {slide.title}
@@ -1653,7 +1659,7 @@ function About() {
   return (
     <section id="about" className="bg-[#060606] py-20 md:py-28">
       <div className="mx-auto max-w-7xl px-5 md:px-8">
-        <SectionHeading title="Zašto DevForge" subtitle="Prednosti koje nas izdvajaju od konkurencije — bez rizika za vas." icon={HiOutlineSparkles} eyebrow="O nama" />
+        <SectionHeading title="Zašto Dev Lab" subtitle="Prednosti koje nas izdvajaju od konkurencije — bez rizika za vas." icon={HiOutlineSparkles} eyebrow="O nama" />
         <div className="mt-12 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5">
           {benefits.map((benefit, benefitIndex) => (
             <Reveal
@@ -1763,7 +1769,7 @@ function HowItWorks() {
             <iframe
               className="aspect-video w-full opacity-70"
               src="https://www.youtube.com/embed/vP8ysciz7iU?autoplay=1&mute=1&loop=1&playlist=vP8ysciz7iU&controls=0&modestbranding=1&playsinline=1"
-              title="DevForge proces razvoja"
+              title="Dev Lab proces razvoja"
               allow="autoplay; encrypted-media; picture-in-picture"
             />
           </div>
@@ -2818,7 +2824,7 @@ function ContactAndFooter() {
             <p className="flex items-center gap-3"><HiOutlineMapPin className="text-lg text-teal-300" aria-hidden="true" /><span className="font-bold text-white">Lokacija:</span> Marsala Tita 28, Sarajevo, BiH</p>
           </div>
           <div className="mt-6 flex gap-3">
-            <a className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.linkedin.com/company/devforge" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+            <a className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.linkedin.com/company/devlab" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
               <FaLinkedinIn />
             </a>
             <a className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.instagram.com/devforge_studio" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
@@ -2877,14 +2883,14 @@ function ContactAndFooter() {
           <div className="grid grid-cols-2 gap-x-6 gap-y-10 py-12 md:grid-cols-2 lg:grid-cols-6">
             <div className="col-span-2">
               <Logo />
-              <p className="mt-4 max-w-xs text-sm leading-6 text-[#A7AABB]">DevForge — web stranice, shopovi i mobilne aplikacije iz Sarajeva. Bez predujma, uz besplatnu gotovu verziju.</p>
+              <p className="mt-4 max-w-xs text-sm leading-6 text-[#A7AABB]">Dev Lab — web stranice, shopovi i mobilne aplikacije iz Sarajeva. Bez predujma, uz besplatnu gotovu verziju.</p>
               <div className="mt-5 space-y-2 text-sm text-[#A7AABB]">
                 <a className="flex items-center gap-2.5 transition hover:text-white" href={`tel:${CONTACT.phoneRaw}`}><HiOutlinePhone className="text-teal-300" aria-hidden="true" /> Pozovite nas</a>
                 <a className="flex items-center gap-2.5 transition hover:text-white" href="mailto:devforge.studio@gmail.com"><HiOutlineEnvelope className="text-teal-300" aria-hidden="true" /> devforge.studio@gmail.com</a>
                 <p className="flex items-center gap-2.5"><HiOutlineMapPin className="text-teal-300" aria-hidden="true" /> Maršala Tita 28, Sarajevo, BiH</p>
               </div>
               <div className="mt-5 flex gap-3">
-                <a className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.linkedin.com/company/devforge" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                <a className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.linkedin.com/company/devlab" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
                   <FaLinkedinIn />
                 </a>
                 <a className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.instagram.com/devforge_studio" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
@@ -2928,7 +2934,7 @@ function ContactAndFooter() {
         {/* Bottom bar */}
         <div className="border-t border-white/10">
           <div className="pb-safe mx-auto max-w-7xl px-5 py-6 text-center text-sm text-white/40 md:px-8">
-            <p>© 2025 DevForge. Sva prava zadržana.</p>
+            <p>© 2025 Dev Lab. Sva prava zadržana.</p>
           </div>
         </div>
       </section>
@@ -2936,7 +2942,7 @@ function ContactAndFooter() {
   );
 }
 
-// `long` + `points` koristi SAMO istaknuta (najveća) bento kartica u WhyUs (home "Zašto DevForge").
+// `long` + `points` koristi SAMO istaknuta (najveća) bento kartica u WhyUs (home "Zašto Dev Lab").
 // AboutStory (/o-nama) i manje bento kartice koriste kratki `text` → grid ostaje ujednačen.
 const aboutValues: { icon: IconType; number: string; title: string; text: string; long?: string; points?: string[] }[] = [
   {
@@ -3017,7 +3023,7 @@ function AboutHero() {
             Tko smo mi
           </h1>
           <p className="mt-4 text-base leading-7 text-[#A7AABB] md:text-lg">
-            DevForge je tim za izradu web stranica, web shopova, mobilnih aplikacija i 2D igrica — spajamo
+            Dev Lab je tim za izradu web stranica, web shopova, mobilnih aplikacija i 2D igrica — spajamo
             moderan dizajn s pouzdanim razvojem, bez predujma i uz besplatnu gotovu verziju.
           </p>
         </Reveal>
@@ -3155,7 +3161,7 @@ function IncludedSplit() {
         </Reveal>
         <Reveal direction="right" className="relative">
           <div className="aspect-[4/5] w-full overflow-hidden rounded-3xl border border-black/10 shadow-2xl shadow-black/10 sm:aspect-square lg:aspect-[4/5]">
-            <img className="h-full w-full object-cover" src={images.mobile} alt="DevForge tim u radu na projektu" loading="lazy" />
+            <img className="h-full w-full object-cover" src={images.mobile} alt="Dev Lab tim u radu na projektu" loading="lazy" />
           </div>
           <div className="absolute -bottom-5 left-5 right-5 rounded-2xl border border-black/10 bg-white/95 p-4 shadow-xl shadow-black/10 backdrop-blur sm:left-8 sm:right-auto sm:w-64">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-600">Uvijek uključeno</p>
@@ -3203,13 +3209,13 @@ function CompareTable() {
   return (
     <section className="bg-[#060606] py-20 md:py-28">
       <div className="mx-auto max-w-5xl px-5 md:px-8">
-        <SectionHeading title="DevForge vs. tipična agencija" subtitle="Bez sitnih slova. Evo točno po čemu se razlikujemo — i zašto rizik preuzimamo mi, a ne vi." align="center" icon={HiOutlineSparkles} eyebrow="Transparentno" />
+        <SectionHeading title="Dev Lab vs. tipična agencija" subtitle="Bez sitnih slova. Evo točno po čemu se razlikujemo — i zašto rizik preuzimamo mi, a ne vi." align="center" icon={HiOutlineSparkles} eyebrow="Transparentno" />
 
         {/* Desktop: tablica */}
         <div className="mt-12 hidden overflow-hidden rounded-2xl border border-white/10 md:block">
           <div className="grid grid-cols-[1.3fr_1fr_1fr] bg-white/[0.03] text-xs font-bold uppercase tracking-[0.15em] text-white/50">
             <div className="px-6 py-4">Stavka</div>
-            <div className="border-l border-white/10 bg-teal-500/10 px-6 py-4 text-teal-200">DevForge</div>
+            <div className="border-l border-white/10 bg-teal-500/10 px-6 py-4 text-teal-200">Dev Lab</div>
             <div className="border-l border-white/10 px-6 py-4">Tipična agencija</div>
           </div>
           {comparison.map((row) => (
@@ -3217,7 +3223,7 @@ function CompareTable() {
               <div className="px-6 py-5 font-semibold text-white">{row.feature}</div>
               <div className="flex items-start gap-2 border-l border-white/10 bg-teal-500/[0.06] px-6 py-5 text-white">
                 <HiOutlineCheckCircle className="mt-0.5 shrink-0 text-lg text-teal-300" aria-hidden="true" />
-                <span>{row.devforge}</span>
+                <span>{row.devlab}</span>
               </div>
               <div className="flex items-start gap-2 border-l border-white/10 px-6 py-5 text-[#9A9DAE]">
                 <HiOutlineXMark className="mt-0.5 shrink-0 text-lg text-white/30" aria-hidden="true" />
@@ -3235,8 +3241,8 @@ function CompareTable() {
               <div className="flex items-start gap-2 bg-teal-500/[0.06] px-5 py-3.5">
                 <HiOutlineCheckCircle className="mt-0.5 shrink-0 text-lg text-teal-300" aria-hidden="true" />
                 <div>
-                  <span className="block text-[0.7rem] font-bold uppercase tracking-[0.15em] text-teal-200/80">DevForge</span>
-                  <span className="text-sm text-white">{row.devforge}</span>
+                  <span className="block text-[0.7rem] font-bold uppercase tracking-[0.15em] text-teal-200/80">Dev Lab</span>
+                  <span className="text-sm text-white">{row.devlab}</span>
                 </div>
               </div>
               <div className="flex items-start gap-2 border-t border-white/10 px-5 py-3.5">
@@ -3321,7 +3327,7 @@ function SeoLocalText() {
         </h2>
         <div className="mt-6 space-y-5 text-sm leading-7 text-[#9CA3AF] md:text-[0.95rem] md:leading-8">
           <p>
-            DevForge je digitalna agencija iz Sarajeva koja izrađuje <strong className="font-semibold text-white/90">web stranice, web shopove, mobilne aplikacije, 2D igrice i AI sisteme</strong> za firme, obrtnike, udruženja i pojedince u Bosni i Hercegovini i regionu. Web stranica počinje od 150 KM, web shop od 600 KM, dok se mobilne aplikacije, igre i AI sistemi rade po dogovoru — ovisno o broju ekrana, funkcionalnosti i mehanika.
+            Dev Lab je digitalna agencija iz Sarajeva koja izrađuje <strong className="font-semibold text-white/90">web stranice, web shopove, mobilne aplikacije, 2D igrice i AI sisteme</strong> za firme, obrtnike, udruženja i pojedince u Bosni i Hercegovini i regionu. Web stranica počinje od 150 KM, web shop od 600 KM, dok se mobilne aplikacije, igre i AI sistemi rade po dogovoru — ovisno o broju ekrana, funkcionalnosti i mehanika.
           </p>
           <p>
             Svaki projekat dobija <strong className="font-semibold text-white/90">vlastiti admin panel</strong> (CMS), tako da sami mijenjate tekst, slike, proizvode i cijene — bez programera i bez mjesečnih troškova za sitne izmjene. Stranice su responzivne (prilagođene mobitelu), brze i pripremljene za Google pretragu: uredne meta naslove i opise, strukturirane podatke, sitemap i čiste URL-ove.
@@ -3838,7 +3844,7 @@ function ContactMethods() {
         </div>
         <div className="mt-10 flex flex-wrap items-center gap-4 text-sm text-[#5A5D6E]">
           <span className="font-bold text-[#0B0B0F]">Pratite nas:</span>
-          <a className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-[#0B0B0F] transition hover:border-teal-500 hover:bg-teal-500 hover:text-white" href="https://www.linkedin.com/company/devforge" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+          <a className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-[#0B0B0F] transition hover:border-teal-500 hover:bg-teal-500 hover:text-white" href="https://www.linkedin.com/company/devlab" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
             <FaLinkedinIn />
           </a>
           <a className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-[#0B0B0F] transition hover:border-teal-500 hover:bg-teal-500 hover:text-white" href="https://www.instagram.com/devforge_studio" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
@@ -3864,7 +3870,7 @@ function KontaktPage() {
   );
 }
 
-// Home "Zašto DevForge" — širi pogled (rizik/brzina/dizajn/komunikacija) umjesto
+// Home "Zašto Dev Lab" — širi pogled (rizik/brzina/dizajn/komunikacija) umjesto
 // ponavljanja istih 4 kratka benefita iz heroja. Detaljni benefiti (0 KM, 5 dana...)
 // uz modal žive na zasebnoj "O nama" stranici (komponenta About).
 function WhyUs() {
@@ -3872,7 +3878,7 @@ function WhyUs() {
     <section id="about" className="bg-[#060606] py-20 md:py-28">
       <div className="mx-auto max-w-7xl px-5 md:px-8">
         <SectionHeading
-          title="Zašto DevForge"
+          title="Zašto Dev Lab"
           subtitle="Ne prodajemo samo izradu — preuzimamo rizik, dizajn i komunikaciju na sebe, da vi dobijete rezultat bez brige."
           icon={HiOutlineSparkles}
           eyebrow="Zašto mi"
@@ -4209,7 +4215,7 @@ const legalDocs: Record<"privatnost" | "uslovi" | "kolacici", LegalDoc> = {
     updated: "18.06.2026.",
     intro: "Korištenjem ove stranice i naših usluga prihvatate sljedeće uslove.",
     sections: [
-      { heading: "1. Opšte odredbe", body: ["DevForge pruža usluge izrade web stranica, web shopova, mobilnih aplikacija, 2D igara i AI sistema. Korištenjem stranice potvrđujete da ste pročitali i prihvatili ove uslove."] },
+      { heading: "1. Opšte odredbe", body: ["Dev Lab pruža usluge izrade web stranica, web shopova, mobilnih aplikacija, 2D igara i AI sistema. Korištenjem stranice potvrđujete da ste pročitali i prihvatili ove uslove."] },
       { heading: "2. Usluge i ponuda", body: ["Svaki projekat započinje besplatnom konsultacijom i gotovom verzijom. Tačan obim, rok i cijena definišu se ponudom prije početka rada."] },
       { heading: "3. Cijene i plaćanje", body: ["Ne tražimo predujam — plaćate tek kada ste zadovoljni rezultatom. Cijene su navedene u KM i mogu varirati ovisno o obimu projekta. Hosting i domena plaćaju se direktno provideru."] },
       { heading: "4. Intelektualno vlasništvo", body: ["Nakon isporuke i izmirenja dogovorene cijene, kompletan kod, dizajn i prava nad projektom pripadaju klijentu."] },
@@ -4455,7 +4461,7 @@ function AdMark({ size = 40 }: { size?: number | string }) {
         src="/images/logo-icon.png"
         alt=""
         className="object-contain"
-        style={{ height: "76%", width: "76%" }}
+        style={{ height: LOGO_ICON_SCALE, width: LOGO_ICON_SCALE }}
         aria-hidden="true"
       />
     </span>
@@ -4466,7 +4472,7 @@ function AdWordmark({ className = "text-xl" }: { className?: string }) {
   return (
     <span className={`font-extrabold tracking-tight ${className}`}>
       <span className="text-white">Dev</span>
-      <span className="ad-grad">Forge</span>
+      <span className="ad-grad">Lab</span>
     </span>
   );
 }
@@ -4494,13 +4500,13 @@ const AD_PARTICLES = [
 
 // Bosanski voice-over tekst po sceni (prati ono što se prikazuje).
 const AD_NARRATION = [
-  "DevForge — izrađujemo web stranice, mobilne aplikacije, igre i AI sisteme po vašoj mjeri.",
+  "Dev Lab — izrađujemo web stranice, mobilne aplikacije, igre i AI sisteme po vašoj mjeri.",
   "Gotovu verziju vašeg projekta izrađujemo za pet dana, a plaćate tek kad ste zadovoljni. Bez predujma.",
   "Sve na jednom mjestu: web stranice sto pedeset maraka, web shopovi seststo maraka, mobilne aplikacije, igre i AI sistemi po dogovoru.",
   "Uz svaki projekt dobijate vlastiti admin panel — sami mijenjate tekst, slike, proizvode i cijene, bez koda.",
   "Do šezdeset posto jeftinije od agencija — uz isti vrhunski kvalitet i iste provjerene tehnologije.",
-  "Zatražite svoju besplatnu gotovu verziju na devforge corporation tačka vercel tačka app.",
-  "DevForge. Bez rizika, bez predujma. Javite nam se u DM na Instagramu ili Viberu — javljamo se u roku od deset minuta.",
+  "Zatražite svoju besplatnu gotovu verziju na dev-forge-studio tačka vercel tačka app.",
+  "Dev Lab. Bez rizika, bez predujma. Javite nam se u DM na Instagramu ili Viberu — javljamo se u roku od deset minuta.",
 ];
 
 // Frosted-glass ikona — glavni vizual scene (Spacemail stil). Pop ulaz + lebdenje.
@@ -4687,10 +4693,10 @@ function AdReel({ recordMode = false }: { recordMode?: boolean }) {
         return (
           <div className="ad-box">
             <span className="ad-rise ad-pill">
-              <span className="ad-type">devforge</span>
+              <span className="ad-type">devlab</span>
             </span>
             <div className="ad-pop flex items-center" style={{ gap: "1.8cqh" }}>
-              <AdMark size="11cqh" />
+              <AdMark size="13.1cqh" />
               <AdWordmark className="ad-wm-xl" />
             </div>
             <h2 className="ad-h2">
@@ -4767,7 +4773,7 @@ function AdReel({ recordMode = false }: { recordMode?: boolean }) {
         return (
           <div className="ad-box">
             <div className="ad-pop flex items-center" style={{ gap: "1.8cqh" }}>
-              <AdMark size="8cqh" />
+              <AdMark size="13.1cqh" />
               <AdWordmark className="ad-wm-xl" />
             </div>
 
@@ -4964,7 +4970,7 @@ function AdReel({ recordMode = false }: { recordMode?: boolean }) {
           </p>
           <p className="mt-1.5 text-[0.7rem] leading-relaxed text-teal-300/60">
             Browser će tražiti da odaberete prozor sa reklamom. Odaberite{" "}
-            <strong className="text-teal-200">„DevForge reklama"</strong> u dijalogu i kliknite Podijeli.
+            <strong className="text-teal-200">„Dev Lab reklama"</strong> u dijalogu i kliknite Podijeli.
           </p>
         </div>
         <p className="text-xs leading-relaxed text-white/40">Snimi screen-recorderom samo teal okvir (9:16). Ovaj panel se ne snima.</p>
@@ -4994,7 +5000,7 @@ const ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> = {
 function injectRouteSchema(route: string, docTitle: string, desc: string) {
   const ID = "df-route-schema";
   document.getElementById(ID)?.remove();
-  if (route === "notfound" || route === "admin" || route === "reklama" || route === "objave") return;
+  if (route === "notfound" || route === "admin" || route === "reklama" || route === "objave" || route === "logo") return;
 
   const crumbs = ROUTE_BREADCRUMB[route];
   const graph: Record<string, unknown>[] = [
@@ -5031,6 +5037,46 @@ function injectRouteSchema(route: string, docTitle: string, desc: string) {
 }
 // ──────────────────────────────────────────────────────────────────────────
 
+// ──────────────────────────────────────────────────────────────────────────
+// /logo — SAMO LOGOTIP preko cijele stranice (bez headera/footera/menija).
+// Sluzi za brzi pregled i preuzimanje brenda. Ikona je UNUTAR okvira 70%
+// — identicna proporcija kao u navbaru, reklami i na objavama.
+function LogoPage() {
+  return (
+    <main
+      id="content"
+      className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-[#060606] px-6 py-10"
+    >
+      {/* teal sjaj u pozadini — isti jezik kao hero sekcije */}
+      <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 h-[70vmin] w-[70vmin] -translate-x-1/2 -translate-y-1/2 rounded-full bg-teal-600/10 blur-3xl" />
+
+      <a
+        href="/"
+        className="group relative inline-flex items-center gap-[3vmin]"
+        aria-label="Dev Lab — početna"
+      >
+        {/* Okvir logotipa — kvadrat, zaobljen, tamna podloga + bijeli rub 15% */}
+        <span
+          className="relative flex items-center justify-center overflow-hidden rounded-[24%] border border-white/15 bg-[#0B0B0F] transition duration-500 group-hover:border-teal-400/60"
+          style={{ width: "22vmin", height: "22vmin" }}
+        >
+          <img
+            src="/images/logo-icon.png"
+            alt="Dev Lab logo"
+            className="object-contain transition duration-500 group-hover:scale-105"
+            style={{ width: LOGO_ICON_SCALE, height: LOGO_ICON_SCALE }}
+          />
+        </span>
+        {/* Wordmark: "Dev" bijelo + "Lab" teal gradijent */}
+        <span className="font-extrabold tracking-tight" style={{ fontSize: "12.1vmin", lineHeight: 1 }}>
+          <span className="text-white">Dev</span>
+          <span className="bg-gradient-to-r from-teal-300 to-cyan-300 bg-clip-text text-transparent">Lab</span>
+        </span>
+      </a>
+    </main>
+  );
+}
+
 export default function App() {
   const rawPath = useAppRoute();
   // normaliziraj trailing slash (/usluge/ → /usluge), osim korijena
@@ -5052,6 +5098,7 @@ export default function App() {
     "/reklama": "reklama",
     "/objave": "objave",
     "/admin": "admin",
+    "/logo": "logo",
   };
   // "/" → home; poznata putanja → njena vrijednost; sve ostalo → 404.
   const route = path === "/" ? "home" : routeMap[path] ?? "notfound";
@@ -5131,63 +5178,64 @@ export default function App() {
     type SeoEntry = { title: string; desc: string; noindex?: boolean };
     const SEO: Record<string, SeoEntry> = {
       home: {
-        title: "Izrada web stranica Sarajevo od 150 KM | Web shopovi i aplikacije — DevForge",
+        title: "Izrada web stranica Sarajevo od 150 KM | Web shopovi i aplikacije — Dev Lab",
         desc: "Izrada web stranica u Sarajevu od 150 KM, web shopova od 600 KM, mobilnih aplikacija, 2D igara i AI sistema. Gotova verzija za 5 dana, bez predujma.",
       },
       about: {
-        title: "O nama — digitalna agencija iz Sarajeva | DevForge",
-        desc: "DevForge je digitalna agencija iz Sarajeva. Gradimo web stranice, web shopove, mobilne aplikacije, 2D igre i AI sisteme — bez predujma i uz admin panel u svakom projektu.",
+        title: "O nama — digitalna agencija iz Sarajeva | Dev Lab",
+        desc: "Dev Lab je digitalna agencija iz Sarajeva. Gradimo web stranice, web shopove, mobilne aplikacije, 2D igre i AI sisteme — bez predujma i uz admin panel u svakom projektu.",
       },
       services: {
-        title: "Usluge — web stranice, shopovi, aplikacije i 2D igre | DevForge",
+        title: "Usluge — web stranice, shopovi, aplikacije i 2D igre | Dev Lab",
         desc: "Web stranice od 150 KM, web shopovi od 600 KM, mobilne aplikacije, 2D igrice i AI sistemi po dogovoru. Sve s admin panelom, bez predujma.",
       },
       "svc-web": {
-        title: "Izrada web stranica od 150 KM — Sarajevo i BiH | DevForge",
+        title: "Izrada web stranica od 150 KM — Sarajevo i BiH | Dev Lab",
         desc: "Profesionalne web stranice od 150 KM: brze, responzivne i SEO spremne. Admin panel uključen. Gotova verzija za 5 dana, bez predujma.",
       },
       "svc-games": {
-        title: "Izrada 2D igara za web i mobilne uređaje | DevForge",
+        title: "Izrada 2D igara za web i mobilne uređaje | Dev Lab",
         desc: "Izrađujemo 2D igre po mjeri za web i mobilne uređaje — mehanike, nivoi, grafika i admin panel za upravljanje sadržajem. Cijena po dogovoru.",
       },
       "svc-mobile": {
-        title: "Izrada mobilnih aplikacija za Android i iOS | DevForge",
+        title: "Izrada mobilnih aplikacija za Android i iOS | Dev Lab",
         desc: "Android i iOS aplikacije (React Native / Flutter) s backendom i admin panelom. Za biznis, narudžbe, dostavu i interne alate. Cijena po dogovoru.",
       },
       "svc-ai": {
-        title: "AI sistemi — AI recepcionar i chat asistent 24/7 | DevForge",
+        title: "AI sistemi — AI recepcionar i chat asistent 24/7 | Dev Lab",
         desc: "AI telefonski recepcionar i chat asistent koji primaju pozive 24/7, odgovaraju kupcima, zakazuju termine i bilježe narudžbe. Izrada AI sistema po mjeri.",
       },
       projects: {
-        title: "Projekti — web stranice, shopovi i igre koje smo izradili | DevForge",
+        title: "Projekti — web stranice, shopovi i igre koje smo izradili | Dev Lab",
         desc: "Pregled realizovanih projekata: web shopovi, korporativne stranice, mobilne aplikacije, 2D igrice i AI sistemi. Svaki projekt dolazi s admin panelom.",
       },
       cijene: {
-        title: "Cijene — web stranice od 150 KM, web shopovi od 600 KM | DevForge",
+        title: "Cijene — web stranice od 150 KM, web shopovi od 600 KM | Dev Lab",
         desc: "Transparentne cijene bez skrivenih troškova: web stranice 150–250 KM, web shopovi 600–1.000 KM, aplikacije, igre i AI sistemi po dogovoru. Bez predujma.",
       },
       faq: {
-        title: "Česta pitanja o izradi sajta, cijenama i plaćanju | DevForge",
+        title: "Česta pitanja o izradi sajta, cijenama i plaćanju | Dev Lab",
         desc: "Odgovori na najčešća pitanja: koliko traje izrada, kako funkcioniše besplatna gotova verzija, ko plaća hosting i domenu, te kome pripada kod.",
       },
       kontakt: {
-        title: "Kontakt — zatražite besplatnu gotovu verziju | DevForge Sarajevo",
+        title: "Kontakt — zatražite besplatnu gotovu verziju | Dev Lab Sarajevo",
         desc: "Javite nam se na Viber, WhatsApp ili Instagram DM. Odgovaramo u roku od 10 minuta. Besplatna gotova verzija bez obaveza.",
       },
       privatnost: {
-        title: "Politika privatnosti | DevForge",
+        title: "Politika privatnosti | Dev Lab",
         desc: "Kako prikupljamo, koristimo i štitimo vaše podatke na dev-forge-studio.vercel.app. Bez kolačića za praćenje bez vaše privole.",
       },
       uslovi: {
-        title: "Uslovi korištenja | DevForge",
-        desc: "Uslovi korištenja usluga DevForge: obim posla, plaćanje, rokovi isporuke, vlasništvo nad kodom i prava nakon isporuke.",
+        title: "Uslovi korištenja | Dev Lab",
+        desc: "Uslovi korištenja usluga Dev Lab: obim posla, plaćanje, rokovi isporuke, vlasništvo nad kodom i prava nakon isporuke.",
       },
       kolacici: {
-        title: "Kolačići (cookies) | DevForge",
+        title: "Kolačići (cookies) | Dev Lab",
         desc: "Koje kolačiće koristimo na sajtu, čemu služe i kako ih možete onemogućiti u svom pretraživaču.",
       },
-      notfound: { title: "Stranica nije pronađena (404) | DevForge", desc: "Tražena stranica ne postoji. Vratite se na početnu ili pogledajte usluge i cijene.", noindex: true },
-      objave: { title: "Objave za Instagram | DevForge", desc: "Interna galerija 60 marketinških objava.", noindex: true },
+      notfound: { title: "Stranica nije pronađena (404) | Dev Lab", desc: "Tražena stranica ne postoji. Vratite se na početnu ili pogledajte usluge i cijene.", noindex: true },
+      objave: { title: "Objave za Instagram | Dev Lab", desc: "Interna galerija 60 marketinških objava.", noindex: true },
+      logo: { title: "Logotip | Dev Lab", desc: "Prikaz logotipa Dev Lab.", noindex: true },
     };
 
     const seo = SEO[route] ?? SEO.home;
@@ -5219,7 +5267,7 @@ export default function App() {
 
     // Analitika: biljezi posjetu ove stranice (trajanje se mjeri do odlaska).
     // Ne biljezi /admin i /reklama — to nisu prave posjete sajtu.
-    if (route !== "admin" && route !== "reklama") {
+    if (route !== "admin" && route !== "reklama" && route !== "logo") {
       trackPageView(path, seo.title);
     }
   }, [route, path]);
@@ -5246,6 +5294,9 @@ export default function App() {
 
   // Objave: interna galerija 60 Instagram objava (bez headera/footera).
   if (route === "objave") return <PostsPage />;
+
+  // Logo: samo logotip preko cijele stranice (bez headera/footera).
+  if (route === "logo") return <LogoPage />;
 
   return (
     <ContactModalCtx.Provider value={() => setContactOpen(true)}>

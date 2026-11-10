@@ -50,6 +50,12 @@ export type PostSlide = {
   valueNote?: string;
   palette?: PostPalette; // dozvoljeno mijenjati ton unutar karusela
   photo?: PhotoKey; // fotografija za ovaj list
+  kicker?: string; // PREMIUM: sitni red iznad naslova
+  lead?: string; // PREMIUM: recenica ispod naslova
+  terms?: string[]; // PREMIUM: uslovi u podnozju
+  stats?: { value: string; label: string; icon?: string }[]; // PREMIUM: kljucne brojke
+  /** PREMIUM: tekst CTA dugmeta (npr. "Pišite nam u DM"). */
+  cta?: string;
 };
 
 export type AdPost = {
@@ -69,6 +75,16 @@ export type AdPost = {
   caption: string; // tekst objave za Instagram
   tags: string[]; // hashtagovi
   slides?: PostSlide[]; // ako postoji → karusel
+  /** PREMIUM: sitni red iznad glavnog naslova (npr. "PREMIUM PONUDA"). */
+  kicker?: string;
+  /** PREMIUM: rečenica ispod naslova. */
+  lead?: string;
+  /** PREMIUM: uslovi/podnožje (garancije, rok, cijena "od"). */
+  terms?: string[];
+  /** PREMIUM: 3–4 ključne brojke (npr. "0 KM" / "predujam"). */
+  stats?: { value: string; label: string; icon?: string }[];
+  /** PREMIUM: tekst CTA dugmeta. */
+  cta?: string;
 };
 
 // Varijante kompozicije — daju raznolikost a da sve ostane u istom sistemu:
@@ -86,7 +102,8 @@ export type PostLayout =
   | "photo"    // fotografija desno, tekst lijevo
   | "photoTop" // fotografija gore, tekst dolje
   | "photoBot" // fotografija dolje, tekst gore (zrcalo photoTop)
-  | "photoBg"; // fotografija preko cijele pozadine
+  | "photoBg" // fotografija preko cijele pozadine
+  | "premium"; // PREMIUM oglas — potpuno drugaciji ram, tip i hijerarhija
 
 /** Fotografije dostupne za postove (vidi postPhotos.ts). */
 export type PhotoKey =

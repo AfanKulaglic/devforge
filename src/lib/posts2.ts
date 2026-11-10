@@ -26,7 +26,7 @@ export const POSTS_2: AdPost[] = [
     items: ["Razgovor o kupcu", "Pregled konkurencije", "Struktura na papiru", "Tekst prije dizajna"],
     caption:
       "🧠 Stranica se ne pravi u Figmi. Pravi se u glavi.\n\nRedoslijed je važan. Ovako izgleda naš početak:\n\n1. Razgovor — 30 minuta o tome ko je kupac i šta ga muči. Ne o tome šta Vam se sviđa.\n2. Konkurencija — gledamo 5 firmi koje rade isto. Šta im rade dobro, šta loše.\n3. Struktura — nacrtamo stranice na papiru. Koja vodi gdje, šta je na svakoj.\n4. Tekst — pišemo prvo tekst, pa dizajn. Obrnuto nikad ne radi.\n\nTek onda Figma. Tek onda kod.\n\nZato prva verzija obično bude dobra iz prve — pola posla je urađeno prije nego što se išta vidi.",
-    tags: ["proces", "kakoradimo", "priprema", "izakulisa", "sarajevo", "devforge"],
+    tags: ["proces", "kakoradimo", "priprema", "izakulisa", "sarajevo", "devlab"],
   },
 
   // ── 22. KAKO RADIMO ──────────────────────────────────────────────────────
@@ -41,7 +41,7 @@ export const POSTS_2: AdPost[] = [
     items: ["Konsultacija", "Gotova verzija", "Razvoj", "Isporuka"],
     caption:
       "📋 Četiri koraka. Nema koraka petog.\n\nTransparentno — ovako izgleda projekat od prvog razgovora do zadnjeg dana:\n\nDAN 1 — Razgovor od 15-30 minuta. Čime se bavite, ko Vas zove, šta stranica treba da uradi.\n\nDAN 2–5 — Besplatna gotova verzija. Prava stranica na pravom linku, koju otvorite na mobitelu i pošaljete kome hoćete.\n\nDAN 6–20 — Puni razvoj. Sve stranice, funkcionalnosti, admin panel. Redovni pregledi i izmjene.\n\nZADNJI DAN — Testiranje na tri uređaja. Domena na Vaše ime, kod u cjelosti, sve lozinke predate.\n\nTek onda plaćate. Bez predujma, bez rizika.",
-    tags: ["proces", "koraci", "isporuka", "kakoradimo", "sarajevo", "devforge"],
+    tags: ["proces", "koraci", "isporuka", "kakoradimo", "sarajevo", "devlab"],
   },
 
   // ── 23. NAŠI PROJEKTI — GALERIJA ─────────────────────────────────────────
@@ -59,7 +59,7 @@ export const POSTS_2: AdPost[] = [
         template: "cover",
         eyebrow: "Naši projekti",
         title: "Naši projekti",
-        items: ["Web", "Shopovi", "Aplikacije", "AI"],
+        items: ["Stranice", "Shopovi", "Aplikacije", "AI"],
         palette: "dark",
       },
       {
@@ -67,7 +67,7 @@ export const POSTS_2: AdPost[] = [
         eyebrow: "Do danas",
         title: "isporučenih projekata",
         value: "20+",
-        valueNote: "Web stranice, shopovi, aplikacije i igrice.",
+        valueNote: "Stranice, shopovi, aplikacije i igrice.",
         palette: "dark",
       },
       {
@@ -95,7 +95,7 @@ export const POSTS_2: AdPost[] = [
     ],
     caption:
       "🏆 20+ projekata. Nula nezadovoljnih.\n\nPreko 20 isporučenih projekata — web stranice, shopovi, mobilne aplikacije, igrice i AI sistemi.\n\nKlijenti iz BiH i regiona. E-commerce i trgovine, startupi i agencije, lokalni biznisi i obrti, edukacija, uslužne djelatnosti, SaaS.\n\nOno što nam je važnije od broja: nijedan klijent nije platio nešto što nije vidio.\n\nSvaki projekt prošao je isti put: dogovor → besplatna verzija → pregled → izmjene → objava → plaćanje.\n\n100% klijenata zadovoljno, svaki projekt isporučen prema dogovoru.\n\nPogledajte sve na /projekti.",
-    tags: ["projekti", "rezultati", "portfolio", "sarajevo", "devforge"],
+    tags: ["projekti", "rezultati", "portfolio", "sarajevo", "devlab"],
   },
 
   // ── 24. IZRADA WEB STRANICA U SARAJEVU ───────────────────────────────────
@@ -106,11 +106,11 @@ export const POSTS_2: AdPost[] = [
     layout: "center",
     palette: "teal",
     eyebrow: "Sarajevo",
-    title: "Izrada web stranica u Sarajevu",
+    title: "Izrada stranica u Sarajevu",
     subtitle: "Bez kancelarije u centru i bez velikih režija — zato je cijena niža.",
     caption:
       "📍 Sarajevo. Bez kancelarije u centru, bez Vaše kirije u cijeni.\n\nRadimo iz Sarajeva, za firme iz cijele BiH.\n\nBez kancelarije u centru i bez velikih režija. Zato ne plaćate tuđu kiriju kroz cijenu projekta.\n\nŠta to znači praktično:\n— ✅ web stranica od 150 KM, shop od 600 KM\n— 🔥 cijena je ista za firmu iz Sarajeva i iz Bihaća\n— 💡 sve ide online: razgovor, pregledi, izmjene\n— ⚡ ne morate dolaziti nigdje\n\nRadimo s klijentima iz cijele Bosne i Hercegovine i regiona.\n\nAko Vam je neko rekao da stranica košta 2000 KM — javite nam se.",
-    tags: ["sarajevo", "webstranice", "lokalni", "cijene", "devforge"],
+    tags: ["sarajevo", "webstranice", "lokalni", "cijene", "devlab"],
   },
 
   // ── 25. ŠTA DOBIJATE — GALERIJA ──────────────────────────────────────────
@@ -162,7 +162,7 @@ export const POSTS_2: AdPost[] = [
     ],
     caption:
       "🎁 Šest stvari koje drugi naplaćuju. Kod nas su uključene.\n\nŠta dobijate uz svaki projekt — bez doplata:\n\n1. UI/UX DIZAJN UKLJUČEN. Profesionalan, moderan dizajn dolazi uz svaki paket — bez doplate i bez kompromisa na izgledu.\n\n2. RESPONZIVNO NA SVIM UREĐAJIMA. Svaki proizvod izgleda i radi besprijekorno na mobitelu, tabletu i desktopu.\n\n3. BRZA I OPTIMIZOVANA IZRADA. Optimizovan kod koji se brzo učitava — bolji dojam, niža stopa napuštanja i veća konverzija.\n\n4. DEMO SE NE PLAĆA. Prvo dobijate besplatnu demo verziju — za nju ne plaćate ništa.\n\n5. ČIST, DOKUMENTIRAN KOD. Predajemo uredan, održiv kod s dokumentacijom — projekt je u potpunosti Vaš.\n\n6. 4 BESPLATNE REVIZIJE. Dorađujemo dizajn i funkcionalnosti dok rezultat ne odgovara Vašoj viziji.",
-    tags: ["ukljuceno", "webdizajn", "revizije", "kod", "sarajevo", "devforge"],
+    tags: ["ukljuceno", "webdizajn", "revizije", "kod", "sarajevo", "devlab"],
   },
 
   // ── 26. ČESTA PITANJA ────────────────────────────────────────────────────
@@ -177,7 +177,7 @@ export const POSTS_2: AdPost[] = [
     subtitle: "Da — potpuno, i bez ikakvih obaveza.",
     caption:
       "❓ Najčešće pitanje koje dobijamo. I odgovor.\n\nNajčešće pitanje koje dobijamo.\n\nODGOVOR: Da, gotova verzija je potpuno besplatna i bez ikakvih obaveza.\n\nIzrađujemo funkcionalan prototip Vašeg projekta u roku od 5 radnih dana kako biste vidjeli dizajn, strukturu i osnovne funkcionalnosti prije nego što se odlučite za saradnju.\n\nNema skrivenih troškova niti predujma.\n\nAko Vam se ne svidi — ne plaćate ništa i idemo dalje. Bez objašnjavanja.\n\nJavite nam se u DM.",
-    tags: ["cestapitanja", "faq", "besplatno", "bezpredujma", "sarajevo", "devforge"],
+    tags: ["cestapitanja", "faq", "besplatno", "bezpredujma", "sarajevo", "devlab"],
   },
 
   // ── 27. ČESTA PITANJA ────────────────────────────────────────────────────
@@ -192,7 +192,7 @@ export const POSTS_2: AdPost[] = [
     items: ["Stranica — 1-2 sedmice", "Web shop — 3-4 sedmice", "Aplikacija — 4-8 sedmica"],
     caption:
       "⏱️ Koliko se čeka? Realno, bez laži.\n\nVrijeme razvoja zavisi od kompleksnosti projekta.\n\n— ✅ Landing page ili jednostavna web stranica: 1–2 sedmice\n— 🔥 Web shop sa payment integracijom: 3–4 sedmice\n— 💡 Mobilna aplikacija: 4–8 sedmica\n\nTačan timeline definišemo nakon inicijalne konsultacije i analize zahtjeva.\n\nAli prva verzija koju možete vidjeti — za 5 radnih dana. Bez obzira na veličinu projekta.\n\nTako ne čekate mjesec da vidite je li krenulo u pravom smjeru.",
-    tags: ["cestapitanja", "faq", "rok", "timeline", "sarajevo", "devforge"],
+    tags: ["cestapitanja", "faq", "rok", "timeline", "sarajevo", "devlab"],
   },
 
   // ── 28. ČESTA PITANJA ────────────────────────────────────────────────────
@@ -207,7 +207,7 @@ export const POSTS_2: AdPost[] = [
     items: ["Je li kod moj?", "Kako teče plaćanje?", "Imate li podršku?", "Radite li AI?"],
     caption:
       "❓ Četiri pitanja. Četiri poštena odgovora.\n\nČetiri pitanja koja dobijamo svaki dan — četiri kratka odgovora:\n\nDA LI JE KOD I PROJEKAT U POTPUNOSTI MOJ? Da. Nakon isporuke i izmirenja dogovorene cijene, kompletan kod, dizajn i sva prava nad projektom pripadaju isključivo Vama. Dobijate i dokumentaciju te kratku obuku za korištenje.\n\nKAKO TEČE PLAĆANJE? Plaćate tek kada budete zadovoljni rezultatom. Prvo besplatna gotova verzija, a tek nakon Vaše potvrde krećemo u puni razvoj. Nema predujma.\n\nDA LI NUDITE PODRŠKU NAKON ZAVRŠETKA? Da. Prvo izrađujemo besplatnu demo verziju, a podrška i održavanje su dostupni nakon isporuke.\n\nRADITE LI AI SISTEME I AI CHAT? Da. AI chat asistenti na sajtu i AI telefonski recepcionari koji odgovaraju kupcima 24 sata dnevno.\n\nImate drugo pitanje? Javite se u DM.",
-    tags: ["cestapitanja", "faq", "kod", "placanje", "sarajevo", "devforge"],
+    tags: ["cestapitanja", "faq", "kod", "placanje", "sarajevo", "devlab"],
   },
 
   // ── 29. JAVITE NAM SE BRZO, BEZ FORME ────────────────────────────────────
@@ -223,7 +223,7 @@ export const POSTS_2: AdPost[] = [
     subtitle: "Odgovaramo u roku od 10 minuta.",
     caption:
       "💬 Bez forme. Bez 12 polja. Samo DM.\n\nNe volimo forme koje traže 12 polja prije nego što popričate s nekim.\n\nZato je najbrži način — DM.\n\nŠta nam pošaljete:\n— ✅ čime se bavite (jedna rečenica)\n— 🔥 šta Vam treba (stranica, shop, aplikacija, AI)\n— 💡 grad, ako nije Sarajevo\n\nTo je dovoljno. Mi pitamo dalje.\n\nOdgovaramo u roku od 10 minuta. Ako je noć — ujutro prvo.\n\nNe morate imati ni ideju ni materijal. Većina razgovora počne s „ne znam šta mi treba“.",
-    tags: ["kontakt", "dm", "bezforme", "brzo", "sarajevo", "devforge"],
+    tags: ["kontakt", "dm", "bezforme", "brzo", "sarajevo", "devlab"],
   },
 
   // ── 30. JAVITE NAM SE ────────────────────────────────────────────────────
@@ -238,6 +238,6 @@ export const POSTS_2: AdPost[] = [
     subtitle: "Instagram DM · devforge.studio@gmail.com · Sarajevo",
     caption:
       "👋 Ne morate imati ni ideju. Ozbiljno.\n\nNe morate imati:\n— ✅ gotov tekst\n— 🔥 logo u vektoru\n— 💡 ideju kako stranica treba izgledati\n— ⚡ ni odluku da li Vam uopšte treba stranica\n\nDovoljno je da se javite i kažete čime se bavite.\n\nKako nas kontaktirate:\n— 🎯 Instagram DM: @devforge_studio\n— 💰 e-mail: devforge.studio@gmail.com\n— 📈 ili pozovite: +387 62 576 456\n\nOdgovaramo u roku od 10 minuta. Bez obaveze i bez predujma.\n\nJavite nam se u DM.",
-    tags: ["kontakt", "pocetak", "bezobaveze", "sarajevo", "devforge"],
+    tags: ["kontakt", "pocetak", "bezobaveze", "sarajevo", "devlab"],
   },
 ];

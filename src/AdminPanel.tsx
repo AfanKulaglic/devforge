@@ -155,7 +155,7 @@ function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
               <HiOutlineLockClosed className="text-lg" aria-hidden="true" />
             </span>
             <div>
-              <p className="text-[0.68rem] font-bold uppercase tracking-[0.25em] text-teal-300">DevForge</p>
+              <p className="text-[0.68rem] font-bold uppercase tracking-[0.25em] text-teal-300">Dev Lab</p>
               <h1 className="text-xl font-extrabold tracking-tight text-white">Admin panel</h1>
             </div>
           </div>
@@ -864,7 +864,7 @@ export default function AdminPanel() {
               <HiOutlineLockClosed className="text-base" aria-hidden="true" />
             </span>
             <div>
-              <p className="text-[0.6rem] font-bold uppercase tracking-[0.22em] text-teal-300">DevForge</p>
+              <p className="text-[0.6rem] font-bold uppercase tracking-[0.22em] text-teal-300">Dev Lab</p>
               <p className="text-sm font-extrabold tracking-tight">Admin panel</p>
             </div>
           </div>

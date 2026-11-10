@@ -1,6 +1,6 @@
-# DevForge
+# Dev Lab
 
-Marketinška web stranica digitalne agencije **DevForge** — izrada web stranica, web shopova, mobilnih aplikacija i 2D igara. Gotova verzija za 5 dana, bez predujma.
+Marketinška web stranica digitalne agencije **Dev Lab** — izrada web stranica, web shopova, mobilnih aplikacija i 2D igara. Gotova verzija za 5 dana, bez predujma.
 
 ## Tehnologije
 - **React + Vite + TypeScript**

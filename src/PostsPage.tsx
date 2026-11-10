@@ -351,7 +351,7 @@ export default function PostsPage() {
   return (
     <main id="content" className="bg-[#060606] pb-24 pt-28 md:pt-32">
       <div className="mx-auto max-w-7xl px-5 md:px-8">
-        <h1 className="sr-only">Objave za Instagram — DevForge</h1>
+        <h1 className="sr-only">Objave za Instagram — Dev Lab</h1>
 
         <header className="max-w-3xl">
           <p className="text-[0.7rem] font-extrabold uppercase tracking-[0.22em] text-teal-300">

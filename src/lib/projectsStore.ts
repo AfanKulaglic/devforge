@@ -587,7 +587,7 @@ export function downloadBackup() {
 export function parseBackup(text: string): BackupFile {
   const parsed = JSON.parse(text);
   if (!parsed || parsed.kind !== "devforge-projects-backup") {
-    throw new Error("Fajl nije DevForge backup.");
+    throw new Error("Fajl nije Dev Lab backup.");
   }
   if (!Array.isArray(parsed.projects)) {
     throw new Error("Backup ne sadrzi listu projekata.");

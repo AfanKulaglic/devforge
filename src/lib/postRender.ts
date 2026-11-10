@@ -24,7 +24,7 @@
 //   action — poziv
 // ───────────────────────────────────────────────────────────────────────────
 
-import type { AdPost, PostLayout, PostPalette, PostSlide } from "./postsData";
+import type { AdPost, PhotoKey, PostLayout, PostPalette, PostSlide } from "./postsData";
 import { DF_LOGO_DATA_URI, DF_LOGO_RATIO } from "./postLogo";
 import { PHOTOS, PHOTO_ALT } from "./postPhotos";
 import { BRAND, BRAND_INK } from "./postBrand";
@@ -46,6 +46,40 @@ let SIZE_H = 1080;
 /** Margina — ista horizontalno i vertikalno. */
 const M = 96;
 const FONT = "'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif";
+
+// ── SV G ikone za oglas ────────────────────────────────────────────────────
+// Layout "premium" crta SVG ručno (nema react-icons u lib sloju), zato su
+// potrebne minijaturne ikone kao putanje. Svaka je 24×24 viewBox, stroke.
+const PX_ICONS: Record<string, string> = {
+  web: "M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20",
+  shop: "M3 7h18l-2 13H5L3 7Zm5 0V5a4 4 0 0 1 8 0v2",
+  app: "M7 2h10a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Zm3 17h4",
+  ai: "M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4M12 8a4 4 0 0 1 4 4c0 1.5-.8 2.7-2 3.4V17h-4v-1.6C8.8 14.7 8 13.5 8 12a4 4 0 0 1 4-4Z",
+  check: "M5 12l5 5 9-10",
+  shield: "M12 3l8 3v6c0 4-3 7-8 9-5-2-8-5-8-9V6l8-3Zm-3 8 2 2 4-4",
+  rocket: "M5 19c-1.5 0-3-1-3-3 2 0 3 1 3 3ZM12 5l7 7-4 1-3 3-1-4-4 1-3-3 4-1 4-4ZM5 19c0-2 1-4 3-5",
+  clock: "M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z",
+  chat: "M21 12a8 8 0 0 1-11.5 7.2L4 20l.8-5.5A8 8 0 1 1 21 12Z",
+  bolt: "M13 3 4 14h6l-1 7 9-11h-6l1-7Z",
+  coin: "M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 5v8M9 12h6M10 10h4M10 14h4",
+  layers: "M12 3 3 8l9 5 9-5-9-5ZM3 12l9 5 9-5M3 16l9 5 9-5",
+  monitor: "M3 5h18v11H3V5Zm6 13h6M12 16v3",
+  tools: "M14 6a4 4 0 0 1 6-1l-2 2-1-1-1 1-1-1-1 1V5a4 4 0 0 1 0 1ZM6 14l8-8 2 2-8 8-2-2Z",
+};
+
+/** Crta ikonu u 48×48 ćeliju; ikona unutra 28px, centrirana. */
+function pxIcon(name: string, x: number, y: number, color: string, size = 30): string {
+  const box = size * 1.6;
+  const ix = x + (box - size) / 2;
+  const iy = y + (box - size) / 2;
+  const d = PX_ICONS[name] ?? PX_ICONS.check;
+  return `<g transform="translate(${ix},${iy})">
+    <rect x="-2" y="-2" width="${size + 4}" height="${size + 4}" rx="8" fill="none"
+      stroke="${color}" stroke-opacity="0.35" stroke-width="1.4"/>
+    <path d="${d}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round"
+      stroke-linejoin="round"/>
+  </g>`;
+}
 
 type Colors = {
   bg: string;
@@ -179,32 +213,22 @@ function fit(text: string, maxWidth: number, start: number, min = 46): number {
 //   ─────────────────────────      ─────────────────────────
 //   h-10 .............. 40px   →   84px
 //   gap-2.5 ........... 10px   →   21px
-//   p-1 (padding) ...... 4px   →    8px   ⇒ ikona 68px
-//   text-xl ........... 20px   →   42px
+//   ikona ............. 70%    →   70%
+//   text-[22px] ....... 22px   →   46.2px
 //   rounded-xl ........ 12px   →   25px
 //   border 1px ........  1px   →    2px
 //
 const K = 2.1;                 // jedan faktor za sve — zato su razmaci tačni
 const LOGO_BOX = 40 * K;       // 84
 const LOGO_GAP = 10 * K;       // 21
-// LOGO_PAD se ne koristi direktno — ikona se skalira po izmjerenom odnosu (0.30).
 const LOGO_RADIUS = 12 * K;    // 25.2
-const LOGO_FONT = 20 * K;      // 42
+const LOGO_FONT = 22 * K;      // 46.2
 const LOGO_STROKE = 1 * K;     // 2.1
 
-// VAZNO: u navbaru je <img className="h-full w-full object-contain p-1">.
-// `object-contain` skalira ikonu da STANE, ne da ispuni okvir.
-// Ikona (crop) je 56×24 ⇒ omjer 2.333. Unutar LOGO_BOX-a sa LOGO_PAD paddingom
-// raspoloživo je (LOGO_BOX - 2*LOGO_PAD) × (LOGO_BOX - 2*LOGO_PAD).
-// contain ⇒ uzima se MANJA od dvije mogućnosti:
-//   po širini: w = avail, h = avail / 2.333
-//   po visini: h = avail, w = avail * 2.333  (ovo bi izašlo iz okvira — zato se ne koristi)
-// Izmjereno na stvarnom navbaru (Playwright + PIL): ikona zauzima 30% visine okvira.
-// To je zato što `object-contain` u 40px okviru sa p-1 daje visinu 40-8=32px za ŠIRINU,
-// a stvarna visina znaka je 32/2.333 = 13.7px → 13.7/40 = 0.343 ... ali optički
-// (prazan prostor u PNG-u) mjeri se 12/40 = 0.300. Koristimo izmjereni odnos.
-const LOGO_ICON_H = LOGO_BOX * 0.30;                   // 25.2  (izmjereno na navbaru)
-const LOGO_ICON_W = LOGO_ICON_H * DF_LOGO_RATIO;       // 58.8
+// Ikonica je kvadratna (DF_LOGO_RATIO = 1) i zauzima 70% okvira na svim mjestima:
+// navbar, reklama, objave i /logo. Ista proporcija = isti vizuelni ritam.
+const LOGO_ICON_H = LOGO_BOX * 0.70;                   // 70% okvira - isto kao navbar
+const LOGO_ICON_W = LOGO_ICON_H * DF_LOGO_RATIO;       // 1:1 → ista vrijednost
 
 function brandMark(x: number, y: number, devColor: string, forgeColor: string = "#4DEAE0"): { svg: string; w: number } {
   const iconX = x + (LOGO_BOX - LOGO_ICON_W) / 2;
@@ -227,12 +251,12 @@ function brandMark(x: number, y: number, devColor: string, forgeColor: string = 
     <image href="${DF_LOGO_DATA_URI}" x="${iconX}" y="${iconY}"
       width="${LOGO_ICON_W}" height="${LOGO_ICON_H}"/>
     <text x="${textX}" y="${textY}" font-family="${FONT}" font-size="${LOGO_FONT}" font-weight="800"
-      letter-spacing="-0.6"><tspan fill="${devColor}">Dev</tspan><tspan fill="url(#${gid})">Forge</tspan></text>`,
+      letter-spacing="-0.6"><tspan fill="${devColor}">Dev</tspan><tspan fill="url(#${gid})">Lab</tspan></text>`,
   };
 }
 
 function header(c: Colors, eyebrow: string, category: string, slide: number, total: number): string {
-  // Na zelenoj podlozi (ink je crn) logo se invertuje: "Dev" BIJEL, "Forge" CRN —
+  // Na zelenoj podlozi (ink je crn) logo se invertuje: "Dev" BIJEL, "Lab" CRN —
   // inace bi oba bila tamna na zelenom i wordmark bi se izgubio.
   const onGreen = c.ink === "#0A0A0A";
   const mark = brandMark(M, M - 4, onGreen ? "#FFFFFF" : c.ink, onGreen ? "#0A0A0A" : BRAND);
@@ -337,12 +361,12 @@ function formHero(c: Colors, p: PostSlide): Block {
   const title = p.title ?? "";
   let size = fit(title, W, 116);
   let lines = wrap(title, size, W, 3);
-  const budget = p.subtitle ? CONTENT_H() - 190 : CONTENT_H();
-  while (lines.length * size * 1.08 > budget && size > 54) {
+  const budget = p.subtitle ? CONTENT_H() - 230 : CONTENT_H() - 20;
+  while (lines.length * size * 1.2 > budget && size > 54) {
     size -= 6;
     lines = wrap(title, size, W, 3);
   }
-  const lh = size * 1.08;
+  const lh = size * 1.2;
 
   // mala akcenat traka IZNAD naslova — vizuelni ulaz, unutar bloka
   let svg = `<rect x="0" y="${-34}" width="88" height="8" fill="${c.accent}"/>`;
@@ -379,23 +403,25 @@ function formFigure(c: Colors, p: PostSlide): Block {
     font-weight="900" letter-spacing="${(-vsize * 0.03).toFixed(1)}" fill="${c.accent}">${esc(val)}</text>`;
   let h = vsize;
 
+  // Naslov: veći prored (1.22) da se redovi ne slijube — prije 1.1 je izgledalo zbijeno.
   const ts = fit(p.title ?? "", W, 54);
   const tl = wrap(p.title ?? "", ts, W, 3);
-  h += 44;
+  const tlh = ts * 1.22;
+  h += 52;
   tl.forEach((l, i) => {
-    svg += `<text x="0" y="${h + ts * 0.78 + i * ts * 1.1}" font-family="${FONT}"
+    svg += `<text x="0" y="${h + ts * 0.78 + i * tlh}" font-family="${FONT}"
       font-size="${ts}" font-weight="800" letter-spacing="-1.4" fill="${c.ink}">${esc(l)}</text>`;
   });
-  h += (tl.length - 1) * ts * 1.1 + ts;
+  h += (tl.length - 1) * tlh + ts;
 
   if (p.valueNote) {
     const nl = wrap(p.valueNote, 30, W, 2);
-    h += 34;
+    h += 44;
     nl.forEach((l, i) => {
-      svg += `<text x="0" y="${h + 24 + i * 38}" font-family="${FONT}" font-size="30"
+      svg += `<text x="0" y="${h + 24 + i * 44}" font-family="${FONT}" font-size="30"
         font-weight="500" fill="${c.soft}">${esc(l)}</text>`;
     });
-    h += (nl.length - 1) * 38 + 24;
+    h += (nl.length - 1) * 44 + 24;
   }
 
   return { svg, h };
@@ -413,18 +439,23 @@ function formBlocks(c: Colors, p: PostSlide): Block {
           font-weight="900" letter-spacing="-2.2" fill="${c.ink}">${esc(l)}</text>`,
     )
     .join("");
-  let y = (tl.length - 1) * ts * 1.08 + ts;
+  let y = (tl.length - 1) * ts * 1.15 + ts;
 
-  y += 40;
+  y += 44;
   svg += `<rect x="0" y="${y}" width="96" height="7" fill="${c.accent}"/>`;
   y += 7;
 
   const n = items.length || 1;
-  const avail = CONTENT_H() - y - 10;
-  const rowH = Math.max(64, Math.min(112, avail / n));
+  // Visina reda se racuna iz STVARNO raspolozivog prostora. `avail` je ogranicen
+  // na preostali dio sadrzajne zone; buildFitting() će ga dodatno skalirati ako
+  // layout (npr. photoTop) ima manju zonu od pune CONTENT_H().
+  const avail = Math.max(0, CONTENT_H() - y - 10);
+  const rowH = Math.max(64, Math.min(104, avail / n));
   const fs = n >= 4 ? 34 : 38;
 
-  y += Math.max(18, (avail - rowH * n) * 0.28);
+  // Preostala visina za liste: ako je raspoloziv prostor manji od punog CONTENT_H()
+  // (photoTop/photoBot), redovi se pakuju u ono sto stvarno ima.
+  y += Math.max(18, Math.min(28, (avail - rowH * n) * 0.28));
   items.forEach((it, i) => {
     const ry = y + i * rowH;
     const lines = wrap(it, fs, W - 58, 2);
@@ -545,8 +576,208 @@ function buildFitting(c: Colors, p: PostSlide, maxH: number, total = 1): Block {
   return { svg: `<g transform="scale(1, ${k.toFixed(4)})">${b.svg}</g>`, h: maxH };
 }
 
+// PREMIUM POZADINA — tamna fotografija + gradijenti koji je pretvaraju u podlogu.
+//
+// Zašto: ravna crna je bila čista ali "prazna" — izgledala kao najava, ne kao
+// plaćeni oglas. Fotografija daje dubinu i ton, a gradijenti garantuju da tekst
+// ostane čitljiv bez obzira na to gdje slika ima svijetle dijelove.
+//
+// Tri sloja preko slike, svaki ima svrhu:
+//   1. tamni veo (opacity 0.62) — obara svjetlinu cijele slike
+//   2. vertikalni gradijent gore→dolje — dno najtamnije, tu su brojke i uslovi
+//   3. lijevi gradijent — lijevo je tekst, pa je lijevo najtamnije
+function premiumBackdrop(ph: PhotoKey): string {
+  return `
+  <image href="${PHOTOS[ph]}" x="0" y="0" width="${SIZE}" height="${SIZE_H}"
+    preserveAspectRatio="xMidYMid slice" aria-label="${esc(PHOTO_ALT[ph])}"/>
+  <rect x="0" y="0" width="${SIZE}" height="${SIZE_H}" fill="#050505" opacity="0.62"/>
+  <rect x="0" y="0" width="${SIZE}" height="${SIZE_H}" fill="url(#pxVeil)"/>
+  <rect x="0" y="0" width="${SIZE}" height="${SIZE_H}" fill="url(#pxLeft)"/>`;
+}
+
+// ── PREMIUM ───────────────────────────────────────────────────────────────
+// Oglašavački oglas, namjerno DRUGAČIJI od ostalih 60 objava.
+//
+// Zašto izgleda drugačije (namjerno, ne slučajno):
+//   • Vlastiti ram: dvostruki okvir (debeo zeleni + tanak unutrašnji) — ostale objave
+//     imaju samo traku gore.
+//   • Vlastita hijerarhija: kicker → OGROMAN naslov → lead → traka brojki → uslovi.
+//     Ostale objave nikad ne kombiniraju brojke I uslove na istoj slici.
+//   • Nutarnja kartica sa zelenom akcent-trakom — "certifikat" osjećaj.
+//   • Ključni podaci (0 KM, 5 dana, 150 KM) su UVIJEK vidljivi — to je ono što
+//     kupac mora zapamtiti ako vidi samo jednu sliku u feedu.
+//
+// Sve vrijednosti u `terms`/`stats` dolaze iz podataka objave, ne iz ove funkcije.
+function premiumLayout(c: Colors, p: PostSlide): string {
+  const inner = 62; // unutrašnja margina okvira
+  const left = inner + 38;
+  const right = SIZE - left;
+  const wCol = right - left;
+
+  const stats = (p.stats ?? []).slice(0, 4);
+  const terms = (p.terms ?? []).slice(0, 3);
+
+  // Visine dijelova oglasa — definisane na vrhu jer se naslov mora znati
+  // uklopiti u preostali prostor iznad njih.
+  const barH = 190; // 4 reda: ikona + brojka + label + luft
+  const CTA_H = 76;
+  const CTA_GAP = 34;
+  const footH = terms.length ? 62 : 0;
+
+  // Vertikalna raspodjela: LOGO gore desno, pa kicker gore lijevo, naslov,
+  // lead, traka brojki, CTA i uslovi pri dnu.
+  let y = inner + 34;
+  let svg = "";
+
+  // 0) LOGOTIP — gore desno, unutar rama. Premium oglas mora nositi brend:
+  // bez znaka oglas izgleda kao najava, a ne kao ponuda firme.
+  const mark = brandMark(right - (LOGO_BOX + LOGO_GAP + LOGO_FONT * 3.6), inner + 26, c.ink, c.accent);
+  svg += mark.svg;
+
+  // 1) KICKER — sitno, razmaknuto, zeleno (ispod logotipa)
+  // Razmak od 150px je bio potreban dok je logo sjedio iznad teksta; sada je
+  // logo desno, pa kicker može bliže vrhu — inače 1:1 format nema mjesta za sve.
+  if (p.kicker) {
+    const KICK_Y = 96;
+    svg += `<text x="${left}" y="${y + KICK_Y}" font-family="${FONT}" font-size="27" font-weight="900"
+      letter-spacing="4.4" fill="${c.accent}">${esc(p.kicker.toUpperCase())}</text>`;
+    y += KICK_Y;
+    y += 34;
+  }
+
+  // 2) NASLOV — najveći element na slici, tri reda maksimalno
+  //
+  // MORA stati iznad trake brojki. Prije je naslov bio fiksno do 96px i u 1:1
+  // formatu (kad se dodaju CTA + uslovi) pregazio bi lead i traku. Zato se
+  // veličina sada računa iz stvarno preostalog prostora, a ne "odokativno".
+  //
+  // VAŽNO: `wrap` odbacuje sve iznad `maxLines`. Zato se font smanjuje sve dok
+  // CIJELI naslov ne stane u tri reda — inače zadnje riječi tiho nestanu
+  // ("Bez predujma" se gubilo, pa je izgledalo da je tekst krnj).
+  const title = p.title ?? "";
+  const availTitle = SIZE_H - inner - 62 - CTA_H - CTA_GAP - 34 - barH - 56 - y
+    - (p.lead ? 36 * 0.92 + 2 * 50 : 0);
+  let ts = fit(title, wCol, 96, 40);
+  let tl = wrap(title, ts, wCol, 3);
+  const fitsAll = (lines: string[]) => lines.join(" ") === title.split(/\s+/).filter(Boolean).join(" ");
+  while (
+    ts > 40 &&
+    (!fitsAll(tl) || tl.length * ts * 1.06 > availTitle || tl.length * ts * 1.06 > 300)
+  ) {
+    ts -= 3;
+    tl = wrap(title, ts, wCol, 3);
+  }
+  const tlh = ts * 1.06;
+  tl.forEach((l, i) => {
+    svg += `<text x="${left}" y="${y + ts * 0.78 + i * tlh}" font-family="${FONT}" font-size="${ts}"
+      font-weight="900" letter-spacing="${(-ts * 0.028).toFixed(1)}" fill="${c.ink}">${esc(l)}</text>`;
+  });
+  y += (tl.length - 1) * tlh + ts + 26;
+
+  // 3) LEAD — jedna rečenica, siva, gura poantu naslova dalje
+  if (p.lead) {
+    const LEAD_FS = 36;
+    const LEAD_LH = 50;
+    const ll = wrap(p.lead, LEAD_FS, wCol - 10, 3);
+    ll.forEach((l, i) => {
+      svg += `<text x="${left}" y="${y + 28 + i * LEAD_LH}" font-family="${FONT}" font-size="${LEAD_FS}"
+        font-weight="500" fill="${c.soft}">${esc(l)}</text>`;
+    });
+    // `y` mora prijeći ISPOD zadnjeg reda (baseline + descender), inače
+    // traka brojki sjedi na tekstu. Prije je falilo visine slova.
+    y += (ll.length - 1) * LEAD_LH + LEAD_FS * 0.92;
+  }
+
+  // 4) TRAKA BROJKI
+  // Prije je bila fiksno zakucana za dno (SIZE_H - inner - 232), pa je u 1:1
+  // ostajala prazna crna rupa od ~280px izmedju teksta i brojki, a u 3:4 ~700px.
+  // Sada se traka veze na kraj TEKSTA (min razmak), a visak prostora se dijeli:
+  // jedan dio ide izmedju teksta i trake, drugi ispod trake.
+  // Donja granica za traku mora uračunati i CTA pilulu, inače se potrpaju.
+  const bottomLimit = inner + footH + CTA_H + CTA_GAP + 34;
+  const gapMin = 56;                                // najmanji razmak tekst → traka
+  const naturalTop = y + gapMin;
+  const maxTop = SIZE_H - bottomLimit - barH;       // traka ne smije uci u podnozje
+  const barTop = Math.min(naturalTop + Math.max(0, (maxTop - naturalTop) * 0.42), maxTop);
+
+  if (stats.length) {
+    svg += `<rect x="${left}" y="${barTop}" width="${wCol}" height="${barH}" fill="${c.card}"
+      stroke="${c.line}" stroke-width="2"/>`;
+    const cw = wCol / stats.length;
+    stats.forEach((s, i) => {
+      const cx = left + i * cw;
+      if (i > 0) {
+        svg += `<rect x="${cx}" y="${barTop + 22}" width="2" height="${barH - 44}" fill="${c.line}"/>`;
+      }
+      // IKONA iznad brojke — daje značenje bez citanja labela i ne moze se
+      // preklopiti s tekstom (vlastiti red). Uz label je bila premala i tijesna.
+      if (s.icon) {
+        const IS = 26;                       // velicina ikone
+        svg += pxIcon(s.icon, cx + cw / 2 - (IS * 1.6) / 2, barTop + 20, c.accent, IS);
+      }
+      svg += `<text x="${cx + cw / 2}" y="${barTop + 106}" text-anchor="middle" font-family="${FONT}"
+        font-size="52" font-weight="900" letter-spacing="-1.6" fill="${c.accent}">${esc(s.value)}</text>`;
+      // Label se automatski smanjuje ako ne stane u svoju ćeliju — bez prelijevanja preko ivica.
+      const lab = s.label.toUpperCase();
+      const maxW = cw - 16;
+      let lfs = 24;
+      while (lfs > 15 && lab.length * lfs * 0.62 > maxW) lfs -= 1;
+      svg += `<text x="${cx + cw / 2}" y="${barTop + 148}" text-anchor="middle" font-family="${FONT}"
+        font-size="${lfs}" font-weight="800" letter-spacing="0.8" fill="${c.soft}">${esc(lab)}</text>`;
+    });
+  }
+
+  // 5) CTA + USLOVI — podnožje.
+  // Redoslijed je fiksan: TRAKA → CTA → USLOVI. Ništa se ne preklapa jer se
+  // svaki element računa iz prethodnog, a ne iz nezavisne pozicije.
+  //
+  // CTA: jasan poziv na akciju. Za plaćeni oglas je obavezan — bez njega
+  // gledalac zna ponudu ali ne zna šta da uradi sljedeće.
+  const ctaH = CTA_H;
+  const ctaLabel = (p.cta ?? "Pišite nam u DM").toUpperCase();
+  const ctaW = Math.min(wCol, ctaLabel.length * 17 + 84);
+
+  // U 3:4 (visoki format) ima puno prostora pod tekstom — tada se CTA+uslovi
+  // zakucaju za DNO rama kao podnožje oglasa. U 1:1 idu odmah pod traku.
+  const footBlockH = ctaH + (terms.length ? CTA_GAP + footH - 14 : 0);
+  const footNear = barTop + barH + 40;
+  const footBottom = SIZE_H - inner - 40 - footBlockH;
+  const footTop = footBottom - footNear > 60 ? footBottom : footNear;
+
+  const ctaY = footTop;
+  svg += `<rect x="${left}" y="${ctaY}" width="${ctaW}" height="${ctaH}" rx="${ctaH / 2}"
+    fill="${c.accent}"/>`;
+  svg += `<text x="${left + ctaW / 2}" y="${ctaY + ctaH / 2 + 11}" text-anchor="middle"
+    font-family="${FONT}" font-size="30" font-weight="900" letter-spacing="1.6"
+    fill="${c.accentInk}">${esc(ctaLabel)}</text>`;
+
+  // Uslovi — linija + tačkice, uvijek ispod CTA pilule.
+  const ty = ctaY + ctaH + CTA_GAP;
+  if (terms.length) {
+    svg += `<rect x="${left}" y="${ty - 26}" width="${wCol}" height="2" fill="${c.line}"/>`;
+    let tx = left;
+    terms.forEach((t, i) => {
+      if (i > 0) {
+        svg += `<circle cx="${tx + 10}" cy="${ty + 4}" r="3" fill="${c.soft}" opacity="0.7"/>`;
+        tx += 30;
+      }
+      const label = t.toUpperCase();
+      // Term se smanjuje ako bi prekoracio širinu rama.
+      let tfs = 23;
+      while (tfs > 15 && tx + label.length * tfs * 0.62 > right) tfs -= 1;
+      svg += `<text x="${tx}" y="${ty + 12}" font-family="${FONT}" font-size="${tfs}" font-weight="800"
+        letter-spacing="1.1" fill="${c.soft}">${esc(label)}</text>`;
+      tx += label.length * tfs * 0.62 + 22;
+    });
+  }
+
+  return svg;
+}
+
 // ── Pozicioniranje ────────────────────────────────────────────────────────
 const PLACE: Record<PostLayout, (c: Colors, p: PostSlide, total: number) => string> = {
+  // PREMIUM — nema header/footer iz `header()`; vlastiti ram i vlastita hijerarhija.
+  premium: (c, p) => premiumLayout(c, p),
   center: (c, p, total) => {
     const b = build(c, p, total);
     const y = b.h >= CONTENT_H() ? CONTENT_TOP() : CONTENT_TOP() + (CONTENT_H() - b.h) / 2;
@@ -620,9 +851,14 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide, total: number) => stri
     const imgH = Math.round(SIZE_H * 0.343);
     const zoneTop = imgH;
     const zoneBot = CONTENT_BOTTOM();
-    const b = buildFitting(c, p, zoneBot - 24, total);
-    // Tekst se CENTRIRA u tamnoj zoni ispod slike — ne lijepi se za sliku.
-    const y = zoneTop + Math.max(0, (zoneBot - zoneTop - b.h) / 2);
+    // BUG (prije): cap je bio `zoneBot - 40` (apsolutna koordinata), pa blok od
+    // 552px u zoni od samo 530px NIJE bio skaliran i tekst je izlazio ispod zone.
+    // Sada se blok skalira na STVARNU visinu zone: `zoneBot - zoneTop - rezerva`.
+    const b = buildFitting(c, p, zoneBot - zoneTop - 40, total);
+    const realH = b.h + 20;
+    const centered = zoneTop + Math.max(0, (zoneBot - zoneTop - realH) / 2 - 8);
+    const maxY = Math.max(zoneTop + 8, zoneBot - realH - 4);
+    const y = Math.max(zoneTop + 8, Math.min(centered, maxY));
     return `<image href="${PHOTOS[ph]}" x="0" y="0" width="${SIZE}" height="${imgH}"
         preserveAspectRatio="xMidYMid slice" aria-label="${esc(PHOTO_ALT[ph])}"/>
       <rect x="0" y="${imgH - 80}" width="${SIZE}" height="80" fill="url(#fadeBot)"/>
@@ -738,6 +974,10 @@ export function renderSlideSvg(
   const isCover = (slide.template ?? post.template) === "cover" && slideTotal > 1;
   let content = (PLACE[layout] ?? PLACE.center)(c, slide, slideTotal);
 
+  // PREMIUM ima vlastiti ram i vlastito zaglavlje (logo je dio `premiumLayout`),
+  // pa se opći `header()` preskače — inače bi se logo i eyebrow crtali dvaput.
+  const isPremium = layout === "premium";
+
   if (layout === "photoBg") {
     content = `<g style="filter:drop-shadow(0 3px 16px rgba(0,0,0,0.9)) drop-shadow(0 1px 3px rgba(0,0,0,0.95))">${content}</g>`;
   }
@@ -768,20 +1008,42 @@ export function renderSlideSvg(
       <stop offset="60%" stop-color="#000000" stop-opacity="0.42"/>
       <stop offset="100%" stop-color="#000000" stop-opacity="0.66"/>
     </linearGradient>
+    <linearGradient id="topEdge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${c.ink === "#0A0A0A" ? "#0A0A0A" : BRAND}" stop-opacity="1"/>
+      <stop offset="45%" stop-color="${c.ink === "#0A0A0A" ? "#0A0A0A" : BRAND}" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="${c.ink === "#0A0A0A" ? "#0A0A0A" : BRAND}" stop-opacity="0"/>
+    </linearGradient>
     <linearGradient id="fadeLeft" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0%" stop-color="#000000" stop-opacity="0.94"/>
       <stop offset="45%" stop-color="#000000" stop-opacity="0.72"/>
       <stop offset="75%" stop-color="#000000" stop-opacity="0.34"/>
       <stop offset="100%" stop-color="#000000" stop-opacity="0.10"/>
     </linearGradient>
+    <!-- PREMIUM: vertikalni veo — gore blago, dolje skoro crno (brojke se čitaju) -->
+    <linearGradient id="pxVeil" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.34"/>
+      <stop offset="45%" stop-color="#000000" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.82"/>
+    </linearGradient>
+    <!-- PREMIUM: lijevi veo — tekst je lijevo, pa je lijevo najtamnije -->
+    <linearGradient id="pxLeft" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.80"/>
+      <stop offset="58%" stop-color="#000000" stop-opacity="0.30"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.06"/>
+    </linearGradient>
   </defs>
   ${isCover ? coverChrome(c) : `<rect width="${SIZE}" height="${SIZE_H}" fill="${c.bg}"/>`}
-  ${isCover ? "" : decor(c, slideIndex + post.id.length)}
+  ${isPremium ? premiumBackdrop(slide.photo ?? "ai") : ""}
+  ${isCover || isPremium ? "" : decor(c, slideIndex + post.id.length)}
   ${content}
   <!-- Zaglavlje se crta POSLIJE sadržaja: foto-pozadine inače prekriju logo. -->
-  ${header(c, slide.eyebrow ?? post.eyebrow, post.category, slideIndex, slideTotal)}
+  ${isPremium ? "" : header(c, slide.eyebrow ?? post.eyebrow, post.category, slideIndex, slideTotal)}
   ${isCover ? coverFrame(c) : ""}
-  <rect x="0" y="0" width="${SIZE}" height="12" fill="${c.ink === "#0A0A0A" ? "#0A0A0A" : BRAND}"/>
+  ${isPremium ? "" : ""}
+  <!-- Gornja traka: umjesto tvrde linije, kratki gradijent koji se stopi u pozadinu
+       (na zelenim paletama crna traka je izgledala kao strana linija).
+       PREMIUM je nema — oglas ima vlastiti ram/pozadinu i traka mu smeta. -->
+  ${isPremium ? "" : `<rect x="0" y="0" width="${SIZE}" height="28" fill="url(#topEdge)"/>`}
 </svg>`;
 }
 
@@ -802,6 +1064,11 @@ export function renderPostSlides(post: AdPost): string[] {
       valueNote: post.valueNote,
       palette: post.palette,
       photo: post.photo,
+      kicker: post.kicker,
+      lead: post.lead,
+      terms: post.terms,
+      stats: post.stats,
+      cta: post.cta,
     };
     return [renderSlideSvg(post, single, 0, 1)];
   }

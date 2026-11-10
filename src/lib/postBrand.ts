@@ -1,5 +1,5 @@
 // ───────────────────────────────────────────────────────────────────────────
-// BREND ZNAK — DevForge "DF" monogram, crtan vektorski.
+// BREND ZNAK — Dev Lab "DF" monogram, crtan vektorski.
 //
 // Boja je tačna boja loga iz navbara sajta: #4DEAE0 (teal-cyan).
 // Oblik prati original: "D" lijevo (zaobljen sa rupom), "F" desno (dvije
