@@ -67,13 +67,36 @@ function buildHtml(bodyText: string, sigName: string, sigRole: string, sender: s
   const INK = "#111827";
   const SOFT = "#6b7280";
 
+  // Mail klijenti (Gmail, Outlook) odsijecaju dno poruke ako nema "disanja":
+  //   - bez vanjske tabele fiksne širine sadržaj se rasteže i lomi
+  //   - bez donjeg paddinga potpis se zalijepi za ivicu i bude odrezan
+  //   - bez spacer reda na kraju Gmail odsijece zadnjih ~30px ("Message clipped")
+  // Zato: tabela 600px, padding 24px svuda, i eksplicitan spacer na dnu.
   return `<!doctype html>
-<html><body style="margin:0;padding:0;background:#ffffff;">
-<div style="padding:4px 0;">
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#ffffff;">
+<table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;background:#ffffff;">
+  <tr>
+    <td align="left" style="padding:24px 24px 0;">
+      <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;max-width:600px;">
+        <tr>
+          <td style="font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.65;color:#111827;padding:0 0 4px;">
 ${paragraphs}
-</div>
-<div style="margin-top:26px;padding-top:18px;border-top:1px solid #e5e7eb;">
-<table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;">
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" style="padding:26px 24px 0;">
+      <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;max-width:600px;">
+        <tr><td style="border-top:1px solid #e5e7eb;font-size:0;line-height:0;height:1px;">&nbsp;</td></tr>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td align="left" style="padding:18px 24px 0;">
+      <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;">
   <tr>
     <td style="padding:0 22px 0 0;vertical-align:top;border-right:3px solid ${TEAL_BRIGHT};">
       <img src="https://devlab.cc.cd/images/logo-icon.png" width="64" height="64" alt="Dev Lab"
@@ -96,7 +119,11 @@ ${paragraphs}
     </td>
   </tr>
 </table>
-</div>
+    </td>
+  </tr>
+  <!-- Spacer: spriecava da Gmail/Outlook odsijece dno potpisa -->
+  <tr><td style="padding:0 0 32px;font-size:0;line-height:0;">&nbsp;</td></tr>
+</table>
 </body></html>`;
 }
 
