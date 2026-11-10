@@ -492,33 +492,64 @@ function formHero(c: Colors, p: PostSlide): Block {
  * uvijek je rečenica koja objašnjava posljedicu.
  */
 function formFigure(c: Colors, p: PostSlide): Block {
+  // FORMA "VELIKI BROJ".
+  //
+  // Prije: broj, naslov max 3 reda, biljeska max 2 reda, fiksni razmaci
+  // (52 i 44). U 3:4 formatu to je ostavljalo prazan pojas jer je tekst
+  // bio kratak i nije mogao popuniti visinu.
+  //
+  // Sada: razmaci se racunaju iz visine formata, a naslov i biljeska dobijaju
+  // po jedan red vise. Tekst se NE rasteze — samo se ravnomjernije rasporedi.
+  const tall = SIZE_H >= 1300;
   const val = p.value ?? "";
   const base = val.length <= 2 ? 260 : val.length <= 4 ? 210 : val.length <= 7 ? 150 : 112;
-  const vsize = Math.max(70, Math.min(fit(val, W, base), 250));
+  const vsize = Math.max(70, Math.min(fit(val, W, base), tall ? 280 : 250));
 
   let svg = `<text x="0" y="${vsize * 0.78}" font-family="${FONT}" font-size="${vsize}"
     font-weight="900" letter-spacing="${(-vsize * 0.03).toFixed(1)}" fill="${c.accent}">${esc(val)}</text>`;
   let h = vsize;
 
-  // Naslov: veći prored (1.22) da se redovi ne slijube — prije 1.1 je izgledalo zbijeno.
-  const ts = fit(p.title ?? "", W, 54);
-  const tl = wrap(p.title ?? "", ts, W, 3);
-  const tlh = ts * 1.22;
-  h += 52;
+  // Naslov: 3 reda u 1:1, 4 u 3:4. Prored 1.22 da se redovi ne slijube.
+  const MAXT = tall ? 4 : 3;
+  let ts = fit(p.title ?? "", W, tall ? 60 : 54);
+  const titleText = p.title ?? "";
+  const allW = titleText.split(/\s+/).filter(Boolean).length;
+  const whole = (ls: string[]) => ls.join(" ").split(/\s+/).filter(Boolean).length === allW;
+  let tl = wrap(titleText, ts, W, MAXT);
+  while (ts > 34 && (!whole(tl) || tl.length > MAXT)) {
+    ts -= 2;
+    tl = wrap(titleText, ts, W, MAXT);
+  }
+  // Prored 1.34 — bb visine slova je ~1.33*font, pa 1.24 nije dovoljno.
+  const tlh = ts * 1.34;
+
+  // Razmak broj -> naslov. U 3:4 veci — broj je ogroman pa mu treba zraka.
+  h += tall ? 104 : 52;
   tl.forEach((l, i) => {
     svg += `<text x="0" y="${h + ts * 0.78 + i * tlh}" font-family="${FONT}"
       font-size="${ts}" font-weight="800" letter-spacing="-1.4" fill="${c.ink}">${esc(l)}</text>`;
   });
   h += (tl.length - 1) * tlh + ts;
 
+  // Biljeska ispod naslova: 2 reda u 1:1, 3 u 3:4. Tanke akcenat-linije
+  // lijevo drze blok na okupu i odvajaju ga od fotografije.
   if (p.valueNote) {
-    const nl = wrap(p.valueNote, 30, W, 2);
-    h += 44;
-    nl.forEach((l, i) => {
-      svg += `<text x="0" y="${h + 24 + i * 44}" font-family="${FONT}" font-size="30"
-        font-weight="500" fill="${c.soft}">${esc(l)}</text>`;
+    const noteFS = tall ? 33 : 30;
+    const MAXN = tall ? 3 : 2;
+    let nl = wrap(p.valueNote, noteFS, W - 30, MAXN);
+    // Ako se ne stane, smanji font — ali nikad ispod 26px.
+    let nfs = noteFS;
+    while (nfs > 26 && !whole(nl)) {
+      nfs -= 2;
+      nl = wrap(p.valueNote, nfs, W - 30, MAXN + 1);
+    }
+    h += tall ? 90 : 44;
+    svg += `<rect x="0" y="${h - 6}" width="5" height="${nl.length * (nfs + 20)}" fill="${c.accent}"/>`;
+    nl.forEach((l: string, i: number) => {
+      svg += `<text x="30" y="${h + nfs * 0.86 + i * (nfs + 16)}" font-family="${FONT}"
+        font-size="${nfs}" font-weight="500" fill="${c.soft}">${esc(l)}</text>`;
     });
-    h += (nl.length - 1) * 44 + 24;
+    h += (nl.length - 1) * (nfs + 20) + nfs;
   }
 
   return { svg, h };

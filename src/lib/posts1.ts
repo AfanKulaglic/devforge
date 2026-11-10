@@ -25,7 +25,7 @@ export const POSTS_1: AdPost[] = [
     eyebrow: "Bez plaćanja unaprijed",
     title: "Ne plaćate ni marku dok svoj sajt ne vidite gotov.",
     value: "0 KM",
-    valueNote: "Bez uplate na početku. Ako vam se ne svidi, ne plaćate ništa i nemate nikakvu obavezu.",
+    valueNote: "Bez uplate na početku. Napravimo sajt, pokažemo vam ga i tek onda razgovaramo o plaćanju. Ako vam se ne svidi, ne plaćate ništa i nemate nikakvu obavezu. Bez avansa, bez ugovora, bez rizika.",
     caption:
       "🛑 STOP. Ne plaćajte ništa unaprijed.\n\nVećina agencija traži 50% predujma prije nego što počne. Vi platite, pa vidite šta ste dobili.\n\nKod nas je obrnuto.\n\n0 KM predujma. Razvoj počinjemo na povjerenje. Plaćate tek kada je projekat gotov i kada ste u potpunosti zadovoljni rezultatom.\n\nPovjerenje gradimo na rezultatu, a ne na avansu.\n\nJavite se u DM — odgovaramo u 10 minuta.",
     tags: ["bezpredujma", "webdizajn", "agencija", "sarajevo", "devlab"],

@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (p02: "sve na jednom mjestu" u teal boji)
+Zadnje ažurirano: 2026-11-10 (p01 "0 KM": vise teksta i bolji razmak)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,31 +12,34 @@ Zadnje ažurirano: 2026-11-10 (p02: "sve na jednom mjestu" u teal boji)
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### p02 — dio naslova "sve na jednom mjestu." u teal boji
-Korisnik: zeli da dio teksta "sve na jednom mjestu" bude zelen (teal) i
-istaknutiji od ostatka naslova.
+### p01 ("0 KM") — vise teksta i bolji razmak
+Korisnik: drugi post ("0 KM") treba vise teksta i bolji razmak.
 
-U `formHero` (postRender.ts) dodat akcenat dio naslova:
-- `ACCENT_FROM = "sve na jednom mjestu."` — trazi se u naslovu.
-- Broje se RIJECI prije akcent dijela; prva rijec koja mu pripada oboji
-  cijeli ostatak reda i sve redove ispod.
-- Red u kojem akcent pocinje dobija DVA `<text>` elementa: bijeli dio i
-  teal dio. Teal dio krece na x = sirina bijelog dijela + razmak.
-- Koeficijent sirine 0.441 (izmjeren) + razmak 0.22 * size = ~22px na 100px.
+`formFigure` prepravljen (postRender.ts):
+- **Biljeska** (`valueNote`): 2 reda u 1:1, **3 u 3:4**, sa akcenat-linijom
+  lijevo (prije: samo goli tekst bez linije).
+- **Naslov**: 3 reda u 1:1, **4 u 3:4**, sa provjerom da nijedna rijec ne
+  nestane (`whole()` — isti bug kao u formHero, wrap tiho reze rijeci).
+- **Prored naslova 1.34** — bb visine slova je ~1.33*font, pa je 1.22 i
+  1.24 davalo preklapanje redova (mjer eno: 782 vs 776).
+- **Razmaci se racunaju iz formata**: broj->naslov 104 (3:4) / 52 (1:1),
+  naslov->biljeska 90 / 44.
+- Prored biljeske (nfs + 20) — prije (nfs + 16) su se redovi dodirivali.
 
-### BUG popravljen usput
-U `formHero` regex je bio pokvaren: `split(/s+/)` umjesto `split(/\s+/)`.
-Zbog toga `fitsWhole()` nikad nije radio kako treba — brojao je sve kao
-jednu rijec. Popravljeno na oba mjesta.
+Tekst p01 prosiren (posts1.ts): valueNote sada objasnjava cijeli mehanizam
+— napravimo pa pokazemo pa tek onda placanje, bez avansa i ugovora.
 
 ### Verifikacija
-- p02 3:4: "sve na jednom mjestu." teal (#4DEAE0), razmak 22px (prirodno).
-- p02 1:1: isto radi, font 64px.
-- 41 objava: 0 van kadra, 0 console gresaka, tsc=0, build OK (1.821 kB).
+- 3:4: broj 340-620, naslov 699-859, biljeska 942-1098.
+  Razmaci 79 / 83 px (ujednaceni), 0 preklapanja.
+- 1:1: tekst 237-846, domena 952, 0 preklapanja.
+- 41 objava u oba formata: 0 van kadra, 0 console gresaka.
+- tsc=0, build OK (1.822 kB).
 
 ## Sljedeći korak
-- Pregledati p02 — "sve na jednom mjestu." je teal.
-- Ako jos neki post treba akcenat dio u naslovu, mijenja se ACCENT_FROM.
+- Pregledati p01 ("0 KM") u oba formata.
+- Ostali broj-postovi (p45 24/7, p56 0, p57 5) koriste isti formFigure —
+  provjeriti da im tekst nije kratak za 3 reda u 1:1.
 - Opciono: 4:5 format.
 
 ## Napomene / zamke
