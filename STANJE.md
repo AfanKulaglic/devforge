@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (premium oglas v15 — cijeli 'Bez predujma.' u teal)
+Zadnje ažurirano: 2026-11-10 (premium oglas v16 — 'Bez plaćanja unaprijed')
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,6 +12,17 @@ Zadnje ažurirano: 2026-11-10 (premium oglas v15 — cijeli 'Bez predujma.' u te
 - Dev server: `npm run dev` → http://localhost:5173/
 
 ## Gotovo (ova sesija)
+- **"PREDUJAM" ZAMIJENJEN** — rijec mnogima nejasna. Svuda u oglasu sad **"plaćanje unaprijed"**:
+  - naslov: **"Vaš biznis online. Za 5 dana. Bez plaćanja unaprijed."** (cijeli zadnji red teal)
+  - stats: `0 KM` / **"unaprijed"**
+  - caption + hashtag: `#bezplacanjaunaprijed`
+  - 0 pojava "predujm" u oglasu (provjereno)
+- **LOMLJENJE NASLOVA PO REČENICAMA** (ne po sirini znakova): tijelo se dijeli na
+  "Vaš biznis online." / "Za 5 dana." / akcent "Bez plaćanja unaprijed."
+  Prije je "dana." ostajalo samo u redu — izgledalo neuredno.
+  (`headBody.split(/(?<=\.)\s+).flatMap(...)`)
+- Provjereno: 41 objava 0 van viewBoxa, 0 gresaka, tsc=0, build OK, vision 1:1 i 3:4
+  (3 balansirana reda, zadnji teal).
 - **CIJELI RED "Bez predujma." u teal boji** (prije se lomilo pa je "Bez" ostalo bijelo, a
   obojeno samo "predujma." — djelovalo slučajno).
   - `premiumLayout`: naslov se dijeli na `accentPhrase = "Bez predujma."` — `wrap` se radi

@@ -8,7 +8,7 @@
 // SVI PODACI SU STVARNI, preuzeti sa sajta (src/App.tsx):
 //   pricing          → 150 KM web stranice, 600 KM shopovi
 //   deliverables     → UI/UX uključen, responzivno, demo se ne plaća, 4 revizije
-//   comparison       → bez predujma, gotova verzija za 5 radnih dana
+//   comparison       → bez plaćanja unaprijed, gotova verzija za 5 radnih dana
 //   milestones       → 20+ isporučenih projekata
 // Ništa izmišljeno: nema izmišljenih brojeva ni lažnih garancija.
 // ───────────────────────────────────────────────────────────────────────────
@@ -24,11 +24,11 @@ export const POST_PREMIUM: AdPost = {
   photo: "ai",
   eyebrow: "Premium ponuda",
   kicker: "Ideja danas — stranica za 5 dana",
-  title: "Vaš biznis online. Za 5 dana. Bez predujma.",
+  title: "Vaš biznis online. Za 5 dana. Bez plaćanja unaprijed.",
   lead: "Prvo vidite gotov rezultat pa platite. Bez ugovora, bez skrivenih troškova.",
   site: "devlab.cc.cd",
   stats: [
-    { value: "0 KM", label: "predujam", icon: "shield" },
+    { value: "0 KM", label: "unaprijed", icon: "shield" },
     { value: "5 dana", label: "gotova verzija", icon: "clock" },
     { value: "150 KM", label: "web od", icon: "coin" },
     { value: "4", label: "revizije", icon: "layers" },
@@ -87,7 +87,7 @@ export const POST_PREMIUM: AdPost = {
     "— Aplikacije, igrice, AI: po dogovoru\n" +
     "\n" +
     "📩 Javite se u DM sa jednom rečenicom: čime se bavite.\n" +
-    "Odgovaramo u roku od 10 minuta, bez obaveze i bez predujma.\n" +
+    "Odgovaramo u roku od 10 minuta, bez obaveze i bez plaćanja unaprijed.\n" +
     "\n" +
     "🌐 devlab.cc.cd\n" +
     "📧 kontakt@devlab.cc.cd\n" +
@@ -99,7 +99,7 @@ export const POST_PREMIUM: AdPost = {
     "Web stranice · Shopovi · Aplikacije · Igrice · AI\n",
   tags: [
     "premium",
-    "bezpredujma",
+    "bezplacanjaunaprijed",
     "webdizajn",
     "webshop",
     "aplikacije",

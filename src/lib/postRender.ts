@@ -667,7 +667,7 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   // Zadnja rečenica naslova ide u akcent-boji. Da bi to izgledalo namjerno,
   // zadnji red mora POCETI tom rečenicom — inace se "Bez" odvoji u prethodni
   // red i oboji samo "predujma.", sto djeluje slucajno.
-  const accentPhrase = "Bez predujma.";
+  const accentPhrase = "Bez plaćanja unaprijed.";
   const titleParts = title.split(accentPhrase);
   const hasAccent = titleParts.length === 2;
 
@@ -678,7 +678,11 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   const build = (size: number) => {
     if (!hasAccent) return { all: wrap(title, size, wTitle, 3), head: "", acc: [] as string[] };
     headBody = titleParts[0].trim();
-    const head = wrap(headBody, size, wTitle, 2);
+    // Tijelo se lomi po RECENICAMA ("Vaš biznis online." / "Za 5 dana."), ne po
+    // sirini znakova — inace "dana." ostane samo u redu i izgleda neuredno.
+    const head = headBody
+      .split(/(?<=\.)\s+/)
+      .flatMap((sent) => wrap(sent, size, wTitle, 2));
     accLines = wrap(accentPhrase, size, wTitle, 1);
     return { all: [...head, ...accLines], head: head.join(" "), acc: accLines };
   };
