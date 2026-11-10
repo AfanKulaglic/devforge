@@ -183,7 +183,9 @@ export default async function handler(req: any, res: any) {
       // Ne vraćamo sirovi odgovor Brevoa klijentu (može sadržavati interne info),
       // ali ga logujemo da se vidi u Vercel logovima.
       console.error("Brevo error", r.status, detail.slice(0, 500));
-      res.status(502).json({ ok: false, error: "Slanje nije uspjelo. Pokušajte ponovo." });
+      // DEBUG: privremeno vraćamo status+poruku da dijagnostikujemo konfiguraciju.
+      // Ukloniti kad proradi.
+      res.status(502).json({ ok: false, error: `Brevo ${r.status}: ${detail.slice(0, 200)}` });
       return;
     }
 
