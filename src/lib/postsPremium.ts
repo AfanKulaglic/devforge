@@ -26,7 +26,7 @@ export const POST_PREMIUM: AdPost = {
   kicker: "Ideja danas — stranica za 5 dana",
   title: "Vaš biznis online. Za 5 dana. Bez plaćanja unaprijed.",
   lead: "Prvo vidite gotov rezultat pa platite. Ne svidi li se, ne plaćate ništa i nemate nikakvu obavezu.",
-  site: "devlab.cc.cd",
+  site: "www.devlab.cc.cd",
   stats: [
     { value: "0 KM", label: "unaprijed", icon: "shield" },
     { value: "5 dana", label: "gotova verzija", icon: "clock" },
@@ -45,9 +45,10 @@ export const POST_PREMIUM: AdPost = {
     "Web stranice od 150 KM, shopovi od 600 KM",
     "Sav sadržaj sajta mijenjate sami, u par klikova",
   ],
-  cta: "Javite se u DM ili na sajtu",
+  cta: "Javite se na Instagram DM",
   caption:
-    "💎 STRANICA GOTOVA ZA 5 DANA — BEZ PREDUJMA\n" +
+    "💎 Stranica gotova za 5 dana. Bez plaćanja unaprijed.\n" +
+    "\uD83C\uDF0D www.devlab.cc.cd\n" +
     "\n" +
     "Većina traži 30–50% unaprijed, pa tek onda pokaže nešto. Mi radimo obrnuto: prvo napravimo gotovu verziju, vi je vidite, i plaćate tek ako ste zadovoljni.\n" +
     "\n" +
@@ -68,7 +69,7 @@ export const POST_PREMIUM: AdPost = {
     "✅ Sve ostaje vaše — stranica, domena i pristupi na vaše ime\n" +
     "\n" +
     "KAKO FUNKCIONIŠE\n" +
-    "1️⃣ Javite se — DM, e-mail ili poziv. Recite čime se bavite.\n" +
+    "1️⃣ Javite nam se na Instagram DM — recite čime se bavite.\n" +
     "2️⃣ Za par sati dobijate plan i cijenu — bez sitnih slova.\n" +
     "3️⃣ Za 5 dana gledate gotovu stranicu na svom linku.\n" +
     "4️⃣ Ako vam se svidi — plaćate. Ako ne — ne plaćate ništa.\n" +
@@ -86,10 +87,11 @@ export const POST_PREMIUM: AdPost = {
     "— Web shopovi: od 600 KM\n" +
     "— Aplikacije, igrice, AI: po dogovoru\n" +
     "\n" +
-    "📩 Javite se u DM sa jednom rečenicom: čime se bavite.\n" +
-    "Odgovaramo u roku od 10 minuta, bez obaveze i bez plaćanja unaprijed.\n" +
+    "👉 JAVITE NAM SE NA INSTAGRAM DM\n" +
+    "Dovoljna je jedna rečenica: čime se bavite.\n" +
+    "Odgovaramo u roku od 10 minuta.\n" +
     "\n" +
-    "🌐 devlab.cc.cd\n" +
+    "🌐 www.devlab.cc.cd\n" +
     "📧 kontakt@devlab.cc.cd\n" +
     "📱 +387 62 576 456\n" +
     "📸 @devlab.cc.cd\n" +

@@ -817,7 +817,7 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   svg += `<rect x="${left}" y="${btnY}" width="${ctaW}" height="${btnH}"
     fill="${c.accent}"/>`;
   let cfs = 26;
-  while (cfs > 15 && ctaLabel.length * cfs * 0.56 > ctaW - 56) cfs -= 1;
+  while (cfs > 14 && ctaLabel.length * cfs * 0.58 > ctaW - 24) cfs -= 1;
   svg += `<text x="${left + ctaW / 2}" y="${btnY + btnH / 2 + 10}" text-anchor="middle"
     font-family="${FONT}" font-size="${cfs}" font-weight="900" letter-spacing="0.8"
     fill="${c.accentInk}">${esc(ctaLabel)}</text>`;
@@ -1144,6 +1144,7 @@ export function renderPostSlides(post: AdPost): string[] {
       stats: post.stats,
       features: post.features,
       cta: post.cta,
+      site: post.site,
     };
     return [renderSlideSvg(post, single, 0, 1)];
   }
