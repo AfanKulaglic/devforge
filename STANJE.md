@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (p02: AI u naslovu, wrap ne gubi rijeci)
+Zadnje ažurirano: 2026-11-10 (uklonjena kategorija iz donjeg desnog ugla)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,32 +12,23 @@ Zadnje ažurirano: 2026-11-10 (p02: AI u naslovu, wrap ne gubi rijeci)
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### p02 — AI sistemi u naslovu, stari stil vracen
-Korisnik: lista/nabrajanje mu se ne svidja — trazio vracanje starog stila
-uz AI sisteme spomenute u naslovu.
+### Uklonjena kategorija iz donjeg desnog ugla
+Korisnik: "vidis li sto pise ponuda u donjem desnom uglu posta — obrisi to".
 
-- p02 vracen na stari hero stil (template "title"), bez items liste.
-- Naslov: "Stranica, shop, aplikacija, igrica ili AI sistem — sve na jednom mjestu."
-- Subtitle skracen da stane bez odsjecanja.
+Prije: donji desni ugao je ispisivao kategoriju (PONUDA, BREND, SAVJET)
+blijedim slovima. Ta rijec nista ne znaci onome ko gleda sliku na
+Instagramu i samo je pravila sum.
 
-### BUG (ozbiljan): wrap() je TIHO gubio rijeci
-wrap(text, size, W, maxLines) odbacuje rijeci koje ne stanu u dozvoljen
-broj redova — bez ijedne greske. Zbog toga je iz naslova nestajalo
-"jednom mjestu", a iz podnaslova "shopove, aplikacije, igrice".
-
-Popravak u formHero (postRender.ts):
-- fitsWhole() poredi broj rijeci u linijama sa brojem rijeci u naslovu.
-- Dok se ne poklope, font se smanjuje za 4px (prije: nije bilo provjere).
-- MAXL = 4 reda u 3:4 / 3 u 1:1.
+Promjena u `domainLine()` (postRender.ts): uklonjen drugi `<text>` element.
+Ostaje samo domena lijevo. Parametar `category` se vise ne koristi (`void`).
 
 ### Verifikacija
-- p02 3:4: naslov 100px, 4 reda, SVE rijeci prisutne, 390-883px,
-  lead 926 (43px zraka), 0 preklapanja.
-- 41 objava u 1:1: 0 van kadra, 0 console gresaka, tsc=0, build OK.
+- 41 objava: kategorija vidljiva na **0** objava, domena na **41/41**.
+- 0 van kadra, 0 console gresaka, tsc=0, build OK (1.820 kB).
+- Vision: donji desni ugao prazan, domena lijevo.
 
 ## Sljedeći korak
-- Pregledati p02 u 3:4 — AI sistemi su sad u naslovu.
-- Ako jos neki naslov izgleda odsjeceno: to je wrap() — provjeriti broj rijeci.
+- Pregledati /objave — donji ugao sad nosi samo domenu.
 - Opciono: 4:5 format.
 
 ## Napomene / zamke

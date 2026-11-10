@@ -289,10 +289,11 @@ function domainLine(c: Colors, category: string): string {
   const SITE = "www.devlab.cc.cd";
   const fs0 = 24;
   const baseY = SIZE_H - M - 6;
+  // Kategorija ("PONUDA", "BREND") se NE ispisuje — natpis ništa ne znači
+  // onome ko gleda sliku. Donji lijevi ugao nosi samo domenu.
+  void category;
   return `<text x="${M}" y="${baseY}" font-family="${FONT}" font-size="${fs0}"
-    font-weight="800" letter-spacing="0.6" fill="${c.accent}">${esc(SITE)}</text>
-  <text x="${SIZE - M}" y="${baseY}" text-anchor="end" font-family="${FONT}" font-size="20"
-    font-weight="800" letter-spacing="2.4" fill="${c.soft}" opacity="0.55">${esc(category.toUpperCase())}</text>`;
+    font-weight="800" letter-spacing="0.6" fill="${c.accent}">${esc(SITE)}</text>`;
 }
 function header(c: Colors, eyebrow: string, category: string, slide: number, total: number): string {
   // Na zelenoj podlozi (ink je crn) logo se invertuje: "Dev" BIJEL, "Lab" CRN —
