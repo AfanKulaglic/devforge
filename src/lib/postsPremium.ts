@@ -98,7 +98,14 @@ export const POST_PREMIUM: AdPost = {
     "\n" +
     "—\n" +
     "Dev Lab · Sarajevo · cijela BiH\n" +
-    "Web stranice · Shopovi · Aplikacije · Igrice · AI\n",
+    "Web stranice · Shopovi · Aplikacije · Igrice · AI\n" +
+    "\n" +
+    "🔎 Tražite izradu web stranice, web shopa ili aplikacije u Sarajevu? Dev Lab radi stranice za male firme, obrte i freelancere u cijeloj Bosni i Hercegovini — Sarajevo, Tuzla, Zenica, Mostar, Banja Luka, Bihać.\n" +
+    "Web dizajn, izrada sajta, online shop, mobilne aplikacije i 2D igrice. Cijena web stranice od 150 KM, web shopa od 600 KM.\n" +
+    "Bez plaćanja unaprijed — prvo vidite gotovu verziju.\n" +
+    "\n" +
+    "#izradastranica #izradasajta #webdizajn #websajt #webshop #onlineshop #sarajevo #bosnaihercegovina #bih #tuzla #zenica #mostar #banjaluka\n" +
+    "#malafirma #preduzetnik #obrt #digitalnimarketing #devlab #webstranica #aplikacije #aiautomatizacija #2digrice #freelancerbih #agencijabih #posaobih\n",
   tags: [
     "premium",
     "bezplacanjaunaprijed",
@@ -108,5 +115,15 @@ export const POST_PREMIUM: AdPost = {
     "aisistemi",
     "sarajevo",
     "devlab",
+    "izradastranica",
+    "izradasajta",
+    "websajt",
+    "onlineshop",
+    "bosnaihercegovina",
+    "malafirma",
+    "preduzetnik",
+    "webstranica",
+    "freelancerbih",
+    "posaobih",
   ],
 };

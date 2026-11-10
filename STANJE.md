@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (premium oglas v22 — kursor manji + centriran)
+Zadnje ažurirano: 2026-11-10 (premium SEO + bogati sloj sa 7 varijanti za svih 40 objava)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -8,45 +8,68 @@ Zadnje ažurirano: 2026-11-10 (premium oglas v22 — kursor manji + centriran)
 - Produkcija: `https://devlab.cc.cd` (zaštićeni identifikator — ne mijenjati).
 - Kontakt: `kontakt@devlab.cc.cd`, `@devlab.cc.cd`, `+387 62 576 456`.
 - Admin: `/admin`, login `afan` / `080513` (sessionStorage `devforge-admin-session`).
-- localStorage ključevi ostaju `devforge-*` (ne mijenjati zbog kompatibilnosti).
 - Dev server: `npm run dev` → http://localhost:5173/
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
-## Gotovo (ova sesija — premium oglas px01, v18)
-- **DUGMAD:**
-  - primarno: **"JAVITE NAM SE NA INSTAGRAMU"**
-  - sekundarno: **"www.devlab.cc.cd"** (dodato `www`)
-  - font se auto-smanjuje (padding 56→24, letter-spacing 0.8→0.2) da duži tekst stane bez klipovanja
-  - izmjereno: tekst 418px u dugmetu 464px → stane
-- **BUG FIX — `site` se nije prenosio:** u `renderPostSlides` (postRender.ts ~1136) `single`
-  objekat nije imao `site: post.site`, pa je sekundarno dugme uvijek padalo na fallback
-  `"devlab.cc.cd"` bez `www`. Dodato.
-- **CAPTION:** link **🌍 www.devlab.cc.cd** odmah na vrhu (2. red), jak CTA na dnu
-  "👉 JAVITE NAM SE NA INSTAGRAM DM", korak 1 u KAKO FUNKCIONIŠE = Instagram DM.
-- Naslov: "Vaš biznis online. / Za 5 dana. / Bez plaćanja unaprijed." (zadnji red teal,
-  lomi se PO REČENICAMA ne po širini).
-- Lead: "Prvo vidite gotov rezultat pa platite. Ne svidi li se, ne plaćate ništa i nemate
-  nikakvu obavezu."
-- Provjereno: 41 objava 0 polomljenih, 0 console grešaka, tsc=0, build OK.
+## Gotovo (ova sesija)
+### 1. Premium oglas px01 — SEO
+- Caption dobio SEO blok na kraju: ključne riječi (izrada web stranice, web shop,
+  aplikacije, Sarajevo, Tuzla, Zenica, Mostar, Banja Luka, Bihać), cijene (150/600 KM)
+  i **25 hashtagova**.
+- `tags[]` proširen na 18 (Instagram dozvoljava 30).
+- Naslov/lead/dokazi/dugmad nepromijenjeni.
 
-- **KURSOR na 2. dugmetu:** IZA domene, **BIJELI** (fill=ink, prije teal — stapa se
-  s teal pozadinom), veličina CUR=34 → stvarno **22×29px** (visina ~= visina teksta).
-  Centrirano: luft 95px lijevo / 104px desno.
+### 2. Bogati sloj za SVIH 40 ostalih objava
+**Problem:** ostale objave su bile "jedna rečenica + praznina", premium je bio gust
+sa ikonama. Ostale su čitale kao najava, ne kao reklama.
 
-- **KURSOR v2:** CUR 34 -> **24** (~15x20px, manji od teksta), I DALJE bijeli.
-  Centriranje popravljeno:  racuna STVARNU sirinu putanje (15.2/24*CUR), ne CUR box.
-  Sad luft **104px lijevo / 102px desno** (prije 95/104 — tekst je bjezao lijevo).
-- **ZAMKA:**  je CRLF — zamjene stringova moraju normalizovati
-   ->  ili markeri nece pasati.
+**Rješenje:** `richLayer()` u `postRender.ts` — zajednički rep koji svaka forma dobija:
+```
+[ CTA dugme ][ www.devlab.cc.cd ]   <- fiksno uz dno
+✓ dokaz  ✓ dokaz  ✓ dokaz            <- iz `terms`
+[ikone/raspored po varijanti]        <- iz `features`
+```
+
+**7 varijanti rasporeda** (polje `rich?: RichVariant` u `postsData.ts`), da svaki post
+ne izgleda isto:
+
+| varijanta | izgled | korištena na |
+|---|---|---|
+| `chips` | kartice kao premium (podrazumijevano) | usluge, shop, kod |
+| `inline` | lista sa linijom iznad, ikona+label+✓ | proces, koraci, timeline |
+| `duo` | 2×2 velike ikone sa labelom desno | poređenja, parovi |
+| `list` | kružić iza ikone, vertikalna lista | pitanja, beneficije |
+| `bigtwo` | ogromne ikone (120px), label ispod | 2 jaka argumenta |
+| `band` | **puna accent traka** sa ikonama | cjenovni/agresivni postovi |
+| `none` | bez ikona — samo dokazi + dugmad | postovi već dovoljno jaki |
+
+Raspodjela: band 5, chips 5, bigtwo 4, duo 4, inline 6, list 4, none 7.
+
+### 3. Popravljeni bugovi (3 ista uzroka — polja se nisu prenosila)
+- `site: post.site` u `renderPostSlides` single-slide objekat.
+- `rich: post.rich` isto.
+- **Najveći:** `PLACE[layout]` dobija `slide`, a ne `post` — pa su `features/terms/cta/rich`
+  nestajali. Dodato `richSlide` spajanje u `renderSlideSvg` (~1281).
+- Foto-layouti (`photoBg`, `photoTop`, `photo`, `stamp`) nisu zvali `richLayer` — dodato.
+- Forma iznad repa se **skalira** (`scale(1, availH/b.h)`) da ne preklopi rep.
+
+### 4. Verifikacija
+- 41 objava, **0 tekstova van kadra**, 0 console grešaka, tsc=0, build OK.
+- 34 objave imaju dugmad (ostalih 7 su multi-slide galerije).
+- 0 preklapanja preko accent trake.
 
 ## Sljedeći korak
-- Pogledati `/objave` i potvrditi da dugmad izgledaju kako treba.
+- Pogledati `/objave` i proći kroz varijante — po potrebi zamijeniti `rich:` vrijednost
+  pojedinog posta (jedno polje, jedan red).
 - Opciono: 4:5 format za Instagram feed.
 - Opciono: skinuti `devlab.publicvm.com` sa Vercela.
 
 ## Napomene / zamke
 - **Python heredoc + `\n` u TS stringu = pokvaren string.** Koristiti `.cjs` skriptu sa
   `String.fromCharCode(92)` ili pisati fajl preko `write` alata.
-- `postRender.ts` `wrap()` lomi po širini znakova — za naslove sa akcent-frazom koristi se
+- **`postRender.ts`/`posts*.ts` su CRLF** — zamjene stringova moraju normalizovati
+  `\r\n` → `\n` ili markeri neće pasati.
+- Vision servis (`look_at_image`) je danas padao ~50% poziva — tada mjeriti geometrijski
+  (`getBoundingClientRect`, `maxRectBottom`).
+- `postRender.ts` `wrap()` lomi po širini znakova; naslovi sa akcent-frazom koriste
   `accentPhrase` split da akcent red uvijek počne cijelom frazom.
-- Vision servis povremeno pada — tada mjeriti geometrijski (`getBBox`, `maxRectBottom`).
