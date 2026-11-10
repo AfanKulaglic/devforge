@@ -1,23 +1,37 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (kontakt+domena svuda: devlab.cc.cd)
+Zadnje ažurirano: 2026-11-10 (premium oglas redizajniran + Instagram @devlab.cc.cd)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
 - Brend: **Dev Lab** (wordmark **DevLab**), teal `#4DEAE0`. Valuta KM.
 - Produkcija: `https://devlab.cc.cd` (zaštićeni identifikator — ne mijenjati).
-- Kontakt: `kontakt@devlab.cc.cd`, `@devlab_studio`, `+387 62 576 456`.
+- Kontakt: `kontakt@devlab.cc.cd`, `@devlab.cc.cd`, `+387 62 576 456`.
 - Admin: `/admin`, login `afan` / `080513` (sessionStorage `devforge-admin-session`).
 - localStorage ključevi ostaju `devforge-*` (ne mijenjati zbog kompatibilnosti).
 - Dev server: `npm run dev` → http://localhost:5173/
 
 ## Gotovo (ova sesija)
+- **Instagram promijenjen na `@devlab.cc.cd`** — 7 fajlova (`CONTACT`, posts2/3, MailSignaturePage,
+  index.html, INSTAGRAM-PLAN). Provjereno: 0 ostataka `devlab_studio`.
+- **PREMIUM OGLAS POTPUNO REDIZAJNIRAN** (`premiumLayout` u postRender.ts) — cilj: čitljiv u 2 sekunde.
+  - uklonjeno: 2x2 grid, traka brojki 190px, teal akcenat-linija, dvostruki okviri
+  - novo: logo gore LIJEVO → kicker → veliki naslov (78px) → lead → **JEDAN red 4 usluge**
+    (chip sa ikonom u piluli) → **3 dokaza sa check ikonom** → velika CTA pilula (88px, puna širina)
+    → footer `DEVLAB.CC.CD · SARAJEVO · CIJELA BIH`
+  - novi tekst: kicker "Dev Lab · Digitalna rješenja", naslov "Stranica gotova za 5 dana. Bez predujma.",
+    lead "Prvo vidite gotov rezultat — platite tek ako ste zadovoljni."
+- **Popravljeni bugovi pri redizajnu:**
+  - CTA prekrivao listu dokaza → `ctaY = max(ctaNear, ...)` garantuje da je uvijek ISPOD sadržaja
+  - CTA+footer bili odrezani na dnu u 1:1 → `FOOT_RESERVE=78` + manji naslov 88→78px
+  - u 3:4 bilo 430px praznine → `G` varijabla ravnomjerno dijeli višak (sada ~290px)
+- Provjereno: 41 objava, 0 polomljenih, 0 console grešaka, tsc=0, build OK, vision oba formata čista.
 - **SVE REFERENCE NA NOVU DOMENU I KONTAKT** (0 starih ostalo):
   - domena `dev-forge-studio.vercel.app` → **`devlab.cc.cd`** (index.html canonical/og/hreflang/JSON-LD,
     public/sitemap.xml, public/robots.txt, INSTAGRAM-PLAN.md, naracija reklame u App.tsx)
   - email `devforge.studio@gmail.com` → **`kontakt@devlab.cc.cd`** (App.tsx CONTACT + 6 mjesta,
     posts2.ts, posts3.ts, MailSignaturePage)
-  - Instagram `@devforge_studio` → **`@devlab_studio`**, DM link `ig.me/m/devlab_studio`
+  - Instagram `@devforge_studio` → **`@devlab.cc.cd`**, DM link `ig.me/m/devlab.cc.cd`
   - Provjereno: grep 0 ostataka; renderovani UI (/, /kontakt) prikazuje samo nove podatke;
     produkcijski HTML ima `canonical https://devlab.cc.cd/` i 0 starih referenci
 - **PREMIUM OGLAS — 2x2 grid usluga:**

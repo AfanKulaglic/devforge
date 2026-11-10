@@ -24,7 +24,7 @@ const BRAND = {
   site: "devlab.cc.cd",
   siteUrl: "https://devlab.cc.cd",
   phone: "+387 62 576 456",
-  instagram: "@devlab_studio",
+  instagram: "@devlab.cc.cd",
   address: "Maršala Tita 28, 71000 Sarajevo",
   logoUrl: "https://devlab.cc.cd/images/logo-icon.png",
 };

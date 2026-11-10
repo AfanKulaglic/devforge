@@ -114,8 +114,8 @@ const CONTACT = {
   phoneRaw: "+38762576456", // koristi se SAMO unutar href, nikad kao tekst
   email: "kontakt@devlab.cc.cd",
   // Instagram DM — najbrzi kanal za mnoge klijente.
-  instagramHandle: "@devlab_studio",
-  instagramUrl: "https://ig.me/m/devlab_studio", // ig.me/m/ = direktno otvara DM
+  instagramHandle: "@devlab.cc.cd",
+  instagramUrl: "https://ig.me/m/devlab.cc.cd", // ig.me/m/ = direktno otvara DM
   address: "Maršala Tita 28, Sarajevo",
   street: "Maršala Tita 28",
   city: "71000 Sarajevo",
@@ -1191,7 +1191,7 @@ function Header() {
                   <a className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-white/70 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.linkedin.com/company/devlab" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
                     <FaLinkedinIn className="text-sm" />
                   </a>
-                  <a className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-white/70 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.instagram.com/devlab_studio" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                  <a className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-white/70 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.instagram.com/devlab.cc.cd" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                     <FaInstagram className="text-sm" />
                   </a>
                 </div>
@@ -2474,7 +2474,7 @@ const footerColumns: { title: string; links: { label: string; href?: string; soo
       { label: "Pozovite nas", href: "tel:+38762576456" },
       { label: "kontakt@devlab.cc.cd", href: "mailto:kontakt@devlab.cc.cd" },
       { label: "WhatsApp", href: "https://wa.me/38762576456" },
-      { label: "Instagram DM", href: "https://ig.me/m/devlab_studio" },
+      { label: "Instagram DM", href: "https://ig.me/m/devlab.cc.cd" },
       { label: "Viber", href: "viber://chat?number=%2B38762576456" },
     ],
   },
@@ -2828,7 +2828,7 @@ function ContactAndFooter() {
             <a className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.linkedin.com/company/devlab" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
               <FaLinkedinIn />
             </a>
-            <a className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.instagram.com/devlab_studio" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <a className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.instagram.com/devlab.cc.cd" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
               <FaInstagram />
             </a>
           </div>
@@ -2894,7 +2894,7 @@ function ContactAndFooter() {
                 <a className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.linkedin.com/company/devlab" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
                   <FaLinkedinIn />
                 </a>
-                <a className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.instagram.com/devlab_studio" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                <a className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/80 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.instagram.com/devlab.cc.cd" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                   <FaInstagram />
                 </a>
               </div>
@@ -3848,7 +3848,7 @@ function ContactMethods() {
           <a className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-[#0B0B0F] transition hover:border-teal-500 hover:bg-teal-500 hover:text-white" href="https://www.linkedin.com/company/devlab" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
             <FaLinkedinIn />
           </a>
-          <a className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-[#0B0B0F] transition hover:border-teal-500 hover:bg-teal-500 hover:text-white" href="https://www.instagram.com/devlab_studio" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <a className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-black/10 text-[#0B0B0F] transition hover:border-teal-500 hover:bg-teal-500 hover:text-white" href="https://www.instagram.com/devlab.cc.cd" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
             <FaInstagram />
           </a>
         </div>

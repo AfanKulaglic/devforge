@@ -23,9 +23,9 @@ export const POST_PREMIUM: AdPost = {
   palette: "dark",
   photo: "ai",
   eyebrow: "Premium ponuda",
-  kicker: "Web · Shopovi · Aplikacije · AI",
-  title: "Sve za vaš digitalni nastup. Bez predujma.",
-  lead: "Dizajn, kod i admin panel uključeni. Prvo gotova verzija — plaćate tek kad ste zadovoljni.",
+  kicker: "Dev Lab · Digitalna rješenja",
+  title: "Stranica gotova za 5 dana. Bez predujma.",
+  lead: "Prvo vidite gotov rezultat — platite tek ako ste zadovoljni.",
   stats: [
     { value: "0 KM", label: "predujam", icon: "shield" },
     { value: "5 dana", label: "gotova verzija", icon: "clock" },
@@ -38,7 +38,7 @@ export const POST_PREMIUM: AdPost = {
     { icon: "app", label: "Aplikacije" },
     { icon: "ai", label: "AI sistemi" },
   ],
-  terms: ["Demo se ne plaća", "Kod je 100% vaš", "UI/UX i admin panel uključeni"],
+  terms: ["Gotova verzija za 5 dana", "Kod i admin panel su vaši", "Web stranice od 150 KM"],
   cta: "Pišite nam u DM",
   caption:
     "💎 DEV LAB — vaša stranica, shop ili aplikacija. Bez predujma.\n\n" +

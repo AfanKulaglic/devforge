@@ -1,6 +1,6 @@
 # Dev Lab — Instagram plan objavljivanja
 
-> Praktičan plan za `@devlab_studio`. Cilj: **prvi klijenti kroz Instagram**,
+> Praktičan plan za `@devlab.cc.cd`. Cilj: **prvi klijenti kroz Instagram**,
 > bez plaćanja reklama na početku. Sve je prilagođeno BiH tržištu i tvom
 > trenutnom stanju (7 projekata u portfoliju, cijene 150/600 KM, 0 KM predujma).
 
