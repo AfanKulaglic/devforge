@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (premium 3:4: raspored po visini — nema rupa)
+Zadnje ažurirano: 2026-11-10 (naslov puni sirinu, veci razmak od logotipa)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,34 +12,38 @@ Zadnje ažurirano: 2026-11-10 (premium 3:4: raspored po visini — nema rupa)
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### Premium oglas u 3:4 formatu — rješenje rupa
-Korisnik: "kada pogledam na 3:4 premium post je lose pozicioniran,
-ima puno rupa i praznog prostora".
+### Naslov puni sirinu + vise zraka od logotipa (3:4)
+Korisnik: "pocni font naslova da se popuni prostora, naslov udalji malo
+od logotipa na vrhu, gledaj da se ispuni fino taj prostor".
 
-Prije: svaki razmak je bio fiksan (+56, +50, +46) pa je u 3:4 formatu
-izmedju dokaza i dugmadi ostajalo ~290px praznog. Izmjereno: 627px
-praznog od 1440 = 43%.
+**Glavni uzrok (pronaden mjerenjem):**  je koristio koeficijent
+0.58 za sirinu slova, a stvarna sirina u ovom fontu je **0.451**. Zbog toga
+je wrap mislio da u red stane manje znakova, lomio naslov prerano, i font
+je morao biti manji da sve stane u 3 reda. Naslov je zato stajao na 88px
+i punio samo 77% sirine.
 
-Rjesenje u premiumLayout (postRender.ts):
-- **Proracun razmaka prije crtanja** — visina svake sekcije se izmjeri
-  (naslov tlh, lead wrap, chipH, terms), pa se visak dijeli na 4 spoja
-  (naslov→lead, lead→usluge, usluge→dokazi, dokazi→dugmad).
-- **Dugmad** vise ne idu na Math.max(btnNear, btnBottom) (zakucavanje na
-  dno kadra) nego Math.min — prate raspored, dno je samo granica.
-- Faktori se ponderise: kartice blize leadu, najvise zraka iznad dugmadi.
+Promjene u  (postRender.ts):
+-  koeficijent zavisi od velicine: .
+  0.46 je za 3:4 (naslov do 110px), 0.50 za 1:1 (88-104px), 0.58 za sitni tekst.
+- Naslov trazi **najveci** font od 132px nanize (prije: start 88 i samo padao).
+  Petlja ide kroz sve velicine i pamti najvecu koja stane (prelamanje se
+  mijenja s velicinom pa prvi koji prodje nije uvijek najveci).
+-  = 490 (3:4) / 292 (1:1);  = 4 (3:4) / 3 (1:1).
+-  = 150 (3:4) / 92 (1:1) — naslov udaljen od logotipa.
+-  = 25 (3:4) / 33 (1:1) — sira kolona u 3:4.
+- Akcenat moze u 2 reda u 3:4 (prije 1 red je zakljucavao font na 88px).
+-  +40px u 3:4 da krupniji naslov ne dodiruje lead.
 
-Izmjereno u 3:4 (bilo → sad): lead→chip 196→91, chip→terms 167→102,
-terms→btn 39→144 px. Raspon izmedju spojeva: 53px (bilo 122).
-
-1:1 format ostao nepromijenjen (surplus=0, 0 van kadra).
+Rezultat 3:4: font **110px**, sirina **882/918 = 96%**, razmak od logotipa
+47px, naslov-blok 490px, 0 preklapanja, 98px lufta do dna.
 
 ### Verifikacija
-- 3:4 premium: razmaci 91/102/144, raspon 53px, 0 van kadra.
-- 1:1 premium: 0 van kadra, dugmad na 853+84=937 (143px lufta).
-- tsc=0, build OK (1.820 kB).
+- 3:4: naslov 110px / 96% sirine, 0 preklapanja, dugmad na 1258+84.
+- 1:1: naslov 104px / 91% sirine, 0 van kadra.
+- 41 objava, 0 console gresaka, tsc=0, build OK (1.820 kB).
 ## Sljedeći korak
-- Pregledati premium oglas u 3:4 (/objave → 3:4).
-- Ako i ostali postovi imaju rupe u 3:4, ista logika rasporeda po visini vazi za sve.
+- Pregledati premium u 3:4 (/objave → 3:4) — naslov sad puni sirinu.
+- Ako naslov treba jos krupniji, dizati titleBoxH (3:4) uz provjeru da ne udari u lead.
 - Opciono: 4:5 format.
 
 ## Napomene / zamke

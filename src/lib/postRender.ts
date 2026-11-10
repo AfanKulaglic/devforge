@@ -194,7 +194,18 @@ function esc(t: string): string {
 }
 
 function wrap(text: string, size: number, maxWidth: number, maxLines: number): string[] {
-  const perLine = Math.max(6, Math.floor(maxWidth / (size * 0.58)));
+  // Koeficijent 0.58 je bio PREVISOK za naslove (bold 900) — stvarna sirina
+  // slova u ovom fontu je ~0.451. Zbog greske je wrap mislio da u red stane
+  // manje znakova, lomio naslov prerano, i onda je font morao biti manji da
+  // sve stane u dozvoljen broj redova. Zato je naslov ostajao na 77% sirine.
+  //
+  // Za sitniji tekst (600 tezina) 0.58 je priblizno tacan, pa se koeficijent
+  // bira po velicini fonta: krupni naslovi (>= 40px) koriste 0.46.
+  // 0.46 je izmjereno na 3:4 formatu gdje naslov ide do 110px. U 1:1 naslov
+  // je manji (88px) pa je i koeficijent drugaciji — 0.50 drzi red unutar
+  // kolone bez prelaska (mjer eno: 0.46 je dao 921px u 918px koloni).
+  const K = size >= 100 ? 0.46 : size >= 40 ? 0.50 : 0.58;
+  const perLine = Math.max(6, Math.floor(maxWidth / (size * K)));
   const words = text.split(/\s+/).filter(Boolean);
   const lines: string[] = [];
   let cur = "";
@@ -661,7 +672,11 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   // 0) LOGOTIP gore lijevo — reklama se odmah predstavlja.
   svg += brandMark(left, M_L - 12, c.ink, c.accent).svg;
 
-  let y = M_L + 92;
+  // Razmak logo → naslov. Prije 92px: u 3:4 formatu naslov je sjedio
+  // zalijepljen uz logo i ostajao prazan pojas ispod. Sada se razmak
+  // skalira s formatom — u 1:1 ostaje 92 (nema mjesta za vise).
+  const LOGO_GAP = SIZE_H >= 1300 ? 150 : 92;
+  let y = M_L + LOGO_GAP;
 
   // VISAK PROSTORA: u 3:4 formatu ispod sadrzaja ostane ~290px. Da oglas ne
   // stoji zbijen gore, visak se dijeli na razmake izmedju sekcija (G).
@@ -682,7 +697,9 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   // 2) NASLOV — najveći element. Veličina se traži, ne pogađa: ide od 84px
   // naniže dok CIJELI naslov ne stane u 3 reda (bez tihe odsječe riječi).
   const title = p.title ?? "";
-  const TITLE_INDENT = 7 + 26; // akcenat-linija + razmak (vidi nize)
+  // U 3:4 formatu kolona se siri (manji uvlak od linije) — naslov dobija ~10px
+  // vise sirine, dovoljno da font naraste za nekoliko stepeni.
+  const TITLE_INDENT = 7 + (SIZE_H >= 1300 ? 18 : 26);
   const wTitle = wCol - TITLE_INDENT;
   // Zadnja rečenica naslova ide u akcent-boji. Da bi to izgledalo namjerno,
   // zadnji red mora POCETI tom rečenicom — inace se "Bez" odvoji u prethodni
@@ -691,7 +708,15 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   const titleParts = title.split(accentPhrase);
   const hasAccent = titleParts.length === 2;
 
-  let ts = 88;
+  // Naslov se ne smije skupljati u uglu. Krece od najveceg moguceg i
+  // spusta se SAMO dok ne stane — prije je start bio 88px i samo padao, pa je
+  // u 3:4 formatu ostajalo 226px praznog desno od naslova.
+  //
+  // MAX_TS se racuna iz visine formata: u 3:4 ima vise prostora pa naslov
+  // smije biti krupniji (oko 118px), u 1:1 ostaje na ~88px jer nema mjesta.
+  // 4 reda x ~1.04 line-height; 3:4 ima vise visine pa naslov smije krupnije.
+  const titleBoxH = SIZE_H >= 1300 ? 490 : 292;
+  let ts = 132;
   let tl: string[];
   let headBody = "";
   let accLines: string[] = [];
@@ -703,17 +728,37 @@ function premiumLayout(c: Colors, p: PostSlide): string {
     const head = headBody
       .split(/(?<=\.)\s+/)
       .flatMap((sent) => wrap(sent, size, wTitle, 2));
-    accLines = wrap(accentPhrase, size, wTitle, 1);
+    // U 3:4 formatu akcenat smije u 2 reda — inace bi zadnji red morao stati u
+    // 911px kolonu, pa je cijeli naslov bio zakljucan na 88px i ostajalo je
+    // 226px praznog desno. U 1:1 ostaje 1 red (nema mjesta za vise).
+    accLines = wrap(accentPhrase, size, wTitle, SIZE_H >= 1300 ? 2 : 1);
     return { all: [...head, ...accLines], head: head.join(" "), acc: accLines };
   };
   let built = build(ts);
   tl = built.all;
   const fitsAll = (ls: string[]) => ls.join(" ") === title.split(/\s+/).filter(Boolean).join(" ");
-  while (ts > 48 && (!fitsAll(tl) || tl.length > 3 || tl.length * ts * 1.04 > 292)) {
-    ts -= 3;
-    built = build(ts);
-    tl = built.all;
+  // Maksimum 3 reda, blok ne smije preci titleBoxH, i nijedan red ne smije
+  // biti siri od kolone (wrap to vec garantuje, ali provjera je jeftina).
+  // U 3:4 dozvoljena su 4 reda (tijelo 2 + akcenat 2) — visina je tu jedini limit.
+  const MAX_LINES = SIZE_H >= 1300 ? 4 : 3;
+  // Trazi NAJVECI font koji stane. Problem sa obicnom petljom: kako font pada,
+  // redovi se prelamaju drugacije, pa se desi da 100px stane u 4 reda a 106px
+  // u 3 — petlja bi stala na prvom koji prodje, ne na najvecem. Zato se
+  // pamti najbolji rezultat do sada, a petlja ide do kraja.
+  let bestTs = 0;
+  let bestTl: string[] = [];
+  let bestBuilt: { all: string[]; head: string; acc: string[] } | null = null;
+  for (let t = 132; t >= 48; t -= 2) {
+    const b2 = build(t);
+    if (!fitsAll(b2.all)) continue;
+    if (b2.all.length > MAX_LINES) continue;
+    if (b2.all.length * t * 1.04 > titleBoxH) continue;
+    bestTs = t;
+    bestTl = b2.all;
+    bestBuilt = b2;
+    break;
   }
+  if (bestBuilt) { ts = bestTs; tl = bestTl; built = bestBuilt; }
   const tlh = ts * 1.04;
 
   // VERTIKALNA AKCENAT-LINIJA uz naslov. Daje "urednicki" izgled (kao kod
@@ -745,7 +790,7 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   // podijeliti umjesto da se pogadja fiksnim brojem.
   const BTN_H_PRE = 84;
   const RESERVE_BOTTOM_PRE = 92;
-  const contentTopY = M_L + 92;
+  const contentTopY = M_L + LOGO_GAP;
   // Visina naslova (vec izracunata gore)
   const titleBlockHPx = (tl.length - 1) * tlh + ts * 0.8;
   // Lead
@@ -771,7 +816,7 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   // ostajao zakucan na `y + 46` — sve nepravilno: 196 / 167 / 39 px.
   const surplus = Math.max(0, availH - usedH);
   const extra = surplus / 4;
-  const LEAD_GAP = MIN_GAP + extra * 0.9;
+  const LEAD_GAP = MIN_GAP + extra * 0.9 + (SIZE_H >= 1300 ? 40 : 0); // naslov je krupniji pa treba vise zraka ispod
   const FEAT_GAP = MIN_GAP + extra * 0.8;
   const TERM_GAP = MIN_GAP + extra * 0.95;
   const BTN_GAP_Y = MIN_GAP + extra * 1.15;
