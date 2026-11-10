@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (premium oglas v5 — nova web ikona + udarni naslov)
+Zadnje ažurirano: 2026-11-10 (premium oglas v6 — marketinški kicker)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,6 +12,11 @@ Zadnje ažurirano: 2026-11-10 (premium oglas v5 — nova web ikona + udarni nasl
 - Dev server: `npm run dev` → http://localhost:5173/
 
 ## Gotovo (ova sesija)
+- **KICKER (linija pod logom) promijenjen u marketinški:** "40+ projekata · 5 godina iskustva · Sarajevo"
+  (tri nepovezane cinjenice, slabo djeluju) → **"Ideja danas — stranica za 5 dana"**.
+  - Prva varijanta "Bez rizika · Bez predujma · Bez ugovora" je odbacena jer je PONAVLJALA lead tekst.
+  - Sada kicker govori o BRZINI, lead o PLAĆANJU — bez duplikata.
+- Provjereno: 41 objava 0 van viewBoxa, 0 gresaka, tsc=0, build OK, vision 1:1 i 3:4 (kicker u jednom redu).
 - **IKONA "Web stranice" POPRAVLJENA:** bila je globus (krug s meridijanima) — citaju je kao "internet",
   ne kao "web stranica". Sada je **browser prozor** (okvir + gornja traka + 3 tacke + linije sadrzaja).
 - **UDARNI NASLOV:** "Vaša stranica gotova je za 5 dana. Plaćate tek kad je vidite." (duga, opisna)
