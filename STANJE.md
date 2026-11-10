@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (premium oglas v16 — 'Bez plaćanja unaprijed')
+Zadnje ažurirano: 2026-11-10 (premium oglas v17 — lead 'ne plaćate ništa')
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,6 +12,13 @@ Zadnje ažurirano: 2026-11-10 (premium oglas v16 — 'Bez plaćanja unaprijed')
 - Dev server: `npm run dev` → http://localhost:5173/
 
 ## Gotovo (ova sesija)
+- **LEAD PROŠIREN (opcija D):** "Prvo vidite gotov rezultat pa platite. Ne svidi li se — ne plaćate
+  ništa i nemate nikakvu obavezu." — konkretno objasnjava mehanizam umjesto generickog
+  "bez ugovora, bez skrivenih trosova" (to pise svaka agencija, ljudi ne registruju).
+- **Crtica (—) zamijenjena zapetom** jer je `wrap` lomio red TAKO da crtica padne na pocetak
+  drugog reda ("— ne plaćate...") — izgledalo neuredno.
+- Provjereno geometrijski: 1:1 i 3:4 `maxRectBottom == H` (sve stane tacno), 0 van viewBoxa,
+  tsc=0, build OK, 0 console gresaka.
 - **"PREDUJAM" ZAMIJENJEN** — rijec mnogima nejasna. Svuda u oglasu sad **"plaćanje unaprijed"**:
   - naslov: **"Vaš biznis online. Za 5 dana. Bez plaćanja unaprijed."** (cijeli zadnji red teal)
   - stats: `0 KM` / **"unaprijed"**
