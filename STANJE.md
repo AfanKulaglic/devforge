@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (premium oglas v6 — marketinški kicker)
+Zadnje ažurirano: 2026-11-10 (premium oglas v7 — bez kickera, naslov pokriva sve usluge)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,6 +12,12 @@ Zadnje ažurirano: 2026-11-10 (premium oglas v6 — marketinški kicker)
 - Dev server: `npm run dev` → http://localhost:5173/
 
 ## Gotovo (ova sesija)
+- **KICKER POTPUNO UKLONJEN** — ispod logotipa više ne stoji ništa (`void p.kicker`, prostor ide naslovu).
+- **NASLOV POKRIVA SVE USLUGE** (prije "Vaš projekat. Gotov za 5 dana." — nije predstavljao ponudu):
+  **"Stranica, shop, aplikacija ili igrica. Gotovo za 5 dana."**
+  - 3 reda: "Stranica, shop," / "aplikacija ili igrica." (bijelo) / "Gotovo za 5 dana." (teal)
+- **Lead:** "Plaćate tek kad vidite gotov rezultat — bez predujma, bez ugovora, bez rizika."
+- Provjereno: 41 objava 0 van viewBoxa, 0 gresaka, tsc=0, build OK, vision 1:1 i 3:4 (2 reda ispod loga nema, footer vidljiv).
 - **KICKER (linija pod logom) promijenjen u marketinški:** "40+ projekata · 5 godina iskustva · Sarajevo"
   (tri nepovezane cinjenice, slabo djeluju) → **"Ideja danas — stranica za 5 dana"**.
   - Prva varijanta "Bez rizika · Bez predujma · Bez ugovora" je odbacena jer je PONAVLJALA lead tekst.

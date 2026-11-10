@@ -653,15 +653,11 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   // U 1:1 formatu G je 0 — tamo mjesta nema i sve mora biti kompaktno.
   const G = Math.max(0, Math.min(110, (SIZE_H - 1160) * 0.28));
 
-  // 1) TRUST LINIJA — umjesto kicker etikete.
-  // Kicker ("prva verzija besplatno") je ponavljao ono sto naslov vec kaze,
-  // pa je trosio red prostora. Sada tu stoji konkretan dokaz: koliko projekata,
-  // koliko godina, gdje se nalazimo. To kupcu kaze "ovi ljudi postoje".
-  if (p.kicker) {
-    svg += `<text x="${left}" y="${y}" font-family="${FONT}" font-size="25" font-weight="800"
-      letter-spacing="0.4" fill="${c.accent}">${esc(p.kicker)}</text>`;
-    y += 46;
-  }
+  // 1) Bez linije pod logom — ispod logotipa ne stoji nista.
+  // Kicker se preskace namjerno: svaki dodatni red tu trosi prostor koji naslovu
+  // treba, a nijedna varijanta nije dodala vrijednost (ili je ponavljala lead
+  // ili je bila statistika koja ne prodaje).
+  void p.kicker;
 
   // 2) NASLOV — najveći element. Veličina se traži, ne pogađa: ide od 84px
   // naniže dok CIJELI naslov ne stane u 3 reda (bez tihe odsječe riječi).
