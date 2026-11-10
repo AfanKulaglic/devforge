@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (premium oglas v21 — bijeli vecí kursor)
+Zadnje ažurirano: 2026-11-10 (premium oglas v22 — kursor manji + centriran)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -32,6 +32,12 @@ Zadnje ažurirano: 2026-11-10 (premium oglas v21 — bijeli vecí kursor)
 - **KURSOR na 2. dugmetu:** IZA domene, **BIJELI** (fill=ink, prije teal — stapa se
   s teal pozadinom), veličina CUR=34 → stvarno **22×29px** (visina ~= visina teksta).
   Centrirano: luft 95px lijevo / 104px desno.
+
+- **KURSOR v2:** CUR 34 -> **24** (~15x20px, manji od teksta), I DALJE bijeli.
+  Centriranje popravljeno:  racuna STVARNU sirinu putanje (15.2/24*CUR), ne CUR box.
+  Sad luft **104px lijevo / 102px desno** (prije 95/104 — tekst je bjezao lijevo).
+- **ZAMKA:**  je CRLF — zamjene stringova moraju normalizovati
+   ->  ili markeri nece pasati.
 
 ## Sljedeći korak
 - Pogledati `/objave` i potvrditi da dugmad izgledaju kako treba.

@@ -835,13 +835,17 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   // sto se jasno odvaja (teal na tealu se stapa).
   // Putanja zauzima ~15x20 od 0..24 boxa, pa je stvarna visina ~0.83*CUR.
   // CUR=34 daje kursor ~28px visok — jasno vidljiv pored teksta od 25px.
-  const CUR = 34;
-  const curGap = 9;
+  const CUR = 24;
+  const curGap = 10;
+  // Stvarne dimenzije nacrtane putanje unutar 0..24 boxa (15.2 x 18).
+  // Koriste se za centriranje grupe — CUR box je veci od same strelice.
+  const CUR_W = (CUR * 15.2) / 24;
+  const CUR_H = (CUR * 18) / 24;
   // Isti font kao lijevo dugme — dva dugmeta iste sirine moraju imati i istu
   // tipografsku tezinu, inace djeluju kao da nisu iz istog sistema.
   let sfs = cfs;
-  while (sfs > 13 && (siteLabel.length * sfs * 0.62 + CUR + curGap) > siteW - 26) sfs -= 1;
-  const inner = siteLabel.length * sfs * 0.62 + CUR + curGap;
+  while (sfs > 13 && (siteLabel.length * sfs * 0.62 + CUR_W + curGap) > siteW - 34) sfs -= 1;
+  const inner = siteLabel.length * sfs * 0.62 + CUR_W + curGap;
   const startX = sx + (siteW - inner) / 2;
   const midY = btnY + btnH / 2;
   svg += `<text x="${startX}" y="${midY + 8}" text-anchor="start"
@@ -850,7 +854,7 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   // Strelica u 0..24 koordinatama; stroke u jedinicama lokalnog sistema pa je
   // debljina konstantna bez obzira na `scale`.
   const curX = startX + siteLabel.length * sfs * 0.62 + curGap;
-  svg += `<g transform="translate(${curX.toFixed(1)},${(midY - CUR / 2).toFixed(1)}) scale(${(CUR / 24).toFixed(4)})">
+  svg += `<g transform="translate(${curX.toFixed(1)},${(midY - CUR_H / 2 + 1).toFixed(1)}) scale(${(CUR / 24).toFixed(4)})">
     <path d="M3.6 1.6 L3.6 19.6 L8.7 14.8 L11.7 21.8 L15.2 20.3 L12.2 13.4 L18.8 13 Z"
       fill="${c.ink}" stroke="${c.ink}" stroke-width="1.1" stroke-linejoin="round"/>
   </g>`;
