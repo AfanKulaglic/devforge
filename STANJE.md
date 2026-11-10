@@ -18,7 +18,7 @@ covjeku koji gleda sliku. Sada stoji **www.devlab.cc.cd** u teal boji +
 mala bijela strelica (17px), a kategorija je premjestena desno u istom redu,
 blijeda (opacity 0.55) da ne konkurira.
 
-Nova funkcija  u  (~270).
+Nova funkcija domainLine(c, category) u postRender.ts (~270).
 
 ### 2. Novi naslovi i tekstovi za svih 40 nepremium objava
 Svi naslovi konkretniji — brojevi, rokovi, cijene. Npr:
@@ -34,8 +34,8 @@ Svi naslovi konkretniji — brojevi, rokovi, cijene. Npr:
 | p56 | skrivenih troškova u svakoj ponudi | **Nula skrivenih troškova. Cijena koju čujete je cijena koju plaćate.** |
 | p57 | radnih dana do besplatne gotove verzije | **Pet radnih dana do besplatne gotove verzije.** |
 
-Itemi su konkretizovani:  → ,
- → , itd.
+Itemi su konkretizovani: "Stranice od 150 KM" → "Web stranica — od 150 KM",
+"Stranice — 1-2 sedmice" → "Web stranica — 5 radnih dana", itd.
 
 ### Verifikacija
 - 41 objava, **0 tekstova van kadra**, 0 console grešaka, tsc=0, build OK (1.820 kB).
