@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (uklonjena kategorija iz donjeg desnog ugla)
+Zadnje ažurirano: 2026-11-10 (p02: "sve na jednom mjestu" u teal boji)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,23 +12,31 @@ Zadnje ažurirano: 2026-11-10 (uklonjena kategorija iz donjeg desnog ugla)
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### Uklonjena kategorija iz donjeg desnog ugla
-Korisnik: "vidis li sto pise ponuda u donjem desnom uglu posta — obrisi to".
+### p02 — dio naslova "sve na jednom mjestu." u teal boji
+Korisnik: zeli da dio teksta "sve na jednom mjestu" bude zelen (teal) i
+istaknutiji od ostatka naslova.
 
-Prije: donji desni ugao je ispisivao kategoriju (PONUDA, BREND, SAVJET)
-blijedim slovima. Ta rijec nista ne znaci onome ko gleda sliku na
-Instagramu i samo je pravila sum.
+U `formHero` (postRender.ts) dodat akcenat dio naslova:
+- `ACCENT_FROM = "sve na jednom mjestu."` — trazi se u naslovu.
+- Broje se RIJECI prije akcent dijela; prva rijec koja mu pripada oboji
+  cijeli ostatak reda i sve redove ispod.
+- Red u kojem akcent pocinje dobija DVA `<text>` elementa: bijeli dio i
+  teal dio. Teal dio krece na x = sirina bijelog dijela + razmak.
+- Koeficijent sirine 0.441 (izmjeren) + razmak 0.22 * size = ~22px na 100px.
 
-Promjena u `domainLine()` (postRender.ts): uklonjen drugi `<text>` element.
-Ostaje samo domena lijevo. Parametar `category` se vise ne koristi (`void`).
+### BUG popravljen usput
+U `formHero` regex je bio pokvaren: `split(/s+/)` umjesto `split(/\s+/)`.
+Zbog toga `fitsWhole()` nikad nije radio kako treba — brojao je sve kao
+jednu rijec. Popravljeno na oba mjesta.
 
 ### Verifikacija
-- 41 objava: kategorija vidljiva na **0** objava, domena na **41/41**.
-- 0 van kadra, 0 console gresaka, tsc=0, build OK (1.820 kB).
-- Vision: donji desni ugao prazan, domena lijevo.
+- p02 3:4: "sve na jednom mjestu." teal (#4DEAE0), razmak 22px (prirodno).
+- p02 1:1: isto radi, font 64px.
+- 41 objava: 0 van kadra, 0 console gresaka, tsc=0, build OK (1.821 kB).
 
 ## Sljedeći korak
-- Pregledati /objave — donji ugao sad nosi samo domenu.
+- Pregledati p02 — "sve na jednom mjestu." je teal.
+- Ako jos neki post treba akcenat dio u naslovu, mijenja se ACCENT_FROM.
 - Opciono: 4:5 format.
 
 ## Napomene / zamke

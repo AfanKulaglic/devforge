@@ -406,8 +406,8 @@ function formHero(c: Colors, p: PostSlide): Block {
   // zato je "jednom mjestu" nestajalo iz naslova. Ov dje se trazi velicina
   // pri kojoj CIJELI naslov stane (provjera po broju rijeci), pa se onda
   // jos smanjuje dok blok ne udje u budzet.
-  const allWords = title.split(/s+/).filter(Boolean).length;
-  const fitsWhole = (ls: string[]) => ls.join(" ").split(/s+/).filter(Boolean).length === allWords;
+  const allWords = title.split(/\s+/).filter(Boolean).length;
+  const fitsWhole = (ls: string[]) => ls.join(" ").split(/\s+/).filter(Boolean).length === allWords;
   let lines = wrap(title, size, W, MAXL);
   while (size > 54 && (!fitsWhole(lines) || lines.length > MAXL)) {
     size -= 4;
@@ -420,11 +420,56 @@ function formHero(c: Colors, p: PostSlide): Block {
   }
   const lh = size * 1.2;
 
+  // DIO NASLOVA U AKCENT BOJI.
+  //
+  // p02 ima naslov sa crtom: "Stranica, shop, aplikacija, igrica ili AI
+  // sistem — sve na jednom mjestu." Dio IZA crte je poruka, a dio prije je
+  // samo nabrajanje. Zato taj dio ide u teal — oko prvo vidi "sve na jednom
+  // mjestu", a lista usluga ostaje kao kontekst u bijelom.
+  //
+  // Racuna se po RIJECIMA, ne po znakovima: prati se koliko je rijeci vec
+  // ispisano, i prva rijec koja pripada akcent dijelu oboji cijeli ostatak
+  // reda i sve redove ispod.
+  const ACCENT_FROM = "sve na jednom mjestu.";
+  const titleFlat = title.replace(/\s+/g, " ").trim();
+  const accIdx = titleFlat.indexOf(ACCENT_FROM);
+  // Koliko rijeci dolazi PRIJE akcent dijela — to je granica.
+  const wordsBefore = accIdx > 0 ? titleFlat.slice(0, accIdx).trim().split(/\s+/).filter(Boolean).length : -1;
+  let wordCount = 0;
+
   // mala akcenat traka IZNAD naslova — vizuelni ulaz, unutar bloka
   let svg = `<rect x="0" y="${-34}" width="88" height="8" fill="${c.accent}"/>`;
   lines.forEach((l, i) => {
-    svg += `<text x="0" y="${size * 0.78 + i * lh}" font-family="${FONT}" font-size="${size}"
-      font-weight="900" letter-spacing="-3.2" fill="${c.ink}">${esc(l)}</text>`;
+    const lineWords = l.split(/\s+/).filter(Boolean);
+    // Da li ovaj red sadrzi prvu rijec akcent dijela? Ako da, dio reda od te
+    // rijeci dalje je teal, a ostatak reda prije nje bijeli.
+    let headPart = l;
+    let tailPart = "";
+    if (wordsBefore >= 0) {
+      if (wordCount < wordsBefore && wordCount + lineWords.length > wordsBefore) {
+        const cut = wordsBefore - wordCount;
+        headPart = lineWords.slice(0, cut).join(" ");
+        tailPart = lineWords.slice(cut).join(" ");
+      } else if (wordCount >= wordsBefore) {
+        headPart = "";
+        tailPart = l;
+      }
+    }
+    const by = size * 0.78 + i * lh;
+    if (headPart) {
+      svg += `<text x="0" y="${by}" font-family="${FONT}" font-size="${size}"
+        font-weight="900" letter-spacing="-3.2" fill="${c.ink}">${esc(headPart)}</text>`;
+    }
+    if (tailPart) {
+      // Akcent dio krece tamo gdje se bijeli dio zavrsava. Sirina se racuna
+      // istim koeficijentom kao wrap(), da se rijec ne odvoji od ostatka reda.
+      // Sirina bijelog dijela + razmak. Koeficijent 0.441 je IZMJEREN na
+      // ovom fontu (0.46 je dao 74px razmak umjesto 28px).
+      const hw = headPart ? headPart.length * size * 0.441 + size * 0.22 : 0;
+      svg += `<text x="${hw.toFixed(1)}" y="${by}" font-family="${FONT}" font-size="${size}"
+        font-weight="900" letter-spacing="-3.2" fill="${c.accent}">${esc(tailPart)}</text>`;
+    }
+    wordCount += lineWords.length;
   });
   let h = (lines.length - 1) * lh + size;
 
