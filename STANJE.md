@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (premium oglas v11 — admin panel objašnjen, bez 'kod')
+Zadnje ažurirano: 2026-11-10 (premium oglas v12 — konkretno šta se mijenja)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,6 +12,16 @@ Zadnje ažurirano: 2026-11-10 (premium oglas v11 — admin panel objašnjen, bez
 - Dev server: `npm run dev` → http://localhost:5173/
 
 ## Gotovo (ova sesija)
+- **"ADMIN PANEL" LINIJA KONKRETIZOVANA** — "sami mijenjate tekst i cijene" nije reklo ČEGA:
+  - oglas: **"Sami mijenjate cijene, slike i tekstove na sajtu"**
+  - caption: naslov "vaša kontrolna tabla, otvara se kao obična stranica u browseru" +
+    **5 konkretnih primjera** pod "Šta tu sami mijenjate, bez programera":
+    cijena usluge (150→120 KM), proizvodi u shopu, radno vrijeme/telefon/adresa,
+    tekstovi i vijesti, naslovna slika. Završava: "Sve u par klikova — bez poziva nama."
+- Provjereno: 41 objava 0 van viewBoxa, 0 gresaka, tsc=0, build OK, vision 1:1 i 3:4.
+- Vazno: izbjegavati `
+` u Python heredocu za TS stringove — koristiti `chr(92)+'n'`
+  (dva puta pokvarilo fajl pod "unterminated string literal").
 - **OŠTRI UGLOVI na dugmadima** (rx uklonjen) — sajt koristi `rounded-none` na CTA dugmadima
   (`App.tsx` 1323/1325/1327), pa pilula u oglasu nije pripadala brendu. Kartice usluga ostaju
   zaobljene (`rounded-xl`/`2xl` na sajtu).
