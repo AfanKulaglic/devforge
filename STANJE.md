@@ -16,23 +16,23 @@ Zadnje ažurirano: 2026-11-10 (naslov puni sirinu, veci razmak od logotipa)
 Korisnik: "pocni font naslova da se popuni prostora, naslov udalji malo
 od logotipa na vrhu, gledaj da se ispuni fino taj prostor".
 
-**Glavni uzrok (pronaden mjerenjem):**  je koristio koeficijent
+**Glavni uzrok (pronaden mjerenjem):** wrap() je koristio koeficijent
 0.58 za sirinu slova, a stvarna sirina u ovom fontu je **0.451**. Zbog toga
 je wrap mislio da u red stane manje znakova, lomio naslov prerano, i font
 je morao biti manji da sve stane u 3 reda. Naslov je zato stajao na 88px
 i punio samo 77% sirine.
 
-Promjene u  (postRender.ts):
--  koeficijent zavisi od velicine: .
+Promjene u premiumLayout (postRender.ts):
+- wrap() koeficijent zavisi od velicine: size >= 100 ? 0.46 : size >= 40 ? 0.50 : 0.58.
   0.46 je za 3:4 (naslov do 110px), 0.50 za 1:1 (88-104px), 0.58 za sitni tekst.
 - Naslov trazi **najveci** font od 132px nanize (prije: start 88 i samo padao).
   Petlja ide kroz sve velicine i pamti najvecu koja stane (prelamanje se
   mijenja s velicinom pa prvi koji prodje nije uvijek najveci).
--  = 490 (3:4) / 292 (1:1);  = 4 (3:4) / 3 (1:1).
--  = 150 (3:4) / 92 (1:1) — naslov udaljen od logotipa.
--  = 25 (3:4) / 33 (1:1) — sira kolona u 3:4.
+- titleBoxH = 490 (3:4) / 292 (1:1); MAX_LINES = 4 (3:4) / 3 (1:1).
+- LOGO_GAP = 150 (3:4) / 92 (1:1) — naslov udaljen od logotipa.
+- TITLE_INDENT = 25 (3:4) / 33 (1:1) — sira kolona u 3:4.
 - Akcenat moze u 2 reda u 3:4 (prije 1 red je zakljucavao font na 88px).
--  +40px u 3:4 da krupniji naslov ne dodiruje lead.
+- LEAD_GAP +40px u 3:4 da krupniji naslov ne dodiruje lead.
 
 Rezultat 3:4: font **110px**, sirina **882/918 = 96%**, razmak od logotipa
 47px, naslov-blok 490px, 0 preklapanja, 98px lufta do dna.
