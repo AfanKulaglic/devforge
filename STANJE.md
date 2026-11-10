@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (domena devlab.cc.cd live + /mail generator potpisa)
+Zadnje ažurirano: 2026-11-10 (mail slanje sa /mail kroz Brevo — RADI)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,6 +12,17 @@ Zadnje ažurirano: 2026-11-10 (domena devlab.cc.cd live + /mail generator potpis
 - Dev server: `npm run dev` → http://localhost:5173/
 
 ## Gotovo (ova sesija)
+- **MAIL SLANJE SA SAJTA — RADI** (`/mail` → `api/send-mail.ts` → Brevo):
+  - Brevo domena autentifikovana: TXT brevo-code, DKIM1/2, DMARC, branded `send`/`r.send`/`img.send`
+  - SPF spojen: `v=spf1 include:spf.improvmx.com include:spf.brevo.com ~all` (SAMO JEDAN SPF!)
+  - Pošiljaoci verifikovani u Brevo: `kontakt@` i `info@devlab.cc.cd`
+  - `api/send-mail.ts`: rate limit 5/10min po IP, honeypot, fiksna lista pošiljalaca,
+    HTML potpis se gradi na serveru, API ključ samo u `BREVO_API_KEY` env
+  - `src/MailSignaturePage.tsx`: forma (primalac/tema/sadržaj) + 5 gotovih tema + 3 gotova pisma
+    + live pregled sa Od/Za/Tema i potpisom
+  - **Testirano na produkciji: HTTP 200, rate limit vraća 429 nakon 5 zahtjeva**
+  - ⚠️ API ključ MORA biti `xkeysib-...` (SMTP ključ `xsmtpsib-...` daje 401 Key not found)
+  - ⚠️ Poslije promjene env varijable na Vercelu OBAVEZAN redeploy (commit --allow-empty radi)
 - **DOMENA `devlab.cc.cd` JE ŽIVA** (Vercel + DNSHE):
   - A `@` → `216.198.79.1`, CNAME `www` → Vercel, HTTPS 200, SSL Vercel
   - Mail: ImprovMX forwarding (`kontakt@`, `info@`, `@` → afankul42@gmail.com)
