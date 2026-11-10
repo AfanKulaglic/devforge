@@ -616,6 +616,7 @@ function premiumLayout(c: Colors, p: PostSlide): string {
 
   const stats = (p.stats ?? []).slice(0, 4);
   const terms = (p.terms ?? []).slice(0, 3);
+  const features = (p.features ?? []).slice(0, 4);
 
   // Visine dijelova oglasa — definisane na vrhu jer se naslov mora znati
   // uklopiti u preostali prostor iznad njih.
@@ -655,7 +656,9 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   // CIJELI naslov ne stane u tri reda — inače zadnje riječi tiho nestanu
   // ("Bez predujma" se gubilo, pa je izgledalo da je tekst krnj).
   const title = p.title ?? "";
-  const availTitle = SIZE_H - inner - 62 - CTA_H - CTA_GAP - 34 - barH - 56 - y
+  // Budzet za naslov: sve ispod (lead + usluge + traka + CTA + uslovi) se oduzima.
+  const featsH = features.length ? 168 : 0;
+  const availTitle = SIZE_H - inner - 62 - CTA_H - CTA_GAP - 34 - barH - featsH - 56 - y
     - (p.lead ? 36 * 0.92 + 2 * 50 : 0);
   let ts = fit(title, wCol, 96, 40);
   let tl = wrap(title, ts, wCol, 3);
@@ -688,6 +691,28 @@ function premiumLayout(c: Colors, p: PostSlide): string {
     y += (ll.length - 1) * LEAD_LH + LEAD_FS * 0.92;
   }
 
+  // 3b) USLUGE — ikona + naziv, dvije kolone.
+  // Ovo je ono sto velike firme rade: prije cijene pokazu STA se dobija.
+  // Bez ovoga oglas je samo "jeftino i brzo" — a kupac ne zna sta kupuje.
+  if (features.length) {
+    const featTop = y + 44;
+    const colW = wCol / 2;
+    const rowH = 62;
+    features.forEach((f, i) => {
+      const col = i % 2;
+      const row = Math.floor(i / 2);
+      const fx = left + col * colW;
+      const fy = featTop + row * rowH;
+      // Ikona u zaobljenom kvadratu — vizualni sidro za svaku uslugu.
+      svg += `<rect x="${fx}" y="${fy}" width="44" height="44" rx="12"
+        fill="${c.accent}" opacity="0.14"/>`;
+      svg += pxIcon(f.icon, fx + 6, fy + 6, c.accent, 22);
+      svg += `<text x="${fx + 58}" y="${fy + 30}" font-family="${FONT}" font-size="28"
+        font-weight="800" fill="${c.ink}" letter-spacing="-0.3">${esc(f.label)}</text>`;
+    });
+    y = featTop + Math.ceil(features.length / 2) * rowH;
+  }
+
   // 4) TRAKA BROJKI
   // Prije je bila fiksno zakucana za dno (SIZE_H - inner - 232), pa je u 1:1
   // ostajala prazna crna rupa od ~280px izmedju teksta i brojki, a u 3:4 ~700px.
@@ -703,6 +728,9 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   if (stats.length) {
     svg += `<rect x="${left}" y="${barTop}" width="${wCol}" height="${barH}" fill="${c.card}"
       stroke="${c.line}" stroke-width="2"/>`;
+    // Tanka akcenat-linija na vrhu panela — "premium" detalj koji veže panel
+    // s brendom bez dodavanja okvira oko cijele slike.
+    svg += `<rect x="${left}" y="${barTop}" width="${wCol}" height="3" fill="${c.accent}" opacity="0.75"/>`;
     const cw = wCol / stats.length;
     stats.forEach((s, i) => {
       const cx = left + i * cw;
@@ -716,7 +744,7 @@ function premiumLayout(c: Colors, p: PostSlide): string {
         svg += pxIcon(s.icon, cx + cw / 2 - (IS * 1.6) / 2, barTop + 20, c.accent, IS);
       }
       svg += `<text x="${cx + cw / 2}" y="${barTop + 106}" text-anchor="middle" font-family="${FONT}"
-        font-size="52" font-weight="900" letter-spacing="-1.6" fill="${c.accent}">${esc(s.value)}</text>`;
+        font-size="58" font-weight="900" letter-spacing="-2" fill="${c.accent}">${esc(s.value)}</text>`;
       // Label se automatski smanjuje ako ne stane u svoju ćeliju — bez prelijevanja preko ivica.
       const lab = s.label.toUpperCase();
       const maxW = cw - 16;
@@ -741,8 +769,10 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   // zakucaju za DNO rama kao podnožje oglasa. U 1:1 idu odmah pod traku.
   const footBlockH = ctaH + (terms.length ? CTA_GAP + footH - 14 : 0);
   const footNear = barTop + barH + 40;
-  const footBottom = SIZE_H - inner - 40 - footBlockH;
-  const footTop = footBottom - footNear > 60 ? footBottom : footNear;
+  // U 3:4 formatu dno rama je daleko — tada se CTA+uslovi zakucaju za DNO,
+  // inace ostane 150+px praznine pod tekstom i oglas izgleda nedovrseno.
+  const footBottom = SIZE_H - 54 - footBlockH;
+  const footTop = footBottom - footNear > 18 ? footBottom : footNear;
 
   const ctaY = footTop;
   svg += `<rect x="${left}" y="${ctaY}" width="${ctaW}" height="${ctaH}" rx="${ctaH / 2}"
@@ -1068,6 +1098,7 @@ export function renderPostSlides(post: AdPost): string[] {
       lead: post.lead,
       terms: post.terms,
       stats: post.stats,
+      features: post.features,
       cta: post.cta,
     };
     return [renderSlideSvg(post, single, 0, 1)];

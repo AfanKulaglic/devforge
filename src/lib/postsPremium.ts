@@ -32,6 +32,12 @@ export const POST_PREMIUM: AdPost = {
     { value: "150 KM", label: "web od", icon: "coin" },
     { value: "4", label: "revizije", icon: "layers" },
   ],
+  features: [
+    { icon: "web", label: "Web stranice" },
+    { icon: "shop", label: "Web shopovi" },
+    { icon: "app", label: "Aplikacije" },
+    { icon: "ai", label: "AI sistemi" },
+  ],
   terms: ["Demo se ne plaća", "Kod je 100% vaš", "UI/UX i admin panel uključeni"],
   cta: "Pišite nam u DM",
   caption:
