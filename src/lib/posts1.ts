@@ -40,7 +40,7 @@ export const POSTS_1: AdPost[] = [
       "Bez ugovora i obaveze",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "band",
+    rich: "bigfigure",
     site: "www.devlab.cc.cd",
   },
 
@@ -100,7 +100,7 @@ export const POSTS_1: AdPost[] = [
       "Bez plaćanja unaprijed",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "bigtwo",
+    rich: "band",
     site: "www.devlab.cc.cd",
   },
 
@@ -168,7 +168,7 @@ export const POSTS_1: AdPost[] = [
       "Bez skrivenih troškova",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "none",
+    rich: "quote",
     site: "www.devlab.cc.cd",
   },
 
@@ -198,7 +198,7 @@ export const POSTS_1: AdPost[] = [
       "Cijene javne",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "duo",
+    rich: "bare",
     site: "www.devlab.cc.cd",
   },
 
@@ -368,7 +368,7 @@ export const POSTS_1: AdPost[] = [
       "Bez plaćanja unaprijed",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "band",
+    rich: "stack",
     site: "www.devlab.cc.cd",
   },
 
@@ -397,7 +397,7 @@ export const POSTS_1: AdPost[] = [
       "Bez plaćanja unaprijed",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "duo",
+    rich: "stack",
     site: "www.devlab.cc.cd",
   },
 
@@ -462,7 +462,7 @@ export const POSTS_1: AdPost[] = [
       "Bez plaćanja unaprijed",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "inline",
+    rich: "stack",
     site: "www.devlab.cc.cd",
   },
 ];

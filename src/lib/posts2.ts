@@ -39,7 +39,7 @@ export const POSTS_2: AdPost[] = [
       "Bez plaćanja unaprijed",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "inline",
+    rich: "stack",
     site: "www.devlab.cc.cd",
   },
 
@@ -68,7 +68,7 @@ export const POSTS_2: AdPost[] = [
       "Odgovor u 10 minuta",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "bigtwo",
+    rich: "stack",
     site: "www.devlab.cc.cd",
   },
 
@@ -136,7 +136,7 @@ export const POSTS_2: AdPost[] = [
       "Bez plaćanja unaprijed",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "chips",
+    rich: "split",
     site: "www.devlab.cc.cd",
   },
 
@@ -165,7 +165,7 @@ export const POSTS_2: AdPost[] = [
       "Bez plaćanja unaprijed",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "list",
+    rich: "bare",
     site: "www.devlab.cc.cd",
   },
 
@@ -231,7 +231,7 @@ export const POSTS_2: AdPost[] = [
       "Vlasništvo je vaše",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "duo",
+    rich: "split",
     site: "www.devlab.cc.cd",
   },
 
@@ -260,7 +260,7 @@ export const POSTS_2: AdPost[] = [
       "Bez skrivenih troškova",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "none",
+    rich: "quote",
     site: "www.devlab.cc.cd",
   },
 
@@ -289,7 +289,7 @@ export const POSTS_2: AdPost[] = [
       "Bez plaćanja unaprijed",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "band",
+    rich: "split",
     site: "www.devlab.cc.cd",
   },
 
@@ -318,7 +318,7 @@ export const POSTS_2: AdPost[] = [
       "0 KM unaprijed",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "list",
+    rich: "stack",
     site: "www.devlab.cc.cd",
   },
 
@@ -348,7 +348,7 @@ export const POSTS_2: AdPost[] = [
       "Bez obaveze",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "none",
+    rich: "bare",
     site: "www.devlab.cc.cd",
   },
 
@@ -377,7 +377,7 @@ export const POSTS_2: AdPost[] = [
       "Bez obaveze",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "inline",
+    rich: "bare",
     site: "www.devlab.cc.cd",
   },
 ];

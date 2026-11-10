@@ -35,7 +35,7 @@ export const POSTS_3: AdPost[] = [
       "Sve cijene javne",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "duo",
+    rich: "split",
     site: "www.devlab.cc.cd",
   },
 
@@ -102,7 +102,7 @@ export const POSTS_3: AdPost[] = [
       "Cijene javne",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "inline",
+    rich: "stack",
     site: "www.devlab.cc.cd",
   },
 
@@ -192,7 +192,7 @@ export const POSTS_3: AdPost[] = [
       "Odgovara odmah",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "band",
+    rich: "bigfigure",
     site: "www.devlab.cc.cd",
   },
 
@@ -221,7 +221,7 @@ export const POSTS_3: AdPost[] = [
       "Bez obaveze",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "none",
+    rich: "quote",
     site: "www.devlab.cc.cd",
   },
 
@@ -251,7 +251,7 @@ export const POSTS_3: AdPost[] = [
       "Bez dodatnog troška",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "duo",
+    rich: "stack",
     site: "www.devlab.cc.cd",
   },
 
@@ -339,7 +339,7 @@ export const POSTS_3: AdPost[] = [
       "Odgovor u 10 minuta",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "none",
+    rich: "bare",
     site: "www.devlab.cc.cd",
   },
 
@@ -368,7 +368,7 @@ export const POSTS_3: AdPost[] = [
       "Bez plaćanja unaprijed",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "band",
+    rich: "quote",
     site: "www.devlab.cc.cd",
   },
 
@@ -456,7 +456,7 @@ export const POSTS_3: AdPost[] = [
       "Bez dodatnih troškova",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "duo",
+    rich: "quote",
     site: "www.devlab.cc.cd",
   },
 
@@ -486,7 +486,7 @@ export const POSTS_3: AdPost[] = [
       "Bez programera",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "chips",
+    rich: "stack",
     site: "www.devlab.cc.cd",
   },
 
@@ -516,7 +516,7 @@ export const POSTS_3: AdPost[] = [
       "Bez dodatnih nalaza",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "band",
+    rich: "bigfigure",
     site: "www.devlab.cc.cd",
   },
 
@@ -546,7 +546,7 @@ export const POSTS_3: AdPost[] = [
       "4 revizije uključene",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "none",
+    rich: "bigfigure",
     site: "www.devlab.cc.cd",
   },
 
@@ -576,7 +576,7 @@ export const POSTS_3: AdPost[] = [
       "Bez plaćanja unaprijed",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "chips",
+    rich: "split",
     site: "www.devlab.cc.cd",
   },
 
@@ -605,7 +605,7 @@ export const POSTS_3: AdPost[] = [
       "Bez čekanja",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "inline",
+    rich: "quote",
     site: "www.devlab.cc.cd",
   },
 
@@ -635,7 +635,7 @@ export const POSTS_3: AdPost[] = [
       "Bez obaveze",
     ],
     cta: "Javite nam se na Instagramu",
-    rich: "none",
+    rich: "quote",
     site: "www.devlab.cc.cd",
   },
 ];

@@ -61,6 +61,7 @@ export type PostSlide = {
   /** PREMIUM: tekst CTA dugmeta (npr. "Pišite nam u DM"). */
   cta?: string;
   rich?: RichVariant; // varijanta bogatog sloja
+  quote?: string; // veliki citat (varijanta "quote")
 };
 
 export type AdPost = {
@@ -95,6 +96,7 @@ export type AdPost = {
   /** PREMIUM: tekst CTA dugmeta. */
   cta?: string;
   rich?: RichVariant; // varijanta bogatog sloja
+  quote?: string; // veliki citat (varijanta "quote")
 };
 
 // Varijante kompozicije — daju raznolikost a da sve ostane u istom sistemu:
@@ -111,7 +113,13 @@ export type RichVariant =
   | "list"     // ikone u vertikalnoj listi (kao checklist sa ikonom)
   | "bigtwo"   // dvije ogromne ikone, bez labela ispod, label sa strane
   | "band"     // ikone u punoj traci accent boje
-  | "none";    // bez ikona — samo dokazi + dugmad
+  | "none"     // bez ikona — samo dokazi + dugmad
+  // ── varijante BEZ IKONA (da ne budu svi postovi isti) ──
+  | "bigfigure"  // ogroman broj/cifra preko pola slike, nema ikona
+  | "quote"      // veliki citat sa navodnicima, akcent linija lijevo
+  | "split"      // dvije kolone teksta: PRIJE | POSLIJE, bez ikona
+  | "stack"      // veliki naslovi u nizu, svaki sa brojem 01 02 03
+  | "bare"       // nista osim naslova i CTA — maksimalna praznina
 
 export type PostLayout =
   | "center"

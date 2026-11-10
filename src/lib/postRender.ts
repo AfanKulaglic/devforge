@@ -590,9 +590,9 @@ function buildRich(c: Colors, p: PostSlide, opts: { left: number; width: number;
   const b = build(c, p, total);
   const avail = layer.top - opts.top;
   // Forma se skalira samo ako stvarno ne stane — nikad raste.
-  const svg = b.h > avail && avail > 0
-    ? '<g transform="scale(1, ' + (avail / b.h).toFixed(4) + ')">' + b.svg + '</g>'
-    : b.svg;
+  // PROPORCIONALNO (oba ose) — vertikalno skaliranje je zgazilo naslove.
+  const kf = b.h > avail && avail > 0 ? avail / b.h : 1;
+  const svg = kf < 1 ? '<g transform="scale(' + kf.toFixed(4) + ')">' + b.svg + '</g>' : b.svg;
   const h = Math.min(b.h, Math.max(0, avail));
   const y = opts.top + Math.max(0, (avail - h) / 2);
   return '<g transform="translate(' + opts.left + ', ' + y + ')">' + svg + '</g>' + layer.svg;
@@ -602,7 +602,7 @@ function buildFitting(c: Colors, p: PostSlide, maxH: number, total = 1): Block {
   const b = build(c, p, total);
   if (b.h <= maxH) return b;
   const k = maxH / b.h;
-  return { svg: `<g transform="scale(1, ${k.toFixed(4)})">${b.svg}</g>`, h: maxH };
+  return { svg: `<g transform="scale(${k.toFixed(4)})">${b.svg}</g>`, h: maxH };
 }
 
 // PREMIUM POZADINA — tamna fotografija + gradijenti koji je pretvaraju u podlogu.
@@ -970,6 +970,97 @@ function richLayer(
   if (feats.length) {
     const n = feats.length;
 
+    // ── bigfigure: ogroman broj/cifra, BEZ ikona ──
+    if (variant === "bigfigure") {
+      const big = p.value ?? "";
+      if (big) {
+        const bhs = Math.min(210, width * 0.32);
+        y -= bhs + 54;
+        svg += `<text x="${left}" y="${y + bhs * 0.82}" font-family="${FONT}" font-size="${bhs}"
+          font-weight="900" letter-spacing="-6" fill="${c.accent}">${esc(big)}</text>`;
+        if (p.valueNote) {
+          const nl = wrap(p.valueNote, 26, width, 2);
+          nl.forEach((ln, i) => {
+            svg += `<text x="${left}" y="${y + bhs + 28 + i * 34}" font-family="${FONT}"
+              font-size="26" font-weight="600" fill="${c.soft}">${esc(ln)}</text>`;
+          });
+        }
+        y -= 30;
+      }
+    }
+
+    // ── quote: veliki citat sa akcent linijom, BEZ ikona ──
+    else if (variant === "quote") {
+      const q = p.quote ?? (p.terms?.[0] ?? "");
+      if (q) {
+        const qs = 42;
+        const ql = wrap(q, qs, width - 60, 3);
+        const qh = ql.length * qs * 1.2 + 40;
+        y -= qh;
+        svg += `<rect x="${left}" y="${y}" width="8" height="${qh - 20}" fill="${c.accent}"/>`;
+        ql.forEach((ln, i) => {
+          svg += `<text x="${left + 34}" y="${y + 30 + i * qs * 1.2}" font-family="${FONT}"
+            font-size="${qs}" font-weight="800" letter-spacing="-1" fill="${c.ink}">${esc(ln)}</text>`;
+        });
+        y -= 34;
+      }
+    }
+
+    // ── split: dvije kolone PRIJE | POSLIJE, BEZ ikona ──
+    else if (variant === "split") {
+      const items = p.terms ?? [];
+      if (items.length >= 2) {
+        const half = Math.ceil(items.length / 2);
+        const gap = 16;
+        const colW = (width - gap) / 2;
+        const rowH = 56;
+        const h = 66 + half * rowH;
+        y -= h;
+        svg += `<rect x="${left}" y="${y}" width="${colW}" height="${h}" fill="${c.card}" stroke="${c.line}" stroke-width="1.5"/>`;
+        svg += `<text x="${left + 20}" y="${y + 40}" font-family="${FONT}" font-size="22" font-weight="900"
+          letter-spacing="2" fill="${c.soft}">PRIJE</text>`;
+        items.slice(0, half).forEach((t, i) => {
+          svg += `<text x="${left + 20}" y="${y + 84 + i * rowH}" font-family="${FONT}" font-size="24"
+            font-weight="600" fill="${c.soft}">${esc(wrap(t, 24, colW - 40, 1)[0] ?? t)}</text>`;
+        });
+        svg += `<rect x="${left + colW + gap}" y="${y}" width="${colW}" height="${h}" fill="${c.accent}"/>`;
+        svg += `<text x="${left + colW + gap + 20}" y="${y + 40}" font-family="${FONT}" font-size="22"
+          font-weight="900" letter-spacing="2" fill="${c.accentInk}">POSLIJE</text>`;
+        items.slice(half).forEach((t, i) => {
+          svg += `<text x="${left + colW + gap + 20}" y="${y + 84 + i * rowH}" font-family="${FONT}"
+            font-size="24" font-weight="800" fill="${c.accentInk}">${esc(wrap(t, 24, colW - 40, 1)[0] ?? t)}</text>`;
+        });
+        y -= 26;
+      }
+    }
+
+    // ── stack: veliki naslovi u nizu sa brojevima 01 02 03, BEZ ikona ──
+    else if (variant === "stack") {
+      const items = p.terms ?? [];
+      if (items.length) {
+        const rowH = 66;
+        const h = items.length * rowH + 16;
+        y -= h;
+        svg += `<rect x="${left}" y="${y}" width="${width}" height="2" fill="${c.line}"/>`;
+        items.forEach((t, i) => {
+          const ry = y + 16 + i * rowH;
+          svg += `<text x="${left}" y="${ry + 40}" font-family="${FONT}" font-size="26"
+            font-weight="900" fill="${c.accent}">${String(i + 1).padStart(2, "0")}</text>`;
+          svg += `<text x="${left + 62}" y="${ry + 40}" font-family="${FONT}" font-size="27"
+            font-weight="800" fill="${c.ink}">${esc(t)}</text>`;
+          if (i < items.length - 1) {
+            svg += `<rect x="${left}" y="${ry + rowH - 4}" width="${width}" height="1" fill="${c.line}"/>`;
+          }
+        });
+        y -= 26;
+      }
+    }
+
+    // ── bare: nista osim dokaza i dugmadi — maksimalna praznina ──
+    else if (variant === "bare") {
+      // namjerno prazno
+    }
+
     // ── chips: kartice kao premium (podrazumijevano) ──
     if (variant === "chips") {
       const gap = 10;
@@ -1045,8 +1136,9 @@ function richLayer(
     else if (variant === "bigtwo") {
       const gap = 40;
       const colW = (width - gap) / 2;
-      const IC = 120;
-      const rowH = IC + 54;
+      // 4 ikone u 2 reda prije su zauzimale 372px i gazile naslov.
+      const IC = 72;
+      const rowH = IC + 36;
       const rows = Math.ceil(n / 2);
       y -= rows * rowH + 24;
       feats.forEach((f, i) => {
@@ -1118,7 +1210,7 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide, total: number) => stri
     const rawB = build(c, p, total);
     const availH = layer.top - CONTENT_TOP() - 30;
     const b = rawB.h > availH && availH > 0
-      ? { svg: '<g transform="scale(1, ' + (availH / rawB.h).toFixed(4) + ')">' + rawB.svg + '</g>', h: availH }
+      ? { svg: '<g transform="scale(' + (availH / rawB.h).toFixed(4) + ')">' + rawB.svg + '</g>', h: availH }
       : rawB;
     void total;
     const y = CONTENT_TOP() + Math.max(0, (layer.top - CONTENT_TOP() - b.h) / 2);
@@ -1187,7 +1279,7 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide, total: number) => stri
     const rawB = build(c, p, total);
     const availH = layer.top - CONTENT_TOP() - 30;
     const b = rawB.h > availH && availH > 0
-      ? { svg: '<g transform="scale(1, ' + (availH / rawB.h).toFixed(4) + ')">' + rawB.svg + '</g>', h: availH }
+      ? { svg: '<g transform="scale(' + (availH / rawB.h).toFixed(4) + ')">' + rawB.svg + '</g>', h: availH }
       : rawB;
     const y = CONTENT_TOP() + Math.max(0, (layer.top - CONTENT_TOP() - b.h) / 2);
     return `<image href="${PHOTOS[ph]}" x="${SIZE - imgW}" y="0" width="${imgW}" height="${SIZE_H}"
@@ -1203,7 +1295,7 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide, total: number) => stri
     const rawB = build(c, p, total);
     const availH = layer.top - CONTENT_TOP() - 30;
     const b = rawB.h > availH && availH > 0
-      ? { svg: '<g transform="scale(1, ' + (availH / rawB.h).toFixed(4) + ')">' + rawB.svg + '</g>', h: availH }
+      ? { svg: '<g transform="scale(' + (availH / rawB.h).toFixed(4) + ')">' + rawB.svg + '</g>', h: availH }
       : rawB;
     const y = CONTENT_TOP() + Math.max(0, (layer.top - CONTENT_TOP() - b.h) / 2);
     const sh = 360;
