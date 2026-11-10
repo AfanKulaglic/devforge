@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (naslov puni sirinu, veci razmak od logotipa)
+Zadnje ažurirano: 2026-11-10 (p02: AI u naslovu, wrap ne gubi rijeci)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,38 +12,32 @@ Zadnje ažurirano: 2026-11-10 (naslov puni sirinu, veci razmak od logotipa)
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### Naslov puni sirinu + vise zraka od logotipa (3:4)
-Korisnik: "pocni font naslova da se popuni prostora, naslov udalji malo
-od logotipa na vrhu, gledaj da se ispuni fino taj prostor".
+### p02 — AI sistemi u naslovu, stari stil vracen
+Korisnik: lista/nabrajanje mu se ne svidja — trazio vracanje starog stila
+uz AI sisteme spomenute u naslovu.
 
-**Glavni uzrok (pronaden mjerenjem):** wrap() je koristio koeficijent
-0.58 za sirinu slova, a stvarna sirina u ovom fontu je **0.451**. Zbog toga
-je wrap mislio da u red stane manje znakova, lomio naslov prerano, i font
-je morao biti manji da sve stane u 3 reda. Naslov je zato stajao na 88px
-i punio samo 77% sirine.
+- p02 vracen na stari hero stil (template "title"), bez items liste.
+- Naslov: "Stranica, shop, aplikacija, igrica ili AI sistem — sve na jednom mjestu."
+- Subtitle skracen da stane bez odsjecanja.
 
-Promjene u premiumLayout (postRender.ts):
-- wrap() koeficijent zavisi od velicine: size >= 100 ? 0.46 : size >= 40 ? 0.50 : 0.58.
-  0.46 je za 3:4 (naslov do 110px), 0.50 za 1:1 (88-104px), 0.58 za sitni tekst.
-- Naslov trazi **najveci** font od 132px nanize (prije: start 88 i samo padao).
-  Petlja ide kroz sve velicine i pamti najvecu koja stane (prelamanje se
-  mijenja s velicinom pa prvi koji prodje nije uvijek najveci).
-- titleBoxH = 490 (3:4) / 292 (1:1); MAX_LINES = 4 (3:4) / 3 (1:1).
-- LOGO_GAP = 150 (3:4) / 92 (1:1) — naslov udaljen od logotipa.
-- TITLE_INDENT = 25 (3:4) / 33 (1:1) — sira kolona u 3:4.
-- Akcenat moze u 2 reda u 3:4 (prije 1 red je zakljucavao font na 88px).
-- LEAD_GAP +40px u 3:4 da krupniji naslov ne dodiruje lead.
+### BUG (ozbiljan): wrap() je TIHO gubio rijeci
+wrap(text, size, W, maxLines) odbacuje rijeci koje ne stanu u dozvoljen
+broj redova — bez ijedne greske. Zbog toga je iz naslova nestajalo
+"jednom mjestu", a iz podnaslova "shopove, aplikacije, igrice".
 
-Rezultat 3:4: font **110px**, sirina **882/918 = 96%**, razmak od logotipa
-47px, naslov-blok 490px, 0 preklapanja, 98px lufta do dna.
+Popravak u formHero (postRender.ts):
+- fitsWhole() poredi broj rijeci u linijama sa brojem rijeci u naslovu.
+- Dok se ne poklope, font se smanjuje za 4px (prije: nije bilo provjere).
+- MAXL = 4 reda u 3:4 / 3 u 1:1.
 
 ### Verifikacija
-- 3:4: naslov 110px / 96% sirine, 0 preklapanja, dugmad na 1258+84.
-- 1:1: naslov 104px / 91% sirine, 0 van kadra.
-- 41 objava, 0 console gresaka, tsc=0, build OK (1.820 kB).
+- p02 3:4: naslov 100px, 4 reda, SVE rijeci prisutne, 390-883px,
+  lead 926 (43px zraka), 0 preklapanja.
+- 41 objava u 1:1: 0 van kadra, 0 console gresaka, tsc=0, build OK.
+
 ## Sljedeći korak
-- Pregledati premium u 3:4 (/objave → 3:4) — naslov sad puni sirinu.
-- Ako naslov treba jos krupniji, dizati titleBoxH (3:4) uz provjeru da ne udari u lead.
+- Pregledati p02 u 3:4 — AI sistemi su sad u naslovu.
+- Ako jos neki naslov izgleda odsjeceno: to je wrap() — provjeriti broj rijeci.
 - Opciono: 4:5 format.
 
 ## Napomene / zamke

@@ -398,11 +398,24 @@ function formCover(c: Colors, p: PostSlide, total: number): Block {
 function formHero(c: Colors, p: PostSlide): Block {
   const title = p.title ?? "";
   let size = fit(title, W, 116);
-  let lines = wrap(title, size, W, 3);
+  // 4 reda u 3:4 formatu — ima visine za duze naslove (prije 3 reda su
+  // odsjekla "sistem — sve na jednom mjestu" iz naslova).
+  const MAXL = SIZE_H >= 1300 ? 4 : 3;
+  // wrap() sa ogranicenim brojem redova TIHO odbaci rijeci koje ne stanu —
+  // zato je "jednom mjestu" nestajalo iz naslova. Ov dje se trazi velicina
+  // pri kojoj CIJELI naslov stane (provjera po broju rijeci), pa se onda
+  // jos smanjuje dok blok ne udje u budzet.
+  const allWords = title.split(/s+/).filter(Boolean).length;
+  const fitsWhole = (ls: string[]) => ls.join(" ").split(/s+/).filter(Boolean).length === allWords;
+  let lines = wrap(title, size, W, MAXL);
+  while (size > 54 && (!fitsWhole(lines) || lines.length > MAXL)) {
+    size -= 4;
+    lines = wrap(title, size, W, MAXL);
+  }
   const budget = p.subtitle ? CONTENT_H() - 230 : CONTENT_H() - 20;
   while (lines.length * size * 1.2 > budget && size > 54) {
-    size -= 6;
-    lines = wrap(title, size, W, 3);
+    size -= 4;
+    lines = wrap(title, size, W, MAXL);
   }
   const lh = size * 1.2;
 
@@ -466,7 +479,8 @@ function formFigure(c: Colors, p: PostSlide): Block {
 }
 
 function formBlocks(c: Colors, p: PostSlide): Block {
-  const items = (p.items ?? []).slice(0, 4);
+  // 5 stavki u 3:4 formatu — ima visine, a pet usluga je kompletna ponuda.
+  const items = (p.items ?? []).slice(0, SIZE_H >= 1300 ? 5 : 4);
   const ts = fit(p.title ?? "", W, 60);
   const tl = wrap(p.title ?? "", ts, W, 2);
 
@@ -488,8 +502,11 @@ function formBlocks(c: Colors, p: PostSlide): Block {
   // na preostali dio sadrzajne zone; buildFitting() će ga dodatno skalirati ako
   // layout (npr. photoTop) ima manju zonu od pune CONTENT_H().
   const avail = Math.max(0, CONTENT_H() - y - 10);
-  const rowH = Math.max(64, Math.min(104, avail / n));
-  const fs = n >= 4 ? 34 : 38;
+  // Redovi smiju narasti do 150px — u 3:4 formatu ima 1010px zone, a prije su
+  // bili zakljucani na 104px pa je lista zauzimala 416px i ostajalo je 273px
+  // praznog iznad naslova (blok je bio centriran u praznini).
+  const rowH = Math.max(64, Math.min(SIZE_H >= 1300 ? 150 : 104, avail / n));
+  const fs = SIZE_H >= 1300 ? (n >= 4 ? 38 : 44) : n >= 4 ? 34 : 38;
 
   // Preostala visina za liste: ako je raspoloziv prostor manji od punog CONTENT_H()
   // (photoTop/photoBot), redovi se pakuju u ono sto stvarno ima.

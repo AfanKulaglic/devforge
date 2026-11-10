@@ -34,13 +34,13 @@ export const POSTS_1: AdPost[] = [
   // ── 2. POKREĆU BIZNIS WEB USLUGE ─────────────────────────────────────────
   {
     id: "p02",
-    title: "Stranica, shop, aplikacija ili igrica — sve na jednom mjestu.",
+    title: "Stranica, shop, aplikacija, igrica ili AI sistem — sve na jednom mjestu.",
     template: "title",
     category: "ponuda",
     layout: "center",
     palette: "ink",
     eyebrow: "Šta radimo",
-    subtitle: "Ne morate tražiti tri različite firme. Jedan tim radi sve, od prve skice do puštanja u rad.",
+    subtitle: "Ne morate tražiti tri firme. Jedan tim radi sve — od prve skice do puštanja u rad.",
     caption:
       "⚡ Vaš biznis treba biti na internetu. Danas.\n\nDigitalni proizvodi koji stvarno rade za Vaš biznis:\n\n— ✅ stranice koje pretvaraju posjetioce u klijente\n— 🔥 mobilne aplikacije za iOS i Android\n— 💡 2D igrice za web i mobilne\n— ⚡ AI sistemi koji odgovaraju umjesto Vas\n\nOd ideje do gotovog proizvoda za nekoliko sedmica. Izrađujemo besplatnu gotovu verziju za 5 dana — plaćate tek kada budete zadovoljni.\n\nSarajevo i cijela BiH. Bez kancelarije u centru i bez velikih režija.\n\nŠta Vama treba?",
     tags: ["webdizajn", "aplikacije", "igrice", "aisistemi", "sarajevo", "devlab"],
