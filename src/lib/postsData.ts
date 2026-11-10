@@ -54,8 +54,10 @@ export type PostSlide = {
   lead?: string; // PREMIUM: recenica ispod naslova
   terms?: string[]; // PREMIUM: uslovi u podnozju
   stats?: { value: string; label: string; icon?: string }[]; // PREMIUM: kljucne brojke
-  /** PREMIUM: 2–4 usluge sa ikonom (npr. web / shop / app / ai). */
+  /** PREMIUM: 2–5 usluga sa ikonom (npr. web / shop / app / game / ai). */
   features?: { icon: string; label: string }[];
+  /** PREMIUM: domena u podnožju oglasa. */
+  site?: string;
   /** PREMIUM: tekst CTA dugmeta (npr. "Pišite nam u DM"). */
   cta?: string;
 };
@@ -85,7 +87,9 @@ export type AdPost = {
   terms?: string[];
   /** PREMIUM: 3–4 ključne brojke (npr. "0 KM" / "predujam"). */
   stats?: { value: string; label: string; icon?: string }[];
-  /** PREMIUM: 2–4 usluge sa ikonom. */
+  /** PREMIUM: domena u podnožju oglasa. */
+  site?: string;
+  /** PREMIUM: 2–5 usluga sa ikonom. */
   features?: { icon: string; label: string }[];
   /** PREMIUM: tekst CTA dugmeta. */
   cta?: string;

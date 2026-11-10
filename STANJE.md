@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (premium oglas redizajniran + Instagram @devlab.cc.cd)
+Zadnje ažurirano: 2026-11-10 (premium oglas v3 — 5 usluga, velike ikone, prodajni naslov)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,6 +12,23 @@ Zadnje ažurirano: 2026-11-10 (premium oglas redizajniran + Instagram @devlab.cc
 - Dev server: `npm run dev` → http://localhost:5173/
 
 ## Gotovo (ova sesija)
+- **PREMIUM OGLAS v3 — uvjerljivija verzija:**
+  - naslov prodaje: **"Vaša stranica gotova je za 5 dana. Plaćate tek kad je vidite."**
+    (zadnji red automatski u teal akcentu → oko hvata ponudu bez čitanja)
+  - kicker: "Prva verzija besplatno"
+  - lead: "Bez predujma, bez ugovora, bez rizika. Prvo vidite gotov rezultat — onda odlučujete."
+  - **5 usluga u jednom redu**: Web stranice / Web shopovi / Aplikacije / **2D igrice** / AI sistemi
+  - ikone **64px** (stvarno izmjereno 130×104px u 1080 slici), stroke skalira s veličinom
+  - dokazi konkretni: "5 dana — ne 5 sedmica" / "150 KM, shopovi od 600 KM" / "Kod 100% vaši"
+  - CTA: "Zatraži besplatnu verziju", footer `devlab.cc.cd · Sarajevo · cijela BiH`
+  - nova ikona `game` (gamepad) u PX_ICONS
+  - polje `site` dodano u PostSlide + AdPost
+- **Caption prepisan** (~1841 znakova): pozicioniranje, 5 usluga, šta je uključeno, 4 koraka,
+  zašto jeftinije, za koga, cijene, svi kontakti (web/mail/tel/IG)
+- **Popravljeno:** naveo `
+` u Pythonu → pravi prelom reda u TS stringu (unterminated literal);
+  vraćeno iz gita i urađeno preko `chr(92)`.
+- Provjereno: strokeWidth ikona 4.92 (debeo), 41 objava 0 polomljenih, 0 grešaka, tsc=0, build OK.
 - **Instagram promijenjen na `@devlab.cc.cd`** — 7 fajlova (`CONTACT`, posts2/3, MailSignaturePage,
   index.html, INSTAGRAM-PLAN). Provjereno: 0 ostataka `devlab_studio`.
 - **PREMIUM OGLAS POTPUNO REDIZAJNIRAN** (`premiumLayout` u postRender.ts) — cilj: čitljiv u 2 sekunde.

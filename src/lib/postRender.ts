@@ -65,6 +65,7 @@ const PX_ICONS: Record<string, string> = {
   layers: "M12 3 3 8l9 5 9-5-9-5ZM3 12l9 5 9-5M3 16l9 5 9-5",
   monitor: "M3 5h18v11H3V5Zm6 13h6M12 16v3",
   tools: "M14 6a4 4 0 0 1 6-1l-2 2-1-1-1 1-1-1-1 1V5a4 4 0 0 1 0 1ZM6 14l8-8 2 2-8 8-2-2Z",
+  game: "M7 8h10a5 5 0 0 1 5 5v1a4 4 0 0 1-7.2 2.4L14 15h-4l-.8 1.4A4 4 0 0 1 2 14v-1a5 5 0 0 1 5-5Zm-1 4v2M5 13h1M16 12.5h.01M18 14h.01",
 };
 
 /** Crta ikonu u 48×48 ćeliju; ikona unutra 28px, centrirana. */
@@ -73,11 +74,11 @@ function pxIcon(name: string, x: number, y: number, color: string, size = 30): s
   const ix = x + (box - size) / 2;
   const iy = y + (box - size) / 2;
   const d = PX_ICONS[name] ?? PX_ICONS.check;
+  // Debljina linije raste s velicinom ikone — na 40px bi 2px izgledalo slabo.
+  const sw = Math.max(2, size / 13);
   return `<g transform="translate(${ix},${iy})">
-    <rect x="-2" y="-2" width="${size + 4}" height="${size + 4}" rx="8" fill="none"
-      stroke="${color}" stroke-opacity="0.35" stroke-width="1.4"/>
-    <path d="${d}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round"
-      stroke-linejoin="round"/>
+    <path d="${d}" fill="none" stroke="${color}" stroke-width="${sw.toFixed(2)}"
+      stroke-linecap="round" stroke-linejoin="round"/>
   </g>`;
 }
 
@@ -609,68 +610,70 @@ function premiumBackdrop(ph: PhotoKey): string {
 //
 // Sve vrijednosti u `terms`/`stats` dolaze iz podataka objave, ne iz ove funkcije.
 function premiumLayout(c: Colors, p: PostSlide): string {
-  // ── PREMIUM OGLAS — plaćena reklama, ne informativni post ──────────────
+  // ── PREMIUM OGLAS — plaćena reklama ───────────────────────────────────
   //
-  // Cilj: gledalac u 2 sekunde shvati TRI stvari:
-  //   1. ŠTA nudimo       → 4 usluge u jednom redu, sa ikonama
-  //   2. ŠTA je posebno   → "bez predujma" kao jedina velika poruka
-  //   3. ŠTA dalje        → CTA pilula
+  // Pravilo: gledalac scrolla brzo. Ima ~2 sekunde. Zato svaki element mora
+  // nešto PRODATI, ne samo opisati:
+  //   1. naslov  → obećanje s rokom ("gotovo za 5 dana") + rizik nula
+  //   2. usluge  → sve što nudimo, u jednom redu, sa velikim ikonama
+  //   3. dokazi  → konkretni brojevi (cijena, revizije, vlasništvo koda)
+  //   4. CTA     → šta sad, jednom riječju
   //
-  // Zato je struktura namjerno plitka: nema trake brojki, nema grida 2x2,
-  // nema tri bloka teksta. Jedan naslov, četiri usluge, tri kratka dokaza.
-  // Sve ostalo bi se takmičilo za pažnju i reklama bi izgubila poantu.
+  // Namjerno BEZ trake brojki i bez grida — te dvije stvari su se prije
+  // takmičile s naslovom i oglas se čitao kao tabela, a ne kao ponuda.
 
   const M_L = 68;
   const left = M_L;
   const right = SIZE - M_L;
   const wCol = right - left;
 
-  const features = (p.features ?? []).slice(0, 4);
-  const stats = (p.stats ?? []).slice(0, 4);
+  const features = (p.features ?? []).slice(0, 5);
   const terms = (p.terms ?? []).slice(0, 3);
 
   let svg = "";
 
-  // 0) LOGOTIP gore lijevo — reklama se odmah predstavlja, nema skrivanja.
+  // 0) LOGOTIP gore lijevo — reklama se odmah predstavlja.
   svg += brandMark(left, M_L - 12, c.ink, c.accent).svg;
 
-  // 1) KICKER + naslov — blok gore, odmah pod logom.
-  let y = M_L + 96;
+  let y = M_L + 92;
 
+  // VISAK PROSTORA: u 3:4 formatu ispod sadrzaja ostane ~290px. Da oglas ne
+  // stoji zbijen gore, visak se dijeli na razmake izmedju sekcija (G).
+  // U 1:1 formatu G je 0 — tamo mjesta nema i sve mora biti kompaktno.
+  const G = Math.max(0, Math.min(110, (SIZE_H - 1160) * 0.28));
+
+  // 1) KICKER — sitna etiketa koja pozicionira ponudu.
   if (p.kicker) {
-    svg += `<text x="${left}" y="${y}" font-family="${FONT}" font-size="25" font-weight="900"
-      letter-spacing="4" fill="${c.accent}">${esc(p.kicker.toUpperCase())}</text>`;
-    y += 46;
+    svg += `<text x="${left}" y="${y}" font-family="${FONT}" font-size="24" font-weight="900"
+      letter-spacing="3.8" fill="${c.accent}">${esc(p.kicker.toUpperCase())}</text>`;
+    y += 44;
   }
 
-  // NASLOV — jedna misao, velika. Bez automatskog smanjivanja napamet:
-  // veličina se bira tako da stane u tri reda i da ostane najveći element.
+  // 2) NASLOV — najveći element. Veličina se traži, ne pogađa: ide od 84px
+  // naniže dok CIJELI naslov ne stane u 3 reda (bez tihe odsječe riječi).
   const title = p.title ?? "";
-  let ts = 78;
+  let ts = 88;
   let tl = wrap(title, ts, wCol, 3);
   const fitsAll = (ls: string[]) => ls.join(" ") === title.split(/\s+/).filter(Boolean).join(" ");
-  while (ts > 50 && (!fitsAll(tl) || tl.length > 3)) {
-    ts -= 4;
+  while (ts > 48 && (!fitsAll(tl) || tl.length > 3 || tl.length * ts * 1.04 > 292)) {
+    ts -= 3;
     tl = wrap(title, ts, wCol, 3);
   }
   const tlh = ts * 1.04;
   tl.forEach((l, i) => {
+    // Zadnji red u akcentu — oko hvata ponudu ("Bez predujma") i bez čitanja.
+    const isLast = i === tl.length - 1 && tl.length > 1;
     svg += `<text x="${left}" y="${y + ts * 0.8 + i * tlh}" font-family="${FONT}" font-size="${ts}"
-      font-weight="900" letter-spacing="${(-ts * 0.03).toFixed(1)}" fill="${c.ink}">${esc(l)}</text>`;
+      font-weight="900" letter-spacing="${(-ts * 0.03).toFixed(1)}"
+      fill="${isLast ? c.accent : c.ink}">${esc(l)}</text>`;
   });
   y += (tl.length - 1) * tlh + ts * 0.8;
 
-  // VISAK PROSTORA: u 3:4 formatu ispod sadrzaja ostane ~430px. Umjesto da
-  // sve stoji zbijeno gore, visak se dijeli na razmake izmedju sekcija.
-  // `G` je dodatni razmak koji se dodaje pod naslov, pod usluge i pod dokaze.
-  const G = Math.max(0, Math.min(96, (SIZE_H - 1180) * 0.30));
-
-  // 1b) LEAD — jedna rečenica koja objasnjava ponudu. Bez nje naslov
-  // "bez predujma" zvuci kao trik; s njom je jasno kako funkcionise.
+  // 3) LEAD — jedna rečenica koja objasnjava MEHANIZAM ponude.
   if (p.lead) {
-    y += 50 + G * 0.4;
-    const LEAD_FS = 30;
-    const LEAD_LH = 42;
+    y += 50 + G * 0.30;
+    const LEAD_FS = 29;
+    const LEAD_LH = 40;
     const ll = wrap(p.lead, LEAD_FS, wCol, 2);
     ll.forEach((l: string, i: number) => {
       svg += `<text x="${left}" y="${y + i * LEAD_LH}" font-family="${FONT}" font-size="${LEAD_FS}"
@@ -679,76 +682,68 @@ function premiumLayout(c: Colors, p: PostSlide): string {
     y += (ll.length - 1) * LEAD_LH + LEAD_FS * 0.5;
   }
 
-  // 2) USLUGE — JEDAN red, četiri stavke. Ikona + kratka riječ.
-  // Ovo je srce reklame: "šta nudimo". Horizontalno, da se skenira lijevo-desno
-  // jednim pokretom oka umjesto da se čita kao lista.
+  // 4) USLUGE — JEDAN red. Ikona je sada 40px (bila 28), bez okvira oko ikone:
+  // na tamnoj fotografiji ikona sama nosi težinu, okvir je samo šum.
   if (features.length) {
-    y += 54 + G * 0.5;
-    const gap = 20;
-    const chipW = (wCol - gap * (features.length - 1)) / features.length;
-    const chipH = 108;
+    y += 56 + G * 0.45;
+    const n = features.length;
+    const gap = 14;
+    const chipW = (wCol - gap * (n - 1)) / n;
+    const chipH = 158;
+    const IC = 64;
+
     features.forEach((f, i) => {
       const cx = left + i * (chipW + gap);
-      // Tamna pilula sa teal ikonom — čitljivo na fotografiji, ne bode oči.
-      svg += `<rect x="${cx}" y="${y}" width="${chipW}" height="${chipH}" rx="18"
-        fill="#ffffff" opacity="0.07"/>`;
-      svg += `<rect x="${cx}" y="${y}" width="${chipW}" height="${chipH}" rx="18"
-        fill="none" stroke="${c.accent}" stroke-opacity="0.28" stroke-width="1.5"/>`;
-      const icx = cx + chipW / 2 - (28 * 1.6) / 2;
-      svg += pxIcon(f.icon, icx, y + 18, c.accent, 28);
+      // Jedva vidljiva pilula — drži ikonu i label na okupu, ne bode oči.
+      svg += `<rect x="${cx}" y="${y}" width="${chipW}" height="${chipH}" rx="16"
+        fill="#ffffff" opacity="0.06"/>`;
+      svg += pxIcon(f.icon, cx + chipW / 2 - (IC * 1.6) / 2, y + 14, c.accent, IC);
       const lab = f.label;
-      let lfs = 22;
-      while (lfs > 14 && lab.length * lfs * 0.56 > chipW - 14) lfs -= 1;
-      svg += `<text x="${cx + chipW / 2}" y="${y + chipH - 22}" text-anchor="middle"
+      let lfs = 21;
+      while (lfs > 13 && lab.length * lfs * 0.55 > chipW - 8) lfs -= 1;
+      svg += `<text x="${cx + chipW / 2}" y="${y + chipH - 20}" text-anchor="middle"
         font-family="${FONT}" font-size="${lfs}" font-weight="800" fill="${c.ink}">${esc(lab)}</text>`;
     });
     y += chipH;
   }
 
-  // 3) DOKAZI — tri kratka reda, ikona + tekst. Ovo zamjenjuje veliku traku
-  // brojki: ista informacija, ali se čita kao rečenica a ne kao tabela.
+  // 5) DOKAZI — kvačica + konkretna tvrdnja. Ovo je dio koji ubjeđuje:
+  // apstraktne tvrdnje ("kvalitet") ne prodaju, brojevi prodaju.
   if (terms.length) {
-    y += 52 + G * 0.6;
+    y += 50 + G * 0.55;
     terms.forEach((t, i) => {
-      const ry = y + i * (44 + G * 0.16);
-      svg += pxIcon("check", left, ry - 22, c.accent, 22);
-      svg += `<text x="${left + 48}" y="${ry}" font-family="${FONT}" font-size="28"
+      const ry = y + i * (42 + G * 0.14);
+      svg += pxIcon("check", left - 2, ry - 26, c.accent, 27);
+      svg += `<text x="${left + 42}" y="${ry}" font-family="${FONT}" font-size="27"
         font-weight="700" fill="${c.ink}">${esc(t)}</text>`;
     });
-    y += (terms.length - 1) * (44 + G * 0.16);
+    y += (terms.length - 1) * (42 + G * 0.14);
   }
 
-  // 4) CTA — velika pilula, puna širina kolone. Najjači kontrast na slici.
-  // U 3:4 formatu ide pri dnu; u 1:1 odmah ispod sadržaja.
-  const ctaH = 88;
+  // 6) CTA — puna širina, najjači kontrast na slici.
+  // NIKAD preko sadržaja: donja granica je `y + 54`, a `SIZE_H - ...` je samo
+  // gornja granica kad ima mjesta (3:4). Ranije je Math.min povlačio dugme
+  // nagore i ono je prekrivalo dokaze.
+  const ctaH = 92;
+  const FOOT_RESERVE = 74;
   const ctaLabel = (p.cta ?? "Pišite nam u DM").toUpperCase();
-  // CTA nikad ne bježi predaleko od sadrzaja: u 3:4 formatu dno je daleko, ali
-  // 400px praznine izmedju teksta i dugmeta djeluje kao da nesto fali.
-  // Dozvoljeni razmak se ogranicava na 90px — ostatak ostaje prazan pod CTA.
-  // CTA nikad NE SMIJE preci preko sadrzaja: donja granica je `y + 66`, a
-  // `SIZE_H - M_L - ctaH` je samo gornja granica kad ima mjesta. Prije je
-  // Math.min povlacio dugme nagore i ono je prekrivalo listu dokaza.
-  // FOOT_RESERVE cuva mjesto za footer liniju pod CTA (u 1:1 formatu).
-  const FOOT_RESERVE = 78;
-  const ctaNear = y + 54 + G * 0.5;
-  // Donja granica: u 3:4 formatu CTA ide pri dno da ne ostane 400px praznine.
-  // U 1:1 formatu nema mjesta, pa ostaje odmah pod dokazima — ali nikad preko njih.
-  const ctaBottom = Math.min(SIZE_H - M_L - ctaH - FOOT_RESERVE, SIZE_H - ctaH - 96);
-  const ctaY = Math.max(ctaNear, ctaBottom - Math.max(0, (ctaBottom - ctaNear) * 0.0));
+  const ctaNear = y + 54;
+  // U 1:1 nema puno mjesta: CTA sjeda na dno ali s 74px rezerve za footer,
+  // pa ne dodiruje ivicu i footer ostaje u kadru.
+  const ctaBottom = Math.min(SIZE_H - M_L - ctaH - FOOT_RESERVE, SIZE_H - ctaH - 118);
+  const ctaY = Math.max(ctaNear, ctaBottom);
 
   svg += `<rect x="${left}" y="${ctaY}" width="${wCol}" height="${ctaH}" rx="${ctaH / 2}"
     fill="${c.accent}"/>`;
   svg += `<text x="${left + wCol / 2}" y="${ctaY + ctaH / 2 + 12}" text-anchor="middle"
-    font-family="${FONT}" font-size="34" font-weight="900" letter-spacing="1.4"
+    font-family="${FONT}" font-size="33" font-weight="900" letter-spacing="1.4"
     fill="${c.accentInk}">${esc(ctaLabel)}</text>`;
 
-  // 5) Kontakt ispod CTA — jedna linija, sitno.
-  if (stats.length) {
-    const site = "devlab.cc.cd";
-    svg += `<text x="${left + wCol / 2}" y="${ctaY + ctaH + 40}" text-anchor="middle"
-      font-family="${FONT}" font-size="24" font-weight="700" letter-spacing="0.6"
-      fill="${c.soft}">${esc(site.toUpperCase())}  ·  SARAJEVO  ·  CIJELA BIH</text>`;
-  }
+  // 7) FOOTER — domena. Reklama mora ostaviti trag gdje se javiti.
+  const site = (p.site ?? "devlab.cc.cd").toUpperCase();
+  svg += `<text x="${left + wCol / 2}" y="${ctaY + ctaH + 38}" text-anchor="middle"
+    font-family="${FONT}" font-size="23" font-weight="700" letter-spacing="0.6"
+    fill="${c.soft}">${esc(site)}  ·  SARAJEVO  ·  CIJELA BIH</text>`;
 
   return svg;
 }

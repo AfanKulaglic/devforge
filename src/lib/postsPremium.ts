@@ -23,9 +23,10 @@ export const POST_PREMIUM: AdPost = {
   palette: "dark",
   photo: "ai",
   eyebrow: "Premium ponuda",
-  kicker: "Dev Lab · Digitalna rješenja",
-  title: "Stranica gotova za 5 dana. Bez predujma.",
-  lead: "Prvo vidite gotov rezultat — platite tek ako ste zadovoljni.",
+  kicker: "Prva verzija besplatno",
+  title: "Vaša stranica gotova je za 5 dana. Plaćate tek kad je vidite.",
+  lead: "Bez predujma, bez ugovora, bez rizika. Prvo vidite gotov rezultat — onda odlučujete.",
+  site: "devlab.cc.cd",
   stats: [
     { value: "0 KM", label: "predujam", icon: "shield" },
     { value: "5 dana", label: "gotova verzija", icon: "clock" },
@@ -36,37 +37,66 @@ export const POST_PREMIUM: AdPost = {
     { icon: "web", label: "Web stranice" },
     { icon: "shop", label: "Web shopovi" },
     { icon: "app", label: "Aplikacije" },
+    { icon: "game", label: "2D igrice" },
     { icon: "ai", label: "AI sistemi" },
   ],
-  terms: ["Gotova verzija za 5 dana", "Kod i admin panel su vaši", "Web stranice od 150 KM"],
-  cta: "Pišite nam u DM",
+  terms: [
+    "Gotova verzija za 5 dana — ne za 5 sedmica",
+    "Web stranice od 150 KM, shopovi od 600 KM",
+    "Kod i admin panel ostaju 100% vaši",
+  ],
+  cta: "Zatraži besplatnu verziju",
   caption:
-    "💎 DEV LAB — vaša stranica, shop ili aplikacija. Bez predujma.\n\n" +
-    "Većina traži 30–50% unaprijed, pa tek onda pokaže nešto. Mi radimo obrnuto: prvo vidite gotov rezultat, pa odlučujete da li plaćate.\n\n" +
+    "💎 STRANICA GOTOVA ZA 5 DANA — BEZ PREDUJMA\n" +
+    "\n" +
+    "Većina traži 30–50% unaprijed, pa tek onda pokaže nešto. Mi radimo obrnuto: prvo napravimo gotovu verziju, vi je vidite, i plaćate tek ako ste zadovoljni.\n" +
+    "\n" +
+    "Zvuči previše dobro? Zato evo tačno šta dobijate i koliko košta.\n" +
+    "\n" +
     "ŠTA RADIMO\n" +
     "— 🌐 Web stranice — landing i korporativne, od 150 KM\n" +
     "— 🛒 Web shopovi — korpa, online plaćanje, admin panel, od 600 KM\n" +
     "— 📱 Mobilne aplikacije — iOS i Android, po dogovoru\n" +
+    "— 🎮 2D igrice — za web i mobilne, po dogovoru\n" +
     "— 🤖 AI sistemi — AI chat i recepcionar koji rade 24/7\n" +
-    "— ✨ Uz sve: UI/UX dizajn, logo, SEO, copywriting i hosting\n\n" +
-    "ŠTA JE UVIJEK UKLJUČENO (bez doplate)\n" +
-    "— ✅ UI/UX dizajn — profesionalan izgled od prvog dana\n" +
-    "— ✅ Mobilna verzija — radi besprijekorno na svakom ekranu\n" +
-    "— ✅ Admin panel — sami mijenjate tekst, slike i cijene\n" +
-    "— ✅ Brz i čist kod — optimizovan za učitavanje i Google\n" +
-    "— ✅ Dokumentacija — projekt je 100% vaš, znate šta imate\n\n" +
-    "KAKO IDE (bez rizika)\n" +
-    "1. Konsultacija — kažete čime se bavite, mi predložimo rješenje\n" +
-    "2. Besplatna gotova verzija — za 5 radnih dana, bez obaveze\n" +
-    "3. Vi kažete da ili ne. Ako ne — ne plaćate ništa.\n" +
-    "4. Razvoj, 4 besplatne revizije, isporuka i postavljanje domene\n\n" +
-    "ZAŠTO BEZ PREDUJMA\n" +
-    "Radimo bez kancelarije u centru i bez velikih režija — ta razlika ide u vašu cijenu. Nemamo šta izgubiti ako pokažemo rezultat: 20+ isporučenih projekata govori umjesto nas.\n\n" +
-    "CIJENE (javne, bez iznenađenja)\n" +
-    "Web stranica 150 KM · Web shop 600 KM · Aplikacije po dogovoru\n" +
-    "Domenu, email i SSL plaćate direktno provideru — bez naše marže.\n\n" +
-    "Sarajevo i cijela BiH.\n\n" +
-    "📩 Pišite nam u DM — odgovaramo u 10 minuta. Recite dvije rečenice o svom poslu i pošaljite prvu verziju za 5 dana.",
+    "\n" +
+    "ŠTA JE UKLJUČENO U CIJENU\n" +
+    "✅ Dizajn i kod — sve radimo mi, vi ne tražite nikoga\n" +
+    "✅ Admin panel — sami mijenjate tekst, slike i cijene, bez koda\n" +
+    "✅ 4 revizije dizajna — dok ne bude kako treba\n" +
+    "✅ Hosting i domena — podesimo za vas\n" +
+    "✅ Kod ostaje 100% vaš — nema zaključavanja kod nas\n" +
+    "\n" +
+    "KAKO FUNKCIONIŠE\n" +
+    "1️⃣ Javite se — DM, e-mail ili poziv. Recite čime se bavite.\n" +
+    "2️⃣ Za par sati dobijate plan i cijenu — bez sitnih slova.\n" +
+    "3️⃣ Za 5 dana gledate gotovu stranicu na svom linku.\n" +
+    "4️⃣ Ako vam se svidi — plaćate. Ako ne — ne plaćate ništa.\n" +
+    "\n" +
+    "ZAŠTO JE JEFTINIJE\n" +
+    "Radimo bez kancelarija, menadžera i prodajnih timova. Ne plaćate njihov najam — plaćate kod. Zato je do 60% jeftinije od agencija, uz iste provjerene tehnologije: React, WordPress, Shopify.\n" +
+    "\n" +
+    "ZA KOGA RADIMO\n" +
+    "— 🥇 Male firme koje još nemaju stranicu\n" +
+    "— 🥈 Firme koje imaju zastarjelu stranicu koja ne prodaje\n" +
+    "— 🥉 Oni koji su već platili agenciji i ostali bez rezultata\n" +
+    "\n" +
+    "CIJENE\n" +
+    "— Web stranice: od 150 KM\n" +
+    "— Web shopovi: od 600 KM\n" +
+    "— Aplikacije, igrice, AI: po dogovoru\n" +
+    "\n" +
+    "📩 Javite se u DM sa jednom rečenicom: čime se bavite.\n" +
+    "Odgovaramo u roku od 10 minuta, bez obaveze i bez predujma.\n" +
+    "\n" +
+    "🌐 devlab.cc.cd\n" +
+    "📧 kontakt@devlab.cc.cd\n" +
+    "📱 +387 62 576 456\n" +
+    "📸 @devlab.cc.cd\n" +
+    "\n" +
+    "—\n" +
+    "Dev Lab · Sarajevo · cijela BiH\n" +
+    "Web stranice · Shopovi · Aplikacije · Igrice · AI\n",
   tags: [
     "premium",
     "bezpredujma",
