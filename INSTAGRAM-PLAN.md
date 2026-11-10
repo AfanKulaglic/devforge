@@ -1,6 +1,6 @@
 # Dev Lab — Instagram plan objavljivanja
 
-> Praktičan plan za `@devforge_studio`. Cilj: **prvi klijenti kroz Instagram**,
+> Praktičan plan za `@devlab_studio`. Cilj: **prvi klijenti kroz Instagram**,
 > bez plaćanja reklama na početku. Sve je prilagođeno BiH tržištu i tvom
 > trenutnom stanju (7 projekata u portfoliju, cijene 150/600 KM, 0 KM predujma).
 
@@ -29,7 +29,7 @@ Ne „što više pratilaca". Nego:
 | Bio red 1 | Web stranice, shopovi, aplikacije |
 | Bio red 2 | Od 150 KM · gotovo za 5 dana |
 | Bio red 3 | 0 KM predujma — plaćate kad ste zadovoljni |
-| Link | `dev-forge-studio.vercel.app` |
+| Link | `devlab.cc.cd` |
 | CTA dugme | Pošalji poruku (ne „Kontakt") |
 
 **Ime profila je najvažniji SEO na Instagramu** — ljudi pretražuju „izrada sajta sarajevo", ne „Dev Lab".

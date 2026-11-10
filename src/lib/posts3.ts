@@ -199,7 +199,7 @@ export const POSTS_3: AdPost[] = [
     title: "Recite čime se bavite. Prva verzija je besplatna.",
     subtitle: "Stranice od 150 KM · Shopovi od 600 KM · 0 KM predujma",
     caption:
-      "🚀 Recite čime se bavite. To je dovoljno.\n\nStranice, mobilne aplikacije i igre koje pokreću Vaš biznis.\n\nOd ideje do gotovog proizvoda za nekoliko sedmica. Izrađujemo besplatnu gotovu verziju za 5 dana — plaćate tek kada budete zadovoljni.\n\nŠta dobijate:\n— ✅ besplatnu gotovu verziju za 5 dana\n— 🔥 0 KM predujma\n— 💡 fiksnu cijenu prije početka\n— ⚡ četiri besplatne revizije\n— 🎯 vlastiti admin panel\n— 💰 domenu i kod na Vaše ime\n\nJavite nam se u DM — odgovaramo u roku od 10 minuta.\n\ndev-forge-studio.vercel.app",
+      "🚀 Recite čime se bavite. To je dovoljno.\n\nStranice, mobilne aplikacije i igre koje pokreću Vaš biznis.\n\nOd ideje do gotovog proizvoda za nekoliko sedmica. Izrađujemo besplatnu gotovu verziju za 5 dana — plaćate tek kada budete zadovoljni.\n\nŠta dobijate:\n— ✅ besplatnu gotovu verziju za 5 dana\n— 🔥 0 KM predujma\n— 💡 fiksnu cijenu prije početka\n— ⚡ četiri besplatne revizije\n— 🎯 vlastiti admin panel\n— 💰 domenu i kod na Vaše ime\n\nJavite nam se u DM — odgovaramo u roku od 10 minuta.\n\ndevlab.cc.cd",
     tags: ["kontakt", "pocetak", "webdizajn", "sarajevo", "devlab"],
   },
 
@@ -321,10 +321,10 @@ export const POSTS_3: AdPost[] = [
     photo: "heroMob",
     palette: "ink",
     eyebrow: "Kontakt",
-    title: "Sve na jednom mjestu: dev-forge-studio.vercel.app",
+    title: "Sve na jednom mjestu: devlab.cc.cd",
     subtitle: "Usluge, cijene, projekti i česta pitanja — bez zvanja.",
     caption:
-      "🌐 Sve je javno. Ne morate nikoga zvati.\n\nAko ne volite razgovarati prije nego što vidite brojeve — sve je javno na sajtu.\n\nŠta tamo nađete:\n— ✅ usluge detaljno (web, igrice, aplikacije, AI)\n— 🔥 cijene: web od 150 KM, shopovi od 600 KM\n— 💡 projekti koje smo radili\n— ⚡ česta pitanja s odgovorima\n— 🎯 način rada, korak po korak\n\nNe morate nikoga zvati da saznate cijenu.\n\ndev-forge-studio.vercel.app\n\nAko i poslije toga imate pitanje — javite se u DM.",
+      "🌐 Sve je javno. Ne morate nikoga zvati.\n\nAko ne volite razgovarati prije nego što vidite brojeve — sve je javno na sajtu.\n\nŠta tamo nađete:\n— ✅ usluge detaljno (web, igrice, aplikacije, AI)\n— 🔥 cijene: web od 150 KM, shopovi od 600 KM\n— 💡 projekti koje smo radili\n— ⚡ česta pitanja s odgovorima\n— 🎯 način rada, korak po korak\n\nNe morate nikoga zvati da saznate cijenu.\n\ndevlab.cc.cd\n\nAko i poslije toga imate pitanje — javite se u DM.",
     tags: ["kontakt", "sajt", "cijene", "usluge", "devlab"],
   },
 
@@ -355,7 +355,7 @@ export const POSTS_3: AdPost[] = [
     title: "Ne morate imati ni ideju.",
     subtitle: "Dovoljno je da se javite i kažete čime se bavite.",
     caption:
-      "👋 Ne morate imati ni ideju, samo se javite.\n\nVećina razgovora počne ovako: „Radim to i to, ne znam šta mi treba.“\n\nTo je sasvim dovoljno.\n\nNe morate imati:\n— ✅ gotov tekst\n— 🔥 logo\n— 💡 ideju kako stranica treba izgledati\n— ⚡ budžet na papiru\n\nMi pitamo dalje i kažemo šta ima smisla.\n\nInstagram DM: @devforge_studio\nE-mail: devforge.studio@gmail.com\nSarajevo · cijela BiH\n\nOdgovaramo u roku od 10 minuta. Bez obaveze i bez predujma.",
+      "👋 Ne morate imati ni ideju, samo se javite.\n\nVećina razgovora počne ovako: „Radim to i to, ne znam šta mi treba.“\n\nTo je sasvim dovoljno.\n\nNe morate imati:\n— ✅ gotov tekst\n— 🔥 logo\n— 💡 ideju kako stranica treba izgledati\n— ⚡ budžet na papiru\n\nMi pitamo dalje i kažemo šta ima smisla.\n\nInstagram DM: @devlab_studio\nE-mail: kontakt@devlab.cc.cd\nSarajevo · cijela BiH\n\nOdgovaramo u roku od 10 minuta. Bez obaveze i bez predujma.",
     tags: ["kontakt", "pocetak", "bezobaveze", "sarajevo", "devlab"],
   },
 ];

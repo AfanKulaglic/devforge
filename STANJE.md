@@ -5,8 +5,8 @@ Zadnje ažurirano: 2026-11-10 (mail slanje sa /mail kroz Brevo — RADI)
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
 - Brend: **Dev Lab** (wordmark **DevLab**), teal `#4DEAE0`. Valuta KM.
-- Produkcija: `https://dev-forge-studio.vercel.app` (zaštićeni identifikator — ne mijenjati).
-- Kontakt: `devforge.studio@gmail.com`, `@devforge_studio`, `+387 62 576 456`.
+- Produkcija: `https://devlab.cc.cd` (zaštićeni identifikator — ne mijenjati).
+- Kontakt: `kontakt@devlab.cc.cd`, `@devlab_studio`, `+387 62 576 456`.
 - Admin: `/admin`, login `afan` / `080513` (sessionStorage `devforge-admin-session`).
 - localStorage ključevi ostaju `devforge-*` (ne mijenjati zbog kompatibilnosti).
 - Dev server: `npm run dev` → http://localhost:5173/
@@ -77,7 +77,7 @@ Zadnje ažurirano: 2026-11-10 (mail slanje sa /mail kroz Brevo — RADI)
   - Objave: `LOGO_FONT = 22 * K` = 46.2px (bilo 42px)
   - Reklama: `.ad-wm-xl 7.2cqh`, `.ad-wm-lg 6.0cqh`
 - **Verifikacija:** `npx tsc --noEmit` → 0; `npm run build` → OK (1.778 kB, gzip 799 kB); Playwright: navbar ikona 70.0%, wordmark 22px, odnos 1.273; `/logo` desktop 70.0% / 108.9px / 1.273, mobilni 70.0% / 47.19px / 1.272; `/reklama` 70.0% / 64.8px / 1.278, end card se uklapa (kartice do 755px, okvir do 950px); 0 grešaka.
-- **Ispravljena naracija reklame:** „devlab corporation“ → „dev-forge-studio“ (prava domena `dev-forge-studio.vercel.app`).
+- **Ispravljena naracija reklame:** „devlab corporation“ → „dev lab tačka c c tačka c d“ (prava domena `devlab.cc.cd`).
 
 ## Poznato / sljedeće
 - **Commit/push:** 24+ izmijenjenih fajlova još nije commitano; zadnji commit `c478916`. Pitati korisnika za commit/push.

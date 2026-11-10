@@ -1,5 +1,5 @@
 # robots.txt — Dev Lab
-# https://dev-forge-studio.vercel.app
+# https://devlab.cc.cd
 
 User-agent: *
 Allow: /
@@ -45,5 +45,5 @@ Allow: /
 User-agent: archive.org_bot
 Allow: /
 
-Sitemap: https://dev-forge-studio.vercel.app/sitemap.xml
-Host: dev-forge-studio.vercel.app
+Sitemap: https://devlab.cc.cd/sitemap.xml
+Host: devlab.cc.cd
