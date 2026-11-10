@@ -777,8 +777,11 @@ function premiumLayout(c: Colors, p: PostSlide): string {
 
   const ctaLabel = (p.cta ?? "Pišite nam u DM").toUpperCase();
   const siteLabel = (p.site ?? "devlab.cc.cd");
-  const ctaW = Math.round(wCol * 0.60);
-  const siteW = wCol - ctaW - BTN_GAP;
+  // Oba dugmeta iste sirine — simetricno, bez "glavno/sporedno" po sirini.
+  // Hierarhija se drzi BOJOM (puni teal vs outline), ne velicinom.
+  const halfW = Math.floor((wCol - BTN_GAP) / 2);
+  const ctaW = halfW;
+  const siteW = halfW;
 
   const btnNear = y + 46;
   const btnBottom = SIZE_H - reserveBottom - btnH;
@@ -787,8 +790,8 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   // Primarno dugme — puni teal, najjaci kontrast na slici.
   svg += `<rect x="${left}" y="${btnY}" width="${ctaW}" height="${btnH}" rx="${btnH / 2}"
     fill="${c.accent}"/>`;
-  let cfs = 30;
-  while (cfs > 18 && ctaLabel.length * cfs * 0.56 > ctaW - 40) cfs -= 1;
+  let cfs = 26;
+  while (cfs > 15 && ctaLabel.length * cfs * 0.56 > ctaW - 56) cfs -= 1;
   svg += `<text x="${left + ctaW / 2}" y="${btnY + btnH / 2 + 10}" text-anchor="middle"
     font-family="${FONT}" font-size="${cfs}" font-weight="900" letter-spacing="0.8"
     fill="${c.accentInk}">${esc(ctaLabel)}</text>`;
@@ -797,9 +800,22 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   const sx = left + ctaW + BTN_GAP;
   svg += `<rect x="${sx}" y="${btnY}" width="${siteW}" height="${btnH}" rx="${btnH / 2}"
     fill="none" stroke="${c.accent}" stroke-opacity="0.55" stroke-width="2.5"/>`;
-  let sfs = 27;
-  while (sfs > 14 && siteLabel.length * sfs * 0.56 > siteW - 28) sfs -= 1;
-  svg += `<text x="${sx + siteW / 2}" y="${btnY + btnH / 2 + 9}" text-anchor="middle"
+
+  // KURZOR (ruka sa prstom) uz domen — vizuelni signal "ovo se klika".
+  // Bez njega outline dugme izgleda kao obicna etiketa, ne kao link.
+  const CUR = 20;
+  const curGap = 12;
+  // Isti font kao lijevo dugme — dva dugmeta iste sirine moraju imati i istu
+  // tipografsku tezinu, inace djeluju kao da nisu iz istog sistema.
+  let sfs = cfs;
+  while (sfs > 13 && (siteLabel.length * sfs * 0.56 + CUR + curGap) > siteW - 26) sfs -= 1;
+  const inner = siteLabel.length * sfs * 0.56 + CUR + curGap;
+  const startX = sx + (siteW - inner) / 2;
+  svg += `<g transform="translate(${startX - 2},${btnY + btnH / 2 - CUR / 2}) scale(${(CUR / 24).toFixed(3)})">
+    <path d="M5 3l14 7-6 1.6L10 18 5 3Z" fill="${c.accent}" stroke="${c.accent}"
+      stroke-width="1.6" stroke-linejoin="round"/>
+  </g>`;
+  svg += `<text x="${startX + CUR + curGap}" y="${btnY + btnH / 2 + 8}" text-anchor="start"
     font-family="${FONT}" font-size="${sfs}" font-weight="800" letter-spacing="0.2"
     fill="${c.accent}">${esc(siteLabel)}</text>`;
 

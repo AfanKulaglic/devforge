@@ -45,7 +45,7 @@ export const POST_PREMIUM: AdPost = {
     "Web stranice od 150 KM, shopovi od 600 KM",
     "Kod i admin panel ostaju 100% vaši",
   ],
-  cta: "Zatraži besplatnu verziju",
+  cta: "Javite se u DM ili na sajtu",
   caption:
     "💎 STRANICA GOTOVA ZA 5 DANA — BEZ PREDUJMA\n" +
     "\n" +

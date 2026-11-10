@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (premium oglas v9 — stil + dva dugmeta)
+Zadnje ažurirano: 2026-11-10 (premium oglas v10 — jednaka dugmad + kursor)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,6 +12,15 @@ Zadnje ažurirano: 2026-11-10 (premium oglas v9 — stil + dva dugmeta)
 - Dev server: `npm run dev` → http://localhost:5173/
 
 ## Gotovo (ova sesija)
+- **DUGMAD ISTE ŠIRINE:** `halfW = (wCol - 16) / 2` → oba 464px. Hijerarhija se drži
+  BOJOM (puni teal vs outline), ne veličinom.
+- **KURSOR IKONA** u domen dugmetu (strelica pokazivač, 20px, ispred teksta) —
+  bez nje outline dugme izgleda kao etiketa, ne kao link.
+- **CTA TEKST:** "Zatraži besplatnu verziju" → **"Javite se u DM ili na sajtu"**.
+- **Font izjednačen:** oba 26px (`sfs = cfs`, ne fiksno 25) — dva dugmeta iste
+  širine moraju imati istu tipografsku težinu.
+- Provjereno: 41 objava 0 van viewBoxa, 0 gresaka, tsc=0, build OK,
+  vision 1:1 i 3:4 (dugmad 464px/466px, kursor vidljiv, luft do dna).
 - **STIL — vertikalna akcenat-linija uz naslov:** teal bar 7px, visok kao blok naslova,
   naslov uvučen 26px od linije. Daje "urednicki" izgled i sidro za oko.
   Lead i dokazi poravnati na isti `TITLE_INDENT` (33px).
