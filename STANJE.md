@@ -20,15 +20,15 @@ Prije: svaki razmak je bio fiksan (+56, +50, +46) pa je u 3:4 formatu
 izmedju dokaza i dugmadi ostajalo ~290px praznog. Izmjereno: 627px
 praznog od 1440 = 43%.
 
-Rjesenje u  (postRender.ts):
+Rjesenje u premiumLayout (postRender.ts):
 - **Proracun razmaka prije crtanja** — visina svake sekcije se izmjeri
   (naslov tlh, lead wrap, chipH, terms), pa se visak dijeli na 4 spoja
   (naslov→lead, lead→usluge, usluge→dokazi, dokazi→dugmad).
-- **Dugmad** vise ne idu na  (zakucavanje na
-  dno kraja) nego  — prate raspored, dno je samo granica.
+- **Dugmad** vise ne idu na Math.max(btnNear, btnBottom) (zakucavanje na
+  dno kadra) nego Math.min — prate raspored, dno je samo granica.
 - Faktori se ponderise: kartice blize leadu, najvise zraka iznad dugmadi.
 
-Mjer eno u 3:4 (bilo → sad): lead→chip 196→91, chip→terms 167→102,
+Izmjereno u 3:4 (bilo → sad): lead→chip 196→91, chip→terms 167→102,
 terms→btn 39→144 px. Raspon izmedju spojeva: 53px (bilo 122).
 
 1:1 format ostao nepromijenjen (surplus=0, 0 van kadra).
