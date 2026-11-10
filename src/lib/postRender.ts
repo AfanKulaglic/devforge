@@ -829,23 +829,27 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   svg += `<rect x="${sx}" y="${btnY}" width="${siteW}" height="${btnH}"
     fill="none" stroke="${c.accent}" stroke-opacity="0.55" stroke-width="2.5"/>`;
 
-  // KURZOR (ruka sa prstom) uz domen — vizuelni signal "ovo se klika".
-  // Bez njega outline dugme izgleda kao obicna etiketa, ne kao link.
-  const CUR = 20;
-  const curGap = 12;
+  // KURZOR (strelica) IZA domene — signal "ovo se klika".
+  // Oblik je standardna pokazivacka strelica (kao OS kursor), ne ruka:
+  // ruka na ovoj velicini izgleda kao mrlja. Boja = boja teksta dugmeta.
+  const CUR = 19;
+  const curGap = 11;
   // Isti font kao lijevo dugme — dva dugmeta iste sirine moraju imati i istu
   // tipografsku tezinu, inace djeluju kao da nisu iz istog sistema.
   let sfs = cfs;
-  while (sfs > 13 && (siteLabel.length * sfs * 0.56 + CUR + curGap) > siteW - 26) sfs -= 1;
-  const inner = siteLabel.length * sfs * 0.56 + CUR + curGap;
+  while (sfs > 13 && (siteLabel.length * sfs * 0.62 + CUR + curGap) > siteW - 30) sfs -= 1;
+  const inner = siteLabel.length * sfs * 0.62 + CUR + curGap;
   const startX = sx + (siteW - inner) / 2;
-  svg += `<g transform="translate(${startX - 2},${btnY + btnH / 2 - CUR / 2}) scale(${(CUR / 24).toFixed(3)})">
-    <path d="M5 3l14 7-6 1.6L10 18 5 3Z" fill="${c.accent}" stroke="${c.accent}"
-      stroke-width="1.6" stroke-linejoin="round"/>
-  </g>`;
-  svg += `<text x="${startX + CUR + curGap}" y="${btnY + btnH / 2 + 8}" text-anchor="start"
+  const midY = btnY + btnH / 2;
+  svg += `<text x="${startX}" y="${midY + 8}" text-anchor="start"
     font-family="${FONT}" font-size="${sfs}" font-weight="800" letter-spacing="0.2"
     fill="${c.accent}">${esc(siteLabel)}</text>`;
+  // Strelica: tijelo 0..24, vrh gore-lijevo, "rep" ide dole-desno (klasican kursor).
+  const curX = startX + siteLabel.length * sfs * 0.62 + curGap;
+  svg += `<g transform="translate(${curX.toFixed(1)},${(midY - CUR / 2).toFixed(1)}) scale(${(CUR / 24).toFixed(3)})">
+    <path d="M4 2 L4 19.4 L8.6 15.1 L11.5 21.6 L14.6 20.2 L11.7 13.8 L18 13.4 Z"
+      fill="${c.accent}" stroke="${c.accent}" stroke-width="1.4" stroke-linejoin="round"/>
+  </g>`;
 
   return svg;
 }

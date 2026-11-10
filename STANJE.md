@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (premium oglas v19 — dugme "Javite nam se na Instagramu")
+Zadnje ažurirano: 2026-11-10 (premium oglas v20 — kursor iza domene)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -28,6 +28,10 @@ Zadnje ažurirano: 2026-11-10 (premium oglas v19 — dugme "Javite nam se na Ins
 - Lead: "Prvo vidite gotov rezultat pa platite. Ne svidi li se, ne plaćate ništa i nemate
   nikakvu obavezu."
 - Provjereno: 41 objava 0 polomljenih, 0 console grešaka, tsc=0, build OK.
+
+- **KURSOR na 2. dugmetu:** premješten IZA domene (bio ispred), oblik promijenjen
+  iz ruke u **standardnu strelicu** (ruka na 19px izgleda kao mrlja), boja = accent.
+  Centriranje grupe tekst+kursor: luft 102px lijevo / 111px desno.
 
 ## Sljedeći korak
 - Pogledati `/objave` i potvrditi da dugmad izgledaju kako treba.
