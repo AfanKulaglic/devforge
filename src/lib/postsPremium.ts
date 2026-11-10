@@ -24,8 +24,8 @@ export const POST_PREMIUM: AdPost = {
   photo: "ai",
   eyebrow: "Premium ponuda",
   kicker: "Ideja danas — stranica za 5 dana",
-  title: "Stranica, shop, aplikacija ili igrica. Gotovo za 5 dana.",
-  lead: "Plaćate tek kad vidite gotov rezultat — bez predujma, bez ugovora, bez rizika.",
+  title: "Vaš biznis online. Za 5 dana. Bez predujma.",
+  lead: "Prvo vidite gotov rezultat pa platite. Bez ugovora, bez skrivenih troškova.",
   site: "devlab.cc.cd",
   stats: [
     { value: "0 KM", label: "predujam", icon: "shield" },
