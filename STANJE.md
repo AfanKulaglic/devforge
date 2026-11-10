@@ -15,7 +15,7 @@ Zadnje ažurirano: 2026-11-10 (40 objava: novi naslovi + domena u uglu)
 ### 1. Domena u donjem lijevom uglu — na SVIH 41 objavi
 Prije je tu stajala kategorija ("PONUDA", "BREND") koja nista ne govori
 covjeku koji gleda sliku. Sada stoji **www.devlab.cc.cd** u teal boji +
-mala bijela strelica (17px), a kategorija je premjestena desno u istom redu,
+bez ikakvih dodataka, a kategorija je premjestena desno u istom redu,
 blijeda (opacity 0.55) da ne konkurira.
 
 Nova funkcija domainLine(c, category) u postRender.ts (~270).
@@ -39,7 +39,7 @@ Itemi su konkretizovani: "Stranice od 150 KM" → "Web stranica — od 150 KM",
 
 ### Verifikacija
 - 41 objava, **0 tekstova van kadra**, 0 console grešaka, tsc=0, build OK (1.820 kB).
-- Domena prisutna na **41/41** objavi.
+- Domena prisutna na **41/41** objavi, bez strelice (strelica ostala samo na premium oglasu).
 ## Sljedeći korak
 - Pregledati  — svi postovi imaju domenu u uglu i novi tekst.
 - Ako neki naslov ne odgovara, to je jedan red u .
