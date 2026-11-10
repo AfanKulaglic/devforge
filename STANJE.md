@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (premium oglas v20 — kursor iza domene)
+Zadnje ažurirano: 2026-11-10 (premium oglas v21 — bijeli vecí kursor)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -29,9 +29,9 @@ Zadnje ažurirano: 2026-11-10 (premium oglas v20 — kursor iza domene)
   nikakvu obavezu."
 - Provjereno: 41 objava 0 polomljenih, 0 console grešaka, tsc=0, build OK.
 
-- **KURSOR na 2. dugmetu:** premješten IZA domene (bio ispred), oblik promijenjen
-  iz ruke u **standardnu strelicu** (ruka na 19px izgleda kao mrlja), boja = accent.
-  Centriranje grupe tekst+kursor: luft 102px lijevo / 111px desno.
+- **KURSOR na 2. dugmetu:** IZA domene, **BIJELI** (fill=ink, prije teal — stapa se
+  s teal pozadinom), veličina CUR=34 → stvarno **22×29px** (visina ~= visina teksta).
+  Centrirano: luft 95px lijevo / 104px desno.
 
 ## Sljedeći korak
 - Pogledati `/objave` i potvrditi da dugmad izgledaju kako treba.

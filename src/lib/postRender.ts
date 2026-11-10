@@ -829,26 +829,30 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   svg += `<rect x="${sx}" y="${btnY}" width="${siteW}" height="${btnH}"
     fill="none" stroke="${c.accent}" stroke-opacity="0.55" stroke-width="2.5"/>`;
 
-  // KURZOR (strelica) IZA domene — signal "ovo se klika".
-  // Oblik je standardna pokazivacka strelica (kao OS kursor), ne ruka:
-  // ruka na ovoj velicini izgleda kao mrlja. Boja = boja teksta dugmeta.
-  const CUR = 19;
-  const curGap = 11;
+  // KURSOR (strelica) IZA domene — signal "ovo se klika".
+  // Oblik je standardna pokazivacka strelica (kao OS kursor), ne ruka.
+  // BIJELI fill + accent stroke: na teal pozadini dugmeta bijelo je jedino
+  // sto se jasno odvaja (teal na tealu se stapa).
+  // Putanja zauzima ~15x20 od 0..24 boxa, pa je stvarna visina ~0.83*CUR.
+  // CUR=34 daje kursor ~28px visok — jasno vidljiv pored teksta od 25px.
+  const CUR = 34;
+  const curGap = 9;
   // Isti font kao lijevo dugme — dva dugmeta iste sirine moraju imati i istu
   // tipografsku tezinu, inace djeluju kao da nisu iz istog sistema.
   let sfs = cfs;
-  while (sfs > 13 && (siteLabel.length * sfs * 0.62 + CUR + curGap) > siteW - 30) sfs -= 1;
+  while (sfs > 13 && (siteLabel.length * sfs * 0.62 + CUR + curGap) > siteW - 26) sfs -= 1;
   const inner = siteLabel.length * sfs * 0.62 + CUR + curGap;
   const startX = sx + (siteW - inner) / 2;
   const midY = btnY + btnH / 2;
   svg += `<text x="${startX}" y="${midY + 8}" text-anchor="start"
     font-family="${FONT}" font-size="${sfs}" font-weight="800" letter-spacing="0.2"
     fill="${c.accent}">${esc(siteLabel)}</text>`;
-  // Strelica: tijelo 0..24, vrh gore-lijevo, "rep" ide dole-desno (klasican kursor).
+  // Strelica u 0..24 koordinatama; stroke u jedinicama lokalnog sistema pa je
+  // debljina konstantna bez obzira na `scale`.
   const curX = startX + siteLabel.length * sfs * 0.62 + curGap;
-  svg += `<g transform="translate(${curX.toFixed(1)},${(midY - CUR / 2).toFixed(1)}) scale(${(CUR / 24).toFixed(3)})">
-    <path d="M4 2 L4 19.4 L8.6 15.1 L11.5 21.6 L14.6 20.2 L11.7 13.8 L18 13.4 Z"
-      fill="${c.accent}" stroke="${c.accent}" stroke-width="1.4" stroke-linejoin="round"/>
+  svg += `<g transform="translate(${curX.toFixed(1)},${(midY - CUR / 2).toFixed(1)}) scale(${(CUR / 24).toFixed(4)})">
+    <path d="M3.6 1.6 L3.6 19.6 L8.7 14.8 L11.7 21.8 L15.2 20.3 L12.2 13.4 L18.8 13 Z"
+      fill="${c.ink}" stroke="${c.ink}" stroke-width="1.1" stroke-linejoin="round"/>
   </g>`;
 
   return svg;
