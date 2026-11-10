@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (premium oglas v10 — jednaka dugmad + kursor)
+Zadnje ažurirano: 2026-11-10 (premium oglas v11 — admin panel objašnjen, bez 'kod')
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,6 +12,17 @@ Zadnje ažurirano: 2026-11-10 (premium oglas v10 — jednaka dugmad + kursor)
 - Dev server: `npm run dev` → http://localhost:5173/
 
 ## Gotovo (ova sesija)
+- **OŠTRI UGLOVI na dugmadima** (rx uklonjen) — sajt koristi `rounded-none` na CTA dugmadima
+  (`App.tsx` 1323/1325/1327), pa pilula u oglasu nije pripadala brendu. Kartice usluga ostaju
+  zaobljene (`rounded-xl`/`2xl` na sajtu).
+- **ADMIN PANEL OBJAŠNJEN, RIJEČ "kod" UKLONJENA (0 pojava):**
+  - oglas: "Admin panel: sami mijenjate tekst i cijene"
+  - caption: "Admin panel — vaša kontrolna tabla. Otvorite je kao običnu stranicu u browseru i tu sami
+    mijenjate tekst, slike, cijene i proizvode. Bez čekanja na programera."
+  - "Dizajn i kod" → "Dizajn i izrada"
+  - "Kod ostaje 100% vaš" → "Sve ostaje vaše — stranica, domena i pristupi na vaše ime"
+  - "plaćate kod" → "plaćate samo izradu"; tehnologije (React/WordPress/Shopify) uklonjene
+- Provjereno: 41 objava 0 van viewBoxa, 0 gresaka, tsc=0, build OK, vision 1:1 i 3:4.
 - **DUGMAD ISTE ŠIRINE:** `halfW = (wCol - 16) / 2` → oba 464px. Hijerarhija se drži
   BOJOM (puni teal vs outline), ne veličinom.
 - **KURSOR IKONA** u domen dugmetu (strelica pokazivač, 20px, ispred teksta) —

@@ -43,7 +43,7 @@ export const POST_PREMIUM: AdPost = {
   terms: [
     "Gotova verzija za 5 dana — ne za 5 sedmica",
     "Web stranice od 150 KM, shopovi od 600 KM",
-    "Kod i admin panel ostaju 100% vaši",
+    "Admin panel: sami mijenjate tekst i cijene",
   ],
   cta: "Javite se u DM ili na sajtu",
   caption:
@@ -55,17 +55,17 @@ export const POST_PREMIUM: AdPost = {
     "\n" +
     "ŠTA RADIMO\n" +
     "— 🌐 Web stranice — landing i korporativne, od 150 KM\n" +
-    "— 🛒 Web shopovi — korpa, online plaćanje, admin panel, od 600 KM\n" +
+    "— 🛒 Web shopovi — korpa, online plaćanje i tabla za upravljanje proizvodima, od 600 KM\n" +
     "— 📱 Mobilne aplikacije — iOS i Android, po dogovoru\n" +
     "— 🎮 2D igrice — za web i mobilne, po dogovoru\n" +
     "— 🤖 AI sistemi — AI chat i recepcionar koji rade 24/7\n" +
     "\n" +
     "ŠTA JE UKLJUČENO U CIJENU\n" +
-    "✅ Dizajn i kod — sve radimo mi, vi ne tražite nikoga\n" +
-    "✅ Admin panel — sami mijenjate tekst, slike i cijene, bez koda\n" +
+    "✅ Dizajn i izrada — sve radimo mi, vi ne tražite nikoga\n" +
+    "✅ Admin panel — vaša kontrolna tabla. Otvorite je kao običnu stranicu u browseru i tu sami mijenjate tekst, slike, cijene i proizvode. Bez čekanja na programera.\n" +
     "✅ 4 revizije dizajna — dok ne bude kako treba\n" +
     "✅ Hosting i domena — podesimo za vas\n" +
-    "✅ Kod ostaje 100% vaš — nema zaključavanja kod nas\n" +
+    "✅ Sve ostaje vaše — stranica, domena i pristupi na vaše ime\n" +
     "\n" +
     "KAKO FUNKCIONIŠE\n" +
     "1️⃣ Javite se — DM, e-mail ili poziv. Recite čime se bavite.\n" +
@@ -74,7 +74,7 @@ export const POST_PREMIUM: AdPost = {
     "4️⃣ Ako vam se svidi — plaćate. Ako ne — ne plaćate ništa.\n" +
     "\n" +
     "ZAŠTO JE JEFTINIJE\n" +
-    "Radimo bez kancelarija, menadžera i prodajnih timova. Ne plaćate njihov najam — plaćate kod. Zato je do 60% jeftinije od agencija, uz iste provjerene tehnologije: React, WordPress, Shopify.\n" +
+    "Radimo bez kancelarija, menadžera i prodajnih timova. Ne plaćate njihov najam ni sastanke — plaćate samo izradu. Zato je do 60% jeftinije od agencija, uz isti kvalitet.\n" +
     "\n" +
     "ZA KOGA RADIMO\n" +
     "— 🥇 Male firme koje još nemaju stranicu\n" +

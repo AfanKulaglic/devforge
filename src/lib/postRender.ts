@@ -788,7 +788,9 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   const btnY = Math.max(btnNear, btnBottom);
 
   // Primarno dugme — puni teal, najjaci kontrast na slici.
-  svg += `<rect x="${left}" y="${btnY}" width="${ctaW}" height="${btnH}" rx="${btnH / 2}"
+  // OSTRI UGLOVI (rx=0): cijeli sajt koristi `rounded-none` na dugmadima
+  // (vidi App.tsx), pa bi pilula u oglasu izgledala iz drugog brenda.
+  svg += `<rect x="${left}" y="${btnY}" width="${ctaW}" height="${btnH}"
     fill="${c.accent}"/>`;
   let cfs = 26;
   while (cfs > 15 && ctaLabel.length * cfs * 0.56 > ctaW - 56) cfs -= 1;
@@ -798,7 +800,7 @@ function premiumLayout(c: Colors, p: PostSlide): string {
 
   // Sekundarno dugme — outline, domena. Nema tacke/tačkica: samo ime sajta.
   const sx = left + ctaW + BTN_GAP;
-  svg += `<rect x="${sx}" y="${btnY}" width="${siteW}" height="${btnH}" rx="${btnH / 2}"
+  svg += `<rect x="${sx}" y="${btnY}" width="${siteW}" height="${btnH}"
     fill="none" stroke="${c.accent}" stroke-opacity="0.55" stroke-width="2.5"/>`;
 
   // KURZOR (ruka sa prstom) uz domen — vizuelni signal "ovo se klika".
