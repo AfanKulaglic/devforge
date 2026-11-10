@@ -664,12 +664,31 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   const title = p.title ?? "";
   const TITLE_INDENT = 7 + 26; // akcenat-linija + razmak (vidi nize)
   const wTitle = wCol - TITLE_INDENT;
+  // Zadnja rečenica naslova ide u akcent-boji. Da bi to izgledalo namjerno,
+  // zadnji red mora POCETI tom rečenicom — inace se "Bez" odvoji u prethodni
+  // red i oboji samo "predujma.", sto djeluje slucajno.
+  const accentPhrase = "Bez predujma.";
+  const titleParts = title.split(accentPhrase);
+  const hasAccent = titleParts.length === 2;
+
   let ts = 88;
-  let tl = wrap(title, ts, wTitle, 3);
+  let tl: string[];
+  let headBody = "";
+  let accLines: string[] = [];
+  const build = (size: number) => {
+    if (!hasAccent) return { all: wrap(title, size, wTitle, 3), head: "", acc: [] as string[] };
+    headBody = titleParts[0].trim();
+    const head = wrap(headBody, size, wTitle, 2);
+    accLines = wrap(accentPhrase, size, wTitle, 1);
+    return { all: [...head, ...accLines], head: head.join(" "), acc: accLines };
+  };
+  let built = build(ts);
+  tl = built.all;
   const fitsAll = (ls: string[]) => ls.join(" ") === title.split(/\s+/).filter(Boolean).join(" ");
   while (ts > 48 && (!fitsAll(tl) || tl.length > 3 || tl.length * ts * 1.04 > 292)) {
     ts -= 3;
-    tl = wrap(title, ts, wTitle, 3);
+    built = build(ts);
+    tl = built.all;
   }
   const tlh = ts * 1.04;
 
@@ -685,12 +704,13 @@ function premiumLayout(c: Colors, p: PostSlide): string {
     fill="${c.accent}"/>`;
 
   const textX = left + barW + 26; // naslov uvucen od linije
+  const accFrom = hasAccent ? tl.length - built.acc.length : tl.length;
   tl.forEach((l, i) => {
-    // Zadnji red u akcentu — oko hvata ponudu ("Bez predujma") i bez čitanja.
-    const isLast = i === tl.length - 1 && tl.length > 1;
+    // Cijeli akcent-red ("Bez predujma.") je u teal boji, ne samo jedna rijec.
+    const inAccent = i >= accFrom;
     svg += `<text x="${textX}" y="${y + ts * 0.8 + i * tlh}" font-family="${FONT}" font-size="${ts}"
       font-weight="900" letter-spacing="${(-ts * 0.03).toFixed(1)}"
-      fill="${isLast ? c.accent : c.ink}">${esc(l)}</text>`;
+      fill="${inAccent && tl.length > 1 ? c.accent : c.ink}">${esc(l)}</text>`;
   });
   y += (tl.length - 1) * tlh + ts * 0.8;
 
