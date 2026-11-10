@@ -651,7 +651,7 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   // VISAK PROSTORA: u 3:4 formatu ispod sadrzaja ostane ~290px. Da oglas ne
   // stoji zbijen gore, visak se dijeli na razmake izmedju sekcija (G).
   // U 1:1 formatu G je 0 — tamo mjesta nema i sve mora biti kompaktno.
-  const G = Math.max(0, Math.min(110, (SIZE_H - 1160) * 0.28));
+  const G = Math.max(0, Math.min(150, (SIZE_H - 1160) * 0.38));
 
   // 1) Bez linije pod logom — ispod logotipa ne stoji nista.
   // Kicker se preskace namjerno: svaki dodatni red tu trosi prostor koji naslovu
@@ -662,18 +662,33 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   // 2) NASLOV — najveći element. Veličina se traži, ne pogađa: ide od 84px
   // naniže dok CIJELI naslov ne stane u 3 reda (bez tihe odsječe riječi).
   const title = p.title ?? "";
+  const TITLE_INDENT = 7 + 26; // akcenat-linija + razmak (vidi nize)
+  const wTitle = wCol - TITLE_INDENT;
   let ts = 88;
-  let tl = wrap(title, ts, wCol, 3);
+  let tl = wrap(title, ts, wTitle, 3);
   const fitsAll = (ls: string[]) => ls.join(" ") === title.split(/\s+/).filter(Boolean).join(" ");
   while (ts > 48 && (!fitsAll(tl) || tl.length > 3 || tl.length * ts * 1.04 > 292)) {
     ts -= 3;
-    tl = wrap(title, ts, wCol, 3);
+    tl = wrap(title, ts, wTitle, 3);
   }
   const tlh = ts * 1.04;
+
+  // VERTIKALNA AKCENAT-LINIJA uz naslov. Daje "urednicki" izgled (kao kod
+  // Awwwards/Stripe reklama): oko dobija sidro, a naslov vizualno odvoji od
+  // ostatka. Linija je visoka kao blok naslova, tanka, u akcentnoj boji.
+  const titleBlockH = (tl.length - 1) * tlh + ts * 0.8;
+  const barX = left;
+  const barY = y + 6;
+  const barW = 7;
+  const barH2 = titleBlockH + 10;
+  svg += `<rect x="${barX}" y="${barY}" width="${barW}" height="${barH2}" rx="${barW / 2}"
+    fill="${c.accent}"/>`;
+
+  const textX = left + barW + 26; // naslov uvucen od linije
   tl.forEach((l, i) => {
     // Zadnji red u akcentu — oko hvata ponudu ("Bez predujma") i bez čitanja.
     const isLast = i === tl.length - 1 && tl.length > 1;
-    svg += `<text x="${left}" y="${y + ts * 0.8 + i * tlh}" font-family="${FONT}" font-size="${ts}"
+    svg += `<text x="${textX}" y="${y + ts * 0.8 + i * tlh}" font-family="${FONT}" font-size="${ts}"
       font-weight="900" letter-spacing="${(-ts * 0.03).toFixed(1)}"
       fill="${isLast ? c.accent : c.ink}">${esc(l)}</text>`;
   });
@@ -684,9 +699,9 @@ function premiumLayout(c: Colors, p: PostSlide): string {
     y += 50 + G * 0.30;
     const LEAD_FS = 29;
     const LEAD_LH = 40;
-    const ll = wrap(p.lead, LEAD_FS, wCol, 2);
+    const ll = wrap(p.lead, LEAD_FS, wCol - TITLE_INDENT, 2);
     ll.forEach((l: string, i: number) => {
-      svg += `<text x="${left}" y="${y + i * LEAD_LH}" font-family="${FONT}" font-size="${LEAD_FS}"
+      svg += `<text x="${left + TITLE_INDENT}" y="${y + i * LEAD_LH}" font-family="${FONT}" font-size="${LEAD_FS}"
         font-weight="600" fill="${c.soft}">${esc(l)}</text>`;
     });
     y += (ll.length - 1) * LEAD_LH + LEAD_FS * 0.5;
@@ -749,30 +764,44 @@ function premiumLayout(c: Colors, p: PostSlide): string {
     y += (terms.length - 1) * (42 + G * 0.14);
   }
 
-  // 6) CTA — puna širina, najjači kontrast na slici.
-  // NIKAD preko sadržaja: donja granica je `y + 54`, a `SIZE_H - ...` je samo
-  // gornja granica kad ima mjesta (3:4). Ranije je Math.min povlačio dugme
-  // nagore i ono je prekrivalo dokaze.
-  const ctaH = 86;
-  const FOOT_RESERVE = 96;
-  const ctaLabel = (p.cta ?? "Pišite nam u DM").toUpperCase();
-  const ctaNear = y + 46;
-  // U 1:1 nema puno mjesta: CTA sjeda na dno ali s 74px rezerve za footer,
-  // pa ne dodiruje ivicu i footer ostaje u kadru.
-  const ctaBottom = Math.min(SIZE_H - M_L - ctaH - FOOT_RESERVE, SIZE_H - ctaH - 118);
-  const ctaY = Math.max(ctaNear, ctaBottom);
+  // 6) DVA DUGMETA U REDU — primarno (akcija) + sekundarno (domena).
+  //
+  // CTA zauzima ~62% sirine i puni je teal. Desno od njega stoji domena kao
+  // "outline" dugme — ista forma, ali providna, pa hijerarhija ostaje jasna:
+  // prvo klikni, a adresa je tu ako zelis da ukucas.
+  //
+  // NIKAD preko sadrzaja: donja granica je `y + 46`, gornja `SIZE_H - ...`.
+  const btnH = 84;
+  const BTN_GAP = 16;
+  const reserveBottom = 92; // luft do ivice kadra
 
-  svg += `<rect x="${left}" y="${ctaY}" width="${wCol}" height="${ctaH}" rx="${ctaH / 2}"
+  const ctaLabel = (p.cta ?? "Pišite nam u DM").toUpperCase();
+  const siteLabel = (p.site ?? "devlab.cc.cd");
+  const ctaW = Math.round(wCol * 0.60);
+  const siteW = wCol - ctaW - BTN_GAP;
+
+  const btnNear = y + 46;
+  const btnBottom = SIZE_H - reserveBottom - btnH;
+  const btnY = Math.max(btnNear, btnBottom);
+
+  // Primarno dugme — puni teal, najjaci kontrast na slici.
+  svg += `<rect x="${left}" y="${btnY}" width="${ctaW}" height="${btnH}" rx="${btnH / 2}"
     fill="${c.accent}"/>`;
-  svg += `<text x="${left + wCol / 2}" y="${ctaY + ctaH / 2 + 12}" text-anchor="middle"
-    font-family="${FONT}" font-size="33" font-weight="900" letter-spacing="1.4"
+  let cfs = 30;
+  while (cfs > 18 && ctaLabel.length * cfs * 0.56 > ctaW - 40) cfs -= 1;
+  svg += `<text x="${left + ctaW / 2}" y="${btnY + btnH / 2 + 10}" text-anchor="middle"
+    font-family="${FONT}" font-size="${cfs}" font-weight="900" letter-spacing="0.8"
     fill="${c.accentInk}">${esc(ctaLabel)}</text>`;
 
-  // 7) FOOTER — domena. Reklama mora ostaviti trag gdje se javiti.
-  const site = (p.site ?? "devlab.cc.cd").toUpperCase();
-  svg += `<text x="${left + wCol / 2}" y="${ctaY + ctaH + 34}" text-anchor="middle"
-    font-family="${FONT}" font-size="23" font-weight="700" letter-spacing="0.6"
-    fill="${c.soft}">${esc(site)}  ·  SARAJEVO  ·  CIJELA BIH</text>`;
+  // Sekundarno dugme — outline, domena. Nema tacke/tačkica: samo ime sajta.
+  const sx = left + ctaW + BTN_GAP;
+  svg += `<rect x="${sx}" y="${btnY}" width="${siteW}" height="${btnH}" rx="${btnH / 2}"
+    fill="none" stroke="${c.accent}" stroke-opacity="0.55" stroke-width="2.5"/>`;
+  let sfs = 27;
+  while (sfs > 14 && siteLabel.length * sfs * 0.56 > siteW - 28) sfs -= 1;
+  svg += `<text x="${sx + siteW / 2}" y="${btnY + btnH / 2 + 9}" text-anchor="middle"
+    font-family="${FONT}" font-size="${sfs}" font-weight="800" letter-spacing="0.2"
+    fill="${c.accent}">${esc(siteLabel)}</text>`;
 
   return svg;
 }

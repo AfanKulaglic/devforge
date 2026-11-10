@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (premium oglas v8 — naslov fokusiran na rezultat)
+Zadnje ažurirano: 2026-11-10 (premium oglas v9 — stil + dva dugmeta)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,6 +12,17 @@ Zadnje ažurirano: 2026-11-10 (premium oglas v8 — naslov fokusiran na rezultat
 - Dev server: `npm run dev` → http://localhost:5173/
 
 ## Gotovo (ova sesija)
+- **STIL — vertikalna akcenat-linija uz naslov:** teal bar 7px, visok kao blok naslova,
+  naslov uvučen 26px od linije. Daje "urednicki" izgled i sidro za oko.
+  Lead i dokazi poravnati na isti `TITLE_INDENT` (33px).
+- **FOOTER LINIJA UKLONJENA:** "devlab.cc.cd · SARAJEVO · CIJELA BIH" više ne postoji.
+- **DVA DUGMETA U REDU (novo):**
+  - primarno: `ZATRAŽI BESPLATNU VERZIJU` — puni teal, 60% širine, h 84, auto-shrink font
+  - sekundarno: `devlab.cc.cd` — outline (stroke 2.5, opacity 0.55), teal tekst
+  - gap 16px, `reserveBottom=92` da ne dodiruju ivicu
+- `G` povećan (max 150, faktor 0.38) — popunjava visak u 3:4 formatu.
+- Provjereno: 41 objava 0 van viewBoxa, 0 gresaka, tsc=0, build OK, vision 1:1 i 3:4
+  (obje dugmadi u kadru, 74px/90px lufta do dna).
 - **NASLOV v8 — fokus na REZULTAT za kupca, ne na tehnologiju:**
   **"Vaš biznis online. Za 5 dana. Bez predujma."** (3 reda, zadnji "predujma." teal)
   - Probao i odbacio: "Vaša ideja. Gotova za 5 dana." (apstraktno),
