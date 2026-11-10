@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (premium oglas v12 — konkretno šta se mijenja)
+Zadnje ažurirano: 2026-11-10 (premium oglas v13 — admin panel objašnjen poređenjem)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,6 +12,14 @@ Zadnje ažurirano: 2026-11-10 (premium oglas v12 — konkretno šta se mijenja)
 - Dev server: `npm run dev` → http://localhost:5173/
 
 ## Gotovo (ova sesija)
+- **ADMIN PANEL OBJAŠNJEN TAKO DA SVAKO RAZUMIJE** (prije: samo "šta mijenjate", bez "šta je to"):
+  - **poređenje s poznatim:** "radi kao Facebook: prijavite se, kliknete i promijenite"
+  - **negativna pojašnjenja** (uklanjaju strah): "Vi NE GLEDATE kod, ne instalirate ništa,
+    ne učite ništa novo"
+  - **definicija prije liste:** "posebna stranica uz sajt, zaštićena lozinkom, sa nje upravljate sajtom"
+  - pa tek onda 5 konkretnih primjera (cijena 150→120 KM, proizvodi, radno vrijeme, tekstovi, slika)
+  - oglas (1 linija): **"Admin panel: sami mijenjate cijene i slike"**
+- Provjereno: 41 objava 0 van viewBoxa, 0 gresaka, tsc=0, build OK, vision 1:1 i 3:4.
 - **"ADMIN PANEL" LINIJA KONKRETIZOVANA** — "sami mijenjate tekst i cijene" nije reklo ČEGA:
   - oglas: **"Sami mijenjate cijene, slike i tekstove na sajtu"**
   - caption: naslov "vaša kontrolna tabla, otvara se kao obična stranica u browseru" +

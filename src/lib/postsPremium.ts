@@ -43,7 +43,7 @@ export const POST_PREMIUM: AdPost = {
   terms: [
     "Gotova verzija za 5 dana — ne za 5 sedmica",
     "Web stranice od 150 KM, shopovi od 600 KM",
-    "Sami mijenjate cijene, slike i tekstove na sajtu",
+    "Admin panel: sami mijenjate cijene i slike",
   ],
   cta: "Javite se u DM ili na sajtu",
   caption:
@@ -62,7 +62,7 @@ export const POST_PREMIUM: AdPost = {
     "\n" +
     "ŠTA JE UKLJUČENO U CIJENU\n" +
     "✅ Dizajn i izrada — sve radimo mi, vi ne tražite nikoga\n" +
-    "✅ Admin panel — vaša kontrolna tabla, otvara se kao obična stranica u browseru.\n   Šta tu sami mijenjate, bez programera:\n   · cijenu usluge (npr. 150 → 120 KM) — odmah se vidi na sajtu\n   · proizvode u shopu — dodate novi sa slikom, opisom i cijenom\n   · radno vrijeme, telefon i adresu\n   · tekstove i vijesti na sajtu\n   · naslovnu sliku kad vam dosadi\n   Sve u par klikova — bez poziva nama i bez dodatnog troška.\n" +
+    "✅ Admin panel — vaša kontrolna tabla. To je posebna stranica koju dobijete uz sajt,\n   zaštićena lozinkom, u koju se prijavite i sa nje upravljate sajtom. Zvuči komplikovano,\n   ali radi kao Facebook: prijavite se, kliknete i promijenite. Vi NE GLEDATE kod,\n   ne instalirate ništa i ne učite ništa novo.\n   Šta tu sami mijenjate, bez programera:\n   · cijenu usluge (npr. 150 → 120 KM) — odmah se vidi na sajtu\n   · proizvode u shopu — dodate novi sa slikom, opisom i cijenom\n   · radno vrijeme, telefon i adresu\n   · tekstove i vijesti na sajtu\n   · naslovnu sliku kad vam dosadi\n   Sve u par klikova — bez poziva nama i bez dodatnog troška.\n" +
     "✅ 4 revizije dizajna — dok ne bude kako treba\n" +
     "✅ Hosting i domena — podesimo za vas\n" +
     "✅ Sve ostaje vaše — stranica, domena i pristupi na vaše ime\n" +
