@@ -666,7 +666,12 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   // VISAK PROSTORA: u 3:4 formatu ispod sadrzaja ostane ~290px. Da oglas ne
   // stoji zbijen gore, visak se dijeli na razmake izmedju sekcija (G).
   // U 1:1 formatu G je 0 — tamo mjesta nema i sve mora biti kompaktno.
-  const G = Math.max(0, Math.min(150, (SIZE_H - 1160) * 0.38));
+  // RASPORED PO VISINI FORMATU.
+  //
+  // Prije je svaki razmak bio fiksan (`+ 56`, `+ 50`) pa je u 3:4 formatu
+  // izmedju dokaza i dugmadi ostajalo 290px praznog. Sada se svi razmaci
+  // racunaju iz STVARNE visine sadrzaja i preostalog prostora — sav visak
+  // se dijeli ravnomjerno na 3 spoja (naslov→lead, lead→usluge, usluge→dokazi).
 
   // 1) Bez linije pod logom — ispod logotipa ne stoji nista.
   // Kicker se preskace namjerno: svaki dodatni red tu trosi prostor koji naslovu
@@ -733,9 +738,47 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   });
   y += (tl.length - 1) * tlh + ts * 0.8;
 
+  // ── PRORACUN RAZMAKA ─────────────────────────────────────────────────
+  //
+  // Sve sekcije imaju poznatu visinu PRIJE crtanja (naslov se vec izmjerio,
+  // broj usluga i dokaza je poznat). Zato se visak prostora moze tacno
+  // podijeliti umjesto da se pogadja fiksnim brojem.
+  const BTN_H_PRE = 84;
+  const RESERVE_BOTTOM_PRE = 92;
+  const contentTopY = M_L + 92;
+  // Visina naslova (vec izracunata gore)
+  const titleBlockHPx = (tl.length - 1) * tlh + ts * 0.8;
+  // Lead
+  const LEAD_FS_PRE = 29;
+  const LEAD_LH_PRE = 40;
+  const leadLinesPre = p.lead ? wrap(p.lead, LEAD_FS_PRE, wCol - TITLE_INDENT, 2) : [];
+  const leadHPre = leadLinesPre.length ? (leadLinesPre.length - 1) * LEAD_LH_PRE + LEAD_FS_PRE * 0.5 : 0;
+  // Usluge (chip visina)
+  const IC_PRE = 98;
+  const chipHPre = Math.round(IC_PRE * 1.44) + 34;
+  const featsHPre = features.length ? chipHPre : 0;
+  // Dokazi
+  const termsHPre = terms.length ? (terms.length - 1) * 42 + 27 : 0;
+  // Koliko prostora treba za sadrzaj + minimalni razmaci (3 x 40)
+  const MIN_GAP = 40;
+  const usedH = titleBlockHPx + leadHPre + featsHPre + termsHPre + MIN_GAP * 4;
+  // Dostupno: od vrha sadrzaja do dna dugmadi
+  const availH = (SIZE_H - RESERVE_BOTTOM_PRE - BTN_H_PRE) - (contentTopY + 26);
+  // Visak se dijeli na 3 spoja; naslov→lead dobija malo manje (opticki je
+  // najblizi), usluge→dokazi jednako.
+  // Visak se dijeli na 4 spoja: naslov→lead, lead→usluge, usluge→dokazi,
+  // dokazi→dugmad. Prije su bila 3 spoja, pa je zadnji (dokazi→dugmad)
+  // ostajao zakucan na `y + 46` — sve nepravilno: 196 / 167 / 39 px.
+  const surplus = Math.max(0, availH - usedH);
+  const extra = surplus / 4;
+  const LEAD_GAP = MIN_GAP + extra * 0.9;
+  const FEAT_GAP = MIN_GAP + extra * 0.8;
+  const TERM_GAP = MIN_GAP + extra * 0.95;
+  const BTN_GAP_Y = MIN_GAP + extra * 1.15;
+  const TERM_ROW = 42 + (surplus > 0 ? Math.min(16, extra * 0.25) : 0);
   // 3) LEAD — jedna rečenica koja objasnjava MEHANIZAM ponude.
   if (p.lead) {
-    y += 50 + G * 0.30;
+    y += LEAD_GAP;
     const LEAD_FS = 29;
     const LEAD_LH = 40;
     const ll = wrap(p.lead, LEAD_FS, wCol - TITLE_INDENT, 2);
@@ -749,7 +792,7 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   // 4) USLUGE — JEDAN red. Ikona je sada 40px (bila 28), bez okvira oko ikone:
   // na tamnoj fotografiji ikona sama nosi težinu, okvir je samo šum.
   if (features.length) {
-    y += 56 + G * 0.45;
+    y += FEAT_GAP;
     const n = features.length;
     const gap = 12;
     const chipW = (wCol - gap * (n - 1)) / n;
@@ -793,14 +836,14 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   // 5) DOKAZI — kvačica + konkretna tvrdnja. Ovo je dio koji ubjeđuje:
   // apstraktne tvrdnje ("kvalitet") ne prodaju, brojevi prodaju.
   if (terms.length) {
-    y += 50 + G * 0.55;
+    y += TERM_GAP;
     terms.forEach((t, i) => {
-      const ry = y + i * (42 + G * 0.14);
+      const ry = y + i * TERM_ROW;
       svg += pxIcon("check", left - 2, ry - 26, c.accent, 27);
       svg += `<text x="${left + 42}" y="${ry}" font-family="${FONT}" font-size="27"
         font-weight="700" fill="${c.ink}">${esc(t)}</text>`;
     });
-    y += (terms.length - 1) * (42 + G * 0.14);
+    y += (terms.length - 1) * TERM_ROW;
   }
 
   // 6) DVA DUGMETA U REDU — primarno (akcija) + sekundarno (domena).
@@ -822,9 +865,12 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   const ctaW = halfW;
   const siteW = halfW;
 
-  const btnNear = y + 46;
+  const btnNear = y + BTN_GAP_Y;
   const btnBottom = SIZE_H - reserveBottom - btnH;
-  const btnY = Math.max(btnNear, btnBottom);
+  // Prije: Math.max() je ZAKUCAVAO dugmad na dno kadra, pa je razmak iznad
+  // njih narastao na 237px dok su ostali bili 57-93px. Sada dugmad idu tamo
+  // gdje ih raspored stavi — dno je samo sigurnosna granica, ne cilj.
+  const btnY = Math.min(btnNear, btnBottom);
 
   // Primarno dugme — puni teal, najjaci kontrast na slici.
   // OSTRI UGLOVI (rx=0): cijeli sajt koristi `rounded-none` na dugmadima

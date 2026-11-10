@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (40 objava: novi naslovi + domena u uglu)
+Zadnje ažurirano: 2026-11-10 (premium 3:4: raspored po visini — nema rupa)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,38 +12,35 @@ Zadnje ažurirano: 2026-11-10 (40 objava: novi naslovi + domena u uglu)
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### 1. Domena u donjem lijevom uglu — na SVIH 41 objavi
-Prije je tu stajala kategorija ("PONUDA", "BREND") koja nista ne govori
-covjeku koji gleda sliku. Sada stoji **www.devlab.cc.cd** u teal boji +
-bez ikakvih dodataka, a kategorija je premjestena desno u istom redu,
-blijeda (opacity 0.55) da ne konkurira.
+### Premium oglas u 3:4 formatu — rješenje rupa
+Korisnik: "kada pogledam na 3:4 premium post je lose pozicioniran,
+ima puno rupa i praznog prostora".
 
-Nova funkcija domainLine(c, category) u postRender.ts (~270).
+Prije: svaki razmak je bio fiksan (+56, +50, +46) pa je u 3:4 formatu
+izmedju dokaza i dugmadi ostajalo ~290px praznog. Izmjereno: 627px
+praznog od 1440 = 43%.
 
-### 2. Novi naslovi i tekstovi za svih 40 nepremium objava
-Svi naslovi konkretniji — brojevi, rokovi, cijene. Npr:
+Rjesenje u  (postRender.ts):
+- **Proracun razmaka prije crtanja** — visina svake sekcije se izmjeri
+  (naslov tlh, lead wrap, chipH, terms), pa se visak dijeli na 4 spoja
+  (naslov→lead, lead→usluge, usluge→dokazi, dokazi→dugmad).
+- **Dugmad** vise ne idu na  (zakucavanje na
+  dno kraja) nego  — prate raspored, dno je samo granica.
+- Faktori se ponderise: kartice blize leadu, najvise zraka iznad dugmadi.
 
-| id | prije | sada |
-|---|---|---|
-| p01 | Bez predujma. Plaćate tek kada ste zadovoljni | **Ne plaćate ni marku dok svoj sajt ne vidite gotov.** |
-| p02 | Stranice, aplikacije i igre koje pokreću Vaš biznis | **Stranica, shop, aplikacija ili igrica — sve na jednom mjestu.** |
-| p03 | Stranica već od 150 KM | **Kompletna stranica za 150 KM. Bez skrivenih stavki.** |
-| p05 | Četiri stvari koje radimo | **Četiri stvari koje radimo — i radimo ih dobro.** |
-| p27 | Koliko traje razvoj projekta | **Koliko traje izrada? Evo tačnih rokova.** |
-| p45 | sata dnevno dostupan AI recepcionar | **AI recepcionar koji nikad ne spava.** |
-| p56 | skrivenih troškova u svakoj ponudi | **Nula skrivenih troškova. Cijena koju čujete je cijena koju plaćate.** |
-| p57 | radnih dana do besplatne gotove verzije | **Pet radnih dana do besplatne gotove verzije.** |
+Mjer eno u 3:4 (bilo → sad): lead→chip 196→91, chip→terms 167→102,
+terms→btn 39→144 px. Raspon izmedju spojeva: 53px (bilo 122).
 
-Itemi su konkretizovani: "Stranice od 150 KM" → "Web stranica — od 150 KM",
-"Stranice — 1-2 sedmice" → "Web stranica — 5 radnih dana", itd.
+1:1 format ostao nepromijenjen (surplus=0, 0 van kadra).
 
 ### Verifikacija
-- 41 objava, **0 tekstova van kadra**, 0 console grešaka, tsc=0, build OK (1.820 kB).
-- Domena prisutna na **41/41** objavi, bez strelice (strelica ostala samo na premium oglasu).
+- 3:4 premium: razmaci 91/102/144, raspon 53px, 0 van kadra.
+- 1:1 premium: 0 van kadra, dugmad na 853+84=937 (143px lufta).
+- tsc=0, build OK (1.820 kB).
 ## Sljedeći korak
-- Pregledati  — svi postovi imaju domenu u uglu i novi tekst.
-- Ako neki naslov ne odgovara, to je jedan red u .
-- Opciono: 4:5 format za Instagram feed.
+- Pregledati premium oglas u 3:4 (/objave → 3:4).
+- Ako i ostali postovi imaju rupe u 3:4, ista logika rasporeda po visini vazi za sve.
+- Opciono: 4:5 format.
 
 ## Napomene / zamke
 - **Python heredoc + `\n` u TS stringu = pokvaren string.** Koristiti `.cjs` skriptu sa
