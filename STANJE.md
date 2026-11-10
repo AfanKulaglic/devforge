@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (mail slanje sa /mail kroz Brevo — RADI)
+Zadnje ažurirano: 2026-11-10 (kontakt+domena svuda: devlab.cc.cd)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,6 +12,19 @@ Zadnje ažurirano: 2026-11-10 (mail slanje sa /mail kroz Brevo — RADI)
 - Dev server: `npm run dev` → http://localhost:5173/
 
 ## Gotovo (ova sesija)
+- **SVE REFERENCE NA NOVU DOMENU I KONTAKT** (0 starih ostalo):
+  - domena `dev-forge-studio.vercel.app` → **`devlab.cc.cd`** (index.html canonical/og/hreflang/JSON-LD,
+    public/sitemap.xml, public/robots.txt, INSTAGRAM-PLAN.md, naracija reklame u App.tsx)
+  - email `devforge.studio@gmail.com` → **`kontakt@devlab.cc.cd`** (App.tsx CONTACT + 6 mjesta,
+    posts2.ts, posts3.ts, MailSignaturePage)
+  - Instagram `@devforge_studio` → **`@devlab_studio`**, DM link `ig.me/m/devlab_studio`
+  - Provjereno: grep 0 ostataka; renderovani UI (/, /kontakt) prikazuje samo nove podatke;
+    produkcijski HTML ima `canonical https://devlab.cc.cd/` i 0 starih referenci
+- **PREMIUM OGLAS — 2x2 grid usluga:**
+  - `features[]` u postsData: Web stranice / Web shopovi / Aplikacije / AI sistemi
+  - ikona u zaobljenom teal kvadratu + label pored
+  - traka brojki: teal akcenat-linija na vrhu, cifre 52→58px
+  - 3:4 format: CTA+uslovi zakucani za dno (praznina 160px → 85px)
 - **MAIL SLANJE SA SAJTA — RADI** (`/mail` → `api/send-mail.ts` → Brevo):
   - Brevo domena autentifikovana: TXT brevo-code, DKIM1/2, DMARC, branded `send`/`r.send`/`img.send`
   - SPF spojen: `v=spf1 include:spf.improvmx.com include:spf.brevo.com ~all` (SAMO JEDAN SPF!)
