@@ -23,7 +23,7 @@ export const POST_PREMIUM: AdPost = {
   palette: "dark",
   photo: "ai",
   eyebrow: "Premium ponuda",
-  kicker: "Prva verzija besplatno",
+  kicker: "40+ projekata · 5 godina iskustva · Sarajevo",
   title: "Vaša stranica gotova je za 5 dana. Plaćate tek kad je vidite.",
   lead: "Bez predujma, bez ugovora, bez rizika. Prvo vidite gotov rezultat — onda odlučujete.",
   site: "devlab.cc.cd",

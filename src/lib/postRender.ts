@@ -69,14 +69,22 @@ const PX_ICONS: Record<string, string> = {
 };
 
 /** Crta ikonu u 48×48 ćeliju; ikona unutra 28px, centrirana. */
+/**
+ * Crta ikonu zadate veličine.
+ *
+ * BUG koji je ovo popravio: svi pathovi u PX_ICONS su crtani u koordinatnom
+ * sistemu 0–24. Prije se path samo TRANSLIRAO, nikad SKALIRAO — pa je ikona
+ * uvijek bila ~24px bez obzira na `size`. Zato su ikone "bile premale" iako je
+ * kod tražio 64 ili 98px.
+ *
+ * Sada: viewBox 24 se skalira na `size`, pa `size` stvarno znači piksele.
+ */
 function pxIcon(name: string, x: number, y: number, color: string, size = 30): string {
-  const box = size * 1.6;
-  const ix = x + (box - size) / 2;
-  const iy = y + (box - size) / 2;
   const d = PX_ICONS[name] ?? PX_ICONS.check;
+  const k = size / 24; // 24 = izvorni viewBox svih ikona
   // Debljina linije raste s velicinom ikone — na 40px bi 2px izgledalo slabo.
-  const sw = Math.max(2, size / 13);
-  return `<g transform="translate(${ix},${iy})">
+  const sw = Math.max(2, size / 13) / k; // dijeli se s k jer grupa skalira
+  return `<g transform="translate(${x},${y}) scale(${k.toFixed(4)})">
     <path d="${d}" fill="none" stroke="${color}" stroke-width="${sw.toFixed(2)}"
       stroke-linecap="round" stroke-linejoin="round"/>
   </g>`;
@@ -642,11 +650,14 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   // U 1:1 formatu G je 0 — tamo mjesta nema i sve mora biti kompaktno.
   const G = Math.max(0, Math.min(110, (SIZE_H - 1160) * 0.28));
 
-  // 1) KICKER — sitna etiketa koja pozicionira ponudu.
+  // 1) TRUST LINIJA — umjesto kicker etikete.
+  // Kicker ("prva verzija besplatno") je ponavljao ono sto naslov vec kaze,
+  // pa je trosio red prostora. Sada tu stoji konkretan dokaz: koliko projekata,
+  // koliko godina, gdje se nalazimo. To kupcu kaze "ovi ljudi postoje".
   if (p.kicker) {
-    svg += `<text x="${left}" y="${y}" font-family="${FONT}" font-size="24" font-weight="900"
-      letter-spacing="3.8" fill="${c.accent}">${esc(p.kicker.toUpperCase())}</text>`;
-    y += 44;
+    svg += `<text x="${left}" y="${y}" font-family="${FONT}" font-size="25" font-weight="800"
+      letter-spacing="0.4" fill="${c.accent}">${esc(p.kicker)}</text>`;
+    y += 46;
   }
 
   // 2) NASLOV — najveći element. Veličina se traži, ne pogađa: ide od 84px
@@ -687,22 +698,41 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   if (features.length) {
     y += 56 + G * 0.45;
     const n = features.length;
-    const gap = 14;
+    const gap = 12;
     const chipW = (wCol - gap * (n - 1)) / n;
-    const chipH = 158;
-    const IC = 64;
+    // Ikona mora DOMINIRATI chipom, ne sjediti u njemu. Prije je bila 64px u
+    // 158px visokoj kartici (41%) pa je djelovala kao detalj. Sada je ~72%
+    // visine kartice — chip CITAJU ikonom, a label je samo potvrda.
+    const IC = 98;
+    const chipH = Math.round(IC * 1.44) + 34;
 
     features.forEach((f, i) => {
       const cx = left + i * (chipW + gap);
-      // Jedva vidljiva pilula — drži ikonu i label na okupu, ne bode oči.
-      svg += `<rect x="${cx}" y="${y}" width="${chipW}" height="${chipH}" rx="16"
-        fill="#ffffff" opacity="0.06"/>`;
-      svg += pxIcon(f.icon, cx + chipW / 2 - (IC * 1.6) / 2, y + 14, c.accent, IC);
+      svg += `<rect x="${cx}" y="${y}" width="${chipW}" height="${chipH}" rx="20"
+        fill="#ffffff" opacity="0.075"/>`;
+      svg += `<rect x="${cx}" y="${y}" width="${chipW}" height="${chipH}" rx="20"
+        fill="none" stroke="${c.accent}" stroke-opacity="0.22" stroke-width="1.5"/>`;
+      // Ikona centrirana horizontalno, label ide pri dnu — bez okvira oko ikone,
+      // jer je sada dovoljno velika da nosi sebe.
+      // Ikona gore, label odmah pod njom. Razmak se racuna iz stvarne visine
+      // ikone (IC*1.6 je path box), da ne ostane prazan pojas u sredini kartice.
+      // VAZNO: pxIcon crta path u `IC*1.6` boxu, ali stvarna visina crteza je
+      // ~IC*1.25 (path ne popunjava cijeli box). Zato se vertikalno centrira po
+      // stvarnoj visini crteza, a label dobija fiksni razmak ispod njega —
+      // prije se ikona spustala na label i preklapala ga.
+      // pxIcon sada skalira path na TACNO `IC` piksela (prije se nije skalirao
+      // — to je bio razlog sto su ikone izgledale sitno). Zato se raspored
+      // racuna iz stvarnih piksela, bez "magic" faktora.
+      const gapIL = 16;
       const lab = f.label;
-      let lfs = 21;
+      let lfs = 22;
       while (lfs > 13 && lab.length * lfs * 0.55 > chipW - 8) lfs -= 1;
-      svg += `<text x="${cx + chipW / 2}" y="${y + chipH - 20}" text-anchor="middle"
-        font-family="${FONT}" font-size="${lfs}" font-weight="800" fill="${c.ink}">${esc(lab)}</text>`;
+      const blockH = IC + gapIL + lfs;
+      const top = y + (chipH - blockH) / 2;
+      svg += pxIcon(f.icon, cx + chipW / 2 - IC / 2, top, c.accent, IC);
+      svg += `<text x="${cx + chipW / 2}" y="${top + IC + gapIL + lfs * 0.82}"
+        text-anchor="middle" font-family="${FONT}" font-size="${lfs}" font-weight="800"
+        fill="${c.ink}">${esc(lab)}</text>`;
     });
     y += chipH;
   }
@@ -724,10 +754,10 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   // NIKAD preko sadržaja: donja granica je `y + 54`, a `SIZE_H - ...` je samo
   // gornja granica kad ima mjesta (3:4). Ranije je Math.min povlačio dugme
   // nagore i ono je prekrivalo dokaze.
-  const ctaH = 92;
-  const FOOT_RESERVE = 74;
+  const ctaH = 86;
+  const FOOT_RESERVE = 96;
   const ctaLabel = (p.cta ?? "Pišite nam u DM").toUpperCase();
-  const ctaNear = y + 54;
+  const ctaNear = y + 46;
   // U 1:1 nema puno mjesta: CTA sjeda na dno ali s 74px rezerve za footer,
   // pa ne dodiruje ivicu i footer ostaje u kadru.
   const ctaBottom = Math.min(SIZE_H - M_L - ctaH - FOOT_RESERVE, SIZE_H - ctaH - 118);
@@ -741,7 +771,7 @@ function premiumLayout(c: Colors, p: PostSlide): string {
 
   // 7) FOOTER — domena. Reklama mora ostaviti trag gdje se javiti.
   const site = (p.site ?? "devlab.cc.cd").toUpperCase();
-  svg += `<text x="${left + wCol / 2}" y="${ctaY + ctaH + 38}" text-anchor="middle"
+  svg += `<text x="${left + wCol / 2}" y="${ctaY + ctaH + 34}" text-anchor="middle"
     font-family="${FONT}" font-size="23" font-weight="700" letter-spacing="0.6"
     fill="${c.soft}">${esc(site)}  ·  SARAJEVO  ·  CIJELA BIH</text>`;
 

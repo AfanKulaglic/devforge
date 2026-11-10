@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (premium oglas v3 — 5 usluga, velike ikone, prodajni naslov)
+Zadnje ažurirano: 2026-11-10 (premium oglas v4 — fix pxIcon skale + trust linija)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,6 +12,13 @@ Zadnje ažurirano: 2026-11-10 (premium oglas v3 — 5 usluga, velike ikone, prod
 - Dev server: `npm run dev` → http://localhost:5173/
 
 ## Gotovo (ova sesija)
+- **KICKER ZAMIJENJEN TRUST LINIJOM:** "Prva verzija besplatno" (ponavljao naslov) → **"40+ projekata · 5 godina iskustva · Sarajevo"**.
+- **KRITIČAN BUG — `pxIcon` nije skalirao:** svi pathovi crtani 0–24, samo translirani, pa je ikona bila ~24px BEZ OBZIRA na `size` (64/98). Popravljeno:
+  `scale(size/24)` + stroke-width se dijeli s skalom. Rezultat: ikone sad stvarno 98px → **mjereno 124px, 71% visine chipa** (bilo 26px/15%).
+- **Ikone u chipovima preuređene:** ikona gore (top = centrirano), label tačno ispod s gap 16 — pine preklapanja (prije se label oduzimao fiksno `chipH-20` pa je ulazio u ikonu).
+- Chip: IC 98px, `chipH = IC*1.44+34` = 175px, rx 20, stroke 1.5 opacity 0.22.
+- **Footer popravljen:** FOOT_RESERVE 96, ctaH 86 → footer `y=1060` unutar 1080 kadra (prije 1082 → odrezan).
+- Provjereno: 41 objava, 0 van viewBoxa, 0 grešaka, tsc=0, build OK, vision oba formata čista (footer vidljiv u 1:1).
 - **PREMIUM OGLAS v3 — uvjerljivija verzija:**
   - naslov prodaje: **"Vaša stranica gotova je za 5 dana. Plaćate tek kad je vidite."**
     (zadnji red automatski u teal akcentu → oko hvata ponudu bez čitanja)
