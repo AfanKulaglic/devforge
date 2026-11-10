@@ -21,9 +21,14 @@ export const POSTS_2: AdPost[] = [
     layout: "photoBg",
     photo: "hero",
     palette: "dark",
-    eyebrow: "Kako radimo",
-    title: "Šta radimo prije prve linije koda",
-    items: ["Razgovor o kupcu", "Pregled konkurencije", "Struktura na papiru", "Tekst prije dizajna"],
+    eyebrow: "Prije izrade",
+    title: "Prije prve linije koda sjednemo i razmislimo.",
+    items: [
+      "Razgovor o tome ko je vaš kupac",
+      "Pregled onoga što radi konkurencija",
+      "Struktura stranice na papiru",
+      "Tekstovi prije dizajna, ne poslije",
+    ],
     caption:
       "🧠 Stranica se ne pravi u Figmi. Pravi se u glavi.\n\nRedoslijed je važan. Ovako izgleda naš početak:\n\n1. Razgovor — 30 minuta o tome ko je kupac i šta ga muči. Ne o tome šta Vam se sviđa.\n2. Konkurencija — gledamo 5 firmi koje rade isto. Šta im rade dobro, šta loše.\n3. Struktura — nacrtamo stranice na papiru. Koja vodi gdje, šta je na svakoj.\n4. Tekst — pišemo prvo tekst, pa dizajn. Obrnuto nikad ne radi.\n\nTek onda Figma. Tek onda kod.\n\nZato prva verzija obično bude dobra iz prve — pola posla je urađeno prije nego što se išta vidi.",
     tags: ["proces", "kakoradimo", "priprema", "izakulisa", "sarajevo", "devlab"],
@@ -32,13 +37,18 @@ export const POSTS_2: AdPost[] = [
   // ── 22. KAKO RADIMO ──────────────────────────────────────────────────────
   {
     id: "p22",
+    title: "Četiri koraka. Nula plaćanja unaprijed.",
     template: "process",
     category: "izakulisa",
     layout: "band",
     palette: "ink",
     eyebrow: "Naš proces",
-    title: "Četiri koraka, nula unaprijed",
-    items: ["Konsultacija", "Gotova verzija", "Razvoj", "Isporuka"],
+    items: [
+      "Konsultacija — 15 minuta",
+      "Gotova verzija — za 5 dana",
+      "Vaše revizije — 4 besplatne",
+      "Isporuka — sve na vaše ime",
+    ],
     caption:
       "📋 Četiri koraka. Nema koraka petog.\n\nTransparentno — ovako izgleda projekat od prvog razgovora do zadnjeg dana:\n\nDAN 1 — Razgovor od 15-30 minuta. Čime se bavite, ko Vas zove, šta stranica treba da uradi.\n\nDAN 2–5 — Besplatna gotova verzija. Prava stranica na pravom linku, koju otvorite na mobitelu i pošaljete kome hoćete.\n\nDAN 6–20 — Puni razvoj. Sve stranice, funkcionalnosti, admin panel. Redovni pregledi i izmjene.\n\nZADNJI DAN — Testiranje na tri uređaja. Domena na Vaše ime, kod u cjelosti, sve lozinke predate.\n\nTek onda plaćate. Bez predujma, bez rizika.",
     tags: ["proces", "koraci", "isporuka", "kakoradimo", "sarajevo", "devlab"],
@@ -53,7 +63,7 @@ export const POSTS_2: AdPost[] = [
     photo: "mobile",
     palette: "dark",
     eyebrow: "Naši projekti",
-    title: "Naši projekti",
+    title: "Projekti koje smo radili — i šta su donijeli.",
     slides: [
       {
         template: "cover",
@@ -106,8 +116,8 @@ export const POSTS_2: AdPost[] = [
     layout: "center",
     palette: "teal",
     eyebrow: "Sarajevo",
-    title: "Izrada stranica u Sarajevu",
-    subtitle: "Bez kancelarije u centru i bez velikih režija — zato je cijena niža.",
+    title: "Izrada sajtova u Sarajevu, bez cijene kancelarije u centru.",
+    subtitle: "Radimo iz malog ureda bez režija, pa je cijena niža od agencijske. Isti kvalitet, manje troškova.",
     caption:
       "📍 Sarajevo. Bez kancelarije u centru, bez Vaše kirije u cijeni.\n\nRadimo iz Sarajeva, za firme iz cijele BiH.\n\nBez kancelarije u centru i bez velikih režija. Zato ne plaćate tuđu kiriju kroz cijenu projekta.\n\nŠta to znači praktično:\n— ✅ web stranica od 150 KM, shop od 600 KM\n— 🔥 cijena je ista za firmu iz Sarajeva i iz Bihaća\n— 💡 sve ide online: razgovor, pregledi, izmjene\n— ⚡ ne morate dolaziti nigdje\n\nRadimo s klijentima iz cijele Bosne i Hercegovine i regiona.\n\nAko Vam je neko rekao da stranica košta 2000 KM — javite nam se.",
     tags: ["sarajevo", "webstranice", "lokalni", "cijene", "devlab"],
@@ -122,7 +132,7 @@ export const POSTS_2: AdPost[] = [
     photo: "web",
     palette: "ink",
     eyebrow: "Šta dobijate",
-    title: "Šta dobijate",
+    title: "Šta tačno dobijate za cijenu koju platite.",
     slides: [
       {
         template: "cover",
@@ -168,13 +178,13 @@ export const POSTS_2: AdPost[] = [
   // ── 26. ČESTA PITANJA ────────────────────────────────────────────────────
   {
     id: "p26",
+    subtitle: "Jeste. Napravimo je bez naplate i bez obaveze — ako vam se ne svidi, ne dugujete ništa.",
     template: "quote",
     category: "ponuda",
     layout: "band",
     palette: "dark",
     eyebrow: "Česta pitanja",
     title: "Da li je gotova verzija zaista besplatna?",
-    subtitle: "Da — potpuno, i bez ikakvih obaveza.",
     caption:
       "❓ Najčešće pitanje koje dobijamo. I odgovor.\n\nNajčešće pitanje koje dobijamo.\n\nODGOVOR: Da, gotova verzija je potpuno besplatna i bez ikakvih obaveza.\n\nIzrađujemo funkcionalan prototip Vašeg projekta u roku od 5 radnih dana kako biste vidjeli dizajn, strukturu i osnovne funkcionalnosti prije nego što se odlučite za saradnju.\n\nNema skrivenih troškova niti predujma.\n\nAko Vam se ne svidi — ne plaćate ništa i idemo dalje. Bez objašnjavanja.\n\nJavite nam se u DM.",
     tags: ["cestapitanja", "faq", "besplatno", "bezpredujma", "sarajevo", "devlab"],
@@ -188,8 +198,12 @@ export const POSTS_2: AdPost[] = [
     layout: "split",
     palette: "light",
     eyebrow: "Česta pitanja",
-    title: "Koliko traje razvoj projekta",
-    items: ["Stranica — 1-2 sedmice", "Web shop — 3-4 sedmice", "Aplikacija — 4-8 sedmica"],
+    title: "Koliko traje izrada? Evo tačnih rokova.",
+    items: [
+      "Web stranica — 5 radnih dana",
+      "Web shop — 10 do 15 dana",
+      "Aplikacija — 4 do 8 sedmica",
+    ],
     caption:
       "⏱️ Koliko se čeka? Realno, bez laži.\n\nVrijeme razvoja zavisi od kompleksnosti projekta.\n\n— ✅ Landing page ili jednostavna web stranica: 1–2 sedmice\n— 🔥 Web shop sa payment integracijom: 3–4 sedmice\n— 💡 Mobilna aplikacija: 4–8 sedmica\n\nTačan timeline definišemo nakon inicijalne konsultacije i analize zahtjeva.\n\nAli prva verzija koju možete vidjeti — za 5 radnih dana. Bez obzira na veličinu projekta.\n\nTako ne čekate mjesec da vidite je li krenulo u pravom smjeru.",
     tags: ["cestapitanja", "faq", "rok", "timeline", "sarajevo", "devlab"],
@@ -203,8 +217,13 @@ export const POSTS_2: AdPost[] = [
     layout: "center",
     palette: "mint",
     eyebrow: "Česta pitanja",
-    title: "Četiri stvari koje svi pitaju",
-    items: ["Je li kod moj?", "Kako teče plaćanje?", "Imate li podršku?", "Radite li AI?"],
+    title: "Četiri pitanja koja nam svi postavljaju.",
+    items: [
+      "Je li kod na kraju moj?",
+      "Kako ide plaćanje?",
+      "Šta poslije isporuke?",
+      "Radite li i AI?",
+    ],
     caption:
       "❓ Četiri pitanja. Četiri poštena odgovora.\n\nČetiri pitanja koja dobijamo svaki dan — četiri kratka odgovora:\n\nDA LI JE KOD I PROJEKAT U POTPUNOSTI MOJ? Da. Nakon isporuke i izmirenja dogovorene cijene, kompletan kod, dizajn i sva prava nad projektom pripadaju isključivo Vama. Dobijate i dokumentaciju te kratku obuku za korištenje.\n\nKAKO TEČE PLAĆANJE? Plaćate tek kada budete zadovoljni rezultatom. Prvo besplatna gotova verzija, a tek nakon Vaše potvrde krećemo u puni razvoj. Nema predujma.\n\nDA LI NUDITE PODRŠKU NAKON ZAVRŠETKA? Da. Prvo izrađujemo besplatnu demo verziju, a podrška i održavanje su dostupni nakon isporuke.\n\nRADITE LI AI SISTEME I AI CHAT? Da. AI chat asistenti na sajtu i AI telefonski recepcionari koji odgovaraju kupcima 24 sata dnevno.\n\nImate drugo pitanje? Javite se u DM.",
     tags: ["cestapitanja", "faq", "kod", "placanje", "sarajevo", "devlab"],
@@ -213,14 +232,14 @@ export const POSTS_2: AdPost[] = [
   // ── 29. JAVITE NAM SE BRZO, BEZ FORME ────────────────────────────────────
   {
     id: "p29",
+    title: "Pišite nam na Instagram. Bez formi, bez čekanja.",
     template: "cta",
     category: "ponuda",
     layout: "photoBg",
     photo: "heroMob",
     palette: "dark",
-    eyebrow: "Bez forme",
-    title: "Javite nam se u DM. Bez forme, bez čekanja.",
-    subtitle: "Odgovaramo u roku od 10 minuta.",
+    eyebrow: "Kontakt",
+    subtitle: "Odgovaramo u roku od 10 minuta, radnim danom od 9 do 20 sati.",
     caption:
       "💬 Bez forme. Bez 12 polja. Samo DM.\n\nNe volimo forme koje traže 12 polja prije nego što popričate s nekim.\n\nZato je najbrži način — DM.\n\nŠta nam pošaljete:\n— ✅ čime se bavite (jedna rečenica)\n— 🔥 šta Vam treba (stranica, shop, aplikacija, AI)\n— 💡 grad, ako nije Sarajevo\n\nTo je dovoljno. Mi pitamo dalje.\n\nOdgovaramo u roku od 10 minuta. Ako je noć — ujutro prvo.\n\nNe morate imati ni ideju ni materijal. Većina razgovora počne s „ne znam šta mi treba“.",
     tags: ["kontakt", "dm", "bezforme", "brzo", "sarajevo", "devlab"],
@@ -234,8 +253,8 @@ export const POSTS_2: AdPost[] = [
     layout: "center",
     palette: "ink",
     eyebrow: "Kontakt",
-    title: "Recite čime se bavite. Mi pitamo dalje.",
-    subtitle: "Instagram DM · kontakt@devlab.cc.cd · Sarajevo",
+    title: "Recite čime se bavite. Ostalo je naš posao.",
+    subtitle: "Instagram: @devlab.cc.cd · Email: kontakt@devlab.cc.cd · Sarajevo, cijela BiH",
     caption:
       "👋 Ne morate imati ni ideju. Ozbiljno.\n\nNe morate imati:\n— ✅ gotov tekst\n— 🔥 logo u vektoru\n— 💡 ideju kako stranica treba izgledati\n— ⚡ ni odluku da li Vam uopšte treba stranica\n\nDovoljno je da se javite i kažete čime se bavite.\n\nKako nas kontaktirate:\n— 🎯 Instagram DM: @devlab.cc.cd\n— 💰 e-mail: kontakt@devlab.cc.cd\n— 📈 ili pozovite: +387 62 576 456\n\nOdgovaramo u roku od 10 minuta. Bez obaveze i bez predujma.\n\nJavite nam se u DM.",
     tags: ["kontakt", "pocetak", "bezobaveze", "sarajevo", "devlab"],

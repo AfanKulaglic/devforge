@@ -16,15 +16,16 @@ export const POSTS_1: AdPost[] = [
   // ── 1. BEZ PREDUJMA ──────────────────────────────────────────────────────
   {
     id: "p01",
+    subtitle: "Napravimo ga, pokažemo vam, i tek onda razgovaramo o plaćanju. Bez avansa, bez ugovora, bez rizika.",
     template: "number",
     category: "ponuda",
     layout: "photoBg",
     photo: "hero",
     palette: "dark",
-    eyebrow: "Bez predujma",
-    title: "Bez predujma. Plaćate tek kada ste zadovoljni",
+    eyebrow: "Bez plaćanja unaprijed",
+    title: "Ne plaćate ni marku dok svoj sajt ne vidite gotov.",
     value: "0 KM",
-    valueNote: "Počinjemo bez uplate. Odluku donosite kad vidite rezultat.",
+    valueNote: "Bez uplate na početku. Ako vam se ne svidi, ne plaćate ništa i nemate nikakvu obavezu.",
     caption:
       "🛑 STOP. Ne plaćajte ništa unaprijed.\n\nVećina agencija traži 50% predujma prije nego što počne. Vi platite, pa vidite šta ste dobili.\n\nKod nas je obrnuto.\n\n0 KM predujma. Razvoj počinjemo na povjerenje. Plaćate tek kada je projekat gotov i kada ste u potpunosti zadovoljni rezultatom.\n\nPovjerenje gradimo na rezultatu, a ne na avansu.\n\nJavite se u DM — odgovaramo u 10 minuta.",
     tags: ["bezpredujma", "webdizajn", "agencija", "sarajevo", "devlab"],
@@ -33,13 +34,13 @@ export const POSTS_1: AdPost[] = [
   // ── 2. POKREĆU BIZNIS WEB USLUGE ─────────────────────────────────────────
   {
     id: "p02",
+    title: "Stranica, shop, aplikacija ili igrica — sve na jednom mjestu.",
     template: "title",
     category: "ponuda",
     layout: "center",
     palette: "ink",
-    eyebrow: "Za Vaš biznis",
-    title: "Stranice, aplikacije i igre koje pokreću Vaš biznis",
-    subtitle: "Od ideje do gotovog proizvoda za nekoliko sedmica.",
+    eyebrow: "Šta radimo",
+    subtitle: "Ne morate tražiti tri različite firme. Jedan tim radi sve, od prve skice do puštanja u rad.",
     caption:
       "⚡ Vaš biznis treba biti na internetu. Danas.\n\nDigitalni proizvodi koji stvarno rade za Vaš biznis:\n\n— ✅ stranice koje pretvaraju posjetioce u klijente\n— 🔥 mobilne aplikacije za iOS i Android\n— 💡 2D igrice za web i mobilne\n— ⚡ AI sistemi koji odgovaraju umjesto Vas\n\nOd ideje do gotovog proizvoda za nekoliko sedmica. Izrađujemo besplatnu gotovu verziju za 5 dana — plaćate tek kada budete zadovoljni.\n\nSarajevo i cijela BiH. Bez kancelarije u centru i bez velikih režija.\n\nŠta Vama treba?",
     tags: ["webdizajn", "aplikacije", "igrice", "aisistemi", "sarajevo", "devlab"],
@@ -48,15 +49,15 @@ export const POSTS_1: AdPost[] = [
   // ── 3. WEB STRANICA VEĆ OD 150 KM ────────────────────────────────────────
   {
     id: "p03",
+    valueNote: "Dizajn, mobilna verzija i admin panel uključeni u cijenu. Gotova za 5 dana.",
     template: "price",
     category: "ponuda",
     layout: "photoBot",
     photo: "web",
     palette: "teal",
-    eyebrow: "Cijene",
-    title: "Stranica već od 150 KM",
+    eyebrow: "Cijena",
+    title: "Kompletna stranica za 150 KM. Bez skrivenih stavki.",
     value: "150 KM",
-    valueNote: "UI/UX dizajn, mobilna verzija i admin panel uključeni.",
     caption:
       "💸 150 KM. Ne 1500. Ista stvar.\n\nWeb stranica od 150 KM. Web shop od 600 KM. To je na sajtu i to dobijete u ponudi.\n\nU tih 150 KM:\n— ✅ landing page ili jednostavna web stranica\n— 🔥 UI/UX dizajn uključen u cijenu\n— 💡 responzivni dizajn (radi na mobitelu)\n— ⚡ kontakt forma\n— 🎯 admin panel\n— 💰 postavljanje hostinga i domene\n— 📈 besplatna gotova verzija\n\nNema skrivenih stavki na kraju. Bez naknadnih doplata.\n\nKoliko ste platili svoju trenutnu?",
     tags: ["cijene", "150km", "webstranice", "transparentnost", "sarajevo", "devlab"],
@@ -70,8 +71,8 @@ export const POSTS_1: AdPost[] = [
     layout: "photoBg",
     photo: "zasto",
     palette: "dark",
-    eyebrow: "Zašto Dev Lab",
-    title: "Zašto Dev Lab",
+    eyebrow: "Zašto baš mi",
+    title: "Zašto firme biraju Dev Lab umjesto agencije.",
     slides: [
       {
         template: "cover",
@@ -124,9 +125,14 @@ export const POSTS_1: AdPost[] = [
     layout: "photo",
     photo: "stvari",
     palette: "ink",
-    eyebrow: "Usluge",
-    title: "Četiri stvari koje radimo",
-    items: ["Stranice i shopovi", "2D igrice", "Mobilne aplikacije", "AI sistemi"],
+    eyebrow: "Naše usluge",
+    title: "Četiri stvari koje radimo — i radimo ih dobro.",
+    items: [
+      "Web stranice i shopovi",
+      "2D igrice za web i mobilne",
+      "Mobilne aplikacije iOS i Android",
+      "AI chat i recepcionar 24/7",
+    ],
     caption:
       "🎯 Četiri stvari. Bez filozofije.\n\nRadimo četiri stvari — i svaku dobro.\n\n1. WEB STRANICE I SHOPOVI. Moderne, responzivne stranice koje predstavljaju Vaš brend. Od landing page-a do kompleksnih korporativnih stranica i shopova. Od 150 KM.\n\n2. 2D IGRICE. Engaging igrice za mobilne platforme i web. Od casual do educational — prilagođeno Vašim zahtjevima.\n\n3. MOBILNE APLIKACIJE. Native i cross-platform aplikacije za iOS i Android. Od MVP-a do potpune aplikacije s backend-om.\n\n4. AI SISTEMI. AI recepcionar i chat asistent koji primaju pozive 24/7, odgovaraju kupcima, zakazuju termine i bilježe narudžbe — bez Vašeg učešća.\n\nSve ostalo — ne radimo. Za velike enterprise sisteme preporučimo nekog drugog.",
     tags: ["usluge", "webstranice", "igrice", "aplikacije", "sarajevo", "devlab"],
@@ -139,8 +145,8 @@ export const POSTS_1: AdPost[] = [
     category: "ponuda",
     layout: "center",
     palette: "dark",
-    eyebrow: "Usluge",
-    title: "Naše usluge",
+    eyebrow: "Naše usluge",
+    title: "Pet usluga. Jedan tim. Cijene javne.",
     slides: [
       {
         template: "cover",
@@ -193,13 +199,18 @@ export const POSTS_1: AdPost[] = [
   // ── 7. SVE OSTALO ŠTO PROJEKAT TREBA ─────────────────────────────────────
   {
     id: "p07",
+    title: "Sve što vaš projekat treba — uključeno u cijenu, bez doplata.",
     template: "list",
     category: "ponuda",
     layout: "band",
     palette: "mint",
-    eyebrow: "Sve ostalo",
-    title: "Sve što Vaš projekat treba, na jednom mjestu",
-    items: ["API razvoj i integracije", "Admin panel (CMS)", "Online plaćanje", "Domena, email i SSL"],
+    eyebrow: "Sve uključeno",
+    items: [
+      "API razvoj i integracije",
+      "Admin panel za samostalno uređivanje",
+      "Online plaćanje karticom",
+      "Domena, email i SSL certifikat",
+    ],
     caption:
       "🧩 Fali Vam pola stvari? Rješavamo sve.\n\nStranica nije samo dizajn. Ovo je sve što ide uz nju:\n\n— ✅ API razvoj i integracije — REST i GraphQL API-ji, povezivanje s CRM, ERP i dostavnim službama\n— 🔥 Admin panel (CMS) — vlastiti panel za samostalno uređivanje sadržaja, slika i proizvoda\n— 💡 Online plaćanje — Stripe, PayPal i servisi koje već koristite\n— ⚡ Domena, email i SSL — postavljamo ih, a plaćate direktno provideru, bez naše marže\n— 🎯 SEO i Google Analytics — tehnička osnova i mjerenje posjeta\n— 💰 Višejezičnost — za klijente iz BiH, regije i inostranstva\n— 📈 Copywriting — pišemo tekstove i opise proizvoda\n— 🚀 Logo i vizualni identitet — boje, tipografija, usklađen brend\n— 📱 Održavanje i podrška — ažuriranja i optimizacija nakon isporuke\n\nNe morate tražiti pet izvođača. Sve je na jednom mjestu.",
     tags: ["api", "adminpanel", "placanje", "seo", "sarajevo", "devlab"],
@@ -214,7 +225,7 @@ export const POSTS_1: AdPost[] = [
     photo: "web",
     palette: "ink",
     eyebrow: "Cijene",
-    title: "Cijene",
+    title: "Cijene bez sitnih slova. Od 150 KM.",
     slides: [
       {
         template: "cover",
@@ -263,13 +274,17 @@ export const POSTS_1: AdPost[] = [
   // ── 9. CIJENE ────────────────────────────────────────────────────────────
   {
     id: "p09",
+    title: "Tri paketa. Tri jasne cijene. Bez iznenađenja.",
     template: "list",
     category: "ponuda",
     layout: "split",
     palette: "light",
     eyebrow: "Cijene",
-    title: "Tri paketa, tri jasne cijene",
-    items: ["Stranice od 150 KM", "Web shopovi od 600 KM", "Aplikacije po dogovoru"],
+    items: [
+      "Web stranica — od 150 KM",
+      "Web shop — od 600 KM",
+      "Aplikacije i igrice — po dogovoru",
+    ],
     caption:
       "💰 Tri paketa. Tri cijene. Nula iznenađenja.\n\nWeb Stranice — 150 KM\nLanding page ili jednostavna web stranica, UI/UX dizajn uključen, responzivni dizajn, kontakt forma, demo se ne plaća, postavljanje hostinga i domene.\n\nWeb Shopovi — 600 KM\nKompletan e-commerce sistem, UI/UX dizajn uključen, online plaćanje (Stripe, PayPal), admin panel, inventory management, demo se ne plaća.\n\nMobilne Aplikacije — po dogovoru\niOS i/ili Android development, UI/UX dizajn, backend API integracija, push notifications, user authentication, App Store deployment, dokumentacija.\n\nTačnu ponudu dajemo nakon besplatne konsultacije — bez skrivenih troškova.",
     tags: ["cijene", "paketi", "webstranice", "shopovi", "sarajevo", "devlab"],
@@ -283,7 +298,7 @@ export const POSTS_1: AdPost[] = [
     layout: "center",
     palette: "mint",
     eyebrow: "Kako radimo",
-    title: "Kako radimo",
+    title: "Kako radimo: od prve poruke do gotovog sajta.",
     slides: [
       {
         template: "cover",

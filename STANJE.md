@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (premium uređen; ostali postovi vraćeni na original)
+Zadnje ažurirano: 2026-11-10 (40 objava: novi naslovi + domena u uglu)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,37 +12,38 @@ Zadnje ažurirano: 2026-11-10 (premium uređen; ostali postovi vraćeni na origi
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### VRAĆENO — ostali postovi su opet original
-Korisnik je tražio da se vrati stanje **prije** diranja ostalih 40 objava
-(ikone/dokazi/dugmad/12 varijanti su mu bila previše — "dosadno, isti dizajn").
+### 1. Domena u donjem lijevom uglu — na SVIH 41 objavi
+Prije je tu stajala kategorija ("PONUDA", "BREND") koja nista ne govori
+covjeku koji gleda sliku. Sada stoji **www.devlab.cc.cd** u teal boji +
+mala bijela strelica (17px), a kategorija je premjestena desno u istom redu,
+blijeda (opacity 0.55) da ne konkurira.
 
-`git checkout 834ac0d -- posts1.ts posts2.ts posts3.ts postsData.ts postRender.ts`
+Nova funkcija  u  (~270).
 
-Rezultat:
-- **premium (px01)** — ostaje uređen, sa CTA dugmadima, ikonama usluga, dokazima i SEO-om
-- **ostalih 40 objava** — originalni dizajn, bez ikona/dokaza/dugmadi
+### 2. Novi naslovi i tekstovi za svih 40 nepremium objava
+Svi naslovi konkretniji — brojevi, rokovi, cijene. Npr:
 
-### Stanje premium oglasa (px01) — finalno
-- Naslov: "Vaš biznis online. / Za 5 dana. / Bez plaćanja unaprijed." (zadnji red teal,
-  lomi se PO REČENICAMA).
-- Lead: "Prvo vidite gotov rezultat pa platite. Ne svidi li se, ne plaćate ništa i nemate
-  nikakvu obavezu."
-- 5 usluga sa velikim ikonama (web, shop, app, igrice, AI).
-- 3 dokaza sa kvačicama.
-- **Dugmad:** "JAVITE NAM SE NA INSTAGRAMU" (puni teal) + "www.devlab.cc.cd" (outline,
-  bijeli kursor IZA teksta, CUR=24, centrirano 104/102px).
-- **SEO:** blok ključnih riječi u captionu (izrada stranica, web shop, Sarajevo, Tuzla,
-  Zenica, Mostar, Banja Luka, Bihać, cijene 150/600 KM) + 25 hashtagova; `tags[]` = 18.
-- Caption: link `www.devlab.cc.cd` na vrhu, CTA na dnu.
+| id | prije | sada |
+|---|---|---|
+| p01 | Bez predujma. Plaćate tek kada ste zadovoljni | **Ne plaćate ni marku dok svoj sajt ne vidite gotov.** |
+| p02 | Stranice, aplikacije i igre koje pokreću Vaš biznis | **Stranica, shop, aplikacija ili igrica — sve na jednom mjestu.** |
+| p03 | Stranica već od 150 KM | **Kompletna stranica za 150 KM. Bez skrivenih stavki.** |
+| p05 | Četiri stvari koje radimo | **Četiri stvari koje radimo — i radimo ih dobro.** |
+| p27 | Koliko traje razvoj projekta | **Koliko traje izrada? Evo tačnih rokova.** |
+| p45 | sata dnevno dostupan AI recepcionar | **AI recepcionar koji nikad ne spava.** |
+| p56 | skrivenih troškova u svakoj ponudi | **Nula skrivenih troškova. Cijena koju čujete je cijena koju plaćate.** |
+| p57 | radnih dana do besplatne gotove verzije | **Pet radnih dana do besplatne gotove verzije.** |
+
+Itemi su konkretizovani:  → ,
+ → , itd.
 
 ### Verifikacija
-- 41 objava, 0 tekstova van kadra, 0 console grešaka, tsc=0, build OK (1.818 kB).
-
+- 41 objava, **0 tekstova van kadra**, 0 console grešaka, tsc=0, build OK (1.820 kB).
+- Domena prisutna na **41/41** objavi.
 ## Sljedeći korak
-- Pregledati `/objave` — premium uređen, ostali vraćeni na original.
-- Ako se opet želi bogatiji dizajn ostalih: raditi POSTEPENO, po 2-3 posta, uz odobrenje.
+- Pregledati  — svi postovi imaju domenu u uglu i novi tekst.
+- Ako neki naslov ne odgovara, to je jedan red u .
 - Opciono: 4:5 format za Instagram feed.
-- Opciono: skinuti `devlab.publicvm.com` sa Vercela.
 
 ## Napomene / zamke
 - **Python heredoc + `\n` u TS stringu = pokvaren string.** Koristiti `.cjs` skriptu sa

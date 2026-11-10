@@ -267,6 +267,29 @@ function brandMark(x: number, y: number, devColor: string, forgeColor: string = 
   };
 }
 
+// DONJI LIJEVI UGAO — natpis na svakom postu.
+//
+// Prije je tu stajala kategorija ("PONUDA", "BREND") koja nista ne govori
+// covjeku koji gleda sliku. Sada stoji DOMENA kao poziv: covjek odmah zna
+// gdje da ode ako ga zanima, bez citanja captiona.
+//
+// Strelica je namjerno mala i u soft boji — natpis ne smije konkurirati
+// naslovu, samo mora biti tu kad oko padne na dno.
+function domainLine(c: Colors, category: string): string {
+  const SITE = "www.devlab.cc.cd";
+  const fs0 = 24;
+  const baseY = SIZE_H - M - 6;
+  const w = SITE.length * fs0 * 0.58;
+  const CUR = 17;
+  const gap = 10;
+  return `<text x="${M}" y="${baseY}" font-family="${FONT}" font-size="${fs0}"
+    font-weight="800" letter-spacing="0.6" fill="${c.accent}">${esc(SITE)}</text>
+  <g transform="translate(${(M + w + gap).toFixed(1)},${(baseY - CUR + 3).toFixed(1)}) scale(${(CUR / 24).toFixed(4)})">
+    <path d="M3.6 1.6 L3.6 19.6 L8.7 14.8 L11.7 21.8 L15.2 20.3 L12.2 13.4 L18.8 13 Z"
+      fill="${c.ink}" stroke="${c.ink}" stroke-width="1.1" stroke-linejoin="round"/></g>
+  <text x="${SIZE - M}" y="${baseY}" text-anchor="end" font-family="${FONT}" font-size="20"
+    font-weight="800" letter-spacing="2.4" fill="${c.soft}" opacity="0.55">${esc(category.toUpperCase())}</text>`;
+}
 function header(c: Colors, eyebrow: string, category: string, slide: number, total: number): string {
   // Na zelenoj podlozi (ink je crn) logo se invertuje: "Dev" BIJEL, "Lab" CRN —
   // inace bi oba bila tamna na zelenom i wordmark bi se izgubio.
@@ -292,8 +315,7 @@ function header(c: Colors, eyebrow: string, category: string, slide: number, tot
     <text x="${SIZE - M}" y="${M - 4 + LOGO_BOX / 2 + 28 * 0.36}" text-anchor="end" font-family="${FONT}"
       font-size="28" font-weight="800" letter-spacing="2.6"
       fill="${c.accent}">${esc(eyebrow.toUpperCase())}</text>
-    <text x="${M}" y="${SIZE_H - M - 6}" font-family="${FONT}" font-size="26" font-weight="800"
-      letter-spacing="3" fill="${c.soft}">${esc(category.toUpperCase())}</text>
+    ${domainLine(c, category)}
     ${dots}`;
 }
 
