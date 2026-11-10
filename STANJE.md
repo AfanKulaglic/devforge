@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (premium oglas v4 — fix pxIcon skale + trust linija)
+Zadnje ažurirano: 2026-11-10 (premium oglas v5 — nova web ikona + udarni naslov)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,6 +12,13 @@ Zadnje ažurirano: 2026-11-10 (premium oglas v4 — fix pxIcon skale + trust lin
 - Dev server: `npm run dev` → http://localhost:5173/
 
 ## Gotovo (ova sesija)
+- **IKONA "Web stranice" POPRAVLJENA:** bila je globus (krug s meridijanima) — citaju je kao "internet",
+  ne kao "web stranica". Sada je **browser prozor** (okvir + gornja traka + 3 tacke + linije sadrzaja).
+- **UDARNI NASLOV:** "Vaša stranica gotova je za 5 dana. Plaćate tek kad je vidite." (duga, opisna)
+  → **"Vaš projekat." (bijeli) / "Gotov za 5 dana." (teal)** — 2 kratke recenice, druga u akcentu.
+- **Lead preureden:** "Plaćate tek kad vidite gotov rezultat. Bez predujma, bez ugovora, bez rizika."
+- Provjereno: 41 objava 0 van viewBoxa, 0 gresaka, tsc=0, build OK, vision oba formata (naslov 2 reda,
+  ikona browser prozor, footer vidljiv).
 - **KICKER ZAMIJENJEN TRUST LINIJOM:** "Prva verzija besplatno" (ponavljao naslov) → **"40+ projekata · 5 godina iskustva · Sarajevo"**.
 - **KRITIČAN BUG — `pxIcon` nije skalirao:** svi pathovi crtani 0–24, samo translirani, pa je ikona bila ~24px BEZ OBZIRA na `size` (64/98). Popravljeno:
   `scale(size/24)` + stroke-width se dijeli s skalom. Rezultat: ikone sad stvarno 98px → **mjereno 124px, 71% visine chipa** (bilo 26px/15%).

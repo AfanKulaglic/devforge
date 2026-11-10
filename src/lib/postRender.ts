@@ -51,7 +51,10 @@ const FONT = "'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif";
 // Layout "premium" crta SVG ručno (nema react-icons u lib sloju), zato su
 // potrebne minijaturne ikone kao putanje. Svaka je 24×24 viewBox, stroke.
 const PX_ICONS: Record<string, string> = {
-  web: "M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20",
+  // Browser prozor: okvir + gornja traka + tri tacke + linije sadrzaja.
+  // Prije je "web" bio globus (krug s meridijanima) — to citaju kao "internet",
+  // ne kao "web stranica", pa ikona nije odgovarala labelu.
+  web: "M3 4h18a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1Zm0 5h18M5.5 6.5h.01M7.5 6.5h.01M9.5 6.5h.01M6 13h6M6 16h9",
   shop: "M3 7h18l-2 13H5L3 7Zm5 0V5a4 4 0 0 1 8 0v2",
   app: "M7 2h10a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Zm3 17h4",
   ai: "M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4M12 8a4 4 0 0 1 4 4c0 1.5-.8 2.7-2 3.4V17h-4v-1.6C8.8 14.7 8 13.5 8 12a4 4 0 0 1 4-4Z",
