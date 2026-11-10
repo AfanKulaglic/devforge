@@ -67,6 +67,7 @@ import {
 import { FaLinkedinIn, FaInstagram } from "react-icons/fa6";
 import AdminPanel from "./AdminPanel";
 import PostsPage from "./PostsPage";
+import MailSignaturePage from "./MailSignaturePage";
 import { initAnalytics, trackEvent, trackPageView } from "./lib/analytics";
 import { startProjectsSync } from "./lib/projectsStore";
 import { startPricingSync } from "./lib/pricingStore";
@@ -5000,7 +5001,7 @@ const ROUTE_BREADCRUMB: Record<string, { name: string; path: string }[]> = {
 function injectRouteSchema(route: string, docTitle: string, desc: string) {
   const ID = "df-route-schema";
   document.getElementById(ID)?.remove();
-  if (route === "notfound" || route === "admin" || route === "reklama" || route === "objave" || route === "logo") return;
+  if (route === "notfound" || route === "admin" || route === "reklama" || route === "objave" || route === "logo" || route === "mail") return;
 
   const crumbs = ROUTE_BREADCRUMB[route];
   const graph: Record<string, unknown>[] = [
@@ -5099,6 +5100,7 @@ export default function App() {
     "/objave": "objave",
     "/admin": "admin",
     "/logo": "logo",
+    "/mail": "mail",
   };
   // "/" → home; poznata putanja → njena vrijednost; sve ostalo → 404.
   const route = path === "/" ? "home" : routeMap[path] ?? "notfound";
@@ -5297,6 +5299,7 @@ export default function App() {
 
   // Logo: samo logotip preko cijele stranice (bez headera/footera).
   if (route === "logo") return <LogoPage />;
+  if (route === "mail") return <MailSignaturePage />;
 
   return (
     <ContactModalCtx.Provider value={() => setContactOpen(true)}>

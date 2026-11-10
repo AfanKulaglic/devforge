@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (premium oglas: bez rama, popravljen naslov + CTA)
+Zadnje ažurirano: 2026-11-10 (domena devlab.cc.cd live + /mail generator potpisa)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,6 +12,18 @@ Zadnje ažurirano: 2026-11-10 (premium oglas: bez rama, popravljen naslov + CTA)
 - Dev server: `npm run dev` → http://localhost:5173/
 
 ## Gotovo (ova sesija)
+- **DOMENA `devlab.cc.cd` JE ŽIVA** (Vercel + DNSHE):
+  - A `@` → `216.198.79.1`, CNAME `www` → Vercel, HTTPS 200, SSL Vercel
+  - Mail: ImprovMX forwarding (`kontakt@`, `info@`, `@` → afankul42@gmail.com)
+    MX `mx1/mx2.improvmx.com` (10/20) + SPF TXT `v=spf1 include:spf.improvmx.com ~all`
+  - **Napomena:** Hotmail odbija ImprovMX (`S8002` Microsoftova interna lista) — Gmail radi.
+- **`/mail` — generator e-mail potpisa** (`src/MailSignaturePage.tsx`):
+  - Dvije varijante (puni / kompaktni), bira se pošiljalac `kontakt@` ili `info@`
+  - Potpis je **tabela sa inline stilovima** (Gmail briše `<style>`, Outlook ne podržava flex)
+  - Logo je **javni URL** `https://devlab.cc.cd/images/logo-icon.png` (Gmail blokira base64)
+  - Live pregled + "u kontekstu poruke" + dugme **Kopiraj potpis** (ClipboardItem text/html)
+  - Uputstvo za Gmail / Outlook.com / Outlook Desktop
+  - Ruta dodana u `App.tsx` (route map, noindex lista, render)
 - **PREMIUM OBJAVA (`px01`) — namjerno drugačiji oglas od svih ostalih:**
   - Novi fajl: `src/lib/postsPremium.ts` (jedina objava, stoji PRVA u galeriji)
   - Novi layout `"premium"` u `postRender.ts` → `premiumLayout()`
