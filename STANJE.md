@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (premium oglas v18 — dugmad + link u captionu)
+Zadnje ažurirano: 2026-11-10 (premium oglas v19 — dugme "Javite nam se na Instagramu")
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -14,7 +14,7 @@ Zadnje ažurirano: 2026-11-10 (premium oglas v18 — dugmad + link u captionu)
 
 ## Gotovo (ova sesija — premium oglas px01, v18)
 - **DUGMAD:**
-  - primarno: **"JAVITE SE NA INSTAGRAM DM"** (bilo "Javite se u DM ili na sajtu")
+  - primarno: **"JAVITE NAM SE NA INSTAGRAMU"**
   - sekundarno: **"www.devlab.cc.cd"** (dodato `www`)
   - font se auto-smanjuje (padding 56→24, letter-spacing 0.8→0.2) da duži tekst stane bez klipovanja
   - izmjereno: tekst 418px u dugmetu 464px → stane

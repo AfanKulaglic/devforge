@@ -817,7 +817,9 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   svg += `<rect x="${left}" y="${btnY}" width="${ctaW}" height="${btnH}"
     fill="${c.accent}"/>`;
   let cfs = 26;
-  while (cfs > 14 && ctaLabel.length * cfs * 0.58 > ctaW - 24) cfs -= 1;
+  // Koeficijent 0.655 je IZMJEREN na bold 900 (0.58 je podcjenjivao sirinu
+  // pa je tekst izlazio 460px u 464px dugmetu — pritisnut do ivice).
+  while (cfs > 13 && ctaLabel.length * cfs * 0.655 > ctaW - 52) cfs -= 1;
   svg += `<text x="${left + ctaW / 2}" y="${btnY + btnH / 2 + 10}" text-anchor="middle"
     font-family="${FONT}" font-size="${cfs}" font-weight="900" letter-spacing="0.8"
     fill="${c.accentInk}">${esc(ctaLabel)}</text>`;

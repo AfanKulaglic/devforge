@@ -45,7 +45,7 @@ export const POST_PREMIUM: AdPost = {
     "Web stranice od 150 KM, shopovi od 600 KM",
     "Sav sadržaj sajta mijenjate sami, u par klikova",
   ],
-  cta: "Javite se na Instagram DM",
+  cta: "Javite nam se na Instagramu",
   caption:
     "💎 Stranica gotova za 5 dana. Bez plaćanja unaprijed.\n" +
     "\uD83C\uDF0D www.devlab.cc.cd\n" +
