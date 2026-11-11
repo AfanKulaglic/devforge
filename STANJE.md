@@ -46,6 +46,53 @@ otvara. Korisnik klikne "Posalji" i vidi "Poruka je poslana".
 - stanja `sent` / `sending` / `sendError` umjesto `mailOpened`
 - uspjeh: "Poruka je poslana" + ponuda da pisu na mejl ako je hitno
 
+### SEO LIVE — verifikacija prosla + soft-404 fix
+
+Korisnik je dao tagove i potvrdio "proslo je oba".
+
+**Verifikacija (index.html, prije "Primarni SEO"):**
+```html
+<meta name="google-site-verification" content="_yes0yFX1rimvElU22mdGoMBPztQYpDE6lBm5lxcyEk" />
+<meta name="msvalidate.01" content="AA7B68670AEA3B6FBB5893AF3681FE48" />
+```
+Provjereno uzivo na devlab.cc.cd: oba **1** (prisutna). Deploy prosao.
+
+**BUG: SOFT-404 (kriticno).**
+SPA fallback vraca HTTP **200 za SVE** putanje, a staticki HTML nosi
+`index, follow`. Znaci nepostojeca stranica se Googleu prijavljivala kao
+**indeksabilna**, i vracala je title pocetne. Google to zove *soft 404* i
+kaznjava. Provjereno: `/nepostojeca-xyz-12345` -> 200 + index,follow.
+
+**Fix 1 — `index.html` SOFT-404 GUARD.** Synchronous `<script>` u
+`<head>`, izvrsi se PRIJE Reacta:
+```
+known = [14 javnih ruta]
+interni = ["/admin","/reklama","/objave","/logo","/mail","/test"]
+if (interni.includes(path) || !known.includes(path))
+   -> robots = "noindex, nofollow", googlebot = "noindex, nofollow"
+```
+
+**Fix 2 — `src/App.tsx` SEO mapa.** `admin`/`reklama`/`mail` nisu imali
+unos, pa su padali na `SEO.home` = **index, follow** i React je
+**prepisivao** guard. Dodani:
+```
+admin:    { title:"Admin | DevLab",   desc:"", noindex:true }
+reklama:  { title:"Reklama | DevLab", desc:"", noindex:true }
+mail:     { title:"Mail | DevLab",    desc:"", noindex:true }
+```
+
+**Verifikacija na PRODUKCIJI (Playwright):**
+| ruta | robots |
+|---|---|
+| / | index |
+| /cijene | index |
+| /kontakt | index |
+| **/nepostojeca-xyz** | **NOINDEX** + "Stranica nije pronađena (404)" |
+| **/admin** | **NOINDEX** |
+| **/objave** | **NOINDEX** |
+
+Svih 14 ruta vraca **200**. Googlebot dobija isti HTML (1967204 B).
+
 ### SEO — stanje i sta je popravljeno
 
 Korisnik: "daj mi najbolji moguci seo da ljudi brzo cuju za mene".
