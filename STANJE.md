@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (p03: vecina teksta CRNA, bijelo samo akcent)
+Zadnje ažurirano: 2026-11-10 (p03 vracen na ZELENU - kao prije)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,38 +12,34 @@ Zadnje ažurirano: 2026-11-10 (p03: vecina teksta CRNA, bijelo samo akcent)
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### p03 — boje okrenute: VISE crnog teksta
-Korisnik: "ne svidja mi se, zelim da vise teksta bude crno a nesto bijelo".
+### p03 ("150 KM") — VRACEN NA ZELENU
+Korisnik je trazio da se p03 vrati kako je ranije bilo (zelena podloga,
+crn tekst, bijeli "150 KM"). Moja prethodna izmjena na CRNU podlogu
+(`inkgreen` paleta) je bila pogresno razumljena — ponistena.
 
-U `formFigure` dodane dvije boje koje vaze SAMO na zelenoj podlozi:
+**Trenutno stanje p03:**
+- `palette: "tealwhite"` (zelena #4DEAE0 podloga)
+- eyebrow / 150 KM / domena -> BIJELI
+- naslov + biljeska -> CRNI (#0A0A0A / 72%)
 
-| element | prije | sada |
-|---|---|---|
-| 150 KM (broj) | crno | **BIJELO** |
-| naslov | bijelo | **CRNO** #0A0A0A |
-| biljeska | bijelo 82% | **CRNO** rgba(10,10,10,0.72) |
+**p01 ("0 KM"):** vracen na `dark` paletu (foto pozadina). "0 KM" je
+zelen (BRAND) na tamnoj fotografiji — jedini nacin da bude citljivo, jer
+layout `photoBg` uvijek stavlja taman fade preko slike.
 
-Bijelo ostaje samo kao akcent: broj, eyebrow slogan i domena.
-Time je vecina teksta crna (sto korisnik trazi), a bijelo nosi kontrast.
-
-```ts
-const onTeal = c.bg === "#4DEAE0" || c.bg === "#6FEFE6";
-const headInk = onTeal ? "#0A0A0A" : c.ink;
-const noteInk = onTeal ? "rgba(10,10,10,0.72)" : c.soft;
-```
-
-Na tamnoj paleti (dark/ink) nista se ne mijenja — tamo bi crni tekst bio
-nevidljiv, pa naslov ostaje `c.ink` i biljeska `c.soft`.
+### Napomena o `inkgreen` paleti
+Paleta `inkgreen` (crna podloga + bijeli naslov + zeleni akcent) je
+OSTALA u kodu ali se NIGDJE ne koristi. Ako zatreba, samo se postavi
+`palette: "inkgreen"` na post.
 
 ### Verifikacija
-- p03: naslov i biljeska crni, broj/slogan/domena bijeli (vision potvrdio).
+- p03: zelena podloga, crn naslov/biljeska, bijeli broj (vision potvrdio).
 - 41 objava x 2 formata: 0 van kadra, 0 console gresaka.
 - tsc=0, build OK (1.822 kB).
 
 ## Sljedeći korak
-- Pregledati p03 — vecina crno, bijeli akcent na broju.
-- Ako neki drugi post ide na zelenu podlogu, koristiti paletu `tealwhite`
-  i automatski dobija isti tretman (crni tekst, bijeli broj).
+- Pregledati p03 na zelenoj — vraceno kako je bilo.
+- Cekati sljedecu konkretnu zelju za p03 (npr. koja boja za koji
+  element) prije daljih promjena palete.
 - Opciono: 4:5 format.
 
 ## Napomene / zamke

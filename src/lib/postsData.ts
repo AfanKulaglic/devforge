@@ -35,7 +35,15 @@ export type PostCategory =
   | "ponuda"
   | "brend";
 
-export type PostPalette = "dark" | "teal" | "tealwhite" | "light" | "ink" | "mint" | "sun";
+export type PostPalette =
+  | "dark"
+  | "teal"
+  | "tealwhite"
+  | "inkgreen"
+  | "light"
+  | "ink"
+  | "mint"
+  | "sun";
 
 // Jedan list karusela. Ako ga nema, objava je jedna slika.
 // Kod karusela (2–10 listova) svaki list dobija isti vizuelni ram, ali

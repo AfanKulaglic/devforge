@@ -148,6 +148,21 @@ const PALETTES: Record<PostPalette, Colors> = {
     line: "#0A0A0A",       // crne linije na zelenom
     warm: "#0A0A0A",
   },
+  // CRNA PODLOGA + BIJELI NASLOV + ZELENI AKCENT.
+  //
+  // Za p03 ("150 KM"): podloga crna, glavni naslov bijeli, a sve ostalo
+  // (broj, slogan, domena) u BRAND teal. Tako oglas ima tri jasan sloja:
+  // crna nosi mirnocu, bijelo nosi poruku, zeleno nosi brend.
+  inkgreen: {
+    bg: "#060606",
+    ink: "#FFFFFF",
+    soft: "#FFFFFF",
+    accent: BRAND,
+    accentInk: "#0A0A0A",
+    card: "#111111",
+    line: "rgba(255,255,255,0.16)",
+    warm: BRAND,
+  },
   // ZELENA PODLOGA + BIJELI TEKST.
   //
   // Paleta teal ima CRNI tekst na zelenoj — to je citljivo, ali djeluje kao
@@ -529,6 +544,8 @@ function formFigure(c: Colors, p: PostSlide): Block {
   // Na tamnoj paleti (dark/ink) ovo se ne primjenjuje: tamo crni tekst ne
   // bi bio vidljiv, pa naslov ostaje `c.ink` a biljeska `c.soft`.
   const onTeal = c.bg.toUpperCase() === "#4DEAE0" || c.bg.toUpperCase() === "#6FEFE6";
+  // Na zelenoj podlozi tekst ide u CRNO (korisnik zeli vecinu crnog teksta).
+  // Na crnoj podlozi naslov je BIJEL, a akcent (broj, linija) je ZELEN.
   const headInk = onTeal ? "#0A0A0A" : c.ink;
   const noteInk = onTeal ? "rgba(10,10,10,0.72)" : c.soft;
   const val = p.value ?? "";
@@ -536,7 +553,7 @@ function formFigure(c: Colors, p: PostSlide): Block {
   const vsize = Math.max(70, Math.min(fit(val, W, base), tall ? 280 : 250));
 
   let svg = `<text x="0" y="${vsize * 0.78}" font-family="${FONT}" font-size="${vsize}"
-    font-weight="900" letter-spacing="${(-vsize * 0.03).toFixed(1)}" fill="${tall ? "#FFFFFF" : c.accent}">${esc(val)}</text>`;
+    font-weight="900" letter-spacing="${(-vsize * 0.03).toFixed(1)}" fill="${onTeal ? "#FFFFFF" : c.accent}">${esc(val)}</text>`;
   let h = vsize;
 
   // Naslov: 3 reda u 1:1, 4 u 3:4. Prored 1.22 da se redovi ne slijube.
