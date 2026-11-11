@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (p21 + p22 sređeni; VAZNO: ID-evi nisu 1-2-3, vidi mapu)
+Zadnje ažurirano: 2026-11-10 (p23 sređen; p22 potvrđen; mapa pozicija->ID u tabeli)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,7 +12,7 @@ Zadnje ažurirano: 2026-11-10 (p21 + p22 sređeni; VAZNO: ID-evi nisu 1-2-3, vid
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### p05–p10 — sređeni (detalji u gitu)
+### p05–p10, p21, p22 — sređeni (detalji u gitu)
 
 **Dva vazna buga popravljena globalno:**
 1. `formFigure`: razmak broj->naslov bio `tall ? 8 : 52` — u 3:4 samo 8px,
@@ -20,21 +20,22 @@ Zadnje ažurirano: 2026-11-10 (p21 + p22 sređeni; VAZNO: ID-evi nisu 1-2-3, vid
 2. `richLayer` logo: `brandMark(..., c.accent)` je na `light` paleti
    (`accent #0A0A0A`) pravio „Lab" CRN na tirkiznoj. Sada `richOnGreen`.
 
-### p21 — „Prije izrade"
+### p23 — „Naši projekti", 5 slajdova
 
-`layout: photoBg`, `palette: dark`. Dodan `subtitle` + 4x `{icon,label,note}`
-(chat/monitor/layers/check). Prije gola lista sa crticama.
+Template `number` koristi `formFigure`, pa `items` grid radi automatski.
 
-### p22 — „Naš proces"
-
-`layout: "band"` -> `"center"` — band je crtao `stroke 1.5` okvir koji je
-korisnik odbio na p07. Dodan `subtitle` + 4x `{icon,label,note}`
-(chat/rocket/layers/check).
+| slajd | tema | ikone |
+|---|---|---|
+| 1 | cover — „Dvadeset projekata. Nijedan nije platio ono što nije vidio." + lead | web/shop/app/ai |
+| 2 | 20+ isporučenih projekata | web/shop/app/game |
+| 3 | Vrste projekata + subtitle | shop/rocket/monitor/ai |
+| 4 | 100% zadovoljstvo | shield/check/clock/tools |
+| 5 | CTA — „Vaš projekt je sljedeći." + lead | chat/rocket/shield |
 
 ## ⚠️ VAZNO: ID-evi NISU 1-2-3 po redu
 
 Korisnik trazi postove po REDOSLIJEDU na stranici ("p12", "p13"), ali
-ID-evi u kodu skacu. Mapa (pozicija -> id):
+ID-evi u kodu skacu. **Uvijek provjeri poziciju, ne pretpostavljaj ID!**
 
 | # | id | naslov |
 |---|---|---|
@@ -49,24 +50,26 @@ ID-evi u kodu skacu. Mapa (pozicija -> id):
 | 9 | p08 | Cijene bez sitnih slova |
 | 10 | p09 | Tri paketa. Tri jasne cijene. |
 | 11 | p10 | Kako radimo |
-| 12 | **p21** | **Prije prve linije koda** |
-| 13 | **p22** | **Četiri koraka. Nula plaćanja unaprijed.** |
-| 14 | p23 | Projekti koje smo radili |
+| 12 | p21 | Prije prve linije koda |
+| 13 | p22 | Četiri koraka. Nula plaćanja unaprijed. |
+| 14 | **p23** | **Projekti koje smo radili** |
 | 15 | p24 | Izrada sajtova u Sarajevu |
 | 16 | p25 | Šta tačno dobijate za cijenu |
+| 17 | p26 | Da li je gotova verzija zaista besplatna? |
+| 18 | p27 | Koliko traje izrada? |
 
 **Nema p11–p20 ni p31–p40.** Niz: p01–p10, p21–p30, p41–p60.
-Kad korisnik kaze "pN", provjeri da li misli ID ili poziciju!
 
 ### Verifikacija
-- p21: 4 ikone, subtitle vidljiv, 0 preklapanja, y 1344/1440.
-- p22: 4 ikone, BEZ okvira (stroke-width 1.5 = 0), 0 preklapanja.
+- p23: 5 slajdova, ikone 4/4/4/4/3, svi y 1344/1440.
+- Vision: cover, 20+ slajd i CTA potvrdjeni — bez preklapanja.
+- p22: 0 okvira (`stroke-width 1.5` = 0).
 - 70 slajdova x 2 formata: 0 van kadra.
 - tsc=0, build OK.
 
 ## Sljedeći korak
-- Pregledati p21 i p22 (pozicije 12 i 13).
-- Sljedeci po redu: **p23** (pozicija 14) — galerija projekata.
+- Pregledati p23 (5 slajdova).
+- Sljedeci po redu: **p24** (pozicija 15) — izrada sajtova u Sarajevu.
 - `band` layout vise nigdje ne koristi okvir — kandidat za brisanje.
 
 ## Napomene / zamke
