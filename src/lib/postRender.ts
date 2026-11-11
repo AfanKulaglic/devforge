@@ -525,7 +525,7 @@ function formFigure(c: Colors, p: PostSlide): Block {
   const vsize = Math.max(70, Math.min(fit(val, W, base), tall ? 280 : 250));
 
   let svg = `<text x="0" y="${vsize * 0.78}" font-family="${FONT}" font-size="${vsize}"
-    font-weight="900" letter-spacing="${(-vsize * 0.03).toFixed(1)}" fill="${c.accent}">${esc(val)}</text>`;
+    font-weight="900" letter-spacing="${(-vsize * 0.03).toFixed(1)}" fill="${tall ? "#0A0A0A" : c.accent}">${esc(val)}</text>`;
   let h = vsize;
 
   // Naslov: 3 reda u 1:1, 4 u 3:4. Prored 1.22 da se redovi ne slijube.
@@ -565,31 +565,10 @@ function formFigure(c: Colors, p: PostSlide): Block {
     h += tall ? 48 : 44;
     svg += `<rect x="0" y="${h - 6}" width="5" height="${nl.length * (nfs + 20)}" fill="${c.accent}"/>`;
     nl.forEach((l: string, i: number) => {
-      svg += `<text x="30" y="${h + nfs * 0.86 + i * (nfs + 16)}" font-family="${FONT}"
+      svg += `<text x="30" y="${h + nfs * 0.86 + i * (nfs + 20)}" font-family="${FONT}"
         font-size="${nfs}" font-weight="500" fill="${c.soft}">${esc(l)}</text>`;
     });
     h += (nl.length - 1) * (nfs + 20) + nfs;
-  }
-
-  // LISTA UKLJUCENOG — kratke stavke bez ikona.
-  //
-  // Za cjenovne objave (150 KM) samo broj + naslov + biljeska nije dovoljno:
-  // covjek zeli znati STA dobija za taj novac. Lista ide ISPOD biljeske,
-  // malim slovima, kao fusnota ponude — da ne konkurira broju.
-  const incl = (p as any).includes as string[] | undefined;
-  if (incl && incl.length) {
-    const ifs = tall ? 27 : 25;
-    // Razmak 44 — bb visine slova 27px je ~1.33*27=36, pa 34 nije dovoljno.
-    const iGap = tall ? 46 : 40;
-    h += tall ? 46 : 38;
-    incl.slice(0, tall ? 5 : 4).forEach((it, i) => {
-      const iy = h + i * iGap;
-      // kratka crtica, pa tekst
-      svg += `<rect x="0" y="${iy - 10}" width="18" height="3" fill="${c.ink}" opacity="0.55"/>`;
-      svg += `<text x="30" y="${iy}" font-family="${FONT}" font-size="${ifs}"
-        font-weight="600" fill="${c.ink}" opacity="0.88">${esc(it)}</text>`;
-    });
-    h += ((incl.slice(0, tall ? 5 : 4).length - 1) * iGap) + ifs;
   }
 
   return { svg, h };

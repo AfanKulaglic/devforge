@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (p03 "150 KM": bijeli font, lista ukljucenog)
+Zadnje ažurirano: 2026-11-10 (p03: crno/bijelo, bez nabrajanja)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,42 +12,39 @@ Zadnje ažurirano: 2026-11-10 (p03 "150 KM": bijeli font, lista ukljucenog)
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### p03 ("150 KM") — bijeli font + lista ukljucenog
-Korisnik: zeli bijeli font na tom postu (ne samo crni) i vise teksta,
-marketinski objasnjeno.
+### p03 ("150 KM") — mijesane boje, nabrajanje uklonjeno
+Korisnik: "rekao sam da nesto bude crno nesto bijelog fonta, ali izbrisi
+nabrajanje ispod teksta i daj bolji tekst".
 
-**1. Nova paleta `tealwhite`** (postsData.ts + postRender.ts):
-zeleni bg #4DEAE0, ink #FFFFFF, soft rgba(255,255,255,0.82),
-accent #FFFFFF. Postojeca `teal` je imala CRNI ink — to je plakat, ne oglas.
+**1. Boje izmijesane** (formFigure):
+- `150 KM` -> **crno** (#0A0A0A) u 3:4 formatu, kao sidro.
+- Naslov i biljeska -> **bijelo** / bijelo 82%.
+- Kontrast je jak: crn broj na teal podlozi, bijeli tekst oko njega.
 
-**2. Nova lista `includes`** (AdPost + PostSlide + formFigure):
-kratke stavke ispod biljeske, malim slovima, sa tankom crticom. 5 stavki u
-3:4, 4 u 1:1. Za p03: dizajn, admin panel, domena/hosting/SSL,
-kontakt forma, rok 5 dana.
+**2. Nabrajanje uklonjeno** — cijeli `includes` blok iz `formFigure`
+(i polje `includes` iz p03). Lista sa crticama je djelovala kao formular
+i gusila je oglas.
 
-### BUGOVI POPRAVLJENI
-**a) Polja sa objave nisu dolazila na slide.** PLACE[layout] prima `slide`,
-a `includes` je na objavi — lista se tiho ne bi nacrtala. U
-`renderSlideSvg` dodan `merged` objekat koji spaja title/subtitle/value/
-valueNote/includes/items/eyebrow s objave na slide.
+**3. Tekst bolji i marketinski:**
+- valueNote: "Dizajn, kod, domena i hosting — jedan trošak, bez dodataka.
+  Gotova za 5 radnih dana, a platiti je trebate tek kad je vidite i kad vam
+  se svidi."
+- title: "Kompletna stranica za 150 KM. Plaćate tek kad je vidite."
+  (prije: "Bez skrivenih stavki")
 
-**b) Logo "Lab" nevidljiv na zelenoj podlozi.** `onGreen` se detektovao po
-`c.ink === "#0A0A0A"` — ali tealwhite ima zeleni bg i BIJELI ink, pa je
-"Lab" ispisivan u BRAND teal na teal podlozi. Sada se gleda `c.bg`.
-
-**c) Prored liste bio premali** (iGap 34 za font 27) — redovi su se
-preklapali. Sada 46/40.
+### BUG popravljen
+Prored biljeske nije bio isti na sva tri mjesta: linija je racunala
+(nfs+20), a tekst (nfs+16) — zadnja rijec je izlazila i gubila se
+("svid" umjesto "svidi"). Sada svuda `(nfs + 20)` -> `NLH`.
 
 ### Verifikacija
-- p03: bijeli #FFFFFF tekst, 150KM 150px, lista 5 stavki, 0 preklapanja.
-- Logo "DevLab" citljiv na zelenom (vision potvrdio).
+- p03: 150 KM crno (#0A0A0A), naslov bijeli, bez liste, tekst cijeli.
 - 41 objava x 2 formata: 0 van kadra, 0 console gresaka.
-- tsc=0, build OK (1.823 kB).
+- tsc=0, build OK (1.822 kB).
 
 ## Sljedeći korak
-- Pregledati p03 u oba formata.
-- Ostali cjenovni postovi (p08, p09, p55, p56) mogu dobiti `includes` listu
-  i paletu `tealwhite` na isti nacin — samo polje u postsN.ts.
+- Pregledati p03 — crno "150 KM" + bijeli tekst.
+- Ostali cjenovni postovi (p08, p09, p55, p56) mogu dobiti isti tretman.
 - Opciono: 4:5 format.
 
 ## Napomene / zamke
