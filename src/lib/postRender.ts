@@ -1539,49 +1539,94 @@ function premiumLayout(c: Colors, p: PostSlide): string {
 function coverLayout(): string {
   // ── NASLOVNA ZA FACEBOOK ──────────────────────────────────────────────
   //
-  // Zahtjev: LOGO U SREDINI, zanimljiva tamna pozadina preko nje, ispod
-  // logotipa slogan i instagram/domena.
+  // Kompozicija: LOGO U SREDINI, iza njega PLANETA ZEMLJA iz daljine
+  // (vidi se samo gornja polovina luka), ispod slogan, pa instagram i domena.
   //
-  // Zato je kompozicija vertikalno centrirana i simetricna — FB cover se
-  // gleda odozgo, a profilna slika prekriva lijevi donji ugao. Sve sto je
-  // vazno drzi se u sredini, pa ni profilna ni ivice ne odsijecaju nista.
+  // Zasto planeta a ne apstraktni krug: krug je bio simetrican i "mrtav".
+  // Zemlja iz daljine daje dubinu — gornji luk horizonta iza logotipa cita
+  // se kao izlazak sunca nad planetom, sto je premium i pricaljivo, a ne
+  // dekoracija. Donji dio planete je namjerno izvan kadra (y > SIZE_H), pa
+  // se nikad ne vidi kao "lopta" — samo luk.
   const cx = SIZE / 2;
   const cy = SIZE_H / 2;
   let svg = "";
 
-  // 1) POZADINA — tamna baza + tri sloja svjetla da ne bude ravna crna.
-  svg += `<rect x="0" y="0" width="${SIZE}" height="${SIZE_H}" fill="#070707"/>`;
+  // 1) SVEMIR — tamna baza, zvijezde i tirkizni sjaj u sredini.
+  svg += `<rect x="0" y="0" width="${SIZE}" height="${SIZE_H}" fill="#05060A"/>`;
+  svg += `<rect x="0" y="0" width="${SIZE}" height="${SIZE_H}" fill="url(#covStars)"/>`;
   svg += `<rect x="0" y="0" width="${SIZE}" height="${SIZE_H}" fill="url(#covGlow)"/>`;
-  svg += `<rect x="0" y="0" width="${SIZE}" height="${SIZE_H}" fill="url(#covGrid)"/>`;
 
-  // 2) DVA TANKA PRSTENA oko logotipa — dubina bez ijednog okvira oko kadra.
-  svg += `<circle cx="${cx}" cy="${cy - 96}" r="196" fill="none" stroke="#4DEAE0" stroke-opacity="0.16" stroke-width="1.5"/>`;
-  svg += `<circle cx="${cx}" cy="${cy - 96}" r="248" fill="none" stroke="#4DEAE0" stroke-opacity="0.07" stroke-width="1.5"/>`;
-  // Luk u akcent boji — prekida simetriju i vuce pogled na logo.
-  svg += `<path d="M ${cx - 196} ${cy - 96} A 196 196 0 0 1 ${cx + 60} ${cy - 96 - 186}"
-    fill="none" stroke="#4DEAE0" stroke-opacity="0.55" stroke-width="3" stroke-linecap="round"/>`;
+  // 2) PLANETA ZEMLJA — iz daljine, vidi se samo GORNJI LUK horizonta.
+  //
+  // R = 620 je namjerno velik: manji krug bi izgledao kao loptica iza
+  // teksta. Veliki radijus + nizak centar = horizont, ne predmet.
+  //
+  // Zemlja se prepoznaje po KONTINENTIMA i po atmosferskom rubu. Bez njih
+  // je to samo sivi luk. Zato: tamna vodena masa, svjetlije kopno (blagi
+  // teal, ne zelena — da ostane u brendu), i svijetli rub prema svemiru.
+  const pR = 620;
+  const pCy = SIZE_H + 268;
 
-  // 3) LOGOTIP U SREDINI — "Dev" bijel, "Lab" tirkizan, krupno.
-  const lfs = 132;
-  // Sirina se racuna po karakteru da bi se oba dijela centrirala zajedno.
+  // 2a) Tijelo planete — tamna okeanska baza.
+  svg += `<circle cx="${cx}" cy="${pCy}" r="${pR}" fill="url(#covOcean)"/>`;
+
+  // 2b) KONTINENTI — nepravilne mrlje, isjecene na krug planete.
+  //
+  // Oblici su namjerno mekani i organski (ne geometrijski) jer se tako
+  // citaju kao kopno. Svi su unutar `clipPath`-a planete, pa nijedan ne
+  // moze izaci izvan luka.
+  svg += `<g clip-path="url(#covEarthClip)">`;
+  // Veliki kontinent lijevo od centra — vidi se samo gornji dio.
+  svg += `<path d="M ${cx - 430} ${pCy - 400}
+    C ${cx - 360} ${pCy - 470} ${cx - 250} ${pCy - 480} ${cx - 175} ${pCy - 430}
+    C ${cx - 120} ${pCy - 392} ${cx - 140} ${pCy - 330} ${cx - 210} ${pCy - 305}
+    C ${cx - 300} ${pCy - 275} ${cx - 400} ${pCy - 310} ${cx - 430} ${pCy - 400} Z"
+    fill="url(#covLand)" opacity="0.55"/>`;
+  // Manji kontinent desno — uravnotezuje kompoziciju.
+  svg += `<path d="M ${cx + 120} ${pCy - 455}
+    C ${cx + 210} ${pCy - 500} ${cx + 330} ${pCy - 480} ${cx + 385} ${pCy - 410}
+    C ${cx + 430} ${pCy - 350} ${cx + 380} ${pCy - 300} ${cx + 300} ${pCy - 305}
+    C ${cx + 210} ${pCy - 312} ${cx + 130} ${pCy - 380} ${cx + 120} ${pCy - 455} Z"
+    fill="url(#covLand)" opacity="0.42"/>`;
+  // Mali otok gore lijevo — detalj koji cita kao arhipelag.
+  svg += `<path d="M ${cx - 330} ${pCy - 520}
+    C ${cx - 300} ${pCy - 540} ${cx - 260} ${pCy - 530} ${cx - 255} ${pCy - 505}
+    C ${cx - 250} ${pCy - 482} ${cx - 290} ${pCy - 470} ${cx - 315} ${pCy - 488} Z"
+    fill="url(#covLand)" opacity="0.30"/>`;
+  // Terminator: desna strana planete tone u tamu.
+  svg += `<rect x="${cx}" y="${pCy - pR}" width="${pR}" height="${pR}"
+    fill="url(#covTerm)"/>`;
+  svg += `</g>`;
+
+  // 2c) ATMOSFERA — svijetli rub prema svemiru, najjaci na gornjem luku.
+  svg += `<circle cx="${cx}" cy="${pCy}" r="${pR}" fill="none" stroke="url(#covAtmo)"
+    stroke-width="3"/>`;
+  svg += `<circle cx="${cx}" cy="${pCy}" r="${pR + 11}" fill="none" stroke="#4DEAE0"
+    stroke-opacity="0.10" stroke-width="7"/>`;
+  // Odraz sunca na rubu — mali, da planet bude "iz daljine", ne osvijetljen.
+  svg += `<circle cx="${cx}" cy="${pCy}" r="${pR + 2}" fill="none" stroke="#8BFFF6"
+    stroke-opacity="0.50" stroke-width="1.5" stroke-dasharray="180 900"
+    stroke-dashoffset="-70"/>`;
+
+  // 3) LOGOTIP U SREDINI — "Dev" bijel, "Lab" tirkizan.
+  const lfs = 126;
   const charW = lfs * 0.56;
-  const totalW = ("DevLab").length * charW;
+  const totalW = "DevLab".length * charW;
   const lx = cx - totalW / 2;
-  const ly = cy - 96 + lfs * 0.36;
+  const ly = cy - 78 + lfs * 0.36;
   svg += `<text x="${lx}" y="${ly}" font-family="${FONT}" font-size="${lfs}" font-weight="900"
     letter-spacing="-5"><tspan fill="#FFFFFF">Dev</tspan><tspan fill="#4DEAE0">Lab</tspan></text>`;
 
-  // 4) SLOGAN — jedna linija, ispod logotipa, s dvije kratke crte sa strane.
-  const slogan = "Stranice, shopovi i aplikacije — bez plaćanja unaprijed.";
-  const slfs = 34;
-  svg += `<text x="${cx}" y="${cy + 42}" text-anchor="middle" font-family="${FONT}"
-    font-size="${slfs}" font-weight="600" fill="#9A9A9A">${esc(slogan)}</text>`;
+  // 4) SLOGAN — KRATAK, dvije rijeci. Prije je bila cijela recenica koja je
+  //    izgledala kao podnaslov clanka, a ne kao potpis brenda.
+  svg += `<text x="${cx}" y="${cy + 58}" text-anchor="middle" font-family="${FONT}"
+    font-size="38" font-weight="700" letter-spacing="1.5" fill="#9AA0A8">Digitalna agencija</text>`;
 
-  // 5) INSTAGRAM + DOMENA — u jednom redu, ispod slogana.
-  svg += `<text x="${cx}" y="${cy + 122}" text-anchor="middle" font-family="${FONT}"
+  // 5) INSTAGRAM + DOMENA.
+  svg += `<text x="${cx}" y="${cy + 126}" text-anchor="middle" font-family="${FONT}"
     font-size="30" font-weight="800" fill="#4DEAE0">@devlab.cc.cd</text>`;
   svg += `<text x="${cx}" y="${cy + 164}" text-anchor="middle" font-family="${FONT}"
-    font-size="26" font-weight="600" fill="#6E6E6E">www.devlab.cc.cd</text>`;
+    font-size="25" font-weight="600" fill="#5F646C">www.devlab.cc.cd</text>`;
 
   return svg;
 }
@@ -1876,6 +1921,45 @@ export function renderSlideSvg(
       <stop offset="100%" stop-color="#000000" stop-opacity="0.82"/>
     </linearGradient>
     <!-- PREMIUM: lijevi veo — tekst je lijevo, pa je lijevo najtamnije -->
+    <radialGradient id="covOcean" cx="0.5" cy="0.42" r="0.62">
+      <stop offset="0" stop-color="#0A3330"/>
+      <stop offset="0.55" stop-color="#072421"/>
+      <stop offset="0.85" stop-color="#04150F"/>
+      <stop offset="1" stop-color="#020B09"/>
+    </radialGradient>
+    <radialGradient id="covLand" cx="0.45" cy="0.35" r="0.7">
+      <stop offset="0" stop-color="#1E6E63"/>
+      <stop offset="0.6" stop-color="#14514A"/>
+      <stop offset="1" stop-color="#0C332F"/>
+    </radialGradient>
+    <linearGradient id="covTerm" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.80"/>
+    </linearGradient>
+    <linearGradient id="covAtmo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7DF5EA" stop-opacity="0.75"/>
+      <stop offset="0.5" stop-color="#4DEAE0" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#4DEAE0" stop-opacity="0.08"/>
+    </linearGradient>
+    <clipPath id="covEarthClip">
+      <circle cx="540" cy="896" r="620"/>
+    </clipPath>
+    <radialGradient id="covPlanet" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#12403C"/>
+      <stop offset="0.55" stop-color="#0B2B29"/>
+      <stop offset="0.85" stop-color="#071A19"/>
+      <stop offset="1" stop-color="#04100F"/>
+    </radialGradient>
+    <radialGradient id="covStars" cx="0.5" cy="0.5" r="0.72">
+      <stop offset="0" stop-color="#4DEAE0" stop-opacity="0.05"/>
+      <stop offset="1" stop-color="#4DEAE0" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="covDots" width="26" height="26" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="4" r="1" fill="#FFFFFF" fill-opacity="0.30"/>
+      <circle cx="15" cy="12" r="0.8" fill="#FFFFFF" fill-opacity="0.18"/>
+      <circle cx="22" cy="19" r="1.1" fill="#FFFFFF" fill-opacity="0.24"/>
+      <circle cx="8" cy="21" r="0.7" fill="#FFFFFF" fill-opacity="0.14"/>
+    </pattern>
     <radialGradient id="covGlow" cx="0.5" cy="0.42" r="0.62">
       <stop offset="0" stop-color="#4DEAE0" stop-opacity="0.20"/>
       <stop offset="0.45" stop-color="#4DEAE0" stop-opacity="0.06"/>

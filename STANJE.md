@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (premium bez okvira; nova FB naslovna sa logom u sredini)
+Zadnje ažurirano: 2026-11-10 (FB naslovna: planeta Zemlja + kratak slogan)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -36,27 +36,61 @@ ${isCover && !isBare ? coverFrame(c) : ""}
 Ostala su namjerno samo 2 stroke recta: okvir logo-kutije i outline dugme.
 Karuseli (p04, p06...) zadrzali su svoj okvir — provjereno.
 
-### FB NASLOVNA — nova kompozicija, logo u sredini
+### FB NASLOVNA — planeta Zemlja iza logotipa
 
-Korisnik: stara je "dosadna", trazi logo u sredini, zanimljivu tamnu
-pozadinu, ispod slogan i instagram/domenu.
+Korisnik: stari slogan ("Stranice, shopovi i aplikacije — bez plaćanja
+unaprijed.") mu se ne svidja, a krug u pozadini zamijeniti **planetom
+Zemljom iz daljine, samo gornja polovina luka**. Trazi "premium" izgled.
 
-`coverLayout()` u `postRender.ts` potpuno prepravljen — vertikalno
-centrirano i simetricno, jer FB profilna prekriva lijevi donji ugao:
+`coverLayout()` u `postRender.ts`, sve vertikalno centrirano:
 
 | sloj | sadrzaj |
 |---|---|
-| pozadina | `#070707` + `#covGlow` radial (teal 0.20 u sredini) + `#covGrid` mreza 60px |
-| dekor | dva tanka kruga (r 196 / 248) + teal luk preko gornje polovine |
-| centar | **DevLab** 132px, "Dev" bijel, "Lab" `#4DEAE0` |
-| ispod | slogan: "Stranice, shopovi i aplikacije — bez plaćanja unaprijed." |
-| ispod | `@devlab.cc.cd` (teal, 800) |
-| dno | `www.devlab.cc.cd` (sivo, 600) |
+| svemir | `#05060A` + `#covStars` + `#covGlow` (teal) |
+| planeta | `circle r=620`, `cy = SIZE_H + 268` — centar je IZVAN kadra, vidi se samo luk |
+| kontinenti | 3 organska `path` oblika u `clipPath` (`#covEarthClip`) |
+| terminator | `#covTerm` gradijent desno — tamna strana planete |
+| atmosfera | `#covAtmo` 3px rub + 7px prigušeni prsten + tanki "sunčev odraz" |
+| logo | **DevLab** 126px, "Dev" bijel, "Lab" `#4DEAE0` |
+| slogan | **Digitalna agencija** 38px, `#9AA0A8` |
+| ispod | `@devlab.cc.cd` (teal 800) |
+| dno | `www.devlab.cc.cd` (sivo 600) |
 
-**BUG:** gradienti `covGlow`/`covGrid` su prvo ubaceni u `brandMark` (regex
-pogodio pogresan `</defs>`), pa se nisu definisali u SVG-u — pozadina je
-bila ravna crna (izmjereno centar `[7,7,7]`). Premjesteni u `defs` od
-`renderSlideSvg`; sada centar `[21,33,32]`, sredina `[22,46,44]`.
+**Slogan promijenjen** — bila cijela recenica koja se citala kao podnaslov
+clanka. Sada dvije rijeci, kao potpis brenda.
+
+**Zasto kontinenti:** bez njih je to samo sivi luk. Planeta se prepoznaje
+po kopnu i atmosferskom rubu. Kopno je blagi teal (ne zelena) da ostane
+u brendu. Izmjereno: lijevo `[13,59,54]`, desno `[7,30,28]` (terminator).
+
+**BUG:** prvi render imao je ravnu crnu pozadinu — gradienti `covGlow`/
+`covGrid` su regexom upali u `brandMark` (pogresan `</defs>`), pa se nisu
+definisali. Premjesteni u `defs` od `renderSlideSvg`.
+
+**BUG:** slogan je preklapao logo (DevLab box y 145-313, slogan y 299-350)
+jer `<text>` box nosi veliki line-height. Pomjereno na `cy + 58`, dalje
+`cy + 126` i `cy + 164` — sada 0 preklapanja.
+
+### PREMIUM objava — svi okviri uklonjeni
+
+Korisnik: "ne svidja mi se okvir na postu ekskluzivnog sadrzaja".
+
+**BUG: invertovana logika okvira.** U `renderSlideSvg` je stajalo:
+
+```ts
+${isCover || isBare ? "" : coverFrame(c)}   // POGREGSNO
+```
+
+To znaci: okvir se crta SVUDA OSIM na coveru — dakle bas na premium objavi
+(koja nije cover) je uvijek bio. Ispravno:
+
+```ts
+${isCover && !isBare ? coverFrame(c) : ""}
+```
+
+**Chip kartice bez okvira** — u `premiumLayout` su imale `stroke` 1.5
+(`stroke-opacity 0.22`). Uklonjen; ostala je samo svjetlija podloga.
+Karuseli (p04, p06...) zadrzali su svoj okvir — provjereno.
 
 ### Ranije ove sesije
 
@@ -99,7 +133,9 @@ http://localhost:5173/
 ### Verifikacija
 - px01: okvir 8px = false, tanak 0.30 = false, chip 0.22 = false.
 - p04/p06 (karuseli): okvir 8px = true (zadrzan).
-- FB naslovna: sve centrirano na cx=540, unutar kadra, glow radi.
+- FB naslovna: sve centrirano na cx=540, 0 preklapanja, unutar kadra.
+- Planeta: kontinenti vidljivi, terminator lijevo/desno razlika potvrdjena.
+- Preuzimanje: fbc01 -> PNG 1080x628.
 - 71 slajd x 2 formata: 0 van kadra. tsc=0, build OK.
 
 ## Dev server
