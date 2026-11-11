@@ -23,11 +23,28 @@ export const POSTS_2: AdPost[] = [
     palette: "dark",
     eyebrow: "Prije izrade",
     title: "Prije prve linije koda sjednemo i razmislimo.",
+    subtitle: "Stranica se ne pravi u Figmi. Pravi se u glavi.",
     items: [
-      "Razgovor o tome ko je vaš kupac",
-      "Pregled onoga što radi konkurencija",
-      "Struktura stranice na papiru",
-      "Tekstovi prije dizajna, ne poslije",
+      {
+        icon: "chat",
+        label: "Ko je vaš kupac",
+        note: "Razgovor o tome koga zovete — ne o tome šta vam se sviđa.",
+      },
+      {
+        icon: "monitor",
+        label: "Šta radi konkurencija",
+        note: "Gledamo pet firmi koje rade isto. Šta im ide, šta ne.",
+      },
+      {
+        icon: "layers",
+        label: "Struktura na papiru",
+        note: "Nacrtamo stranice prije dizajna — koja vodi gdje.",
+      },
+      {
+        icon: "check",
+        label: "Tekst prije dizajna",
+        note: "Prvo riječi, pa izgled. Obrnuto nikad ne radi.",
+      },
     ],
     caption:
       "🧠 Stranica se ne pravi u Figmi. Pravi se u glavi.\n\nRedoslijed je važan. Ovako izgleda naš početak:\n\n1. Razgovor — 30 minuta o tome ko je kupac i šta ga muči. Ne o tome šta Vam se sviđa.\n2. Konkurencija — gledamo 5 firmi koje rade isto. Šta im rade dobro, šta loše.\n3. Struktura — nacrtamo stranice na papiru. Koja vodi gdje, šta je na svakoj.\n4. Tekst — pišemo prvo tekst, pa dizajn. Obrnuto nikad ne radi.\n\nTek onda Figma. Tek onda kod.\n\nZato prva verzija obično bude dobra iz prve — pola posla je urađeno prije nego što se išta vidi.",
@@ -40,14 +57,32 @@ export const POSTS_2: AdPost[] = [
     title: "Četiri koraka. Nula plaćanja unaprijed.",
     template: "process",
     category: "izakulisa",
-    layout: "band",
+    // `band` je crtao stroke okvir oko bloka — korisnik ga odbio na p07.
+    layout: "center",
     palette: "ink",
     eyebrow: "Naš proces",
+    subtitle: "Nema koraka petog — ovo je cijeli put od razgovora do objave.",
     items: [
-      "Konsultacija — 15 minuta",
-      "Gotova verzija — za 5 dana",
-      "Vaše revizije — 4 besplatne",
-      "Isporuka — sve na vaše ime",
+      {
+        icon: "chat",
+        label: "Konsultacija — 15 minuta",
+        note: "Čime se bavite, ko vas zove i šta stranica treba da uradi.",
+      },
+      {
+        icon: "rocket",
+        label: "Gotova verzija — 5 dana",
+        note: "Prava stranica na pravom linku, prije ijednog plaćanja.",
+      },
+      {
+        icon: "layers",
+        label: "Revizije — 4 besplatne",
+        note: "Četiri kruga ispravki su u cijeni, ne naplaćuju se.",
+      },
+      {
+        icon: "check",
+        label: "Isporuka — sve na vaše ime",
+        note: "Domena, kod i lozinke predati vama. Ne ostajete vezani.",
+      },
     ],
     caption:
       "📋 Četiri koraka. Nema koraka petog.\n\nTransparentno — ovako izgleda projekat od prvog razgovora do zadnjeg dana:\n\nDAN 1 — Razgovor od 15-30 minuta. Čime se bavite, ko Vas zove, šta stranica treba da uradi.\n\nDAN 2–5 — Besplatna gotova verzija. Prava stranica na pravom linku, koju otvorite na mobitelu i pošaljete kome hoćete.\n\nDAN 6–20 — Puni razvoj. Sve stranice, funkcionalnosti, admin panel. Redovni pregledi i izmjene.\n\nZADNJI DAN — Testiranje na tri uređaja. Domena na Vaše ime, kod u cjelosti, sve lozinke predate.\n\nTek onda plaćate. Bez predujma, bez rizika.",
