@@ -46,6 +46,32 @@ otvara. Korisnik klikne "Posalji" i vidi "Poruka je poslana".
 - stanja `sent` / `sending` / `sendError` umjesto `mailOpened`
 - uspjeh: "Poruka je poslana" + ponuda da pisu na mejl ako je hitno
 
+### TIMEOUT: modal se vise NE blokira (spor mail/firebase)
+
+Korisnik: "i dalje kada posaljem poruku modal se ne ugasi".
+
+**Testirano na produkciji prvo** — normalan slucaj radi (otvoren 800ms,
+zatvoren 3000ms). Znaci nije bio problem u zatvaranju, nego u **cekanju**.
+
+**Pravi bug:** ako `/api/inquiry` (Brevo) ili Firebase ne odgovore, forma
+vrti `"Šaljem…"` **neograniceno** i modal nikad ne reaguje. Izmjereno sa
+sporim mailom: 9s i dalje `"Šaljem…"`, bez ikakve poruke.
+
+**Fix — dva timeouta:**
+
+| fajl | timeout | ponasanje |
+|---|---|---|
+| `inquiries.ts` `saveInquiryRemote` | 6s | `Promise.race` — nastavi dalje (mail je vazniji) |
+| `inquiries.ts` `sendInquiryToServer` | 8s | `AbortController` -> "Server ne odgovara…" |
+
+**Testirano (mail namjerno 20s):**
+| t | stanje |
+|---|---|
+| 4s | "Šaljem…" |
+| 8s | "Šaljem…" |
+| 11s | greska "Server ne odgovara" — vise ne visi |
+| normalan mail | potvrda 700ms, modal zatvoren 2.9s |
+
 ### MODAL SE SAM ZATVARA NAKON SLANJA
 
 Korisnik: "kada korisnici ukucaju podatke i posalju neka se povai i button

@@ -99,9 +99,18 @@ export function addInquiryLocally(data: Omit<Inquiry, "id" | "at">): Inquiry {
  */
 export async function saveInquiryRemote(data: Omit<Inquiry, "id" | "at">): Promise<boolean> {
   if (!firebaseReady) return false;
+
+  // Firebase može visjeti (loša mreža, ad-blocker). Bez timeouta forma
+  // čeka neograničeno na ovom `await` PRIJE nego uopšte pozove
+  // `/api/inquiry`, pa dugme vrti "Šaljem…" i modal ne reaguje.
+  // 6s: ako do tada ne prođe, nastavi dalje — mail je važniji.
+  const timeout = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error("firebase-timeout")), 6000),
+  );
+
   try {
     const node = push(ref(getDb(), DB_PATH));
-    await set(node, {
+    await Promise.race([set(node, {
       at: new Date().toISOString(),
       name: data.name,
       contact: data.contact,
@@ -110,9 +119,11 @@ export async function saveInquiryRemote(data: Omit<Inquiry, "id" | "at">): Promi
       budget: data.budget,
       message: data.message,
       handled: false,
-    });
+    }), timeout]);
     return true;
   } catch {
+    // Timeout ili prava greška — oboje znači "nije potvrđeno".
+    // Forma zato ne smije tvrditi da je poslano.
     return false;
   }
 }
@@ -207,12 +218,22 @@ export function unhandledCount(list: Inquiry[]): number {
 export async function sendInquiryToServer(
   data: Omit<Inquiry, "id" | "at">,
 ): Promise<{ ok: boolean; error?: string; offline?: boolean }> {
+  // ── TIMEOUT ────────────────────────────────────────────────────────────
+  //
+  // Bez ovoga, ako Brevo/Vercel ne odgovori, dugme vrti "Šaljem…"
+  // neograničeno i modal nikad ne reaguje. Čovjek misli da je aplikacija
+  // mrtva. 8s je dovoljno za normalan mail, a ne drži nikoga zauvijek.
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 8000);
+
   try {
     const r = await fetch("/api/inquiry", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(data),
+      signal: controller.signal,
     });
+    clearTimeout(timer);
 
     if (r.ok) return { ok: true };
 
@@ -230,8 +251,12 @@ export async function sendInquiryToServer(
       ok: false,
       error: (j as { error?: string }).error ?? "Slanje mejla nije uspjelo. Pokušajte ponovo.",
     };
-  } catch {
-    // Mreža pala, ad-blocker, offline…
+  } catch (e) {
+    clearTimeout(timer);
+    // AbortError = istekao timeout; ostalo = mreža pala / ad-blocker.
+    if (e instanceof Error && e.name === "AbortError") {
+      return { ok: false, error: "Server ne odgovara. Pokušajte ponovo ili nas pozovite." };
+    }
     return { ok: false, error: "Nema veze sa serverom. Provjerite internet i pokušajte ponovo." };
   }
 }
