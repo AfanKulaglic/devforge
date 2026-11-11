@@ -779,9 +779,14 @@ function formBlocks(c: Colors, p: PostSlide): Block {
     const baseline = top + fs * 0.78;
 
     if (icon && PX_ICONS[icon]) {
-      // ikona centrirana po VISINI LABELA (ne cijelog bloka) — inace bjezi
-      // prema dolje kad stavka ima note.
-      svg += pxIcon(icon, 0, baseline - IC * 0.78, c.accent, IC);
+      // IKONA SE CENTRIRA PO CIJELOM BLOKU (label + biljeska), ne po labelu.
+      //
+      // Prije je bila vezana za baseline labela — kad stavka ima biljesku,
+      // label je gore, pa je ikona vizuelno bjezala prema gore i nije bila
+      // u ravni sa tekstom desno. Sada se racuna sredina bloka (top + blockH/2)
+      // i ikona se centrira na nju.
+      const iconMid = top + blockH / 2;
+      svg += pxIcon(icon, 0, iconMid - IC / 2, c.accent, IC);
     } else {
       // crtica: debela, vizuelno teza od teksta → centrirana na mala slova
       svg += `<rect x="0" y="${(baseline - fs * 0.30).toFixed(1)}" width="30" height="8"
@@ -820,17 +825,34 @@ function formDuo(c: Colors, p: PostSlide): Block {
     .join("");
   const top = (tl.length - 1) * ts * 1.08 + ts * 0.78 + 46;
 
-  const gap = 14;
+  // DVIJE STRANE, DVIJE PRICE.
+  //
+  // Lijevo = agencija: tamna ploha, siv tekst, X ikona. Desno = DevLab:
+  // puna akcent (zelena) ploha, crn tekst, kvačica. Kontrast plohe je ono
+  // sto oko prvo uhvati — prije su obje bile slicne pa se nije vidjelo koja
+  // je koja dok se ne procita tekst.
+  const gap = 16;
   const bw = (W - gap) / 2;
   const rows = Math.max(left.length, right.length);
-  // Red je visi: 78px (bio 58) jer stavka sad ima label + note u dva reda.
   const rowH = SIZE_H >= 1300 ? 82 : 70;
-  const bh = 76 + rows * rowH;
+  const headerH = 74;
+  const bh = headerH + rows * rowH + 14;
 
-  // LIJEVO — PRIJE. Namjerno prigušeno: sivo na tamnom, bez akcenta.
+  // ── LIJEVO: AGENCIJA ────────────────────────────────────────────────────
   svg += `<rect x="0" y="${top}" width="${bw}" height="${bh}" fill="${c.card}" stroke="${c.line}" stroke-width="1.5"/>`;
-  svg += `<text x="22" y="${top + 40}" font-family="${FONT}" font-size="26" font-weight="900"
-    letter-spacing="2.2" fill="${c.soft}">PRIJE</text>`;
+  // Ikona "x" u zaglavlju — odmah se vidi da je ovo losa strana.
+  svg += pxIcon("x", 22, top + 30, c.soft, 22);
+  svg += `<text x="58" y="${top + 48}" font-family="${FONT}" font-size="26" font-weight="900"
+    letter-spacing="2.2" fill="${c.soft}">AGENCIJA</text>`;
+  // tanka linija ispod zaglavlja — razdvaja header od stavki
+  svg += `<rect x="16" y="${top + headerH - 10}" width="${bw - 32}" height="1" fill="${c.line}"/>`;
+
+  // ── DESNO: DEVLAB ───────────────────────────────────────────────────────
+  svg += `<rect x="${bw + gap}" y="${top}" width="${bw}" height="${bh}" fill="${c.accent}"/>`;
+  svg += pxIcon("check", bw + gap + 22, top + 30, c.accentInk, 22);
+  svg += `<text x="${bw + gap + 58}" y="${top + 48}" font-family="${FONT}" font-size="26"
+    font-weight="900" letter-spacing="2.2" fill="${c.accentInk}">DEVLAB</text>`;
+  svg += `<rect x="${bw + gap + 16}" y="${top + headerH - 10}" width="${bw - 32}" height="1" fill="${c.accentInk}" opacity="0.35"/>`;
 
   const drawRow = (item: any, x: number, y: number, colW: number, ok: boolean) => {
     const isObj = typeof item === "object" && item !== null;
@@ -859,15 +881,12 @@ function formDuo(c: Colors, p: PostSlide): Block {
   };
 
   left.forEach((it: any, ri: number) => {
-    drawRow(it, 0, top + 86 + ri * rowH, bw, false);
+    drawRow(it, 0, top + headerH + 34 + ri * rowH, bw, false);
   });
 
-  // DESNO — POSLIJE. Akcentna ploha: ovo je odgovor koji ostaje u glavi.
-  svg += `<rect x="${bw + gap}" y="${top}" width="${bw}" height="${bh}" fill="${c.accent}"/>`;
-  svg += `<text x="${bw + gap + 22}" y="${top + 40}" font-family="${FONT}" font-size="26"
-    font-weight="900" letter-spacing="2.2" fill="${c.accentInk}">POSLIJE</text>`;
+  // DESNO: ploha i header su vec nacrtani gore.
   right.forEach((it: any, ri: number) => {
-    drawRow(it, bw + gap, top + 86 + ri * rowH, bw, true);
+    drawRow(it, bw + gap, top + headerH + 34 + ri * rowH, bw, true);
   });
 
   return { svg, h: top + bh };

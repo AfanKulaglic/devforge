@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (p04: "ne agenciju" zeleno, vece ikone)
+Zadnje ažurirano: 2026-11-10 (p04: ikone centrirane, AGENCIJA vs DEVLAB)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,36 +12,48 @@ Zadnje ažurirano: 2026-11-10 (p04: "ne agenciju" zeleno, vece ikone)
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### p04 — "ne agenciju" zeleno + vece ikone u listi
+### p04 — tri stvari
 
-**1. Zeleno "ne agenciju"** (korisnik htio frazu, ne samo rijec):
-```ts
-accentWords: ["DevLab", "agenciju", "ne"],
-```
-Fraza "ne agenciju" se NE MOZE matchovati kao jedan string jer wrap()
-lomi naslov na redove — "ne" zavrsi na prvom redu, "agenciju." na drugom.
-Zato su to dvije odvojene akcent rijeci; oba <tspan> dobiju #4DEAE0.
+**1. "ne agenciju" vraceno u BIJELO.** `accentWords` je sada samo
+`["DevLab"]`. Fraza "ne agenciju" je opet bijela kao ostatak naslova.
 
-**2. Ikone u listi povecane** (formBlocks):
+**2. Ikone na slajdu 4 centrirane po CIJELOM BLOKU.**
+Prije: `pxIcon(icon, 0, baseline - IC*0.78, ...)` — vezano za baseline
+LABELA, pa kad stavka ima biljesku ikona bjezi prema gore.
+Sada: `iconMid = top + blockH / 2` → ikona centrirana na sredinu
+(label + biljeska). Vision potvrdio centriranje u svim redovima.
+
+**3. Slajd 5 (compare) — jasnije razdvojeno.**
 
 | | prije | sada |
 |---|---|---|
-| IC (3:4) | 44px | **80px** |
-| IC (1:1) | 38px | **70px** |
-| stupac ikone | 66px | **108px** |
+| lijevi header | "PRIJE" | **AGENCIJA** + X ikona |
+| desni header | "POSLIJE" | **DEVLAB** + kvačica |
+| headeri | samo tekst | ikona + tekst + linija ispod |
+| visina headera | 76px | **74px + 14px padding** |
 
-Stvarna velicina crteza je ~60px (pxIcon crta u tintama unutar boxa, ne
-cijeli box) — prije je bila 46px. Razmak ikona-tekst 90px, bez preklapanja.
+Kontrast ploha je ono sto razdvaja: AGENCIJA = tamna ploha (c.card) +
+siv tekst + X; DEVLAB = puna zelena ploha (c.accent) + crn tekst + kvačica.
+
+Naslov slajda: "Agencija ili DevLab? Stavka po stavku." (bio "Tipična
+agencija i DevLab, stavka po stavku.")
+
+Stavke preformulisane da su razlike jasnije i kraće:
+- 50% unaprijed / Plaćate obećanje  ->  0 KM unaprijed / Plaćate tek na kraju
+- 2–4 sedmice čekanja / Bez linka    ->  Gotovo za 5 dana / Link odmah
+- Vidite tek finalno                 ->  Vidite prije plaćanja / Živa stranica
+- Doplate na kraju                   ->  Cijene javne / od 150 KM
 
 ### Verifikacija
-- Vision: "ne", "agenciju" i "DevLab" zeleni u naslovu.
-- Vision: ikone 50–70px, razmak do labela 90px, bez preklapanja.
+- Vision slajd 5: "clearly identify left as AGENCIJA and right as DEVLAB".
+- Vision slajd 4: ikone centrirane sa blokom, bez pomjeranja.
+- Naslov 1: samo "DevLab" zelen (lista tspan boja potvrdjena).
 - 41 objava x 2 formata: 0 van kadra, 0 console gresaka.
 - tsc=0, build OK.
 
 ## Sljedeći korak
-- Pregledati p04 slajd 1 i 4 u 3:4.
-- Ikone u listi se dalje mogu povecati mijenjajuci 80/70 u formBlocks.
+- Pregledati p04 slajdove 1, 4 i 5 u 3:4.
+- Ako neka stavka u compare treba drugaciji tekst — samo posts1.ts.
 - Opciono: 4:5 format.
 
 ## Napomene / zamke
