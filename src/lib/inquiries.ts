@@ -1,19 +1,22 @@
 // ───────────────────────────────────────────────────────────────────────────
 // PORUKE — upiti koje ljudi šalju kroz kontakt formu.
 //
-// Kako radi (namjerno jednostavno, bez baze):
-//   1. Korisnik popuni formu na sajtu i klikne "Pošalji".
+// Kako radi:
+//   1. Korisnik popuni formu i klikne "Pošalji".
 //   2. `POST /api/inquiry` šalje mail na kontakt@devlab.cc.cd preko Brevoa
 //      — korisnik NE mora imati mail klijent, ništa se ne otvara.
-//   3. Ista poruka se upiše u `inquiries` listu.
+//   3. Ista poruka se upiše u Firebase (`devforge/inquiries`), pa je vidiš
+//      u admin panelu sa BILO KOJEG uređaja.
 //
-// Lista se čuva na dva mjesta:
-//   • localStorage — uvijek, pa admin vidi poruku i bez servera.
-//   • server      — kad je /api/inquiry konfigurisan (Vercel + Brevo).
-//
-// Zašto oba: lokalno je trenutno i radi offline; server je jedino mjesto koje
-// vidi PORUKU OD DRUGOG ČOVJEKA. Bez servera bi admin vidio samo svoje testove.
+// ZAŠTO FIREBASE A NE localStorage:
+//   localStorage živi u pregledniku POSJETIOCA. Kad je poruka tamo upisana,
+//   admin u SVOM pregledniku je nikad ne vidi — to je bio bug: "popunim i
+//   pošaljem, ali mi ne dođe ni u hotmail ni u admin". Sada svi uređaji
+//   gledaju isti izvor (Firebase), a localStorage je samo rezerva offline.
 // ───────────────────────────────────────────────────────────────────────────
+
+import { get, onValue, push, ref, remove, set } from "firebase/database";
+import { getDb, firebaseReady } from "./firebase";
 
 export type Inquiry = {
   id: string;
@@ -32,21 +35,42 @@ export type Inquiry = {
 };
 
 const KEY = "devforge-inquiries";
+const DB_PATH = "devforge/inquiries";
 
-/** Pročitaj sve poruke, najnovije prve. */
-export function loadInquiries(): Inquiry[] {
+// ── Normalizacija (Firebase vraća objekat, ne tipizirane vrijednosti) ─────
+function normalize(id: string, v: unknown): Inquiry | null {
+  if (!v || typeof v !== "object") return null;
+  const o = v as Record<string, unknown>;
+  const at = typeof o.at === "string" ? o.at : "";
+  if (!at) return null;
+  return {
+    id,
+    at,
+    name: typeof o.name === "string" ? o.name : "",
+    contact: typeof o.contact === "string" ? o.contact : "",
+    email: typeof o.email === "string" && o.email ? o.email : undefined,
+    service: typeof o.service === "string" ? o.service : "",
+    budget: typeof o.budget === "string" ? o.budget : "",
+    message: typeof o.message === "string" ? o.message : "",
+    handled: o.handled === true,
+  };
+}
+
+const sortNewest = (a: Inquiry, b: Inquiry) => b.at.localeCompare(a.at);
+
+// ── localStorage rezerva (radi i bez mreže) ──────────────────────────────
+export function loadLocalInquiries(): Inquiry[] {
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return [];
     const list = JSON.parse(raw) as Inquiry[];
-    if (!Array.isArray(list)) return [];
-    return list.sort((a, b) => b.at.localeCompare(a.at));
+    return Array.isArray(list) ? list.sort(sortNewest) : [];
   } catch {
     return [];
   }
 }
 
-function save(list: Inquiry[]): void {
+function saveLocal(list: Inquiry[]): void {
   try {
     localStorage.setItem(KEY, JSON.stringify(list.slice(0, 500)));
   } catch {
@@ -54,35 +78,127 @@ function save(list: Inquiry[]): void {
   }
 }
 
-/** Dodaj poruku lokalno (poziva se i kad server ne odgovori). */
+/** Upisi poruku lokalno (rezerva) i vrati je sa id-jem. */
 export function addInquiryLocally(data: Omit<Inquiry, "id" | "at">): Inquiry {
   const item: Inquiry = {
     ...data,
     id: `inq_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
     at: new Date().toISOString(),
   };
-  save([item, ...loadInquiries()]);
+  saveLocal([item, ...loadLocalInquiries()]);
   return item;
 }
 
-/** Označi poruku kao odgovorenu / neodgovorenu. */
-export function setInquiryHandled(id: string, handled: boolean): void {
-  const list = loadInquiries().map((x) => (x.id === id ? { ...x, handled } : x));
-  save(list);
+// ── Firebase: upis / čitanje / brisanje ──────────────────────────────────
+
+/**
+ * Upiši poruku u Firebase. Vraća true ako je uspjelo.
+ *
+ * Poziva se POSLIJE uspješnog maila — ako mail prođe a ovo padne, poruka
+ * je ipak u mailu, pa korisnik ne vidi grešku.
+ */
+export async function saveInquiryRemote(data: Omit<Inquiry, "id" | "at">): Promise<boolean> {
+  if (!firebaseReady) return false;
+  try {
+    const node = push(ref(getDb(), DB_PATH));
+    await set(node, {
+      at: new Date().toISOString(),
+      name: data.name,
+      contact: data.contact,
+      email: data.email ?? "",
+      service: data.service,
+      budget: data.budget,
+      message: data.message,
+      handled: false,
+    });
+    return true;
+  } catch {
+    return false;
+  }
 }
 
-/** Obriši poruku. */
-export function deleteInquiry(id: string): void {
-  save(loadInquiries().filter((x) => x.id !== id));
-}
-
-/** Koliko je neodgovorenih — za badge na tabu. */
-export function unhandledCount(): number {
-  return loadInquiries().filter((x) => !x.handled).length;
+/** Učitaj sve poruke iz Firebase. */
+export async function loadRemoteInquiries(): Promise<Inquiry[]> {
+  if (!firebaseReady) return [];
+  try {
+    const snap = await get(ref(getDb(), DB_PATH));
+    if (!snap.exists()) return [];
+    const obj = snap.val() as Record<string, unknown>;
+    return Object.entries(obj)
+      .map(([id, raw]) => normalize(id, raw))
+      .filter((x): x is Inquiry => x !== null)
+      .sort(sortNewest);
+  } catch {
+    return [];
+  }
 }
 
 /**
- * Pošalji poruku na server.
+ * Spoji Firebase i lokalne poruke, bez duplikata.
+ *
+ * Dedup po `at + contact` — lokalna kopija i Firebase zapis iste poruke
+ * imaju isto vrijeme u sekundi, a id se razlikuje.
+ */
+function merge(remote: Inquiry[], local: Inquiry[]): Inquiry[] {
+  const seen = new Set(remote.map((x) => `${x.at}|${x.contact}`));
+  return [...remote, ...local.filter((x) => !seen.has(`${x.at}|${x.contact}`))].sort(sortNewest);
+}
+
+/** Sve poruke: Firebase + lokalna rezerva. */
+export async function loadInquiries(): Promise<Inquiry[]> {
+  const [remote, local] = await Promise.all([loadRemoteInquiries(), Promise.resolve(loadLocalInquiries())]);
+  return merge(remote, local);
+}
+
+/** Označi poruku kao odgovorenu. */
+export async function setInquiryHandled(id: string, handled: boolean): Promise<void> {
+  // Lokalno uvijek (odmah se vidi u UI).
+  saveLocal(loadLocalInquiries().map((x) => (x.id === id ? { ...x, handled } : x)));
+  if (!firebaseReady || id.startsWith("inq_")) return; // lokalna kopija nema Firebase zapis
+  try {
+    await set(ref(getDb(), `${DB_PATH}/${id}/handled`), handled);
+  } catch {
+    /* offline — lokalno je već sačuvano */
+  }
+}
+
+/** Obriši poruku. */
+export async function deleteInquiry(id: string): Promise<void> {
+  saveLocal(loadLocalInquiries().filter((x) => x.id !== id));
+  if (!firebaseReady || id.startsWith("inq_")) return;
+  try {
+    await remove(ref(getDb(), `${DB_PATH}/${id}`));
+  } catch {
+    /* offline */
+  }
+}
+
+/** Pretplata na promjene — admin vidi novu poruku bez osvježavanja. */
+export function subscribeInquiries(cb: (list: Inquiry[]) => void): () => void {
+  if (!firebaseReady) return () => {};
+  const r = ref(getDb(), DB_PATH);
+  return onValue(r, (snap) => {
+    if (!snap.exists()) {
+      cb(loadLocalInquiries());
+      return;
+    }
+    const obj = snap.val() as Record<string, unknown>;
+    const remote = Object.entries(obj)
+      .map(([id, raw]) => normalize(id, raw))
+      .filter((x): x is Inquiry => x !== null);
+    cb(merge(remote, loadLocalInquiries()));
+  });
+}
+
+/** Koliko je neodgovorenih — za badge na tabu. */
+export function unhandledCount(list: Inquiry[]): number {
+  return list.filter((x) => !x.handled).length;
+}
+
+// ── Slanje na server (mail) ──────────────────────────────────────────────
+
+/**
+ * Pošalji poruku na server (Brevo -> mail).
  *
  * Vraća `true` ako je mail zaista poslan. Ako server nije dostupan (lokalni
  * razvoj bez Vercela), vraća `false` — pozivalac tada samo sačuva poruku

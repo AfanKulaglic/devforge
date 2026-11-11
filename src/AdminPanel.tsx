@@ -38,7 +38,7 @@ import AnalyticsTab from "./AdminAnalyticsTab";
 import { markAnalyticsSeen, startAnalyticsBadgePolling, useNewAnalyticsCount } from "./lib/analyticsBadge";
 import BackupTools from "./AdminBackupTools";
 import MessagesTab from "./AdminMessagesTab";
-import { unhandledCount } from "./lib/inquiries";
+import { loadInquiries, unhandledCount } from "./lib/inquiries";
 
 // ───────────────────────────────────────────────────────────────────────────
 // Admin panel — lokalna prijava (sessionStorage) + tabovi: Projekti, Poruke, Cijene, Analitika.
@@ -837,10 +837,15 @@ export default function AdminPanel() {
   // u prozor, jer poruka može stići dok je admin na drugoj kartici.
   const [novihPoruka, setNovihPoruka] = useState(0);
   useEffect(() => {
-    const read = () => setNovihPoruka(unhandledCount());
+    // Poruke su u Firebase — citaju se async, pa badge ceka odgovor.
+    // Osvježava se i na fokus (nova poruka moze stici dok je admin na
+    // drugoj kartici) i na interval kao rezerva ako realtime veza padne.
+    const read = () => {
+      void loadInquiries().then((list) => setNovihPoruka(unhandledCount(list)));
+    };
     read();
     window.addEventListener("focus", read);
-    const t = window.setInterval(read, 15000);
+    const t = window.setInterval(read, 20000);
     return () => {
       window.removeEventListener("focus", read);
       window.clearInterval(t);

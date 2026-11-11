@@ -12,6 +12,7 @@ import {
   deleteInquiry,
   loadInquiries,
   setInquiryHandled,
+  subscribeInquiries,
   unhandledCount,
 } from "./lib/inquiries";
 
@@ -99,8 +100,7 @@ function InquiryCard({ item, onChange }: { item: Inquiry; onChange: () => void }
           <button
             type="button"
             onClick={() => {
-              setInquiryHandled(item.id, !item.handled);
-              onChange();
+              void setInquiryHandled(item.id, !item.handled).then(onChange);
             }}
             title={item.handled ? "Označi kao novo" : "Označi kao odgovoreno"}
             className="inline-flex h-8 w-8 items-center justify-center border border-white/10 text-white/50 transition hover:border-teal-400/50 hover:text-teal-200"
@@ -123,8 +123,7 @@ function InquiryCard({ item, onChange }: { item: Inquiry; onChange: () => void }
             type="button"
             onClick={() => {
               if (window.confirm("Obrisati ovu poruku?")) {
-                deleteInquiry(item.id);
-                onChange();
+                void deleteInquiry(item.id).then(onChange);
               }
             }}
             title="Obriši"
@@ -200,18 +199,20 @@ export default function MessagesTab() {
   const [items, setItems] = useState<Inquiry[]>([]);
   const [filter, setFilter] = useState<"sve" | "novo">("sve");
 
-  const reload = () => setItems(loadInquiries());
+  const reload = () => {
+    void loadInquiries().then(setItems);
+  };
 
   useEffect(() => {
+    // Prvo učitaj sve (Firebase + lokalna rezerva)…
     reload();
-    // Druga kartica / drugi tab može dodati poruku — osvježi kad se vratiš.
-    const onFocus = () => reload();
-    window.addEventListener("focus", onFocus);
-    return () => window.removeEventListener("focus", onFocus);
+    // …pa slušaj uživo: nova poruka se pojavi bez osvježavanja stranice.
+    const unsub = subscribeInquiries(setItems);
+    return unsub;
   }, []);
 
   const shown = filter === "novo" ? items.filter((x) => !x.handled) : items;
-  const novih = unhandledCount();
+  const novih = unhandledCount(items);
 
   return (
     <div>

@@ -71,7 +71,7 @@ import MailSignaturePage from "./MailSignaturePage";
 import { initAnalytics, trackEvent, trackPageView } from "./lib/analytics";
 import { startProjectsSync } from "./lib/projectsStore";
 import { startPricingSync } from "./lib/pricingStore";
-import { addInquiryLocally, sendInquiryToServer } from "./lib/inquiries";
+import { addInquiryLocally, saveInquiryRemote, sendInquiryToServer } from "./lib/inquiries";
 import { Analytics as VercelAnalytics } from "@vercel/analytics/react";
 import {
   getProjects as getStoredProjects,
@@ -2592,6 +2592,10 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
 
     // Uvijek sačuvaj lokalno — i kad server radi i kad ne.
     addInquiryLocally(payload);
+
+    // Upiši i u Firebase — da poruka postoji na svim uredjajima, ne samo
+    // u ovom pregledniku. Ovo je ono sto admin panel cita.
+    void saveInquiryRemote(payload);
 
     const r = await sendInquiryToServer(payload);
     setSending(false);

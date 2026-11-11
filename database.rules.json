@@ -16,6 +16,15 @@
         ".write": true
       }
     },
+    "devforge": {
+      "inquiries": {
+        ".read": true,
+        ".write": true,
+        ".indexOn": [
+          "at"
+        ]
+      }
+    },
     "devforge_test": {
       ".read": false,
       ".write": false

@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-11 (telefon OBAVEZAN u formi, email opcionalan)
+Zadnje ažuriranо: 2026-11-11 (poruke u Firebase — vidljive sa svih uredjaja)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -46,6 +46,59 @@ otvara. Korisnik klikne "Posalji" i vidi "Poruka je poslana".
 - stanja `sent` / `sending` / `sendError` umjesto `mailOpened`
 - uspjeh: "Poruka je poslana" + ponuda da pisu na mejl ako je hitno
 
+### PORUKE U FIREBASE (kriticni bug)
+
+Korisnik: "popunim sve i posaljem poruku ali mi ona ne dodje u hotmail
+niti nas trnaici admin".
+
+**BUG 1 — admin nikad ne vidi poruku.** Poruke su bile SAMO u
+`localStorage`. To znaci: poruka se upise u preglednik POSJETIOCA, a admin
+gleda u SVOM pregledniku — nikad je ne vidi. Testirano: forma poslala,
+Firebase bio prazan, admin prazan.
+
+**Rjesenje:** `src/lib/inquiries.ts` sada cuva u Firebase
+(`devforge/inquiries`), isti obrazac kao `analytics.ts`.
+
+| funkcija | radi |
+|---|---|
+| `saveInquiryRemote()` | upis u Firebase (push) — poziva se iz forme |
+| `loadInquiries()` | async: Firebase + localStorage rezerva, dedup |
+| `subscribeInquiries()` | `onValue` — nova poruka se pojavi bez refresh |
+| `setInquiryHandled()` / `deleteInquiry()` | async, `handled` polje u Firebase |
+| `unhandledCount(list)` | prima listu (vise nije globalna) |
+
+**Pravila:** `database.rules.json` — dodana grana `devforge/inquiries`
+(`.read true`, `.write true`, `.indexOn ["at"]`).
+
+**Verifikacija (bitno):** test iz NOVOG browser konteksta (cist
+localStorage = kao drugi uredjaj): forma poslala -> Firebase zapis
+`-P6BfzLmjw7NgyJTslUe` -> admin u cistom kontekstu (`localStorage === null`)
+prikazuje karticu, badge = 1. **Radi.**
+
+**BUG 2 — mail ne stize (nije u kodu).**
+`POST /api/inquiry` na produkciji vraca `{"ok":true}` HTTP 200 — Brevo je
+mail PRIHVATIO. Mail tehnika je ispravna:
+
+```
+MX:    mx1/mx2.improvmx.com   <- ImprovMX (samo FORWARD, ne prima postu)
+SPF:   v=spf1 include:spf.improvmx.com include:spf.brevo.com ~all
+DMARC: v=DMARC1; p=none; rua=mailto:rua@dmarc.brevo.com
+```
+
+SPF i DMARC ukljucuju Brevo — posiljalac je dozvoljen.
+
+**Zato mail ne stize:** `kontakt@devlab.cc.cd` je ALIAS na ImprovMX-u koji
+prosljedjuje na odrediste podeseno u ImprovMX nalogu. Ako to odrediste nije
+postavljeno (ili je pogresno), mail se negdje izgubi nakon sto ga Brevo
+prihvati. To se NE moze popraviti iz koda.
+
+**Sta treba korisnik:**
+1. Otvoriti ImprovMX -> `devlab.cc.cd` -> Aliases.
+2. Provjeriti da `kontakt@` postoji i da forward ide na STVARNI mailbox
+   (hotmail/gmail). Ako alias ne postoji, mail se odbija.
+3. Provjeriti spam folder.
+4. U Brevo -> Transactional -> Logs vidjeti da li je mail `delivered`
+   ili `bounced`.
 ### TELEFON JE OBAVEZAN (korisnikov zahtjev)
 
 Korisnik: "oni moraju unjeti broj telefona jako bitno!!! bez toga ne moze
@@ -88,9 +141,9 @@ uvijek (telefon je obavezan).
 - **Badge na tabu** = broj neodgovorenih; osvjezava se na fokus + svakih 15s.
 - Prazno stanje objasnjava da poruke dolaze sa forme i na mejl.
 
-**Napomena o cuvanju:** poruke su u `localStorage` (bez baze). To znaci da
-admin vidi poruke iz TOG preglednika. Mail na `kontakt@devlab.cc.cd` je
-izvor istine i stize odmah — tab je brzi pregled, ne arhiva.
+**Cuvanje:** poruke su u **Firebase** (`devforge/inquiries`), pa ih admin
+vidi sa svih uredjaja i u realtime. `localStorage` je samo rezerva za
+slucaj da je mreza pala. Mail je odvojen kanal — ako jedan zakaze, drugi radi.
 
 ## Dev server
 
@@ -137,10 +190,10 @@ http://localhost:5173/
 http://localhost:5173/
 
 ## Sljedeći korak
-- Testirati formu na produkciji (Vercel + `BREVO_API_KEY`) — lokalno
-  `/api/inquiry` vraca 404 pa se poruka samo cuva lokalno.
-- Provjeriti da mail stize na `kontakt@devlab.cc.cd` i da "Odgovori"
-  ide korisniku (replyTo).
+- **PODESITI IMPROVMX**: provjeriti da `kontakt@devlab.cc.cd` alias
+  forwarduje na stvarni mailbox. API vraca `ok:true` ali mail se gubi —
+  problem je forward, ne kod.
+- U Brevo -> Transactional -> Logs pogledati status (delivered/bounced).
 - Sljedeci post po redu: **p25** (pozicija 17).
 
 ## Napomene / zamke
