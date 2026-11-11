@@ -49,15 +49,22 @@ export const POSTS_1: AdPost[] = [
   // ── 3. WEB STRANICA VEĆ OD 150 KM ────────────────────────────────────────
   {
     id: "p03",
-    valueNote: "Dizajn, mobilna verzija i admin panel uključeni u cijenu. Gotova za 5 dana.",
+    valueNote: "Dizajn, mobilna verzija, admin panel, domena i hosting — sve uključeno. Gotova za 5 radnih dana, bez dodatnih troškova na kraju.",
     template: "price",
     category: "ponuda",
     layout: "photoBot",
     photo: "web",
-    palette: "teal",
-    eyebrow: "Cijena",
+    palette: "tealwhite",
+    eyebrow: "Cijena bez sitnih slova",
     title: "Kompletna stranica za 150 KM. Bez skrivenih stavki.",
     value: "150 KM",
+    includes: [
+      "Dizajn i mobilna verzija",
+      "Admin panel — mijenjate sami",
+      "Domena, hosting i SSL",
+      "Kontakt forma i mapa",
+      "Gotovo za 5 radnih dana",
+    ],
     caption:
       "💸 150 KM. Ne 1500. Ista stvar.\n\nWeb stranica od 150 KM. Web shop od 600 KM. To je na sajtu i to dobijete u ponudi.\n\nU tih 150 KM:\n— ✅ landing page ili jednostavna web stranica\n— 🔥 UI/UX dizajn uključen u cijenu\n— 💡 responzivni dizajn (radi na mobitelu)\n— ⚡ kontakt forma\n— 🎯 admin panel\n— 💰 postavljanje hostinga i domene\n— 📈 besplatna gotova verzija\n\nNema skrivenih stavki na kraju. Bez naknadnih doplata.\n\nKoliko ste platili svoju trenutnu?",
     tags: ["cijene", "150km", "webstranice", "transparentnost", "sarajevo", "devlab"],

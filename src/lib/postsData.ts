@@ -35,7 +35,7 @@ export type PostCategory =
   | "ponuda"
   | "brend";
 
-export type PostPalette = "dark" | "teal" | "light" | "ink" | "mint" | "sun";
+export type PostPalette = "dark" | "teal" | "tealwhite" | "light" | "ink" | "mint" | "sun";
 
 // Jedan list karusela. Ako ga nema, objava je jedna slika.
 // Kod karusela (2–10 listova) svaki list dobija isti vizuelni ram, ali
@@ -60,6 +60,8 @@ export type PostSlide = {
   site?: string;
   /** PREMIUM: tekst CTA dugmeta (npr. "Pišite nam u DM"). */
   cta?: string;
+  /** Kratka lista "sta je ukljuceno u cijenu" (cjenovne objave). */
+  includes?: string[];
 };
 
 export type AdPost = {
@@ -76,6 +78,7 @@ export type AdPost = {
   items?: string[]; // za list / process / compare
   value?: string; // za number / price (veliki broj)
   valueNote?: string; // sitno ispod broja
+  includes?: string[]; // kratka lista "sta je ukljuceno u cijenu"
   caption: string; // tekst objave za Instagram
   tags: string[]; // hashtagovi
   slides?: PostSlide[]; // ako postoji → karusel

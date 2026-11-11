@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (p01 razmaci stegnuti: 37/41px)
+Zadnje ažurirano: 2026-11-10 (p03 "150 KM": bijeli font, lista ukljucenog)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,29 +12,42 @@ Zadnje ažurirano: 2026-11-10 (p01 razmaci stegnuti: 37/41px)
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### p01 ("0 KM") — razmaci stegnuti
-Korisnik: "previse je odmaknuto 0 KM i naslov i treci dio jedni od drugih".
+### p03 ("150 KM") — bijeli font + lista ukljucenog
+Korisnik: zeli bijeli font na tom postu (ne samo crni) i vise teksta,
+marketinski objasnjeno.
 
-Razmaci u `formFigure` (3:4 format) smanjeni:
+**1. Nova paleta `tealwhite`** (postsData.ts + postRender.ts):
+zeleni bg #4DEAE0, ink #FFFFFF, soft rgba(255,255,255,0.82),
+accent #FFFFFF. Postojeca `teal` je imala CRNI ink — to je plakat, ne oglas.
 
-| spoj | prije | sada |
-|---|---|---|
-| broj -> naslov | 104 px | **62 px** |
-| naslov -> biljeska | 90 px | **48 px** |
+**2. Nova lista `includes`** (AdPost + PostSlide + formFigure):
+kratke stavke ispod biljeske, malim slovima, sa tankom crticom. 5 stavki u
+3:4, 4 u 1:1. Za p03: dizajn, admin panel, domena/hosting/SSL,
+kontakt forma, rok 5 dana.
 
-Stvarni razmak izmedju elemenata (mjereno na slici):
-- 0 KM dno 662 -> naslov vrh 699 = **37 px**
-- naslov dno 859 -> biljeska vrh 900 = **41 px**
+### BUGOVI POPRAVLJENI
+**a) Polja sa objave nisu dolazila na slide.** PLACE[layout] prima `slide`,
+a `includes` je na objavi — lista se tiho ne bi nacrtala. U
+`renderSlideSvg` dodan `merged` objekat koji spaja title/subtitle/value/
+valueNote/includes/items/eyebrow s objave na slide.
 
-Dva su ujednacena, sto je i bio cilj.
+**b) Logo "Lab" nevidljiv na zelenoj podlozi.** `onGreen` se detektovao po
+`c.ink === "#0A0A0A"` — ali tealwhite ima zeleni bg i BIJELI ink, pa je
+"Lab" ispisivan u BRAND teal na teal podlozi. Sada se gleda `c.bg`.
+
+**c) Prored liste bio premali** (iGap 34 za font 27) — redovi su se
+preklapali. Sada 46/40.
 
 ### Verifikacija
-- 3:4 i 1:1: 41 objava, 0 van kadra, 0 console gresaka.
-- tsc=0, build OK (1.822 kB).
+- p03: bijeli #FFFFFF tekst, 150KM 150px, lista 5 stavki, 0 preklapanja.
+- Logo "DevLab" citljiv na zelenom (vision potvrdio).
+- 41 objava x 2 formata: 0 van kadra, 0 console gresaka.
+- tsc=0, build OK (1.823 kB).
 
 ## Sljedeći korak
-- Pregledati p01 u 3:4 — razmaci 37/41 px.
-- Ostali broj-postovi (p45, p56, p57) koriste isti formFigure.
+- Pregledati p03 u oba formata.
+- Ostali cjenovni postovi (p08, p09, p55, p56) mogu dobiti `includes` listu
+  i paletu `tealwhite` na isti nacin — samo polje u postsN.ts.
 - Opciono: 4:5 format.
 
 ## Napomene / zamke

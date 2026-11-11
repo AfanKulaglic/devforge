@@ -148,6 +148,22 @@ const PALETTES: Record<PostPalette, Colors> = {
     line: "#0A0A0A",       // crne linije na zelenom
     warm: "#0A0A0A",
   },
+  // ZELENA PODLOGA + BIJELI TEKST.
+  //
+  // Paleta teal ima CRNI tekst na zelenoj — to je citljivo, ali djeluje kao
+  // plakat, a ne kao oglas. Bijeli tekst na teal podlozi je meksi i skuplji
+  // (kao Stripe/Linear reklame). Sekundarni tekst mora biti BIJEL
+  // poluprovidan, ne tamnozelen — inace na zelenoj izgleda kao prljav.
+  tealwhite: {
+    bg: "#4DEAE0",
+    ink: "#FFFFFF",
+    soft: "rgba(255,255,255,0.82)",
+    accent: "#FFFFFF",
+    accentInk: "#4DEAE0",
+    card: "#2FCFC3",
+    line: "rgba(255,255,255,0.35)",
+    warm: "#FFFFFF",
+  },
   // SVJETLA ZELENA — ista shema, blago svjetlija za varijaciju
   light: {
     bg: "#6FEFE6",
@@ -296,9 +312,12 @@ function domainLine(c: Colors, category: string): string {
     font-weight="800" letter-spacing="0.6" fill="${c.accent}">${esc(SITE)}</text>`;
 }
 function header(c: Colors, eyebrow: string, category: string, slide: number, total: number): string {
-  // Na zelenoj podlozi (ink je crn) logo se invertuje: "Dev" BIJEL, "Lab" CRN —
-  // inace bi oba bila tamna na zelenom i wordmark bi se izgubio.
-  const onGreen = c.ink === "#0A0A0A";
+  // Na ZELENOJ podlozi wordmark se mora preokrenuti, inace se izgubi:
+  // "Dev" bijel, "Lab" crn. Prije se to detektovalo po tome sto je 
+  // crn — ali paleta  ima ZELENU podlogu i BIJELI ink, pa se
+  // "Lab" ispisivao BRAND teal na teal podlozi i bio nevidljiv.
+  // Zato se gleda sama PODLOGA, ne boja teksta.
+  const onGreen = c.bg.toUpperCase() === "#4DEAE0" || c.bg.toUpperCase() === "#6FEFE6";
   const mark = brandMark(M, M - 4, onGreen ? "#FFFFFF" : c.ink, onGreen ? "#0A0A0A" : BRAND);
 
   let dots = "";
@@ -524,7 +543,7 @@ function formFigure(c: Colors, p: PostSlide): Block {
   const tlh = ts * 1.34;
 
   // Razmak broj -> naslov. U 3:4 veci — broj je ogroman pa mu treba zraka.
-  h += tall ? 62 : 52;
+  h += tall ? 8 : 52;
   tl.forEach((l, i) => {
     svg += `<text x="0" y="${h + ts * 0.78 + i * tlh}" font-family="${FONT}"
       font-size="${ts}" font-weight="800" letter-spacing="-1.4" fill="${c.ink}">${esc(l)}</text>`;
@@ -550,6 +569,27 @@ function formFigure(c: Colors, p: PostSlide): Block {
         font-size="${nfs}" font-weight="500" fill="${c.soft}">${esc(l)}</text>`;
     });
     h += (nl.length - 1) * (nfs + 20) + nfs;
+  }
+
+  // LISTA UKLJUCENOG — kratke stavke bez ikona.
+  //
+  // Za cjenovne objave (150 KM) samo broj + naslov + biljeska nije dovoljno:
+  // covjek zeli znati STA dobija za taj novac. Lista ide ISPOD biljeske,
+  // malim slovima, kao fusnota ponude — da ne konkurira broju.
+  const incl = (p as any).includes as string[] | undefined;
+  if (incl && incl.length) {
+    const ifs = tall ? 27 : 25;
+    // Razmak 44 — bb visine slova 27px je ~1.33*27=36, pa 34 nije dovoljno.
+    const iGap = tall ? 46 : 40;
+    h += tall ? 46 : 38;
+    incl.slice(0, tall ? 5 : 4).forEach((it, i) => {
+      const iy = h + i * iGap;
+      // kratka crtica, pa tekst
+      svg += `<rect x="0" y="${iy - 10}" width="18" height="3" fill="${c.ink}" opacity="0.55"/>`;
+      svg += `<text x="30" y="${iy}" font-family="${FONT}" font-size="${ifs}"
+        font-weight="600" fill="${c.ink}" opacity="0.88">${esc(it)}</text>`;
+    });
+    h += ((incl.slice(0, tall ? 5 : 4).length - 1) * iGap) + ifs;
   }
 
   return { svg, h };
@@ -1260,7 +1300,23 @@ export function renderSlideSvg(
   const c = PALETTES[slide.palette ?? post.palette] ?? PALETTES.dark;
   const layout = post.layout ?? "center";
   const isCover = (slide.template ?? post.template) === "cover" && slideTotal > 1;
-  let content = (PLACE[layout] ?? PLACE.center)(c, slide, slideTotal);
+  // POLJA SA NIVOA OBJAVE MORAJU DOCI NA SLIDE.
+  //
+  // PLACE[layout] prima , a ne . Ako polje postoji samo na objavi
+  // (npr.  za cjenovne objave), layout ga ne vidi — lista se tiho
+  // ne nacrta. Zato se ovdje spaja: sta god nedostaje na slideu uzima se s
+  // objave. Isto vazi za , , , .
+  const merged: PostSlide = {
+    ...slide,
+    title: slide.title ?? post.title,
+    subtitle: slide.subtitle ?? post.subtitle,
+    value: slide.value ?? post.value,
+    valueNote: slide.valueNote ?? post.valueNote,
+    includes: slide.includes ?? post.includes,
+    items: slide.items ?? post.items,
+    eyebrow: slide.eyebrow ?? post.eyebrow,
+  };
+  let content = (PLACE[layout] ?? PLACE.center)(c, merged, slideTotal);
 
   // PREMIUM ima vlastiti ram i vlastito zaglavlje (logo je dio `premiumLayout`),
   // pa se opći `header()` preskače — inače bi se logo i eyebrow crtali dvaput.
