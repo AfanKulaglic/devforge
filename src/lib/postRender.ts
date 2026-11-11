@@ -546,14 +546,15 @@ function formFigure(c: Colors, p: PostSlide): Block {
   const onTeal = c.bg.toUpperCase() === "#4DEAE0" || c.bg.toUpperCase() === "#6FEFE6";
   // Na zelenoj podlozi tekst ide u CRNO (korisnik zeli vecinu crnog teksta).
   // Na crnoj podlozi naslov je BIJEL, a akcent (broj, linija) je ZELEN.
-  const headInk = onTeal ? "#0A0A0A" : c.ink;
-  const noteInk = onTeal ? "rgba(10,10,10,0.72)" : c.soft;
+  // Naslov na zelenoj podlozi je BIJELI, biljeska CRNA, broj ZELEN.
+  const headInk = onTeal ? "#FFFFFF" : c.ink;
+  const noteInk = onTeal ? "#0A0A0A" : c.soft;
   const val = p.value ?? "";
   const base = val.length <= 2 ? 260 : val.length <= 4 ? 210 : val.length <= 7 ? 150 : 112;
   const vsize = Math.max(70, Math.min(fit(val, W, base), tall ? 280 : 250));
 
   let svg = `<text x="0" y="${vsize * 0.78}" font-family="${FONT}" font-size="${vsize}"
-    font-weight="900" letter-spacing="${(-vsize * 0.03).toFixed(1)}" fill="${onTeal ? "#FFFFFF" : c.accent}">${esc(val)}</text>`;
+    font-weight="900" letter-spacing="${(-vsize * 0.03).toFixed(1)}" fill="${onTeal ? "#0E7A72" : c.accent}">${esc(val)}</text>`;
   let h = vsize;
 
   // Naslov: 3 reda u 1:1, 4 u 3:4. Prored 1.22 da se redovi ne slijube.
@@ -591,7 +592,7 @@ function formFigure(c: Colors, p: PostSlide): Block {
       nl = wrap(p.valueNote, nfs, W - 30, MAXN + 1);
     }
     h += tall ? 48 : 44;
-    svg += `<rect x="0" y="${h - 6}" width="5" height="${nl.length * (nfs + 20)}" fill="${c.accent}"/>`;
+    svg += `<rect x="0" y="${h - 6}" width="5" height="${nl.length * (nfs + 20)}" fill="${onTeal ? "#0A0A0A" : c.accent}"/>`;
     nl.forEach((l: string, i: number) => {
       svg += `<text x="30" y="${h + nfs * 0.86 + i * (nfs + 20)}" font-family="${FONT}"
         font-size="${nfs}" font-weight="500" fill="${noteInk}">${esc(l)}</text>`;

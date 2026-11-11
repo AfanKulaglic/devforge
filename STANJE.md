@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (p03 vracen na ZELENU - kao prije)
+Zadnje ažurirano: 2026-11-10 (p03: boje po elementima)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,34 +12,37 @@ Zadnje ažurirano: 2026-11-10 (p03 vracen na ZELENU - kao prije)
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### p03 ("150 KM") — VRACEN NA ZELENU
-Korisnik je trazio da se p03 vrati kako je ranije bilo (zelena podloga,
-crn tekst, bijeli "150 KM"). Moja prethodna izmjena na CRNU podlogu
-(`inkgreen` paleta) je bila pogresno razumljena — ponistena.
+### p03 ("150 KM") — boje po elementima
+Korisnik je tacno odredio boju za svaki element. Stanje:
 
-**Trenutno stanje p03:**
-- `palette: "tealwhite"` (zelena #4DEAE0 podloga)
-- eyebrow / 150 KM / domena -> BIJELI
-- naslov + biljeska -> CRNI (#0A0A0A / 72%)
+| element | boja | hex |
+|---|---|---|
+| podloga | zelena | #4DEAE0 |
+| "150 KM" (broj) | ZELENA (tamnija) | #0E7A72 |
+| "Kompletna stranica..." (naslov) | BIJELA | #FFFFFF |
+| "Dizajn, kod, domena..." (biljeska) | CRNA | #0A0A0A |
+| linija uz biljesku | CRNA | #0A0A0A |
+| slogan gore + domena | BIJELA | #FFFFFF |
 
-**p01 ("0 KM"):** vracen na `dark` paletu (foto pozadina). "0 KM" je
-zelen (BRAND) na tamnoj fotografiji — jedini nacin da bude citljivo, jer
-layout `photoBg` uvijek stavlja taman fade preko slike.
+**Zasto #0E7A72 a ne BRAND #4DEAE0 za broj:** BRAND je ista boja kao
+podloga, pa bi broj bio nevidljiv. #0E7A72 je tamnija zelena iste porodice
+— kontrast 3.5:1, vidljivo ali jos uvijek "zeleno".
 
-### Napomena o `inkgreen` paleti
-Paleta `inkgreen` (crna podloga + bijeli naslov + zeleni akcent) je
-OSTALA u kodu ali se NIGDJE ne koristi. Ako zatreba, samo se postavi
-`palette: "inkgreen"` na post.
+### Napomena o kontrastu (ne rijeseno)
+Bijeli naslov na teal podlozi ima kontrast samo **1.48:1**. Cita se jer je
+font 54px bold, ali je ispod WCAG minimuma (4.5:1). Ako korisnik zeli jaci
+kontrast, opcije su: (a) tamnija podloga, (b) tamniji naslov, (c) debeli
+tamni obrub slova. Nije mijenjano jer korisnik nije trazio.
 
 ### Verifikacija
-- p03: zelena podloga, crn naslov/biljeska, bijeli broj (vision potvrdio).
-- 41 objava x 2 formata: 0 van kadra, 0 console gresaka.
-- tsc=0, build OK (1.822 kB).
+- Oba formata: 0 objava van kadra, 0 console gresaka.
+- Vision potvrdio sve 4 boje i crnu liniju.
+- tsc=0, build OK.
 
 ## Sljedeći korak
-- Pregledati p03 na zelenoj — vraceno kako je bilo.
-- Cekati sljedecu konkretnu zelju za p03 (npr. koja boja za koji
-  element) prije daljih promjena palete.
+- Pregledati p03 — zeleni broj, bijeli naslov, crna biljeska + crna linija.
+- Ako bijeli naslov djeluje preslabo na zelenom, reci pa pojacam kontrast
+  (tamnija podloga ili obrub slova).
 - Opciono: 4:5 format.
 
 ## Napomene / zamke
