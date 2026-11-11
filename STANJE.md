@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (p03: konacne boje)
+Zadnje ažurirano: 2026-11-10 (p03: slika povecana)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,35 +12,32 @@ Zadnje ažurirano: 2026-11-10 (p03: konacne boje)
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### p03 ("150 KM") — KONACNE BOJE
+### p03 ("150 KM") — SLIKA POVECANA I PODIGNUTA
+Korisnik: "podigni sliku prema gore da je rasiris, sada je previse mala".
 
-| element | boja | hex |
+U `photoBot` layoutu (postRender.ts):
+
+| | prije | sada |
 |---|---|---|
-| podloga | zelena | #4DEAE0 |
-| "150 KM" (broj) | **CRNA** | #0A0A0A |
-| "Kompletna stranica..." (naslov) | **BIJELA** | #FFFFFF |
-| "Dizajn, kod, domena..." (biljeska) | **CRNA** | #0A0A0A |
-| linija uz biljesku | **CRNA** | #0A0A0A |
-| slogan gore + domena | BIJELA | #FFFFFF |
+| visina slike 3:4 | 38% | **46%** |
+| visina slike 1:1 | 38% | **42%** |
+| slika pocinje na y | ~1130 | **778** |
+| praznina tekst->slika | ~250px | **60px** |
 
-Prvo sam broj stavio u tamnozelenu #0E7A72, jer sam mislio da korisnik
-zeli zelenu. Korisnik je rekao "10 km nije crne boje?" -> broj mora biti
-CRN. Sada je #0A0A0A, potvrdjeno mjerenjem piksela: (10,10,10).
+**Centriranje:** dodat `blend = 60` — zona teksta se skracuje za blend
+posto se slika gore rastvara u zelenu preko gradijenta. Bez toga je tekst
+bio centriran previsoko i ostajalo je 250px prazne zelene.
 
-### Napomena o kontrastu
-Bijeli naslov na teal podlozi ima kontrast **1.48:1** (WCAG min 4.5:1).
-Cita se jer je 54px bold, ali je slabo. Ako korisnik trazi jace: tamnija
-podloga, tamni naslov, ili obrub slova.
+Rezultat: tekst zauzima ~55%, slika ~45%. Vision potvrdio da slika
+"feels large enough as a supporting image".
 
 ### Verifikacija
-- Vision potvrdio sve 4: broj crn, naslov bijel, biljeska crna, linija crna.
-- Piksel-mjerenje: "150 KM" zona dominantna #0A0A0A.
-- 41 objava x 2 formata: 0 van kadra, 0 console gresaka.
+- Oba formata: 0 objava van kadra, 0 console gresaka.
 - tsc=0, build OK.
 
 ## Sljedeći korak
-- Pregledati p03 — crn broj, bijel naslov, crna biljeska + crna linija.
-- Ako je bijeli naslov preslab na zelenom, reci pa pojacam kontrast.
+- Pregledati p03 — slika 46% visine, tekst iznad nje.
+- Ako treba jos veca/manja slika: mijenjati 0.46 u photoBot.
 - Opciono: 4:5 format.
 
 ## Napomene / zamke

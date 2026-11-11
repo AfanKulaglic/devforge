@@ -1164,12 +1164,18 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide, total: number) => stri
   // Koristi se kad broj/cifra treba da dominira gore, a slika da zatvori sliku dolje.
   photoBot: (c, p, total) => {
     const ph = p.photo ?? "hero";
-    const imgH = Math.round(SIZE_H * 0.38);
+    // Visina slike mora zavisti od formata: u 3:4 ima puno teksta pa slika
+    // smije zauzeti manje (0.27), u 1:1 teksta je manje pa slika moze vise.
+    const imgH = Math.round(SIZE_H * (SIZE_H >= 1300 ? 0.46 : 0.42));
     const zoneTop = CONTENT_TOP();
     const zoneBot = SIZE_H - imgH;
     const b = buildFitting(c, p, zoneBot - 16, total);
     // Tekst CENTRIRAN u gornjoj zoni — ne lijepi se za sliku.
-    const y = zoneTop + Math.max(0, (zoneBot - zoneTop - b.h) / 2);
+    // Centriranje mora uzeti u obzir da se slika GORE stapa u zelenu preko
+    // 180px gradijenta — taj dio je vizuelno jos prazan. Zato se zona
+    // skracuje za taj blend, da tekst ne bjezi previsoko od slike.
+    const blend = 60;
+    const y = zoneTop + Math.max(0, (zoneBot - blend - zoneTop - b.h) / 2);
     // Fotografija se stapa sa zelenom: gore se rastvara u boju podloge
     // (bez tvrde ivice), a preko nje ide blagi zeleni ton + zatamnjenje.
     return `<image href="${PHOTOS[ph]}" x="0" y="${SIZE_H - imgH}" width="${SIZE}" height="${imgH}"
