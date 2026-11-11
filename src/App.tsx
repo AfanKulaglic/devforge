@@ -2595,20 +2595,35 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
 
     // Upiši i u Firebase — da poruka postoji na svim uredjajima, ne samo
     // u ovom pregledniku. Ovo je ono sto admin panel cita.
-    void saveInquiryRemote(payload);
+    // Upiši u Firebase — da poruka postoji na svim uredjajima.
+    const remoteSaved = await saveInquiryRemote(payload);
 
     const r = await sendInquiryToServer(payload);
     setSending(false);
 
-    // Ako server nije dostupan (lokalni dev), poruka je ipak sačuvana
-    // lokalno — korisnik ne treba da vidi grešku za našu infrastrukturu.
-    if (!r.ok && r.error) {
-      setSendError(r.error);
+    if (r.ok) {
+      // Mail je stvarno otisao. Ovo je jedini slucaj u kojem smijemo
+      // reci "poslano".
+      trackEvent("form_submit", "kontakt modal", undefined, "/kontakt");
+      setSent(true);
       return;
     }
 
-    trackEvent("form_submit", "kontakt modal", undefined, "/kontakt");
-    setSent(true);
+    if (r.offline && remoteSaved) {
+      // Endpoint ne postoji (lokalni razvoj) ALI poruka je u Firebase,
+      // pa ju admin zaista vidi. Ne lazemo — kazemo gdje je.
+      trackEvent("form_submit", "kontakt modal", undefined, "/kontakt");
+      setSent(true);
+      return;
+    }
+
+    // Mail NIJE otisao i Firebase nije potvrdio. NE kazemo "poslano".
+    // Kazemo tacno sta se desilo i damo direktan kontakt da covjek ne
+    // ostane bez nacina da nas dobije.
+    setSendError(
+      r.error ??
+        "Poruka nije poslana. Pokušajte ponovo ili nas pozovite direktno.",
+    );
   };
   const quickLink = (channel: ContactChannel) => {
     if (channel === "viber") return `viber://chat?number=${encodeURIComponent(CONTACT.phoneRaw)}`;
@@ -2817,6 +2832,27 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
             {sendError && (
               <div className="border border-red-400/40 bg-red-400/10 px-4 py-3">
                 <p className="text-sm font-bold text-red-200">{sendError}</p>
+                {/* Ako slanje ne prođe, čovjek NE SMIJE ostati bez načina da
+                    nas dobije. Dajemo telefon i mejl odmah, u istom bloku. */}
+                <p className="mt-2 text-[0.72rem] leading-5 text-white/55">
+                  Ne morate ponovo popunjavati — javite se direktno:
+                </p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <a
+                    href={`tel:${CONTACT.phoneRaw}`}
+                    className="inline-flex items-center gap-1.5 bg-white/[0.08] px-3 py-1.5 text-[0.7rem] font-bold text-white transition hover:bg-white/[0.16]"
+                  >
+                    <HiOutlinePhone className="text-sm" aria-hidden="true" />
+                    Pozovite nas
+                  </a>
+                  <a
+                    href={`mailto:${CONTACT.email}`}
+                    className="inline-flex items-center gap-1.5 bg-white/[0.08] px-3 py-1.5 text-[0.7rem] font-bold text-white transition hover:bg-white/[0.16]"
+                  >
+                    <HiOutlineEnvelope className="text-sm" aria-hidden="true" />
+                    {CONTACT.email}
+                  </a>
+                </div>
               </div>
             )}
 

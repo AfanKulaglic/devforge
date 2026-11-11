@@ -206,21 +206,32 @@ export function unhandledCount(list: Inquiry[]): number {
  */
 export async function sendInquiryToServer(
   data: Omit<Inquiry, "id" | "at">,
-): Promise<{ ok: boolean; error?: string }> {
+): Promise<{ ok: boolean; error?: string; offline?: boolean }> {
   try {
     const r = await fetch("/api/inquiry", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(data),
     });
-    if (!r.ok) {
-      // 404 = endpoint ne postoji (lokalni dev). To nije greška korisnika.
-      if (r.status === 404) return { ok: false };
-      const j = await r.json().catch(() => ({}));
-      return { ok: false, error: (j as { error?: string }).error ?? "Slanje nije uspjelo." };
+
+    if (r.ok) return { ok: true };
+
+    // 404 = endpoint ne postoji (lokalni razvoj bez Vercela).
+    // To nije korisnikova greška — poruka se čuva lokalno i u Firebase.
+    if (r.status === 404) {
+      return { ok: false, offline: true };
     }
-    return { ok: true };
+
+    const j = await r.json().catch(() => ({}));
+    // SVAKI neuspjeh mora imati poruku. Prije je funkcija vraćala
+    // `{ok:false}` bez `error`, pa je forma prikazivala "poslano"
+    // iako mail nije otišao — korisnik je mislio da je sve u redu.
+    return {
+      ok: false,
+      error: (j as { error?: string }).error ?? "Slanje mejla nije uspjelo. Pokušajte ponovo.",
+    };
   } catch {
-    return { ok: false };
+    // Mreža pala, ad-blocker, offline…
+    return { ok: false, error: "Nema veze sa serverom. Provjerite internet i pokušajte ponovo." };
   }
 }

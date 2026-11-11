@@ -46,6 +46,63 @@ otvara. Korisnik klikne "Posalji" i vidi "Poruka je poslana".
 - stanja `sent` / `sending` / `sendError` umjesto `mailOpened`
 - uspjeh: "Poruka je poslana" + ponuda da pisu na mejl ako je hitno
 
+### FORMA VISE NE LAZE "POSLANO" (kriticni bug)
+
+Korisnik: "kada ruzno unesem podatke pise poslano je a nije posalno".
+
+**Uzrok:** `sendInquiryToServer` je pri svakom neuspjehu vracao
+`{ ok: false }` **bez `error`**. Forma je provjeravala samo
+`if (!r.ok && r.error)` — kad `error` nema, uslov je false, pa je
+potpadala na `setSent(true)`. Rezultat: **"Poruka je poslana" iako nije.**
+
+**Fix (3 mjesta):**
+
+| fajl | promjena |
+|---|---|
+| `src/lib/inquiries.ts` | svaki neuspjeh vraca `error`; 404 -> `offline:true`; catch -> mreza |
+| `src/App.tsx` | `setSent(true)` SAMO ako `r.ok` ili (`r.offline` i Firebase potvrdio) |
+| `src/App.tsx` | blok greske daje **telefon + mejl** odmah |
+
+Novi tok:
+```
+r.ok                    -> "Poruka je poslana"
+r.offline && remoteSaved-> "Poruka je poslana" (Firebase je potvrdio)
+sve ostalo              -> greska + "Pozovite nas" + mejl
+```
+
+**Testirano (Playwright route):**
+- API 500 -> `kazePoslano: false`, `imaGresku: true`, `imaKontakt: true`
+- API 200 -> `poslano: true`
+
+### DIJAGNOZA: zasto mail ne stize
+
+Izmjereno DNS-om za `devlab.cc.cd`:
+
+```
+MX:    mx1/mx2.improvmx.com     <- samo FORWARD, ne prima postu
+SPF:   include:spf.improvmx.com include:spf.brevo.com ~all   OK
+DMARC: v=DMARC1; p=none; rua=mailto:rua@dmarc.brevo.com      OK
+DKIM:  NEMA (brevo._domainkey ne postoji)                    <- PROBLEM
+```
+
+`POST /api/inquiry` vraca `{"ok":true}` — Brevo prihvati mail, ali:
+
+1. **Nema DKIM zapisa.** Brevo trazi CNAME `brevo._domainkey.devlab.cc.cd`
+   (i `brevo2`). Bez toga posiljalac nije autentifikovan i primalac
+   (hotmail) ga odbija ili baca u spam.
+2. **`kontakt@devlab.cc.cd` je ImprovMX alias.** Ako u ImprovMX nalogu
+   alias ne postoji ili forward ne pokazuje na stvarni mailbox, mail se
+   gubi nakon sto ga Brevo preda.
+
+**Sta korisnik treba (izvan koda):**
+1. Brevo -> Senders & IP -> Domains -> `devlab.cc.cd` -> **Authenticate**.
+   Kopirati DKIM CNAME zapise u DNS.
+2. ImprovMX -> Aliases -> provjeriti da `kontakt@` forwarduje na hotmail.
+3. Brevo -> Transactional -> Logs -> pogledati `delivered` / `bounced`.
+
+**Poruke NISU izgubljene**: idu u Firebase (`devforge/inquiries`) i vide se
+u `/admin` -> Poruke, sa telefonom.
+
 ### PORUKE U FIREBASE (kriticni bug)
 
 Korisnik: "popunim sve i posaljem poruku ali mi ona ne dodje u hotmail
