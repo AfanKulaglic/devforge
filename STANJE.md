@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (dev server radi; fix preuzimanja covera -> 1080x628)
+Zadnje ažurirano: 2026-11-10 (premium bez okvira; nova FB naslovna sa logom u sredini)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,65 +12,71 @@ Zadnje ažurirano: 2026-11-10 (dev server radi; fix preuzimanja covera -> 1080x6
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### FB COVER kao objava u /objave (`fbc01`)
+### PREMIUM objava — svi okviri uklonjeni
 
-Cover vise NIJE samo fajl na disku — sada je PRVA objava u `/objave`, sa
-istim dugmetom za preuzimanje kao sve ostale.
+Korisnik: "ne svidja mi se okvir na postu ekskluzivnog sadrzaja".
 
-**Novi format `16:9`** (`FORMATS` u `postRender.ts`): 1200x628 (FB preporuka).
+**BUG: invertovana logika okvira.** U `renderSlideSvg` je stajalo:
 
-**Novo polje `fixedFormat?: "1:1" | "3:4" | "16:9"`** na `AdPost`.
-Objava sa tim poljem se UVIJEK renderuje u svom formatu, bez obzira na
-prekidac 1:1 / 3:4. `PostCard`, `PostModal` i `downloadPng` svi postavljaju
-`setFormat(post.fixedFormat ?? format)` prije rendera i vrate prethodni u
-`finally`.
+```ts
+${isCover || isBare ? "" : coverFrame(c)}   // POGREGSNO
+```
 
-**Novi layout `cover16x9`** (`coverLayout()` u `postRender.ts`):
-horizontalan banner, namjenski za FB. Zasto ne `premium`: premium je gradjen
-za VISOKE formate i u 16:9 mu se kartice sa ikonama odsijeku van kadra
-(izmjereno y=825 u 628px kadru).
+To znaci: okvir se crta SVUDA OSIM na coveru — dakle bas na premium objavi
+(koja nije cover) je uvijek bio. Ispravno:
 
-| zona | sadrzaj |
+```ts
+${isCover && !isBare ? coverFrame(c) : ""}
+```
+
+**Chip kartice bez okvira** — u `premiumLayout` su imale `stroke` 1.5
+(`stroke-opacity 0.22`). Uklonjen; ostala je samo svjetlija podloga
+(`fill #ffffff opacity 0.075`).
+
+Ostala su namjerno samo 2 stroke recta: okvir logo-kutije i outline dugme.
+Karuseli (p04, p06...) zadrzali su svoj okvir — provjereno.
+
+### FB NASLOVNA — nova kompozicija, logo u sredini
+
+Korisnik: stara je "dosadna", trazi logo u sredini, zanimljivu tamnu
+pozadinu, ispod slogan i instagram/domenu.
+
+`coverLayout()` u `postRender.ts` potpuno prepravljen — vertikalno
+centrirano i simetricno, jer FB profilna prekriva lijevi donji ugao:
+
+| sloj | sadrzaj |
 |---|---|
-| gore lijevo | wordmark DevLab (Dev bijel, Lab `#4DEAE0`) |
-| lijevo | naslov 3 reda, zadnji (`Za 5 dana.`) u akcent boji |
-| lijevo dolje | lead 2 reda uz vertikalnu traku |
-| desno | tri dokaza: 0 KM / 5 dana / 150 KM |
-| dolje desno | `www.devlab.cc.cd` |
-| **dolje lijevo** | **NAMJERNO PRAZNO** — tu sjeda FB profilna slika |
+| pozadina | `#070707` + `#covGlow` radial (teal 0.20 u sredini) + `#covGrid` mreza 60px |
+| dekor | dva tanka kruga (r 196 / 248) + teal luk preko gornje polovine |
+| centar | **DevLab** 132px, "Dev" bijel, "Lab" `#4DEAE0` |
+| ispod | slogan: "Stranice, shopovi i aplikacije — bez plaćanja unaprijed." |
+| ispod | `@devlab.cc.cd` (teal, 800) |
+| dno | `www.devlab.cc.cd` (sivo, 600) |
 
-**Guard `isBare`**: `renderSlideSvg` preskace `header()` i `coverFrame()` za
-`cover16x9` — inace bi se domena pojavila DVAPUT i cover bi dobio okvir.
+**BUG:** gradienti `covGlow`/`covGrid` su prvo ubaceni u `brandMark` (regex
+pogodio pogresan `</defs>`), pa se nisu definisali u SVG-u — pozadina je
+bila ravna crna (izmjereno centar `[7,7,7]`). Premjesteni u `defs` od
+`renderSlideSvg`; sada centar `[21,33,32]`, sredina `[22,46,44]`.
 
-### PREMIUM oznaka u /objave
+### Ranije ove sesije
 
-Detekcija `post.layout === "premium"` (bez novog polja):
-1. Znacka gore lijevo na kartici (`bg-teal-300`, `HiOutlineSparkles`).
-2. Kartica dobija teal okvir (`border-teal-300/60`).
-3. Znacka u modalu: "Premium objava".
-4. Filter **Premium** (`PostFilter = PostCategory | "sve" | "premium"`).
+- FB cover kao objava `fbc01` (prva u /objave), format 16:9, `fixedFormat`.
+- BUG: preuzimanje davalo 1080x1080 -> sada cita dimenzije iz `viewBox`.
+- PREMIUM oznaka u /objave: znacka, teal okvir, filter "Premium".
+- Preloader: "Dev Lab" -> "DevLab".
+- p05–p10, p21–p24 sređeni; tri globalna buga (formFigure razmak,
+  richLayer logo na zelenom, formHero items).
 
-### Preloader
+## Dev server
 
-`<p className="preloader-logo">` je pisao "Dev Lab" -> "DevLab".
-Animacija (shimmer gradijent) netaknuta.
-
-### Ranije ove sesije: p05–p10, p21–p24 sređeni
-
-**Tri globalna buga popravljena:**
-1. `formFigure`: razmak broj->naslov bio `tall ? 8 : 52` — u 3:4 samo 8px.
-2. `richLayer` logo: `brandMark(..., c.accent)` na `light` paleti pravio
-   „Lab" CRN na tirkiznoj. Sada `richOnGreen`.
-3. `formHero` nije crtao `items`. Sada grid 2x2 sa `note` ispod labela.
+`npx vite --port 5173` (background, log: /tmp/vite.log)
+http://localhost:5173/
 
 ## ⚠️ VAZNO: ID-evi NISU 1-2-3 po redu
 
-Korisnik trazi postove po REDOSLIJEDU na stranici ("p12", "p13"), ali
-ID-evi u kodu skacu. **Uvijek provjeri poziciju, ne pretpostavljaj ID!**
-
 | # | id | naslov |
 |---|---|---|
-| 1 | **fbc01** | **FB COVER (16:9)** |
+| 1 | fbc01 | FB COVER (16:9) |
 | 2 | px01 | Premium ponuda |
 | 3 | p01 | Ne plaćate ni marku… |
 | 4 | p02 | Stranica, shop, aplikacija, igrica ili AI |
@@ -90,29 +96,11 @@ ID-evi u kodu skacu. **Uvijek provjeri poziciju, ne pretpostavljaj ID!**
 
 **Nema p11–p20 ni p31–p40.** Niz: p01–p10, p21–p30, p41–p60.
 
-### BUG POPRAVLJEN — preuzimanje covera davalo 1080x1080
-
-`svgToPngBlob()` je uzimao `SIZE` / `SIZE_H` (modul-nivo stanje koje
-`setFormat()` mijenja). `downloadPng` vrati format u `finally` PRIJE nego se
-PNG napravi, pa je canvas ostajao na 1080x1080 i cover je izlazio razvucen.
-
-Sada se dimenzije citaju iz `viewBox` samog SVG-a — uvijek tacne:
-
-```ts
-const vb = svg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/);
-const cw = vb ? Math.round(+vb[1]) : SIZE;
-const ch = vb ? Math.round(+vb[2]) : SIZE_H;
-```
-
-Izmjereno: cover -> **1080x628**, px01 -> 1080x1080, p03 -> 1080x1080.
-
 ### Verifikacija
-- /objave: 42 kartice, prva je fbc01 u 16:9 (odnos 1.72, viewBox 1080x628).
-- Cover: domena samo JEDNOM, donji lijevi ugao slobodan (0 elemenata u
-  zoni x<360 / y>490), maxY 566/628.
-- 71 slajd x 2 formata: 0 van kadra.
-- Preuzimanje: cover 1080x628, ostale 1080x1080. 0 console gresaka.
-- tsc=0, build OK.
+- px01: okvir 8px = false, tanak 0.30 = false, chip 0.22 = false.
+- p04/p06 (karuseli): okvir 8px = true (zadrzan).
+- FB naslovna: sve centrirano na cx=540, unutar kadra, glow radi.
+- 71 slajd x 2 formata: 0 van kadra. tsc=0, build OK.
 
 ## Dev server
 
@@ -120,8 +108,8 @@ Izmjereno: cover -> **1080x628**, px01 -> 1080x1080, p03 -> 1080x1080.
 http://localhost:5173/
 
 ## Sljedeći korak
-- Otvoriti /objave — prva kartica je FB cover, preuzmi je dugmetom za PNG.
-- Upload na Facebook kao naslovnu fotografiju stranice.
+- Otvoriti /objave: proveriti px01 bez okvira i fbc01 naslovnu.
+- Preuzeti fbc01 (PNG 1080x628) i postaviti kao FB cover.
 - Sljedeci post po redu: **p25** (pozicija 17).
 - Opciono: ostalih ~20 mjesta "Dev Lab" -> "DevLab".
 

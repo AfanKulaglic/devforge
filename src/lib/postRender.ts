@@ -304,7 +304,7 @@ function brandMark(x: number, y: number, devColor: string, forgeColor: string = 
         <stop offset="0" stop-color="${forgeColor}"/>
         <stop offset="1" stop-color="${forgeColor}"/>
       </linearGradient>
-      <radialGradient id="coverGlow" cx="0.18" cy="0.5" r="0.75">
+  <radialGradient id="coverGlow" cx="0.18" cy="0.5" r="0.75">
     <stop offset="0" stop-color="#4DEAE0" stop-opacity="0.13"/>
     <stop offset="0.55" stop-color="#4DEAE0" stop-opacity="0.03"/>
     <stop offset="1" stop-color="#4DEAE0" stop-opacity="0"/>
@@ -1402,8 +1402,12 @@ function premiumLayout(c: Colors, p: PostSlide): string {
       const cx = left + i * (chipW + gap);
       svg += `<rect x="${cx}" y="${y}" width="${chipW}" height="${chipH}" rx="20"
         fill="#ffffff" opacity="0.075"/>`;
-      svg += `<rect x="${cx}" y="${y}" width="${chipW}" height="${chipH}" rx="20"
-        fill="none" stroke="${c.accent}" stroke-opacity="0.22" stroke-width="1.5"/>`;
+      // BEZ OKVIRA OKO KARTICA.
+      //
+      // Prije je svaka chip kartica imala `stroke` 1.5 koji je crtao vidljiv
+      // ram. Korisnik je rekao da mu se okvir ne svidja. Sada kartice nose
+      // samo blagu svjetliju podlogu (opacity 0.075) — dovoljno da se ikona
+      // odvoji od pozadine, bez rame.
       // Ikona centrirana horizontalno, label ide pri dnu — bez okvira oko ikone,
       // jer je sada dovoljno velika da nosi sebe.
       // Ikona gore, label odmah pod njom. Razmak se racuna iz stvarne visine
@@ -1532,71 +1536,53 @@ function premiumLayout(c: Colors, p: PostSlide): string {
 //
 // Nema headera ni footera iz `header()` — sve sto treba stane u jedan kadar,
 // a FB profilna slika prekriva lijevi donji ugao, pa je taj ugao prazan.
-function coverLayout(c: Colors): string {
-  const M_C = 76;
-  const H = SIZE_H;
+function coverLayout(): string {
+  // ── NASLOVNA ZA FACEBOOK ──────────────────────────────────────────────
+  //
+  // Zahtjev: LOGO U SREDINI, zanimljiva tamna pozadina preko nje, ispod
+  // logotipa slogan i instagram/domena.
+  //
+  // Zato je kompozicija vertikalno centrirana i simetricna — FB cover se
+  // gleda odozgo, a profilna slika prekriva lijevi donji ugao. Sve sto je
+  // vazno drzi se u sredini, pa ni profilna ni ivice ne odsijecaju nista.
+  const cx = SIZE / 2;
+  const cy = SIZE_H / 2;
   let svg = "";
 
-  // Pozadina: tamna baza + tirkizni sjaj s lijeve strane.
-  svg += `<rect x="0" y="0" width="${SIZE}" height="${H}" fill="${c.bg}"/>`;
-  svg += `<rect x="0" y="0" width="${SIZE}" height="${H}" fill="url(#coverGlow)"/>`;
+  // 1) POZADINA — tamna baza + tri sloja svjetla da ne bude ravna crna.
+  svg += `<rect x="0" y="0" width="${SIZE}" height="${SIZE_H}" fill="#070707"/>`;
+  svg += `<rect x="0" y="0" width="${SIZE}" height="${SIZE_H}" fill="url(#covGlow)"/>`;
+  svg += `<rect x="0" y="0" width="${SIZE}" height="${SIZE_H}" fill="url(#covGrid)"/>`;
 
-  // 1) WORDMARK gore lijevo — bez okvira oko logotipa (cover nije oglas).
-  const mark = brandMark(M_C, M_C - 18, "#FFFFFF", BRAND);
-  svg += mark.svg;
+  // 2) DVA TANKA PRSTENA oko logotipa — dubina bez ijednog okvira oko kadra.
+  svg += `<circle cx="${cx}" cy="${cy - 96}" r="196" fill="none" stroke="#4DEAE0" stroke-opacity="0.16" stroke-width="1.5"/>`;
+  svg += `<circle cx="${cx}" cy="${cy - 96}" r="248" fill="none" stroke="#4DEAE0" stroke-opacity="0.07" stroke-width="1.5"/>`;
+  // Luk u akcent boji — prekida simetriju i vuce pogled na logo.
+  svg += `<path d="M ${cx - 196} ${cy - 96} A 196 196 0 0 1 ${cx + 60} ${cy - 96 - 186}"
+    fill="none" stroke="#4DEAE0" stroke-opacity="0.55" stroke-width="3" stroke-linecap="round"/>`;
 
-  // 2) NASLOV — lijevo, tri reda, zadnji red u akcent boji.
-  const titleLines = [
-    "Web stranice. Shopovi.",
-    "Aplikacije. AI sistemi.",
-    "Za 5 dana.",
-  ];
-  // Naslov krece nize od logotipa, ali cijeli blok ostaje u gornjih ~75% visine:
-  // donji lijevi ugao (x<360, y>490) je REZERVISAN za FB profilnu sliku.
-  let ty = M_C + 86;
-  const tfs = 66;
-  titleLines.forEach((l, i) => {
-    const last = i === titleLines.length - 1;
-    svg += `<text x="${M_C}" y="${ty}" font-family="${FONT}" font-size="${tfs}"
-      font-weight="900" letter-spacing="-2.6" fill="${last ? BRAND : c.ink}">${esc(l)}</text>`;
-    ty += tfs * 1.16;
-  });
+  // 3) LOGOTIP U SREDINI — "Dev" bijel, "Lab" tirkizan, krupno.
+  const lfs = 132;
+  // Sirina se racuna po karakteru da bi se oba dijela centrirala zajedno.
+  const charW = lfs * 0.56;
+  const totalW = ("DevLab").length * charW;
+  const lx = cx - totalW / 2;
+  const ly = cy - 96 + lfs * 0.36;
+  svg += `<text x="${lx}" y="${ly}" font-family="${FONT}" font-size="${lfs}" font-weight="900"
+    letter-spacing="-5"><tspan fill="#FFFFFF">Dev</tspan><tspan fill="#4DEAE0">Lab</tspan></text>`;
 
-  // 3) LEAD — jedna recenica ispod naslova, s vertikalnom trakom.
-  ty += 6;
-  // Kratko namjerno: mora stati u 2 reda da ne udje u zonu FB profilne slike.
-  const lead = "Iz Sarajeva, za firme iz cijele BiH. Prvo vidite — pa platite.";
-  const lfs = 27;
-  const ll = wrap(lead, lfs, 620, 2);
-  svg += `<rect x="${M_C}" y="${ty - 4}" width="5" height="${ll.length * (lfs + 12)}" fill="${BRAND}"/>`;
-  ll.forEach((l: string, i: number) => {
-    svg += `<text x="${M_C + 24}" y="${ty + lfs * 0.86 + i * (lfs + 12)}" font-family="${FONT}"
-      font-size="${lfs}" font-weight="500" fill="${c.soft}">${esc(l)}</text>`;
-  });
+  // 4) SLOGAN — jedna linija, ispod logotipa, s dvije kratke crte sa strane.
+  const slogan = "Stranice, shopovi i aplikacije — bez plaćanja unaprijed.";
+  const slfs = 34;
+  svg += `<text x="${cx}" y="${cy + 42}" text-anchor="middle" font-family="${FONT}"
+    font-size="${slfs}" font-weight="600" fill="#9A9A9A">${esc(slogan)}</text>`;
 
-  // 4) DOKAZI — desno, tri broja u stupcu. Ovo je ono sto cover prodaje.
-  const rx = SIZE - M_C;
-  const proof = [
-    { v: "0 KM", l: "unaprijed", i: "shield" },
-    { v: "5 dana", l: "gotova verzija", i: "clock" },
-    { v: "150 KM", l: "stranica od", i: "coin" },
-  ];
-  const pvfs = 52;
-  const pRow = 108;
-  let py = M_C + 96;
-  proof.forEach((pf) => {
-    svg += `<text x="${rx}" y="${py}" text-anchor="end" font-family="${FONT}" font-size="${pvfs}"
-      font-weight="900" letter-spacing="-1.6" fill="${BRAND}">${esc(pf.v)}</text>`;
-    svg += `<text x="${rx}" y="${py + 28}" text-anchor="end" font-family="${FONT}" font-size="23"
-      font-weight="600" fill="${c.soft}">${esc(pf.l)}</text>`;
-    py += pRow;
-  });
+  // 5) INSTAGRAM + DOMENA — u jednom redu, ispod slogana.
+  svg += `<text x="${cx}" y="${cy + 122}" text-anchor="middle" font-family="${FONT}"
+    font-size="30" font-weight="800" fill="#4DEAE0">@devlab.cc.cd</text>`;
+  svg += `<text x="${cx}" y="${cy + 164}" text-anchor="middle" font-family="${FONT}"
+    font-size="26" font-weight="600" fill="#6E6E6E">www.devlab.cc.cd</text>`;
 
-  // 5) DOMENA — donji desni ugao, jedini kontakt na coveru.
-  svg += `<text x="${rx}" y="${H - M_C + 6}" text-anchor="end" font-family="${FONT}"
-    font-size="30" font-weight="800" letter-spacing="-0.4" fill="${c.ink}">www.devlab.cc.cd</text>`;
-
-  // Lijevi donji ugao NAMJERNO prazan — tu sjeda FB profilna slika.
   return svg;
 }
 
@@ -1604,7 +1590,7 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide, total: number) => stri
   // PREMIUM — nema header/footer iz `header()`; vlastiti ram i vlastita hijerarhija.
   premium: (c, p) => premiumLayout(c, p),
   // COVER — naslovna fotografija za FB (16:9). Vidi coverLayout().
-  cover16x9: (c) => coverLayout(c),
+  cover16x9: () => coverLayout(),
   center: (c, p, total) => {
     const b = build(c, p, total);
     const y = b.h >= CONTENT_H() ? CONTENT_TOP() : CONTENT_TOP() + (CONTENT_H() - b.h) / 2;
@@ -1890,6 +1876,14 @@ export function renderSlideSvg(
       <stop offset="100%" stop-color="#000000" stop-opacity="0.82"/>
     </linearGradient>
     <!-- PREMIUM: lijevi veo — tekst je lijevo, pa je lijevo najtamnije -->
+    <radialGradient id="covGlow" cx="0.5" cy="0.42" r="0.62">
+      <stop offset="0" stop-color="#4DEAE0" stop-opacity="0.20"/>
+      <stop offset="0.45" stop-color="#4DEAE0" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#4DEAE0" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="covGrid" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M60 0 L0 0 0 60" fill="none" stroke="#FFFFFF" stroke-opacity="0.028" stroke-width="1"/>
+    </pattern>
     <linearGradient id="pxLeft" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0%" stop-color="#000000" stop-opacity="0.80"/>
       <stop offset="58%" stop-color="#000000" stop-opacity="0.30"/>
@@ -1903,7 +1897,7 @@ export function renderSlideSvg(
   ${content}
   <!-- Zaglavlje se crta POSLIJE sadržaja: foto-pozadine inače prekriju logo. -->
   ${isPremium || isBare ? "" : header(c, slide.eyebrow ?? post.eyebrow, post.category, slideIndex, slideTotal)}
-  ${isCover || isBare ? "" : coverFrame(c)}
+  ${isCover && !isBare ? coverFrame(c) : ""}
   ${isPremium ? "" : ""}
   <!-- Gornja traka: umjesto tvrde linije, kratki gradijent koji se stopi u pozadinu
        (na zelenim paletama crna traka je izgledala kao strana linija).
