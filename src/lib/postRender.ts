@@ -1556,8 +1556,14 @@ function coverLayout(): string {
 
   // 1) SVEMIR + FOTOGRAFIJA ZEMLJE.
   svg += `<rect x="0" y="0" width="${SIZE}" height="${SIZE_H}" fill="#04060A"/>`;
+  // BOJA: originalna, prirodna — plavo-zelena Zemlja kakva je fotografisana.
+  // POKUSAJ sa brend zelenom je odbacen: prebojena planeta je izgledala
+  // kao crtez, a ne kao fotografija iz svemira.
   svg += `<image href="${PHOTOS.earth}" x="0" y="0" width="${SIZE}" height="${SIZE_H}"
-    preserveAspectRatio="xMidYMid slice" aria-label="${esc(PHOTO_ALT.earth)}"/>`;
+    preserveAspectRatio="xMidYMid slice"
+    aria-label="${esc(PHOTO_ALT.earth)}"/>`;
+  // Lagani tamni sloj na dnu da planeta ne bude presvijetla pod tekstom.
+  svg += `<rect x="0" y="0" width="${SIZE}" height="${SIZE_H}" fill="url(#covVeil)"/>`;
   // Blaga tamna zavjesa gore — da zvijezde i sum ne smetaju tekstu.
   svg += `<rect x="0" y="0" width="${SIZE}" height="${SIZE_H * 0.62}" fill="url(#covVeil)"/>`;
 
@@ -1579,7 +1585,11 @@ function coverLayout(): string {
   // razlikuje nas od stotina drugih. Slogan mora u jednoj liniji reci
   // KORIST za kupca: brzina + nula rizika. To su dvije stvari koje nas
   // stvarno predstavljaju, i to su iste dvije cifre koje ponavljamo svuda.
-  const slogan = "Za 5 dana. Bez plaćanja unaprijed.";
+  //
+  // "Za 5 dana. Bez plaćanja unaprijed." bilo je dobro, ali na naslovnici
+  // te dvije stvari vec stoje kao brojke na svakoj drugoj objavi. Naslovna
+  // treba da kaze STA radimo, na jeziku kojim se pise i u oglasima van BiH.
+  const slogan = "We build digital solutions.";
   svg += `<text x="${cx}" y="${cy + 52}" text-anchor="middle" font-family="${FONT}"
     font-size="40" font-weight="700" letter-spacing="0.5" fill="#C8D2D6">${esc(slogan)}</text>`;
 

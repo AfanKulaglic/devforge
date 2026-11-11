@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (FB naslovna: PRAVA slika zemlje + novi slogan)
+Zadnje ažurirano: 2026-11-10 (FB naslovna: prirodna boja zemlje + engleski slogan)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -42,9 +42,11 @@ Korisnik: "planeta koju sam ti trazio umjesto kruga mora biti PRAVA slika
 planete", i slogan "Digitalna agencija" mu se ne svidja — trazi nesto sto
 vise predstavlja nas i sto je za reklamu.
 
-**Slogan promijenjen** u: `Za 5 dana. Bez plaćanja unaprijed.` —
-dvije konkretne koristi (brzina + nula rizika), iste dvije cifre koje se
-ponavljaju svuda u projektu. "Digitalna agencija" je samo opis kategorije.
+**Slogan:** `We build digital solutions.` —
+Engleski, jer se tako pise u oglasima i van BiH. Prije toga probano
+"Digitalna agencija" (samo opis kategorije) i "Za 5 dana. Bez plaćanja
+unaprijed." (dobre cifre, ali te dvije stvari vec stoje na svakoj drugoj
+objavi — naslovna treba da kaze STA radimo).
 
 **Prava slika**: `PHOTOS.earth` — fotorealisticna Zemlja iz svemira,
 1200x675, base64 u `postPhotos.ts` (101 kB, q72). Dodana kao `PhotoKey`
@@ -60,9 +62,14 @@ horizont na ~43% visine (y≈290 od 675), gornji dio cist crni svemir
 | zavjesa | `#covVeil` linearni gradijent gore (0.55 -> 0) — tekst citljiv |
 | sjaj | `#covGlow` tirkizni radial iza logotipa |
 | logo | **DevLab** 118px, "Dev" bijel, "Lab" `#4DEAE0` |
-| slogan | **Za 5 dana. Bez plaćanja unaprijed.** 40px, `#C8D2D6` |
+| slogan | **We build digital solutions.** 40px, `#C8D2D6` |
 | ispod | `@devlab.cc.cd` (teal 800, 30px) |
 | dno | `www.devlab.cc.cd` (sivo 600, 25px) |
+
+**BOJA ZEMLJE JE PRIRODNA.** Pokusaj da se planeta preboji u brend
+`#4DEAE0` (feColorMatrix saturate + `mix-blend-mode:color`) je ODBAČEN —
+prebojena planeta izgleda kao crtez, ne kao fotografija. Filter `covCook`
+uklonjen. Okeani plavi, kopno zeleno-smeđe.
 
 Crtani krugovi, kontinenti-pathovi i atmosferski prstenovi su UKLONJENI —
 zamijenila ih je fotografija. Ostao je samo `#covGlow` za brend boju.
