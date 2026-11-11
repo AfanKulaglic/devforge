@@ -46,6 +46,50 @@ otvara. Korisnik klikne "Posalji" i vidi "Poruka je poslana".
 - stanja `sent` / `sending` / `sendError` umjesto `mailOpened`
 - uspjeh: "Poruka je poslana" + ponuda da pisu na mejl ako je hitno
 
+### FOOTER FORMA I CTA — bili POTPUNO NEISPRAVNI
+
+Korisnik: "mora i u cta kod footera raditi kontakt forma ako ne radi".
+
+**BUG 1 — footer forma nije slala nista.**
+Koristila je `sendForm()` -> `FORM_ENDPOINT`. Taj endpoint **nikad nije
+postavljen**, a kod je radio:
+```
+if (!FORM_ENDPOINT) { setSent(true); form.reset(); return; }
+```
+=> prikazivalo se **"Hvala! Poruka je poslana"** iako nista nije poslano.
+
+**Fix:** footer sada ide ISTI put kao modal — `saveInquiryRemote()` +
+`sendInquiryToServer()` (Brevo + Firebase). Poruke stizu i u admin ->
+Poruke. `FORM_ENDPOINT` i `sendForm()` **obrisani**.
+
+**BUG 2 — telefon nije bio obavezan u footeru.**
+Sada: `digits.length < 6` -> greska. Ime min 2, poruka min 5 znakova.
+Polja: **Ime * | Telefon * | Email (opcionalno) | Poruka ***.
+
+**BUG 3 — `contactError` se nikad nije postavljao.**
+Postavljao se samo `contactErr` (tekst), a prikaz se vezao na
+`contactError`, pa se greska **nije vidjela**. Dodano `setContactError(true)`
+na sva 3 mjesta.
+
+**BUG 4 — CTA u footeru bio `mailto:`.**
+Pola ljudi na telefonu nema mail klijent -> nista se ne desi.
+Sada `<button onClick={openContact}>` — otvara isti modal.
+
+**BUG 5 — newsletter je lagao.** `submitNewsletter` je zvao isti `sendForm`,
+pa je i tu pisalo "Hvala na pretplati" bez slanja. Sada samo lokalna
+potvrda (nema backend endpoint za newsletter).
+
+**Uspjeh u footeru:** forma se zamijeni potvrdom "Poruka je poslana" +
+dugme "Pošalji novu poruku" (da covjek slucajno ne posalje dvaput).
+
+**Testirano (Playwright):**
+| test | rezultat |
+|---|---|
+| los telefon "abc" | `odbijen:true`, `poslano:false` |
+| dobar telefon | `poslano:true` |
+| CTA u footeru | `otvara modal: true` |
+| server 500 | `poslano:false`, greska + kontakt |
+
 ### TIMEOUT: modal se vise NE blokira (spor mail/firebase)
 
 Korisnik: "i dalje kada posaljem poruku modal se ne ugasi".

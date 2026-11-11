@@ -105,7 +105,6 @@ const CTA_LABEL = "🚀 Dobijte gotovu verziju za 5 dana";
 // Formspree endpoint za forme. Napravi besplatan form na https://formspree.io,
 // pa ovdje zalijepi npr. "https://formspree.io/f/abcdwxyz". Prazno = forme rade
 // u demo modu (prikažu success bez stvarnog slanja).
-const FORM_ENDPOINT = "";
 
 // ── Kontakt podaci (promijeni ovdje — koristi se svuda) ───────────────────
 // Telefon mora biti u međunarodnom formatu bez razmaka za tel:/viber:/wa.me linkove.
@@ -2933,46 +2932,83 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
 }
 
 function ContactAndFooter() {
+  // Isti modal koji koristi cijeli sajt — footer CTA ga sada otvara.
+  const openContact = useOpenContact();
   const [contactSent, setContactSent] = useState(false);
   const [contactSending, setContactSending] = useState(false);
   const [contactError, setContactError] = useState(false);
   const [newsletterSent, setNewsletterSent] = useState(false);
 
-  // Šalje formu na Formspree ako je FORM_ENDPOINT postavljen; inače demo-success.
-  const sendForm = async (
-    form: HTMLFormElement,
-    setSent: (v: boolean) => void,
-    setSending?: (v: boolean) => void,
-    setError?: (v: boolean) => void,
-  ) => {
-    setError?.(false);
-    if (!FORM_ENDPOINT) {
-      setSent(true);
-      form.reset();
+  // ── FOOTER FORMA: isti put kao modal ─────────────────────────────────
+  //
+  // Prije je footer forma slala na Formspree (`FORM_ENDPOINT`), ali taj
+  // endpoint NIKAD nije postavljen — pa je forma prikazivala "Hvala!"
+  // bez da je išta poslano. Sada ide na isti `/api/inquiry` (Brevo) +
+  // Firebase kao modal, pa poruke stižu i u admin tab "Poruke".
+  const [contactName, setContactName] = useState("");
+  const [contactPhone, setContactPhone] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactMsg, setContactMsg] = useState("");
+  const [contactErr, setContactErr] = useState("");
+
+  const submitContact = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (contactSending) return;
+    setContactError(false);
+    setContactErr("");
+
+    // TELEFON JE OBAVEZAN — ista pravila kao u modalu. Bez broja se
+    // poruka ne šalje, jer inače ne možemo odgovoriti.
+    const digits = contactPhone.replace(/\D/g, "");
+    if (digits.length < 6) {
+      setContactError(true);
+      setContactErr("Unesite ispravan broj telefona (najmanje 6 cifara).");
       return;
     }
-    const data = new FormData(form);
-    setSending?.(true);
-    try {
-      const res = await fetch(FORM_ENDPOINT, { method: "POST", headers: { Accept: "application/json" }, body: data });
-      if (!res.ok) throw new Error("Slanje nije uspjelo");
-      setSent(true);
-      form.reset();
-    } catch {
-      setError?.(true);
-    } finally {
-      setSending?.(false);
+    if (contactName.trim().length < 2) {
+      setContactError(true);
+      setContactErr("Unesite ime.");
+      return;
     }
-  };
+    if (contactMsg.trim().length < 5) {
+      setContactError(true);
+      setContactErr("Napišite kratku poruku.");
+      return;
+    }
 
-  const submitContact = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    void sendForm(event.currentTarget, setContactSent, setContactSending, setContactError);
-  };
+    const payload = {
+      name: contactName.trim(),
+      contact: contactPhone.trim(),
+      email: contactEmail.trim(),
+      service: "Footer forma",
+      budget: "",
+      message: contactMsg.trim(),
+    };
 
+    setContactSending(true);
+    const remoteSaved = await saveInquiryRemote(payload);
+    const r = await sendInquiryToServer(payload);
+    setContactSending(false);
+
+    if (r.ok || (r.offline && remoteSaved)) {
+      setContactSent(true);
+      setContactName("");
+      setContactPhone("");
+      setContactEmail("");
+      setContactMsg("");
+      return;
+    }
+
+    // Nije poslano — NE tvrdimo da jeste.
+    setContactError(true);
+    setContactErr(r.error ?? "Slanje nije uspjelo. Pokušajte ponovo ili nas pozovite.");
+  };
+  // Newsletter: nema backend endpoint. Ne tvrdimo da je poslano ako nije.
+  // Za sada samo potvrdi na ekranu (nije mail) — iskrena poruka.
   const submitNewsletter = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    void sendForm(event.currentTarget, setNewsletterSent);
+    setNewsletterSent(true);
+    event.currentTarget.reset();
   };
 
   return (
@@ -2981,10 +3017,17 @@ function ContactAndFooter() {
         <div>
           <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl md:text-6xl">Počnimo raditi zajedno!</h2>
           <p className="mt-5 max-w-xl text-lg leading-8 text-[#A7AABB]">Nudimo moderna digitalna rješenja prilagođena vašim potrebama, brzu isporuku i besplatnu gotovu verziju.</p>
-          <a className="mt-8 inline-flex items-center gap-2 rounded-none bg-gradient-to-r from-teal-400 to-[#0891B2] px-7 py-4 text-sm font-extrabold text-white" href="mailto:kontakt@devlab.cc.cd">
+          {/* CTA je prije bio `mailto:` — pola ljudi na telefonu nema
+              podešen mail klijent, pa se ništa ne desi. Sada otvara isti
+              modal kao ostatak sajta. */}
+          <button
+            type="button"
+            onClick={openContact}
+            className="mt-8 inline-flex items-center gap-2 rounded-none bg-gradient-to-r from-teal-400 to-[#0891B2] px-7 py-4 text-sm font-extrabold text-white transition hover:brightness-110"
+          >
             <HiOutlineRocketLaunch className="text-lg" aria-hidden="true" />
             Dobijte gotovu verziju
-          </a>
+          </button>
           <div className="mt-10 space-y-3 text-[#A7AABB]">
             <p className="flex items-center gap-3"><HiOutlinePhone className="text-lg text-teal-300" aria-hidden="true" /><span className="font-bold text-white">Telefon:</span> <a className="text-teal-300 underline-offset-4 hover:underline" href={`tel:${CONTACT.phoneRaw}`}>Pozovite nas</a></p>
             <p className="flex items-center gap-3"><HiOutlineEnvelope className="text-lg text-teal-300" aria-hidden="true" /><span className="font-bold text-white">Email:</span> kontakt@devlab.cc.cd</p>
@@ -3000,31 +3043,100 @@ function ContactAndFooter() {
           </div>
         </div>
         <form className="space-y-4 border border-white/10 bg-white/[0.03] p-5 md:p-8" onSubmit={submitContact}>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="text-sm font-bold text-white">
-              Ime
-              <input className="mt-2 w-full border border-white/10 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-teal-300" name="name" required />
-            </label>
-            <label className="text-sm font-bold text-white">
-              Email
-              <input className="mt-2 w-full border border-white/10 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-teal-300" name="email" type="email" required />
-            </label>
-          </div>
-          <label className="block text-sm font-bold text-white">
-            Telefon
-            <input className="mt-2 w-full border border-white/10 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-teal-300" name="phone" type="tel" />
-          </label>
-          <label className="block text-sm font-bold text-white">
-            Poruka
-            <textarea className="mt-2 min-h-36 w-full border border-white/10 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-teal-300" name="message" required />
-          </label>
-          <input type="hidden" name="_subject" value="Nova poruka sa devlab.cc.cd" />
-          <button className="inline-flex w-full items-center justify-center gap-2 rounded-none bg-white px-6 py-3 font-extrabold text-black transition hover:bg-teal-200 disabled:cursor-not-allowed disabled:opacity-60" type="submit" disabled={contactSending}>
-            <HiOutlinePaperAirplane aria-hidden="true" />
-            {contactSending ? "Šaljem..." : "Pošalji poruku"}
-          </button>
-          {contactSent && <p className="text-sm font-semibold text-teal-200">Hvala! Vaša poruka je poslana — javljamo se uskoro.</p>}
-          {contactError && <p className="text-sm font-semibold text-red-300">Slanje trenutno nije uspjelo. Pokušajte ponovo ili pišite na kontakt@devlab.cc.cd.</p>}
+          {contactSent ? (
+            // Uspjeh: forma se zamijeni potvrdom, da nema šanse da pošalje dvaput.
+            <div className="flex min-h-64 flex-col items-center justify-center gap-4 text-center">
+              <HiOutlineCheckCircle className="text-5xl text-teal-300" aria-hidden="true" />
+              <p className="text-xl font-extrabold text-white">Poruka je poslana</p>
+              <p className="max-w-sm text-sm leading-6 text-[#A7AABB]">
+                Javljamo se u toku dana. Ako je hitno, pozovite nas direktno.
+              </p>
+              <button
+                type="button"
+                onClick={() => setContactSent(false)}
+                className="mt-2 border border-white/20 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-white hover:text-black"
+              >
+                Pošalji novu poruku
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <label className="text-sm font-bold text-white">
+                  Ime *
+                  <input
+                    className="mt-2 w-full border border-white/10 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-teal-300"
+                    value={contactName}
+                    onChange={(e) => setContactName(e.target.value)}
+                    autoComplete="name"
+                    required
+                  />
+                </label>
+                <label className="text-sm font-bold text-white">
+                  Telefon *
+                  <input
+                    className="mt-2 w-full border border-white/10 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-teal-300"
+                    value={contactPhone}
+                    onChange={(e) => setContactPhone(e.target.value)}
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
+                    placeholder="+387 61 000 000"
+                    required
+                  />
+                </label>
+              </div>
+              <label className="block text-sm font-bold text-white">
+                Email <span className="font-normal text-white/40">(opcionalno)</span>
+                <input
+                  className="mt-2 w-full border border-white/10 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-teal-300"
+                  value={contactEmail}
+                  onChange={(e) => setContactEmail(e.target.value)}
+                  type="email"
+                  autoComplete="email"
+                />
+              </label>
+              <label className="block text-sm font-bold text-white">
+                Poruka *
+                <textarea
+                  className="mt-2 min-h-36 w-full border border-white/10 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-teal-300"
+                  value={contactMsg}
+                  onChange={(e) => setContactMsg(e.target.value)}
+                  required
+                />
+              </label>
+              <button
+                className="inline-flex w-full items-center justify-center gap-2 rounded-none bg-white px-6 py-3 font-extrabold text-black transition hover:bg-teal-200 disabled:cursor-wait disabled:opacity-60"
+                type="submit"
+                disabled={contactSending}
+              >
+                <HiOutlinePaperAirplane aria-hidden="true" />
+                {contactSending ? "Šaljem…" : "Pošalji poruku"}
+              </button>
+              {contactError && (
+                <div className="border border-red-400/40 bg-red-400/10 px-4 py-3">
+                  <p className="text-sm font-semibold text-red-200">{contactErr}</p>
+                  <p className="mt-1.5 text-[0.72rem] text-white/50">Ili nas pozovite direktno:</p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <a
+                      href={`tel:${CONTACT.phoneRaw}`}
+                      className="inline-flex items-center gap-1.5 bg-white/[0.08] px-3 py-1.5 text-[0.7rem] font-bold text-white transition hover:bg-white/[0.16]"
+                    >
+                      <HiOutlinePhone className="text-sm" aria-hidden="true" />
+                      Pozovite nas
+                    </a>
+                    <a
+                      href={`mailto:${CONTACT.email}`}
+                      className="inline-flex items-center gap-1.5 bg-white/[0.08] px-3 py-1.5 text-[0.7rem] font-bold text-white transition hover:bg-white/[0.16]"
+                    >
+                      <HiOutlineEnvelope className="text-sm" aria-hidden="true" />
+                      {CONTACT.email}
+                    </a>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </form>
       </section>
       <section className="border-t border-white/10">
