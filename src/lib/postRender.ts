@@ -752,8 +752,13 @@ function formBlocks(c: Colors, p: PostSlide): Block {
   // Note NE ide u novi red sa ikonom — ostaje uvučen pod label, da se lista
   // cita kao jedna cjelina, a ne kao dva stupca.
   const hasIcons = items.some((it: any) => typeof it === "object" && it !== null);
-  const iconCol = hasIcons ? (SIZE_H >= 1300 ? 66 : 58) : 0;
-  const IC = SIZE_H >= 1300 ? 44 : 38;
+  // IKONE MORAJU BITI VELIKE.
+  //
+  // Prije su bile 44px (3:4) / 38px (1:1) — u listi od cetiri stavke djelovale
+  // su kao ukras, a ne kao orijentir. Sada su 62/54, a stupac se siri na 88/78
+  // da label ne bi poceo preblizu ikone.
+  const iconCol = hasIcons ? (SIZE_H >= 1300 ? 108 : 96) : 0;
+  const IC = SIZE_H >= 1300 ? 80 : 70;
 
   items.forEach((it: any, i: number) => {
     const ry = y + i * rowH;

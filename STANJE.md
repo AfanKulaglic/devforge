@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (p04: DevLab zeleno, kraci lead)
+Zadnje ažurirano: 2026-11-10 (p04: "ne agenciju" zeleno, vece ikone)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,47 +12,36 @@ Zadnje ažurirano: 2026-11-10 (p04: DevLab zeleno, kraci lead)
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### p04 — DevLab skupa + zeleni akcent + kraci lead
-Korisnik trazi: "DevLab se pise skupa", "DevLab i agenciju u zelenoj boji",
-"na prvom slajdu je previse teksta, skrati".
+### p04 — "ne agenciju" zeleno + vece ikone u listi
 
-**1. "Dev Lab" -> "DevLab"** na sva tri mjesta: title objave, cover naslov,
-compare naslov.
-
-**2. Nove zelene rijeci u naslovu** — polje `accentWords` na slideu:
-
+**1. Zeleno "ne agenciju"** (korisnik htio frazu, ne samo rijec):
 ```ts
-title: "Zašto firme biraju DevLab, a ne agenciju.",
-accentWords: ["DevLab", "agenciju"],
+accentWords: ["DevLab", "agenciju", "ne"],
 ```
+Fraza "ne agenciju" se NE MOZE matchovati kao jedan string jer wrap()
+lomi naslov na redove — "ne" zavrsi na prvom redu, "agenciju." na drugom.
+Zato su to dvije odvojene akcent rijeci; oba <tspan> dobiju #4DEAE0.
 
-`formCover` dijeli naslov na `<tspan>` dijelove: svaki match dobija
-`fill=c.accent` = BRAND #4DEAE0, ista zelena kao svuda. Case-insensitive.
+**2. Ikone u listi povecane** (formBlocks):
 
-**3. Lead skracen** sa tri recenice na dvije:
+| | prije | sada |
+|---|---|---|
+| IC (3:4) | 44px | **80px** |
+| IC (1:1) | 38px | **70px** |
+| stupac ikone | 66px | **108px** |
 
-prije: "Agencija traži 50% unaprijed i naplati prije nego što vidite ijedan
-piksel. Mi radimo obrnuto: prvo napravimo stranicu, pokažemo vam je na pravom
-linku — i tek onda razgovaramo o novcu. Ako vam se ne svidi, ne plaćate ništa
-i nemate nikakvu obavezu."
-
-sada: "Agencija traži 50% unaprijed, prije nego što vidite ijedan piksel. Mi
-radimo obrnuto — prvo napravimo stranicu i pokažemo vam je na pravom linku.
-Ako vam se ne svidi, ne plaćate ništa."
-
-### Napomena
-Polje `accentWords` radi na svakom cover slajdu — dovoljno dodati niz
-rijeci. Regex escape je rucno popravljen jer je bash pojeo `$&`.
+Stvarna velicina crteza je ~60px (pxIcon crta u tintama unutar boxa, ne
+cijeli box) — prije je bila 46px. Razmak ikona-tekst 90px, bez preklapanja.
 
 ### Verifikacija
-- Vision: "DevLab" i "agenciju" zeleni #4DEAE0, ostatak bijeli.
-- "DevLab" citljiv kao jedna rijec na slajdu 1 i 5.
+- Vision: "ne", "agenciju" i "DevLab" zeleni u naslovu.
+- Vision: ikone 50–70px, razmak do labela 90px, bez preklapanja.
 - 41 objava x 2 formata: 0 van kadra, 0 console gresaka.
 - tsc=0, build OK.
 
 ## Sljedeći korak
-- Pregledati p04 slajd 1 u 3:4 — zelene rijeci + kraci lead.
-- `accentWords` se moze dodati na druge cover slajdove (p06, p07).
+- Pregledati p04 slajd 1 i 4 u 3:4.
+- Ikone u listi se dalje mogu povecati mijenjajuci 80/70 u formBlocks.
 - Opciono: 4:5 format.
 
 ## Napomene / zamke
