@@ -1968,11 +1968,20 @@ export async function svgToPngBlob(svg: string): Promise<Blob | null> {
       img.src = postSvgDataUri(svg);
     });
     const canvas = document.createElement("canvas");
-    canvas.width = SIZE;
-    canvas.height = SIZE_H;
+    // DIMENZIJE IZ SAMOG SVG-a, ne iz globalnog formatа.
+    //
+    // Prije: canvas je uzimao `SIZE` / `SIZE_H` — modul-nivo stanje koje
+    // `setFormat()` mijenja. Kad se u `downloadPng` format vrati u `finally`
+    // PRIJE nego sto se PNG napravi, cover (16:9) bi izasao kao 1080x1080.
+    // Zato se sada cita `viewBox` iz SVG-a — on je uvijek tacan.
+    const vb = svg.match(/viewBox="0 0 (\d+(?:\.\d+)?) (\d+(?:\.\d+)?)"/);
+    const cw = vb ? Math.round(+vb[1]) : SIZE;
+    const ch = vb ? Math.round(+vb[2]) : SIZE_H;
+    canvas.width = cw;
+    canvas.height = ch;
     const ctx = canvas.getContext("2d");
     if (!ctx) return null;
-    ctx.drawImage(img, 0, 0, SIZE, SIZE_H);
+    ctx.drawImage(img, 0, 0, cw, ch);
     return await new Promise((res) => canvas.toBlob((b) => res(b), "image/png"));
   } catch {
     return null;

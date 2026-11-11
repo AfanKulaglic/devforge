@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (FB cover kao objava fbc01 u /objave, 16:9)
+Zadnje ažurirano: 2026-11-10 (dev server radi; fix preuzimanja covera -> 1080x628)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -90,12 +90,34 @@ ID-evi u kodu skacu. **Uvijek provjeri poziciju, ne pretpostavljaj ID!**
 
 **Nema p11–p20 ni p31–p40.** Niz: p01–p10, p21–p30, p41–p60.
 
+### BUG POPRAVLJEN — preuzimanje covera davalo 1080x1080
+
+`svgToPngBlob()` je uzimao `SIZE` / `SIZE_H` (modul-nivo stanje koje
+`setFormat()` mijenja). `downloadPng` vrati format u `finally` PRIJE nego se
+PNG napravi, pa je canvas ostajao na 1080x1080 i cover je izlazio razvucen.
+
+Sada se dimenzije citaju iz `viewBox` samog SVG-a — uvijek tacne:
+
+```ts
+const vb = svg.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/);
+const cw = vb ? Math.round(+vb[1]) : SIZE;
+const ch = vb ? Math.round(+vb[2]) : SIZE_H;
+```
+
+Izmjereno: cover -> **1080x628**, px01 -> 1080x1080, p03 -> 1080x1080.
+
 ### Verifikacija
 - /objave: 42 kartice, prva je fbc01 u 16:9 (odnos 1.72, viewBox 1080x628).
 - Cover: domena samo JEDNOM, donji lijevi ugao slobodan (0 elemenata u
   zoni x<360 / y>490), maxY 566/628.
 - 71 slajd x 2 formata: 0 van kadra.
-- tsc=0, build OK, 0 console gresaka.
+- Preuzimanje: cover 1080x628, ostale 1080x1080. 0 console gresaka.
+- tsc=0, build OK.
+
+## Dev server
+
+`npx vite --port 5173` (background, log: /tmp/vite.log)
+http://localhost:5173/
 
 ## Sljedeći korak
 - Otvoriti /objave — prva kartica je FB cover, preuzmi je dugmetom za PNG.
