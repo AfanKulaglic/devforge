@@ -12,6 +12,31 @@
     <meta name="application-name" content="DevLab" />
     <meta name="format-detection" content="telephone=no" />
 
+    <script>
+      // ── SOFT-404 GUARD ──────────────────────────────────────────────────
+      // SPA fallback vraca HTTP 200 za SVE putanje, pa bi staticki
+      // "index, follow" ostao i na nepostojecim stranicama. Google to
+      // zove "soft 404" i kaznjava. Ovaj blok se izvrsi PRIJE Reacta i
+      // odmah postavi noindex ako putanja nije poznata.
+      (function () {
+        var known = [
+          "/", "/usluge", "/usluge/web-stranice", "/usluge/mobilne-aplikacije",
+          "/usluge/2d-igrice", "/usluge/ai-sistemi", "/cijene", "/projekti",
+          "/o-nama", "/cesta-pitanja", "/kontakt", "/privatnost", "/uslovi",
+          "/kolacici"
+        ];
+        var path = location.pathname.replace(//$/, "") || "/";
+        // Interne stranice: nikad u Googleu.
+        var interni = ["/admin", "/reklama", "/objave", "/logo", "/mail", "/test"];
+        if (interni.indexOf(path) !== -1 || known.indexOf(path) === -1) {
+          var m = document.querySelector('meta[name="robots"]');
+          if (m) m.setAttribute("content", "noindex, nofollow");
+          var g = document.querySelector('meta[name="googlebot"]');
+          if (g) g.setAttribute("content", "noindex, nofollow");
+        }
+      })();
+    </script>
+
     <!-- Verifikacija pretraživača (Google Search Console + Bing Webmaster Tools) -->
     <meta name="google-site-verification" content="_yes0yFX1rimvElU22mdGoMBPztQYpDE6lBm5lxcyEk" />
     <meta name="msvalidate.01" content="AA7B68670AEA3B6FBB5893AF3681FE48" />

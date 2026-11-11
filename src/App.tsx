@@ -5513,6 +5513,11 @@ export default function App() {
         title: "Kolačići (cookies) | DevLab",
         desc: "Koje kolačiće koristimo na sajtu, čemu služe i kako ih možete onemogućiti u svom pretraživaču.",
       },
+      // Interne stranice — NIKAD u Googleu. Prije su padale na `home`
+      // ("index, follow"), pa ih je Google mogao indeksirati.
+      admin: { title: "Admin | DevLab", desc: "", noindex: true },
+      reklama: { title: "Reklama | DevLab", desc: "", noindex: true },
+      mail: { title: "Mail | DevLab", desc: "", noindex: true },
       notfound: { title: "Stranica nije pronađena (404) | DevLab", desc: "Tražena stranica ne postoji. Vratite se na početnu ili pogledajte usluge i cijene.", noindex: true },
       objave: { title: "Objave za Instagram | DevLab", desc: "Interna galerija 60 marketinških objava.", noindex: true },
       logo: { title: "Logotip | DevLab", desc: "Prikaz logotipa DevLab.", noindex: true },
