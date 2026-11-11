@@ -16,6 +16,7 @@ import {
   HiOutlineMagnifyingGlassPlus,
   HiOutlineXMark,
   HiOutlineArrowsPointingOut,
+  HiOutlineSparkles,
 } from "react-icons/hi2";
 import { CATEGORY_LABEL, TEMPLATE_LABEL, ALL_POSTS } from "./lib/postsIndex";
 import type { AdPost, PostCategory } from "./lib/postsData";
@@ -28,8 +29,11 @@ import {
   type PostFormat,
 } from "./lib/postRender";
 
-const FILTERS: (PostCategory | "sve")[] = [
+type PostFilter = PostCategory | "sve" | "premium";
+
+const FILTERS: PostFilter[] = [
   "sve",
+  "premium",
   "edukacija",
   "savjet",
   "izakulisa",
@@ -72,9 +76,20 @@ function PostCard({ post, format, onOpen }: { post: AdPost; format: PostFormat; 
   const slides = useMemo(() => renderPostSlides(post), [post, format]);
   const src = useMemo(() => postSvgDataUri(slides[0]), [slides]);
   const total = slides.length;
+  const isPremium = post.layout === "premium";
 
   return (
-    <figure className="group relative overflow-hidden border border-white/10 bg-white/[0.02]">
+    <figure
+      className={`group relative overflow-hidden border bg-white/[0.02] ${
+        isPremium ? "border-teal-300/60" : "border-white/10"
+      }`}
+    >
+      {isPremium && (
+        <span className="pointer-events-none absolute left-0 top-0 z-10 inline-flex items-center gap-1.5 bg-teal-300 px-2.5 py-1.5 text-[0.6rem] font-extrabold uppercase tracking-[0.14em] text-[#062a28]">
+          <HiOutlineSparkles className="text-[0.8rem]" aria-hidden="true" />
+          Premium
+        </span>
+      )}
       <button
         type="button"
         onClick={onOpen}
@@ -257,6 +272,12 @@ function PostModal({ post, format, onClose }: { post: AdPost; format: PostFormat
               <p className="mt-1 text-xs text-white/40">
                 {CATEGORY_LABEL[post.category]} · {TEMPLATE_LABEL[post.template]}
               </p>
+              {post.layout === "premium" && (
+                <span className="mt-2 inline-flex items-center gap-1.5 bg-teal-300 px-2.5 py-1 text-[0.6rem] font-extrabold uppercase tracking-[0.14em] text-[#062a28]">
+                  <HiOutlineSparkles className="text-[0.8rem]" aria-hidden="true" />
+                  Premium objava
+                </span>
+              )}
             </div>
             <button
               type="button"
@@ -331,7 +352,7 @@ function PostModal({ post, format, onClose }: { post: AdPost; format: PostFormat
 
 // ── Stranica ──────────────────────────────────────────────────────────────
 export default function PostsPage() {
-  const [filter, setFilter] = useState<PostCategory | "sve">("sve");
+  const [filter, setFilter] = useState<PostFilter>("sve");
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [format, setFmt] = useState<PostFormat>("1:1");
 
@@ -342,8 +363,12 @@ export default function PostsPage() {
 
   const visible = useMemo(
     () =>
-      ALL_POSTS.map((p, i) => ({ post: p, index: i })).filter(
-        (x) => filter === "sve" || x.post.category === filter,
+      ALL_POSTS.map((p, i) => ({ post: p, index: i })).filter((x) =>
+        filter === "sve"
+          ? true
+          : filter === "premium"
+            ? x.post.layout === "premium"
+            : x.post.category === filter,
       ),
     [filter],
   );
@@ -397,7 +422,12 @@ export default function PostsPage() {
         <div className="mt-6 flex flex-wrap gap-2">
           {FILTERS.map((f) => {
             const active = filter === f;
-            const count = f === "sve" ? ALL_POSTS.length : ALL_POSTS.filter((p) => p.category === f).length;
+            const count =
+              f === "sve"
+                ? ALL_POSTS.length
+                : f === "premium"
+                  ? ALL_POSTS.filter((p) => p.layout === "premium").length
+                  : ALL_POSTS.filter((p) => p.category === f).length;
             return (
               <button
                 key={f}
@@ -410,7 +440,7 @@ export default function PostsPage() {
                     : "border-white/12 text-white/50 hover:border-white/30 hover:text-white/80"
                 }`}
               >
-                {f === "sve" ? "Sve" : CATEGORY_LABEL[f]}
+                {f === "sve" ? "Sve" : f === "premium" ? "Premium" : CATEGORY_LABEL[f]}
                 <span className="text-[0.62rem] tabular-nums text-white/35">{count}</span>
               </button>
             );

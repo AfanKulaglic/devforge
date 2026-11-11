@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (p24 sređen; formHero dobio items grid sa opisima)
+Zadnje ažurirano: 2026-11-10 (premium oznaka u /objave + FB cover)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,34 +12,40 @@ Zadnje ažurirano: 2026-11-10 (p24 sređen; formHero dobio items grid sa opisima
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### p05–p10, p21–p24 — sređeni (detalji u gitu)
+### PREMIUM oznaka na /objave
 
-**Tri vazna buga popravljena globalno:**
-1. `formFigure`: razmak broj->naslov bio `tall ? 8 : 52` — u 3:4 samo 8px,
-   pa su se broj i naslov preklapali. Sada `tall ? 44 : 52`.
-2. `richLayer` logo: `brandMark(..., c.accent)` je na `light` paleti
-   (`accent #0A0A0A`) pravio „Lab" CRN na tirkiznoj. Sada `richOnGreen`.
-3. `formHero` NIJE crtao `items` — postovi sa `layout: center` i `title`
-   templateom (p24) nisu imali gdje predati listu. Sada crta grid 2x2.
+Premium objava (`layout: "premium"` — za sada samo `px01`) se sada prepoznaje
+na tri mjesta u `src/PostsPage.tsx`:
 
-### p24 — „Izrada sajtova u Sarajevu"
+1. **Značka na kartici** — gore lijevo, `bg-teal-300`, tekst `#062a28`,
+   ikona `HiOutlineSparkles` + "Premium". Kartica dobija i teal okvir
+   (`border-teal-300/60` umjesto `border-white/10`).
+2. **Značka u modalu** — "Premium objava" ispod kategorije.
+3. **Filter "Premium"** — nov tip `PostFilter = PostCategory | "sve" |
+   "premium"`, prikazuje samo premium objave, broji ih u zagradi.
 
-`layout: center`, `palette: teal` (zelena podloga), template `title` ->
-`formHero`. Dodan `items` sa 4 dokaza — prije je imao samo naslov +
-podnaslov. `subtitle` skracen (bio prestan).
+**Detekcija:** `post.layout === "premium"` — nema novog polja u podacima.
 
-| ikona | label | note |
-|---|---|---|
-| web | Stranica od 150 KM | Shop od 600 KM — bez skrivenih stavki. |
-| check | Ista cijena svugdje | Jednako za firmu iz Sarajeva i iz Bihaća. |
-| chat | Sve ide online | Razgovor, pregledi i izmjene — bez dolaska. |
-| shield | Bez kirije u cijeni | Ne plaćate naš najam ni naše režije. |
+### FB cover fotografija
 
-### `formHero` — items grid sa `note`
+`images/fb-cover-devlab-fadec2.jpg` (16:9). DevLab wordmark lijevo
+("Dev" bijel, "Lab" `#4DEAE0`), tagline "Web stranice · Shopovi ·
+Aplikacije · AI", desno apstraktni teal glass paneli. Vision potvrdio
+tekst. **Nisam mogao lično vidjeti sliku.**
 
-Dodano na kraj forme: grid 2x2, `hIC` 40/36, `hfs` 28/26, `hRow` 62/56.
-Kad stavka ima `note`, red je visi za `nfs + 10` (22/20) i ikona se centrira
-po CIJELOM bloku (label + note), ne po labelu.
+### Preloader
+
+`<p className="preloader-logo">` je pisao "Dev Lab" sa razmakom -> "DevLab".
+Animacija (shimmer gradijent) netaknuta.
+
+### Ranije ove sesije: p05–p10, p21–p24 sređeni
+
+**Tri globalna buga popravljena:**
+1. `formFigure`: razmak broj->naslov bio `tall ? 8 : 52` — u 3:4 samo 8px.
+   Sada `tall ? 44 : 52`.
+2. `richLayer` logo: `brandMark(..., c.accent)` na `light` paleti pravio
+   „Lab" CRN na tirkiznoj. Sada `richOnGreen`.
+3. `formHero` nije crtao `items`. Sada grid 2x2 sa `note` ispod labela.
 
 ## ⚠️ VAZNO: ID-evi NISU 1-2-3 po redu
 
@@ -48,7 +54,7 @@ ID-evi u kodu skacu. **Uvijek provjeri poziciju, ne pretpostavljaj ID!**
 
 | # | id | naslov |
 |---|---|---|
-| 1 | px01 | Premium ponuda |
+| 1 | px01 | **Premium ponuda** |
 | 2 | p01 | Ne plaćate ni marku… |
 | 3 | p02 | Stranica, shop, aplikacija, igrica ili AI |
 | 4 | p03 | Kompletna stranica za 150 KM |
@@ -62,24 +68,26 @@ ID-evi u kodu skacu. **Uvijek provjeri poziciju, ne pretpostavljaj ID!**
 | 12 | p21 | Prije prve linije koda |
 | 13 | p22 | Četiri koraka. Nula plaćanja. |
 | 14 | p23 | Projekti koje smo radili |
-| 15 | **p24** | **Izrada sajtova u Sarajevu** |
-| 16 | p25 | Šta tačno dobijate za cijenu |
+| 15 | p24 | Izrada sajtova u Sarajevu |
+| 16 | **p25** | **Šta tačno dobijate za cijenu** |
 | 17 | p26 | Da li je gotova verzija zaista besplatna? |
 | 18 | p27 | Koliko traje izrada? |
 
 **Nema p11–p20 ni p31–p40.** Niz: p01–p10, p21–p30, p41–p60.
 
 ### Verifikacija
-- p24: 4 ikone sa opisima, sve čitljivo na zelenoj podlozi (vision potvrdio).
-- **Svih 70 slajdova (3:4): 0 STVARNOG preklapanja** (tolerancija: sijeku se
-  >40% visine reda). Susjedni redovi naslova nisu preklop.
-- 70 slajdova x 2 formata: 0 van kadra.
+- /objave: Premium značka na kartici (1), filter "Premium 1" radi, 0 grešaka.
+- Vision potvrdio značku, teal okvir i filter red.
+- FB cover: vision potvrdio tekst "DevLab" (jedna rijec) + tagline.
+- 70 slajdova x 2 formata: 0 van kadra; 0 stvarnog preklapanja.
 - tsc=0, build OK.
 
 ## Sljedeći korak
-- Pregledati p24.
-- Sljedeci po redu: **p25** (pozicija 16) — šta tačno dobijate za cijenu.
-- `band` layout vise nigdje ne koristi okvir — kandidat za brisanje.
+- Pogledati /objave — Premium značka na px01 kartici + filter.
+- FB cover: `images/fb-cover-devlab-fadec2.jpg` — upload na Facebook.
+- Sljedeci post po redu: **p25** (pozicija 16).
+- Opciono: ostalih ~20 mjesta "Dev Lab" -> "DevLab" (naslovi sekcija,
+  footer, alt tekstovi, AdminPanel).
 
 ## Napomene / zamke
 - **Python heredoc + `\n` u TS stringu = pokvaren string.** Koristiti `.cjs` skriptu sa
