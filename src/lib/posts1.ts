@@ -352,17 +352,35 @@ export const POSTS_1: AdPost[] = [
   // ── 7. SVE OSTALO ŠTO PROJEKAT TREBA ─────────────────────────────────────
   {
     id: "p07",
-    title: "Sve što vaš projekat treba — uključeno u cijenu, bez doplata.",
+    title: "Sve što vaš projekat treba. Bez doplata.",
     template: "list",
     category: "ponuda",
-    layout: "band",
+    // `band` je crtao okvir oko sadrzaja (stroke 1.5) — uklonjen, sad je `center`.
+    layout: "center",
     palette: "mint",
     eyebrow: "Sve uključeno",
+    subtitle: "Stranica nije samo dizajn. Ovo ide uz nju, bez doplate.",
     items: [
-      "API razvoj i integracije",
-      "Admin panel za samostalno uređivanje",
-      "Online plaćanje karticom",
-      "Domena, email i SSL certifikat",
+      {
+        icon: "tools",
+        label: "API i integracije",
+        note: "Povezivanje s CRM, ERP i dostavnim službama.",
+      },
+      {
+        icon: "monitor",
+        label: "Admin panel",
+        note: "Sami mijenjate tekstove, slike i proizvode.",
+      },
+      {
+        icon: "coin",
+        label: "Plaćanje karticom",
+        note: "Kartice i PayPal — novac ide direktno vama.",
+      },
+      {
+        icon: "shield",
+        label: "Domena, email i SSL",
+        note: "Postavljamo ih, a plaćate provideru bez naše marže.",
+      },
     ],
     caption:
       "🧩 Fali Vam pola stvari? Rješavamo sve.\n\nStranica nije samo dizajn. Ovo je sve što ide uz nju:\n\n— ✅ API razvoj i integracije — REST i GraphQL API-ji, povezivanje s CRM, ERP i dostavnim službama\n— 🔥 Admin panel (CMS) — vlastiti panel za samostalno uređivanje sadržaja, slika i proizvoda\n— 💡 Online plaćanje — Stripe, PayPal i servisi koje već koristite\n— ⚡ Domena, email i SSL — postavljamo ih, a plaćate direktno provideru, bez naše marže\n— 🎯 SEO i Google Analytics — tehnička osnova i mjerenje posjeta\n— 💰 Višejezičnost — za klijente iz BiH, regije i inostranstva\n— 📈 Copywriting — pišemo tekstove i opise proizvoda\n— 🚀 Logo i vizualni identitet — boje, tipografija, usklađen brend\n— 📱 Održavanje i podrška — ažuriranja i optimizacija nakon isporuke\n\nNe morate tražiti pet izvođača. Sve je na jednom mjestu.",

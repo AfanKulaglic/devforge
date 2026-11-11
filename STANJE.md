@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (p06: karusel dobio život — ikone, opisi, lead na CTA)
+Zadnje ažurirano: 2026-11-10 (p07: bez okvira, ikone + opisi, naslov skracen)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -16,54 +16,56 @@ Zadnje ažurirano: 2026-11-10 (p06: karusel dobio život — ikone, opisi, lead 
 
 `buildNarrow()` privremeno smanjuje modul-level `W_MUT` na tekst zonu
 (`SIZE - imgW - fadeW - M - 34`), izgradi blok, vrati u `finally`. Sve forme
-su pocele koristiti `W_MUT` umjesto `W` (34 zamjene), pa nijedna nije morala
-dobiti novi parametar sirine. Tekst zavrsava na x=560, slika pocinje na 750.
+su pocele koristiti `W_MUT` umjesto `W` (34 zamjene). Tekst zavrsava x=560,
+slika pocinje 750.
 
-**BUG a)** biljeska se crtala IZNAD drugog reda labela — `noteTop` se sada
-racuna iz `lastLabelBottom = baseline + (lines-1)*(fs+8)` + 14.
-**BUG b)** `wrap(note, nfs, avail, 2)` tiho odbacivao rijeci — shrink-loop
-do 3 reda / font 18px.
-**BUG c)** `minRow` 64 -> 186 (3:4) / 158 (1:1).
-**BUG d)** skript za `W→W_MUT` ostetio komentar u `renderSlideSvg`.
+**BUG a)** biljeska se crtala IZNAD drugog reda labela — `noteTop` iz
+`lastLabelBottom` + 14.  **BUG b)** `wrap(note,...,2)` odbacivao rijeci —
+shrink-loop do 3 reda.  **BUG c)** `minRow` 64 -> 186/158.  **BUG d)** skript
+za `W→W_MUT` ostetio komentar u `renderSlideSvg`.
 
 ### p06 — karusel dobio život (6 slajdova)
 
-Prije: svaki slajd je bio gola lista od 4 rijeci, bez ikona i bez objasnjenja.
-Sada svaki ima subtitle + 4 stavke kao `{icon, label, note}`:
+Svih 6 slajdova: subtitle + 4 stavke kao `{icon, label, note}`.
+Cover: naslov + lead + 4 ikone. Liste 2-5: web/monitor/shop/tools,
+bolt/layers/game/check, app/tools/chat/rocket, ai/chat/layers/clock.
+CTA: lead + 3 dokaza (web/shop/shield) + dugme.
 
-| slajd | tema | ikone |
+**`formCover`**: `slice(0, 3)` -> `slice(0, SIZE_H >= 1300 ? 4 : 3)` —
+cover je govorio "cetiri usluge" a prikazivao tri.
+**`formAction`**: sada crta `lead` (accent traka + shrink-loop) i 3 dokaza
+sa ikonom IZNAD dugmeta.
+
+### p07 — bez okvira, ikone, kraći naslov
+
+Prije: `layout: "band"` crtao je `stroke 1.5` okvir oko cijelog bloka
+(korisnik: "izbaci ovaj border, ruzno je"). Sad `layout: "center"` — bez
+okvira, sadrzaj slobodno stoji na podlozi.
+
+Naslov je bio odsjecen: "...ukljuceno u cijenu, bez" (nedostajalo "doplata").
+Sada: **"Sve što vaš projekat treba. Bez doplata."**
+
+Lista 4 stavke sa ikonom + opisom (prije gola lista sa crticama):
+
+| ikona | label | note |
 |---|---|---|
-| 1 | cover — "Cetiri usluge. Vecina klijenata uzme dvije." + lead | web, game, app, ai |
-| 2 | Stranice i shopovi | web, monitor, shop, tools |
-| 3 | 2D igrice | bolt, layers, game, check |
-| 4 | Mobilne aplikacije | app, tools, chat, rocket |
-| 5 | AI asistenti | ai, chat, layers, clock |
-| 6 | CTA + lead + 3 dokaza | web, shop, shield |
+| tools | API i integracije | Povezivanje s CRM, ERP i dostavnim službama. |
+| monitor | Admin panel | Sami mijenjate tekstove, slike i proizvode. |
+| coin | Plaćanje karticom | Kartice i PayPal — novac ide direktno vama. |
+| shield | Domena, email i SSL | Postavljamo ih, a plaćate provideru bez naše marže. |
 
-### IZMJENE U RENDERU
-
-**1. `formCover` — 4 stavke umjesto 3.**
-Bio je `slice(0, 3)` fiksno, pa je cover govorio "cetiri usluge" a prikazivao
-tri. Sada `slice(0, SIZE_H >= 1300 ? 4 : 3)` — 4 u 3:4, 3 u 1:1.
-
-**2. `formAction` (CTA) — sada crta `lead` i `items`.**
-Prije samo naslov + dugme, djelovalo prazno. Dodano:
-- `lead` — recenica uz vertikalnu accent traku (shrink-loop za sve rijeci)
-- 3 dokaza sa ikonom iznad dugmeta (`IC` 38/34, `rowH` 62/56)
-- fallback na `subtitle` ako `lead` ne postoji
-
-Dugme ostaje zadnje — oko ga vidi kao zadnju stvar, dokazi idu PRIJE njega.
+Dodan `subtitle`: "Stranica nije samo dizajn. Ovo ide uz nju, bez doplate."
 
 ### Verifikacija
-- 3:4: 6 slajdova, nula preklapanja, ikone 4/4/4/4/4/3.
-- 1:1: 6 slajdova, svi unutar kadra (y 984 / 1080).
-- Vision: cover 4 stavke, lista 2 sve 4 potpune, CTA pun i balansiran.
+- p07: border nestao, naslov cijeli, 4 ikone, 0 preklapanja, y 1344/1440.
+- 70 slajdova x 2 formata: 0 van kadra.
 - tsc=0, build OK.
 
 ## Sljedeći korak
-- Pregledati p06 u 3:4 (6 slajdova).
-- Isti `{icon,label,note}` tretman za p07 i ostale karusele.
-- Opciono: 4:5 format.
+- Pregledati p07 u 3:4 i 1:1.
+- Isti tretman za p08 (cijene) i ostale.
+- `band` layout vise nigdje ne koristi okvir — provjeriti da ga ni jedan
+  drugi post ne koristi (sada: nijedan).
 
 ## Napomene / zamke
 - **Python heredoc + `\n` u TS stringu = pokvaren string.** Koristiti `.cjs` skriptu sa
