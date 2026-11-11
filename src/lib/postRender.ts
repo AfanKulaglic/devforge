@@ -333,10 +333,7 @@ function header(c: Colors, eyebrow: string, category: string, slide: number, tot
   // "Lab" ispisivao BRAND teal na teal podlozi i bio nevidljiv.
   // Zato se gleda sama PODLOGA, ne boja teksta.
   const onGreen = c.bg.toUpperCase() === "#4DEAE0" || c.bg.toUpperCase() === "#6FEFE6";
-  // Na zelenoj su OBA dijela wordmarka ista boja. Prije je "Dev" bio bijel
-  // a "Lab" crn — na zelenoj podlozi to izgleda kao da su dvije rijeci, a
-  // ne jedan brend. Sada su oba CRNA (max kontrast na tealu).
-  const mark = brandMark(M, M - 4, onGreen ? "#0A0A0A" : c.ink, onGreen ? "#0A0A0A" : BRAND);
+  const mark = brandMark(M, M - 4, onGreen ? "#FFFFFF" : c.ink, onGreen ? "#0A0A0A" : BRAND);
 
   let dots = "";
   if (total > 1) {
@@ -601,28 +598,6 @@ function formFigure(c: Colors, p: PostSlide): Block {
         font-size="${nfs}" font-weight="500" fill="${noteInk}">${esc(l)}</text>`;
     });
     h += (nl.length - 1) * (nfs + 20) + nfs;
-  }
-
-  // TRI IKONE — cjenovne objave bez ikona izgledaju kao tekst, ne kao oglas.
-  //
-  // Stave se ISPOD biljeske, u jedan red, bez kartica: samo ikona + kratka
-  // rijec. Tri su dovoljne — cetvrta gura domenu i pravi guzvu.
-  const feats = (p as any).features as
-    | { icon: string; label: string }[]
-    | undefined;
-  if (feats && feats.length && !(p as any).photoTop) {
-    const IC = tall ? 54 : 46;
-    const lab = tall ? 23 : 21;
-    const colW = W / 3;
-    h += tall ? 62 : 52;
-    feats.slice(0, 3).forEach((f, i) => {
-      const cx = i * colW;
-      svg += pxIcon(f.icon, cx, h, onTeal ? "#0A0A0A" : c.accent, IC);
-      svg += `<text x="${cx + IC + 14}" y="${h + IC * 0.66}" font-family="${FONT}"
-        font-size="${lab}" font-weight="700" fill="${onTeal ? "#0A0A0A" : c.ink}"
-        opacity="0.9">${esc(f.label)}</text>`;
-    });
-    h += IC;
   }
 
   return { svg, h };
@@ -1191,7 +1166,7 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide, total: number) => stri
     const ph = p.photo ?? "hero";
     // Visina slike mora zavisti od formata: u 3:4 ima puno teksta pa slika
     // smije zauzeti manje (0.27), u 1:1 teksta je manje pa slika moze vise.
-    const imgH = Math.round(SIZE_H * (SIZE_H >= 1300 ? 0.36 : 0.36));
+    const imgH = Math.round(SIZE_H * (SIZE_H >= 1300 ? 0.46 : 0.42));
     const zoneTop = CONTENT_TOP();
     const zoneBot = SIZE_H - imgH;
     const b = buildFitting(c, p, zoneBot - 16, total);
@@ -1199,13 +1174,8 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide, total: number) => stri
     // Centriranje mora uzeti u obzir da se slika GORE stapa u zelenu preko
     // 180px gradijenta — taj dio je vizuelno jos prazan. Zato se zona
     // skracuje za taj blend, da tekst ne bjezi previsoko od slike.
-    // Slika se gore STAPA u zelenu preko 180px gradijenta. Taj gradijent je
-    // vizuelno prazan, ali NIJE prazan za raspored — ako se tekst centrira u
-    // cijelu zonu, ikone padnu ispod stvarne ivice slike i preklope se.
-    // Zato se donja granica zone pomjera GORE za , a tekst se ne
-    // centrira po , nego po STVARNOJ ivici slike.
-    const blend = 150;
-    const y = zoneTop + Math.max(0, (zoneBot - zoneTop - b.h) / 2) - blend / 2;
+    const blend = 60;
+    const y = zoneTop + Math.max(0, (zoneBot - blend - zoneTop - b.h) / 2);
     // Fotografija se stapa sa zelenom: gore se rastvara u boju podloge
     // (bez tvrde ivice), a preko nje ide blagi zeleni ton + zatamnjenje.
     return `<image href="${PHOTOS[ph]}" x="0" y="${SIZE_H - imgH}" width="${SIZE}" height="${imgH}"
@@ -1357,7 +1327,6 @@ export function renderSlideSvg(
     value: slide.value ?? post.value,
     valueNote: slide.valueNote ?? post.valueNote,
     includes: slide.includes ?? post.includes,
-    features: slide.features ?? post.features,
     items: slide.items ?? post.items,
     eyebrow: slide.eyebrow ?? post.eyebrow,
   };
