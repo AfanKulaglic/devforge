@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (FB naslovna: prirodna boja zemlje + engleski slogan)
+Zadnje ažurirano: 2026-11-11 (kontakt forma salje direktno + admin tab Poruke)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,172 +12,54 @@ Zadnje ažurirano: 2026-11-10 (FB naslovna: prirodna boja zemlje + engleski slog
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### PREMIUM objava — svi okviri uklonjeni
 
-Korisnik: "ne svidja mi se okvir na postu ekskluzivnog sadrzaja".
+### KONTAKT FORMA — salje direktno, bez otvaranja mejla
 
-**BUG: invertovana logika okvira.** U `renderSlideSvg` je stajalo:
+Korisnik: "zatrazi gotovu verziju ukuca se poruka onda se korisnik
+preusmjeri na mail — mozes li da on posalje meni tu poruku bez da mu
+otvara mail".
 
-```ts
-${isCover || isBare ? "" : coverFrame(c)}   // POGREGSNO
-```
+**Problem prije:** `submitMail` je radio `window.location.href = mailto:`.
+To otvara korisnikov mejl klijent. Na telefonu pola ljudi nema podesen
+mail klijent — poruka se NIKAD ne posalje, a korisnik misli da jeste.
 
-To znaci: okvir se crta SVUDA OSIM na coveru — dakle bas na premium objavi
-(koja nije cover) je uvijek bio. Ispravno:
+**Sada:** `submitInquiry` salje na `/api/inquiry` (Brevo), nista se ne
+otvara. Korisnik klikne "Posalji" i vidi "Poruka je poslana".
 
-```ts
-${isCover && !isBare ? coverFrame(c) : ""}
-```
-
-**Chip kartice bez okvira** — u `premiumLayout` su imale `stroke` 1.5
-(`stroke-opacity 0.22`). Uklonjen; ostala je samo svjetlija podloga
-(`fill #ffffff opacity 0.075`).
-
-Ostala su namjerno samo 2 stroke recta: okvir logo-kutije i outline dugme.
-Karuseli (p04, p06...) zadrzali su svoj okvir — provjereno.
-
-### FB NASLOVNA — prava fotografija Zemlje
-
-Korisnik: "planeta koju sam ti trazio umjesto kruga mora biti PRAVA slika
-planete", i slogan "Digitalna agencija" mu se ne svidja — trazi nesto sto
-vise predstavlja nas i sto je za reklamu.
-
-**Slogan:** `We build digital solutions.` —
-Engleski, jer se tako pise u oglasima i van BiH. Prije toga probano
-"Digitalna agencija" (samo opis kategorije) i "Za 5 dana. Bez plaćanja
-unaprijed." (dobre cifre, ali te dvije stvari vec stoje na svakoj drugoj
-objavi — naslovna treba da kaze STA radimo).
-
-**Prava slika**: `PHOTOS.earth` — fotorealisticna Zemlja iz svemira,
-1200x675, base64 u `postPhotos.ts` (101 kB, q72). Dodana kao `PhotoKey`
-"earth" + `PHOTO_ALT.earth` + u `PHOTO_KEYS`.
-
-Slika je generisana (nema pristupa internetu za stock). Izmjereno:
-horizont na ~43% visine (y≈290 od 675), gornji dio cist crni svemir
-(luminance 0-2) — logo i tekst sigurno stanu iznad horizonta.
-
-| sloj | sadrzaj |
+| fajl | sta radi |
 |---|---|
-| baza | `#04060A` + `<image>` Zemlja (`preserveAspectRatio="xMidYMid slice"`) |
-| zavjesa | `#covVeil` linearni gradijent gore (0.55 -> 0) — tekst citljiv |
-| sjaj | `#covGlow` tirkizni radial iza logotipa |
-| logo | **DevLab** 118px, "Dev" bijel, "Lab" `#4DEAE0` |
-| slogan | **We build digital solutions.** 40px, `#C8D2D6` |
-| ispod | `@devlab.cc.cd` (teal 800, 30px) |
-| dno | `www.devlab.cc.cd` (sivo 600, 25px) |
+| `api/inquiry.ts` | NOVO — prima poruku, salje mail na `kontakt@devlab.cc.cd` |
+| `src/lib/inquiries.ts` | NOVO — tip `Inquiry` + localStorage + fetch |
+| `src/AdminMessagesTab.tsx` | NOVO — tab "Poruke" u adminu |
+| `src/App.tsx` | `submitMail` -> `submitInquiry`, honeypot, stanja |
+| `src/AdminPanel.tsx` | tab "Poruke" + badge neodgovorenih |
 
-**BOJA ZEMLJE JE PRIRODNA.** Pokusaj da se planeta preboji u brend
-`#4DEAE0` (feColorMatrix saturate + `mix-blend-mode:color`) je ODBAČEN —
-prebojena planeta izgleda kao crtez, ne kao fotografija. Filter `covCook`
-uklonjen. Okeani plavi, kopno zeleno-smeđe.
+**`api/inquiry.ts` sigurnost:**
+- primalac FIKSNI (`kontakt@devlab.cc.cd`) — ne moze se poslati nikome drugom
+- `replyTo` = korisnikov email (ako ga ostavi), pa "Odgovori" ide njemu
+- rate limit 6/10min po IP, honeypot `website`, duzine se sijeku, HTML escape
+- bez `BREVO_API_KEY` vraca 404 -> klijent samo sacuva lokalno, bez greske
 
-Crtani krugovi, kontinenti-pathovi i atmosferski prstenovi su UKLONJENI —
-zamijenila ih je fotografija. Ostao je samo `#covGlow` za brend boju.
+**Forma izmjene (`App.tsx`):**
+- polje "Telefon" -> **"Telefon ili email *"** (obavezno, jedno ili drugo)
+- honeypot input `name="website"` (skriven, botovi ga popune)
+- stanja `sent` / `sending` / `sendError` umjesto `mailOpened`
+- uspjeh: "Poruka je poslana" + ponuda da pisu na mejl ako je hitno
 
-**Bug fix:** slogan je preklapao logo (DevLab box y 145-313, slogan y
-299-350) — `<text>` nosi veliki line-height. Pomjereno na `cy+52`, domena
-na `cy+124` / `cy+162`. Sada 0 preklapanja.
+### ADMIN TAB "PORUKE"
 
-### PREMIUM objava — svi okviri uklonjeni
+- Lista upita, najnoviji prvi. Kartica: ime, kontakt, usluga, budzet,
+  poruka, "NOVO" oznaka dok nije odgovoreno.
+- Dugmad: **oznaci odgovoreno** (check), **kopiraj**, **obrisi** (uz potvrdu).
+- Akcije: **Odgovori mejlom** (mailto, samo ako je kontakt email),
+  **Pozovi** (tel, ako je broj), **WhatsApp** (wa.me).
+- Filter `Sve (n)` / `Novo (n)`.
+- **Badge na tabu** = broj neodgovorenih; osvjezava se na fokus + svakih 15s.
+- Prazno stanje objasnjava da poruke dolaze sa forme i na mejl.
 
-Korisnik: "ne svidja mi se okvir na postu ekskluzivnog sadrzaja".
-
-**BUG: invertovana logika okvira.** U `renderSlideSvg` je stajalo
-`${isCover || isBare ? "" : coverFrame(c)}` — okvir se crtao SVUDA OSIM
-na coveru, dakle bas na premium objavi uvijek. Ispravno:
-`${isCover && !isBare ? coverFrame(c) : ""}`.
-
-**Chip kartice bez okvira** — imale `stroke` 1.5. Uklonjen. Karuseli
-(p04, p06...) zadrzali svoj okvir — provjereno.
-
-### PREMIUM objava — svi okviri uklonjeni
-
-Korisnik: "ne svidja mi se okvir na postu ekskluzivnog sadrzaja".
-
-**BUG: invertovana logika okvira.** U `renderSlideSvg` je stajalo:
-
-```ts
-${isCover || isBare ? "" : coverFrame(c)}   // POGREGSNO
-```
-
-To znaci: okvir se crta SVUDA OSIM na coveru — dakle bas na premium objavi
-(koja nije cover) je uvijek bio. Ispravno:
-
-```ts
-${isCover && !isBare ? coverFrame(c) : ""}
-```
-
-**Chip kartice bez okvira** — u `premiumLayout` su imale `stroke` 1.5
-(`stroke-opacity 0.22`). Uklonjen; ostala je samo svjetlija podloga
-(`fill #ffffff opacity 0.075`).
-
-Ostala su namjerno samo 2 stroke recta: okvir logo-kutije i outline dugme.
-Karuseli (p04, p06...) zadrzali su svoj okvir — provjereno.
-
-### FB NASLOVNA — planeta Zemlja iza logotipa
-
-Korisnik: stari slogan ("Stranice, shopovi i aplikacije — bez plaćanja
-unaprijed.") mu se ne svidja, a krug u pozadini zamijeniti **planetom
-Zemljom iz daljine, samo gornja polovina luka**. Trazi "premium" izgled.
-
-`coverLayout()` u `postRender.ts`, sve vertikalno centrirano:
-
-| sloj | sadrzaj |
-|---|---|
-| svemir | `#05060A` + `#covStars` + `#covGlow` (teal) |
-| planeta | `circle r=620`, `cy = SIZE_H + 268` — centar je IZVAN kadra, vidi se samo luk |
-| kontinenti | 3 organska `path` oblika u `clipPath` (`#covEarthClip`) |
-| terminator | `#covTerm` gradijent desno — tamna strana planete |
-| atmosfera | `#covAtmo` 3px rub + 7px prigušeni prsten + tanki "sunčev odraz" |
-| logo | **DevLab** 126px, "Dev" bijel, "Lab" `#4DEAE0` |
-| slogan | **Digitalna agencija** 38px, `#9AA0A8` |
-| ispod | `@devlab.cc.cd` (teal 800) |
-| dno | `www.devlab.cc.cd` (sivo 600) |
-
-**Slogan promijenjen** — bila cijela recenica koja se citala kao podnaslov
-clanka. Sada dvije rijeci, kao potpis brenda.
-
-**Zasto kontinenti:** bez njih je to samo sivi luk. Planeta se prepoznaje
-po kopnu i atmosferskom rubu. Kopno je blagi teal (ne zelena) da ostane
-u brendu. Izmjereno: lijevo `[13,59,54]`, desno `[7,30,28]` (terminator).
-
-**BUG:** prvi render imao je ravnu crnu pozadinu — gradienti `covGlow`/
-`covGrid` su regexom upali u `brandMark` (pogresan `</defs>`), pa se nisu
-definisali. Premjesteni u `defs` od `renderSlideSvg`.
-
-**BUG:** slogan je preklapao logo (DevLab box y 145-313, slogan y 299-350)
-jer `<text>` box nosi veliki line-height. Pomjereno na `cy + 58`, dalje
-`cy + 126` i `cy + 164` — sada 0 preklapanja.
-
-### PREMIUM objava — svi okviri uklonjeni
-
-Korisnik: "ne svidja mi se okvir na postu ekskluzivnog sadrzaja".
-
-**BUG: invertovana logika okvira.** U `renderSlideSvg` je stajalo:
-
-```ts
-${isCover || isBare ? "" : coverFrame(c)}   // POGREGSNO
-```
-
-To znaci: okvir se crta SVUDA OSIM na coveru — dakle bas na premium objavi
-(koja nije cover) je uvijek bio. Ispravno:
-
-```ts
-${isCover && !isBare ? coverFrame(c) : ""}
-```
-
-**Chip kartice bez okvira** — u `premiumLayout` su imale `stroke` 1.5
-(`stroke-opacity 0.22`). Uklonjen; ostala je samo svjetlija podloga.
-Karuseli (p04, p06...) zadrzali su svoj okvir — provjereno.
-
-### Ranije ove sesije
-
-- FB cover kao objava `fbc01` (prva u /objave), format 16:9, `fixedFormat`.
-- BUG: preuzimanje davalo 1080x1080 -> sada cita dimenzije iz `viewBox`.
-- PREMIUM oznaka u /objave: znacka, teal okvir, filter "Premium".
-- Preloader: "Dev Lab" -> "DevLab".
-- p05–p10, p21–p24 sređeni; tri globalna buga (formFigure razmak,
-  richLayer logo na zelenom, formHero items).
+**Napomena o cuvanju:** poruke su u `localStorage` (bez baze). To znaci da
+admin vidi poruke iz TOG preglednika. Mail na `kontakt@devlab.cc.cd` je
+izvor istine i stize odmah — tab je brzi pregled, ne arhiva.
 
 ## Dev server
 
@@ -224,10 +106,11 @@ http://localhost:5173/
 http://localhost:5173/
 
 ## Sljedeći korak
-- Otvoriti /objave: proveriti px01 bez okvira i fbc01 naslovnu.
-- Preuzeti fbc01 (PNG 1080x628) i postaviti kao FB cover.
+- Testirati formu na produkciji (Vercel + `BREVO_API_KEY`) — lokalno
+  `/api/inquiry` vraca 404 pa se poruka samo cuva lokalno.
+- Provjeriti da mail stize na `kontakt@devlab.cc.cd` i da "Odgovori"
+  ide korisniku (replyTo).
 - Sljedeci post po redu: **p25** (pozicija 17).
-- Opciono: ostalih ~20 mjesta "Dev Lab" -> "DevLab".
 
 ## Napomene / zamke
 - **Python heredoc + `\n` u TS stringu = pokvaren string.** Koristiti `.cjs` skriptu sa

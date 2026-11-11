@@ -71,6 +71,7 @@ import MailSignaturePage from "./MailSignaturePage";
 import { initAnalytics, trackEvent, trackPageView } from "./lib/analytics";
 import { startProjectsSync } from "./lib/projectsStore";
 import { startPricingSync } from "./lib/pricingStore";
+import { addInquiryLocally, sendInquiryToServer } from "./lib/inquiries";
 import { Analytics as VercelAnalytics } from "@vercel/analytics/react";
 import {
   getProjects as getStoredProjects,
@@ -2507,7 +2508,13 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
   const [service, setService] = useState("Web stranica");
   const [budget, setBudget] = useState("Do 500 KM");
   const [message, setMessage] = useState("");
-  const [mailOpened, setMailOpened] = useState(false);
+  // Stanja slanja. `sent` = poruka je OTISLA (server potvrdio) ili je
+  // sačuvana lokalno jer server nije dostupan. `sending` blokira dvoklik.
+  const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [sendError, setSendError] = useState("");
+  // Honeypot — skriveno polje za botove. Čovjek ga nikad ne vidi ni popuni.
+  const [trap, setTrap] = useState("");
 
   // ESC zatvara + blokiraj skrol pozadine
   useEffect(() => {
@@ -2531,32 +2538,57 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
 
   if (!open) return null;
 
-  const buildMailto = () => {
-    const subject = `Zahtjev za gotovu verziju — ${service}`;
-    const body = [
-      `Ime: ${name || "(nije upisano)"}`,
-      `Telefon: ${phone || "(nije upisan)"}`,
-      `Usluga: ${service}`,
-      `Budžet: ${budget}`,
-      "",
-      "Opis projekta:",
-      message || "(nije upisan)",
-      "",
-      "— — —",
-      "Poslano sa devlab.cc.cd",
-    ].join("\n");
-    return `mailto:${CONTACT.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  };
-
-  const submitMail = (event: FormEvent) => {
+  // ── SLANJE PORUKE ─────────────────────────────────────────────────────
+  //
+  // Prije: otvarao se korisnikov mejl klijent (mailto:). Problem — pola
+  // ljudi na telefonu nema podešen mail klijent, pa se poruka nikad ne
+  // pošalje, a korisnik misli da jeste. Sada poruka ide DIREKTNO sa sajta:
+  //   • `/api/inquiry` šalje je na kontakt@devlab.cc.cd preko Brevoa
+  //   • ista poruka se upiše lokalno, pa admin vidi i u tabu "Poruke"
+  // Ništa se ne otvara, korisnik samo klikne "Pošalji".
+  const submitInquiry = async (event: FormEvent) => {
     event.preventDefault();
-    trackEvent("form_submit", "kontakt modal", undefined, "/kontakt");
-    // Otvara mejl klijent (Outlook / Gmail / Apple Mail) sa popunjenom porukom
-    // i nasom adresom u primaoce. Korisnik samo klikne „Posalji".
-    window.location.href = buildMailto();
-    setMailOpened(true);
-  };
+    if (sending) return;
+    // Honeypot: bot je popunio skriveno polje — tiho odustani.
+    if (trap) {
+      setSent(true);
+      return;
+    }
+    setSendError("");
+    setSending(true);
 
+    const payload = {
+      name: name.trim(),
+      contact: phone.trim(),
+      service,
+      budget,
+      message: message.trim(),
+    };
+
+    // Kontakt je obavezan — bez njega ne možemo odgovoriti. Prihvatamo
+    // i telefon i email, jer ljudi na telefonu radije ostave broj.
+    if (payload.message.length < 3) {
+      setSending(false);
+      setSendError("Napišite nam ukratko šta vam treba.");
+      return;
+    }
+
+    // Uvijek sačuvaj lokalno — i kad server radi i kad ne.
+    addInquiryLocally(payload);
+
+    const r = await sendInquiryToServer(payload);
+    setSending(false);
+
+    // Ako server nije dostupan (lokalni dev), poruka je ipak sačuvana
+    // lokalno — korisnik ne treba da vidi grešku za našu infrastrukturu.
+    if (!r.ok && r.error) {
+      setSendError(r.error);
+      return;
+    }
+
+    trackEvent("form_submit", "kontakt modal", undefined, "/kontakt");
+    setSent(true);
+  };
   const quickLink = (channel: ContactChannel) => {
     if (channel === "viber") return `viber://chat?number=${encodeURIComponent(CONTACT.phoneRaw)}`;
     if (channel === "whatsapp") return `https://wa.me/${CONTACT.phoneRaw.replace(/\D/g, "")}`;
@@ -2664,11 +2696,21 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
             2. Napišite nam ovdje
           </p>
           <p className="mt-1.5 text-[0.72rem] leading-5 text-white/35">
-            Klikom na „Pošalji" otvara se vaš mejl (Outlook, Gmail…) sa već popunjenom porukom — vi samo
-            potvrdite slanje.
+            Popunite i kliknite „Pošalji" — poruka ide direktno nama, bez otvaranja mejla. Odgovaramo isti dan.
           </p>
 
-          <form className="mt-3.5 space-y-3" onSubmit={submitMail}>
+          <form className="mt-3.5 space-y-3" onSubmit={submitInquiry}>
+            {/* Honeypot — skriveno za ljude, vidljivo botovima. */}
+            <input
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              value={trap}
+              onChange={(e) => setTrap(e.target.value)}
+              name="website"
+              className="pointer-events-none absolute h-0 w-0 opacity-0"
+            />
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="block">
                 <span className="mb-1.5 block text-[0.68rem] font-bold text-white/50">Ime i prezime *</span>
@@ -2681,12 +2723,12 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
                 />
               </label>
               <label className="block">
-                <span className="mb-1.5 block text-[0.68rem] font-bold text-white/50">Telefon</span>
+                <span className="mb-1.5 block text-[0.68rem] font-bold text-white/50">Telefon ili email *</span>
                 <input
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+387 6X XXX XXX"
-                  inputMode="tel"
+                  required
+                  placeholder="+387 6X XXX XXX ili @email"
                   className="w-full border border-white/12 bg-white/[0.03] px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:border-teal-300/60 focus:outline-none"
                 />
               </label>
@@ -2731,15 +2773,20 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
               />
             </label>
 
-            {mailOpened ? (
-              <div className="border border-teal-400/40 bg-teal-400/10 px-4 py-3">
+            {sendError && (
+              <div className="border border-red-400/40 bg-red-400/10 px-4 py-3">
+                <p className="text-sm font-bold text-red-200">{sendError}</p>
+              </div>
+            )}
+
+            {sent ? (
+              <div className="border border-teal-400/40 bg-teal-400/10 px-4 py-3.5">
                 <p className="flex items-center gap-2 text-sm font-bold text-teal-200">
                   <HiOutlineCheckCircle className="text-base" aria-hidden="true" />
-                  Otvorili smo vaš mejl
+                  Poruka je poslana
                 </p>
                 <p className="mt-1 text-[0.72rem] leading-5 text-white/55">
-                  Poruka je već popunjena — samo kliknite <strong className="text-white">Pošalji</strong> u
-                  Outlooku ili Gmailu. Ako se ništa nije otvorilo, pišite na{" "}
+                  Javljamo se u toku dana. Ako je hitno, pišite na{" "}
                   <a className="font-bold text-teal-200 underline" href={`mailto:${CONTACT.email}`}>
                     {CONTACT.email}
                   </a>
@@ -2749,13 +2796,13 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
             ) : (
               <button
                 type="submit"
-                className="inline-flex w-full items-center justify-center gap-2 bg-gradient-to-r from-teal-400 to-[#0891B2] px-6 py-3.5 text-sm font-extrabold text-white transition hover:brightness-110"
+                disabled={sending}
+                className="inline-flex w-full items-center justify-center gap-2 bg-gradient-to-r from-teal-400 to-[#0891B2] px-6 py-3.5 text-sm font-extrabold text-white transition hover:brightness-110 disabled:cursor-wait disabled:opacity-60"
               >
                 <HiOutlinePaperAirplane className="text-base" aria-hidden="true" />
-                Pošalji
+                {sending ? "Šaljem…" : "Pošalji"}
               </button>
             )}
-
             <p className="text-center text-[0.66rem] leading-5 text-white/25">
               Bez predujma · bez obaveze · odgovaramo isti dan
             </p>

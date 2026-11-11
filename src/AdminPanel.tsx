@@ -16,6 +16,7 @@ import {
   HiOutlinePencilSquare,
   HiOutlinePlus,
   HiOutlineRectangleGroup,
+  HiOutlineEnvelope,
   HiOutlineTrash,
   HiOutlineXMark,
 } from "react-icons/hi2";
@@ -36,9 +37,11 @@ import PricingTab from "./AdminPricingTab";
 import AnalyticsTab from "./AdminAnalyticsTab";
 import { markAnalyticsSeen, startAnalyticsBadgePolling, useNewAnalyticsCount } from "./lib/analyticsBadge";
 import BackupTools from "./AdminBackupTools";
+import MessagesTab from "./AdminMessagesTab";
+import { unhandledCount } from "./lib/inquiries";
 
 // ───────────────────────────────────────────────────────────────────────────
-// Admin panel — lokalna prijava (sessionStorage) + jedan tab: Projekti.
+// Admin panel — lokalna prijava (sessionStorage) + tabovi: Projekti, Poruke, Cijene, Analitika.
 // Podaci žive u localStorage (src/lib/projectsStore.ts), bez baze i servera.
 // ───────────────────────────────────────────────────────────────────────────
 
@@ -822,13 +825,27 @@ function ProjectsTab() {
 // ── Admin shell ────────────────────────────────────────────────────────────
 export default function AdminPanel() {
   const [authed, setAuthed] = useState(() => isAuthed());
-  const [tab, setTab] = useState<"projekti" | "cijene" | "analitika">("projekti");
+  const [tab, setTab] = useState<"projekti" | "poruke" | "cijene" | "analitika">("projekti");
   const newAnalytics = useNewAnalyticsCount();
 
   // Osvjezavaj badge periodicno (svakih 30s dok je admin otvoren).
   useEffect(() => {
     startAnalyticsBadgePolling();
   }, []);
+
+  // Broj neodgovorenih poruka — badge na tabu. Osvježi se kad se vratiš
+  // u prozor, jer poruka može stići dok je admin na drugoj kartici.
+  const [novihPoruka, setNovihPoruka] = useState(0);
+  useEffect(() => {
+    const read = () => setNovihPoruka(unhandledCount());
+    read();
+    window.addEventListener("focus", read);
+    const t = window.setInterval(read, 15000);
+    return () => {
+      window.removeEventListener("focus", read);
+      window.clearInterval(t);
+    };
+  }, [tab]);
 
   // Kad korisnik otvori tab Analitika, badge se gasi — ali tek nakon kratke
   // pauze, da podaci iz Firebase stignu i brojevi budu vidljivi.
@@ -906,6 +923,27 @@ export default function AdminPanel() {
           </button>
           <button
             type="button"
+            onClick={() => setTab("poruke")}
+            aria-current={tab === "poruke"}
+            className={`-mb-px inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-bold transition ${
+              tab === "poruke"
+                ? "border-teal-400 text-white"
+                : "border-transparent text-white/45 hover:text-white/80"
+            }`}
+          >
+            <HiOutlineEnvelope className="text-base" aria-hidden="true" />
+            Poruke
+            {novihPoruka > 0 && (
+              <span
+                className="inline-flex min-w-[1.15rem] items-center justify-center rounded-full bg-red-500 px-1 text-[0.6rem] font-extrabold leading-[1.15rem] text-white shadow-sm shadow-red-500/40"
+                aria-label={`${novihPoruka} novih poruka`}
+              >
+                {novihPoruka > 99 ? "99+" : novihPoruka}
+              </span>
+            )}
+          </button>
+          <button
+            type="button"
             onClick={() => setTab("cijene")}
             aria-current={tab === "cijene"}
             className={`-mb-px inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm font-bold transition ${
@@ -941,6 +979,7 @@ export default function AdminPanel() {
         </div>
 
         {tab === "projekti" && <ProjectsTab />}
+        {tab === "poruke" && <MessagesTab />}
         {tab === "cijene" && <PricingTab />}
         {tab === "analitika" && <AnalyticsTab />}
       </main>
