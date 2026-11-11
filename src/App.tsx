@@ -2539,6 +2539,20 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
     if (open) trackEvent("contact_open", "kontakt modal");
   }, [open]);
 
+  // Tajmer za automatsko zatvaranje modala nakon uspjeha.
+  //
+  // MORA biti IZNAD `if (!open) return null` — React zahtijeva da se svi
+  // hookovi pozovu u istom redu pri svakom renderu. Kad je bio ispod,
+  // React je bacao "Rendered more hooks than during the previous render"
+  // i cijeli modal se nije mogao otvoriti.
+  const closeTimer = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (closeTimer.current) window.clearTimeout(closeTimer.current);
+    };
+  }, []);
+
   if (!open) return null;
 
   // ── SLANJE PORUKE ─────────────────────────────────────────────────────
@@ -2549,6 +2563,35 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
   //   • `/api/inquiry` šalje je na kontakt@devlab.cc.cd preko Brevoa
   //   • ista poruka se upiše lokalno, pa admin vidi i u tabu "Poruke"
   // Ništa se ne otvara, korisnik samo klikne "Pošalji".
+  // ── USPJEH: pokaži potvrdu, pa ZATVORI MODAL ─────────────────────────
+  //
+  // Zašto se modal sam zatvara: kad čovjek već klikne "Pošalji" i vidi
+  // "Poruka je poslana", svaki dalji klik je samo posao za njega. Modal
+  // sam nestane, stranica ostane čista, i nema šanse da slučajno pošalje
+  // istu poruku dvaput.
+  //
+  // Prikazujemo potvrdu 1.6s (dovoljno da se pročita), pa zatvaramo.
+  // Ako čovjek sam klikne X ili pozadinu prije toga — useEffect ispod
+  // čisti tajmer da ne zatvori nešto drugo.
+
+
+  const finishSuccess = () => {
+    setSent(true);
+    if (closeTimer.current) window.clearTimeout(closeTimer.current);
+    closeTimer.current = window.setTimeout(() => {
+      onClose();
+      // Resetuj formu za sljedeći put (nema starih podataka u poljima).
+      setName("");
+      setPhone("");
+      setEmail("");
+      setMessage("");
+      setSent(false);
+      setSendError("");
+    }, 1600);
+  };
+
+
+
   const submitInquiry = async (event: FormEvent) => {
     event.preventDefault();
     if (sending) return;
@@ -2593,27 +2636,26 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
     // Uvijek sačuvaj lokalno — i kad server radi i kad ne.
     addInquiryLocally(payload);
 
-    // Upiši i u Firebase — da poruka postoji na svim uredjajima, ne samo
-    // u ovom pregledniku. Ovo je ono sto admin panel cita.
-    // Upiši u Firebase — da poruka postoji na svim uredjajima.
+    // Upiši u Firebase — da poruka postoji na svim uredjajima, ne samo
+    // u ovom pregledniku. Ovo je ono što admin panel čita.
     const remoteSaved = await saveInquiryRemote(payload);
 
     const r = await sendInquiryToServer(payload);
     setSending(false);
 
     if (r.ok) {
-      // Mail je stvarno otisao. Ovo je jedini slucaj u kojem smijemo
-      // reci "poslano".
+      // Mail je stvarno otišao. Ovo je jedini slučaj u kojem smijemo
+      // reći "poslano".
       trackEvent("form_submit", "kontakt modal", undefined, "/kontakt");
-      setSent(true);
+      finishSuccess();
       return;
     }
 
     if (r.offline && remoteSaved) {
       // Endpoint ne postoji (lokalni razvoj) ALI poruka je u Firebase,
-      // pa ju admin zaista vidi. Ne lazemo — kazemo gdje je.
+      // pa ju admin zaista vidi. Ne lažemo — kažemo gdje je.
       trackEvent("form_submit", "kontakt modal", undefined, "/kontakt");
-      setSent(true);
+      finishSuccess();
       return;
     }
 

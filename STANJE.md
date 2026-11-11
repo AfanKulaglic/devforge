@@ -46,6 +46,34 @@ otvara. Korisnik klikne "Posalji" i vidi "Poruka je poslana".
 - stanja `sent` / `sending` / `sendError` umjesto `mailOpened`
 - uspjeh: "Poruka je poslana" + ponuda da pisu na mejl ako je hitno
 
+### MODAL SE SAM ZATVARA NAKON SLANJA
+
+Korisnik: "kada korisnici ukucaju podatke i posalju neka se povai i button
+zatvori da se spusti modal".
+
+`finishSuccess()` u `ContactModal`:
+- `setSent(true)` -> potvrda "Poruka je poslana" se vidi
+- timer 1600ms -> `onClose()` + reset svih polja
+
+**Hook mora biti IZNAD `if (!open) return null`.**
+
+**BUG:** `useRef` + `useEffect` za timer su prvo stavljeni ISPOD
+`if (!open) return null`. React je bacao
+**"Rendered more hooks than during the previous render"** i modal se
+**uopste nije mogao otvoriti**. Premjesteni iznad.
+
+Testirano:
+| trenutak | stanje |
+|---|---|
+| 800ms | modal otvoren, "Poruka je poslana" |
+| 3.2s | modal ZATVOREN |
+| ponovno otvaranje | polja prazna |
+| greska (500) | modal OSTAJE otvoren + kontakt |
+
+**Lokalno vs domena:** `/api/inquiry` postoji samo na Vercelu. Lokalno
+`npm run dev` vraca 404 -> `r.offline && remoteSaved` -> poruka ide u
+Firebase i sve radi osim mejla. **To je ocekivano, ne bug.**
+
 ### FORMA VISE NE LAZE "POSLANO" (kriticni bug)
 
 Korisnik: "kada ruzno unesem podatke pise poslano je a nije posalno".
