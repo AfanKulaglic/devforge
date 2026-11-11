@@ -72,13 +72,14 @@ export const POSTS_1: AdPost[] = [
     photo: "zasto",
     palette: "dark",
     eyebrow: "Zašto baš mi",
-    title: "Zašto firme biraju Dev Lab umjesto agencije.",
+    title: "Zašto firme biraju DevLab umjesto agencije.",
     slides: [
       {
         template: "cover",
-        eyebrow: "Zašto baš Dev Lab",
-        title: "Zašto firme biraju Dev Lab, a ne agenciju.",
-        lead: "Agencija traži 50% unaprijed i naplati prije nego što vidite ijedan piksel. Mi radimo obrnuto: prvo napravimo stranicu, pokažemo vam je na pravom linku — i tek onda razgovaramo o novcu. Ako vam se ne svidi, ne plaćate ništa i nemate nikakvu obavezu.",
+        eyebrow: "Zašto baš DevLab",
+        title: "Zašto firme biraju DevLab, a ne agenciju.",
+        accentWords: ["DevLab", "agenciju"],
+        lead: "Agencija traži 50% unaprijed, prije nego što vidite ijedan piksel. Mi radimo obrnuto — prvo napravimo stranicu i pokažemo vam je na pravom linku. Ako vam se ne svidi, ne plaćate ništa.",
         items: [
           { icon: "coin", label: "0 KM unaprijed" },
           { icon: "clock", label: "Gotovo za 5 radnih dana" },
@@ -133,7 +134,7 @@ export const POSTS_1: AdPost[] = [
       {
         template: "compare",
         eyebrow: "Razlika",
-        title: "Tipična agencija i Dev Lab, stavka po stavku.",
+        title: "Tipična agencija i DevLab, stavka po stavku.",
         items: [
           { label: "50% unaprijed", note: "Plaćate prije nego što vidite" },
           { label: "Čekate 2–4 sedmice", note: "Bez ijednog linka do kraja" },

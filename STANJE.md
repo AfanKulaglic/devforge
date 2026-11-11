@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (p04: vise teksta + ikone na svim slajdovima)
+Zadnje ažurirano: 2026-11-10 (p04: DevLab zeleno, kraci lead)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,50 +12,47 @@ Zadnje ažurirano: 2026-11-10 (p04: vise teksta + ikone na svim slajdovima)
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### p04 "Zašto firme biraju Dev Lab" — vise teksta + ikone
-Korisnik: "p04 napravi da ima vise teksta i da svaka slika u galeriji
-bude sa vise teksta i ikone dodaj ali na prava mjesta".
+### p04 — DevLab skupa + zeleni akcent + kraci lead
+Korisnik trazi: "DevLab se pise skupa", "DevLab i agenciju u zelenoj boji",
+"na prvom slajdu je previse teksta, skrati".
 
-**p04 ima 5 slajdova (karusel), svi napunjeni:**
+**1. "Dev Lab" -> "DevLab"** na sva tri mjesta: title objave, cover naslov,
+compare naslov.
 
-1. **COVER** — naslov, lead od 3 recenice (sa akcenat trakom), 3 najave
-   sa ikonama: coin "0 KM unaprijed", clock "Gotovo za 5 radnih dana",
-   shield "Cijene javne".
-2. **0 KM** — prosiren valueNote (objasnjava mehanizam placanja).
-3. **5 dana** — valueNote sa rasporedom po danima (1. dan struktura,
-   3. dan ziva stranica, 5. dan gotova; shop 10 dana).
-4. **LIST** — 4 stavke, svaka sa IKONOM + label + siva biljeska ispod:
-   layers "Dizajn i struktura", monitor "Mobilna verzija",
-   tools "Admin panel", check "4 besplatne revizije".
-5. **COMPARE** — PRIJE/POSLIJE, svaki red sa X ili kvačicom + biljeska:
-   4+4 stavke sa objasnjenjima (npr. "0 KM unaprijed — ništa ne
-   plaćate do kraja").
+**2. Nove zelene rijeci u naslovu** — polje `accentWords` na slideu:
 
-### Kod — nove stvari
-- `PostItem` tip: string | { icon?, label, note? } u postsData.ts.
-- `formBlocks` (list): podrzava objekte, ikona lijevo + note ispod.
-- `formCover`: lead sa akcenat trakom + najave sa ikonama.
-- `formDuo` (compare): redovi sa X/kvačicom ikonom + note, visi redovi.
-- `PX_ICONS.x` nova ikona (X).
+```ts
+title: "Zašto firme biraju DevLab, a ne agenciju.",
+accentWords: ["DevLab", "agenciju"],
+```
 
-### BUGOVI POPRAVLJENI (gubljenje rijeci)
-- `wrap()` sa maxLines TIHO odbacuje rijeci. Lead, valueNote i najave su
-  se odsijecali na pola recenice. Svuda dodat shrink-loop koji smanjuje
-  font dok BROJ RIJECI nije kompletan (prije se provjeravalo samo `whole`
-  koje gleda prvi red).
-- valueNote: MAXN 6 (3:4) / 5 (1:1), font do 20px.
+`formCover` dijeli naslov na `<tspan>` dijelove: svaki match dobija
+`fill=c.accent` = BRAND #4DEAE0, ista zelena kao svuda. Case-insensitive.
+
+**3. Lead skracen** sa tri recenice na dvije:
+
+prije: "Agencija traži 50% unaprijed i naplati prije nego što vidite ijedan
+piksel. Mi radimo obrnuto: prvo napravimo stranicu, pokažemo vam je na pravom
+linku — i tek onda razgovaramo o novcu. Ako vam se ne svidi, ne plaćate ništa
+i nemate nikakvu obavezu."
+
+sada: "Agencija traži 50% unaprijed, prije nego što vidite ijedan piksel. Mi
+radimo obrnuto — prvo napravimo stranicu i pokažemo vam je na pravom linku.
+Ako vam se ne svidi, ne plaćate ništa."
+
+### Napomena
+Polje `accentWords` radi na svakom cover slajdu — dovoljno dodati niz
+rijeci. Regex escape je rucno popravljen jer je bash pojeo `$&`.
 
 ### Verifikacija
-- Svih 5 slajdova: 0 odsjecenih tekstova, ikone 3/0/0/4/8, sve u kadru.
-- Vision proverio: cover lead cijeli, 0KM biljeska cijela ("prema nama."),
-  lista ikone+note, compare X/kvačica+note.
+- Vision: "DevLab" i "agenciju" zeleni #4DEAE0, ostatak bijeli.
+- "DevLab" citljiv kao jedna rijec na slajdu 1 i 5.
 - 41 objava x 2 formata: 0 van kadra, 0 console gresaka.
 - tsc=0, build OK.
 
 ## Sljedeći korak
-- Pregledati p04 u 3:4 (otvoriti karusel, svi slajdovi).
-- Ostali karuseli (p06, p07...) mogu dobiti isti tretman: items objekti
-  sa {icon,label,note} - radi automatski.
+- Pregledati p04 slajd 1 u 3:4 — zelene rijeci + kraci lead.
+- `accentWords` se moze dodati na druge cover slajdove (p06, p07).
 - Opciono: 4:5 format.
 
 ## Napomene / zamke

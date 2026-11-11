@@ -65,7 +65,9 @@ export type PostSlide = {
   palette?: PostPalette; // dozvoljeno mijenjati ton unutar karusela
   photo?: PhotoKey; // fotografija za ovaj list
   kicker?: string; // PREMIUM: sitni red iznad naslova
-  lead?: string; // PREMIUM: recenica ispod naslova
+  lead?: string; // recenica ispod naslova
+  /** Rijeci u naslovu koje se crtaju akcent (zelenom) bojom. */
+  accentWords?: string[];
   terms?: string[]; // PREMIUM: uslovi u podnozju
   stats?: { value: string; label: string; icon?: string }[]; // PREMIUM: kljucne brojke
   /** PREMIUM: 2–5 usluga sa ikonom (npr. web / shop / app / game / ai). */

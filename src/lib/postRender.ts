@@ -405,9 +405,43 @@ function formCover(c: Colors, p: PostSlide, total: number): Block {
   let svg = "";
   let h = 0;
 
+  // RIJECI U AKCENT BOJI UNUTAR NASLOVA.
+  //
+  // "DevLab" i "agenciju" treba da budu zelene, a ostatak bijeli. Ne moze
+  // se cijeli naslov obojiti (izgubio bi se), pa se red dijeli na dijelove:
+  // svaki `accentWords` match dobija svoj <tspan> u BRAND boji.
+  //
+  // Boja: `c.accent` (BRAND #4DEAE0). Na tamnoj paleti to je teal — tacno
+  // boja koju koristimo svuda za zelenu.
+  const accentWords: string[] = Array.isArray((p as any).accentWords)
+    ? ((p as any).accentWords as string[])
+    : [];
+  const paintLine = (line: string): string => {
+    if (!accentWords.length) return esc(line);
+    // Napravi regex od svih akcent rijeci, bez obzira na velika/mala slova.
+    const rx = new RegExp(
+      "(" +
+        accentWords
+          .map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+          .join("|") +
+        ")",
+      "gi",
+    );
+    let out = "";
+    let last = 0;
+    let m: RegExpExecArray | null;
+    while ((m = rx.exec(line)) !== null) {
+      out += esc(line.slice(last, m.index));
+      out += `<tspan fill="${c.accent}">${esc(m[0])}</tspan>`;
+      last = m.index + m[0].length;
+    }
+    out += esc(line.slice(last));
+    return out;
+  };
+
   lines.forEach((l, i) => {
     svg += `<text x="0" y="${h + size * 0.78 + i * lh}" font-family="${FONT}" font-size="${size}"
-      font-weight="900" letter-spacing="-3.2" fill="${c.ink}">${esc(l)}</text>`;
+      font-weight="900" letter-spacing="-3.2" fill="${c.ink}">${paintLine(l)}</text>`;
   });
   h += (lines.length - 1) * lh + size;
 
