@@ -667,8 +667,12 @@ function formFigure(c: Colors, p: PostSlide): Block {
   // Prored 1.34 — bb visine slova je ~1.33*font, pa 1.24 nije dovoljno.
   const tlh = ts * 1.34;
 
-  // Razmak broj -> naslov. U 3:4 veci — broj je ogroman pa mu treba zraka.
-  h += tall ? 8 : 52;
+  // Razmak broj -> naslov.
+  //
+  // U 3:4 je bio 8px — to nije zrak, to je preklapanje. Veliki broj (150-260px)
+  // ima donju ivicu na h, a naslov pocinje na h + ts*0.78, pa je 8px ostavljalo
+  // bukvalno nula prostora. Sada 44 u 3:4, 52 u 1:1.
+  h += tall ? 44 : 52;
   tl.forEach((l, i) => {
     svg += `<text x="0" y="${h + ts * 0.78 + i * tlh}" font-family="${FONT}"
       font-size="${ts}" font-weight="800" letter-spacing="-1.4" fill="${headInk}">${esc(l)}</text>`;
@@ -707,6 +711,38 @@ function formFigure(c: Colors, p: PostSlide): Block {
         font-size="${nfs}" font-weight="500" fill="${noteInk}">${esc(l)}</text>`;
     });
     h += (nl.length - 1) * (nfs + 20) + nfs;
+  }
+
+  // STA JE U CIJENI — kratka lista sa ikonama ispod biljeske.
+  //
+  // Cjenovni slajd je prije imao samo broj, naslov i jednu recenicu. Kupac
+  // je morao vjerovati na rijec da je sve ukljuceno. Sada se vidi stavka po
+  // stavka: ikona + kratak label, u dva stupca da ne pojede visinu.
+  const incl = (p.items ?? []) as any[];
+  if (incl.length) {
+    h += tall ? 56 : 46;
+    const IC = tall ? 32 : 29;
+    const ifs = tall ? 26 : 24;
+    const rowH = tall ? 56 : 50;
+    const half = Math.ceil(incl.length / 2);
+    const colW = W_MUT / 2;
+    incl.forEach((it: any, i: number) => {
+      const isObj = typeof it === "object" && it !== null;
+      const label = isObj ? (it.label ?? "") : String(it);
+      const icon = isObj ? (it.icon ?? "") : "";
+      const col = i < half ? 0 : 1;
+      const row = i < half ? i : i - half;
+      const ix = col * colW;
+      const iy = h + row * rowH;
+      if (icon && PX_ICONS[icon]) {
+        svg += pxIcon(icon, ix, iy, onTeal ? "#0A0A0A" : c.accent, IC);
+      } else {
+        svg += `<rect x="${ix}" y="${iy + IC * 0.4}" width="18" height="6" fill="${onTeal ? "#0A0A0A" : c.accent}"/>`;
+      }
+      svg += `<text x="${ix + IC + 16}" y="${iy + IC * 0.74}" font-family="${FONT}"
+        font-size="${ifs}" font-weight="700" fill="${headInk}">${esc(label)}</text>`;
+    });
+    h += (half - 1) * rowH + IC;
   }
 
   return { svg, h };

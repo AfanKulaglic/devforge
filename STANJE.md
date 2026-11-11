@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (p07: bez okvira, ikone + opisi, naslov skracen)
+Zadnje ažurirano: 2026-11-10 (p08: ikone u price layoutu, popravljen preklop broj/naslov)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -14,58 +14,62 @@ Zadnje ažurirano: 2026-11-10 (p07: bez okvira, ikone + opisi, naslov skracen)
 ## Gotovo (ova sesija)
 ### p05 — tekst ne prelazi na sliku (layout `photo`)
 
-`buildNarrow()` privremeno smanjuje modul-level `W_MUT` na tekst zonu
-(`SIZE - imgW - fadeW - M - 34`), izgradi blok, vrati u `finally`. Sve forme
-su pocele koristiti `W_MUT` umjesto `W` (34 zamjene). Tekst zavrsava x=560,
-slika pocinje 750.
+`buildNarrow()` privremeno smanjuje modul-level `W_MUT` na tekst zonu,
+izgradi blok, vrati u `finally`. Sve forme koriste `W_MUT` umjesto `W`.
+Tekst zavrsava x=560, slika pocinje 750.
 
-**BUG a)** biljeska se crtala IZNAD drugog reda labela — `noteTop` iz
-`lastLabelBottom` + 14.  **BUG b)** `wrap(note,...,2)` odbacivao rijeci —
-shrink-loop do 3 reda.  **BUG c)** `minRow` 64 -> 186/158.  **BUG d)** skript
-za `W→W_MUT` ostetio komentar u `renderSlideSvg`.
+**BUG a)** biljeska ispod drugog reda labela — `noteTop` iz `lastLabelBottom` + 14.
+**BUG b)** `wrap(note,...,2)` odbacivao rijeci — shrink-loop do 3 reda.
+**BUG c)** `minRow` 64 -> 186/158.  **BUG d)** skript ostetio komentar u `renderSlideSvg`.
 
 ### p06 — karusel dobio život (6 slajdova)
 
-Svih 6 slajdova: subtitle + 4 stavke kao `{icon, label, note}`.
-Cover: naslov + lead + 4 ikone. Liste 2-5: web/monitor/shop/tools,
-bolt/layers/game/check, app/tools/chat/rocket, ai/chat/layers/clock.
-CTA: lead + 3 dokaza (web/shop/shield) + dugme.
+Svih 6: subtitle + 4 stavke `{icon, label, note}`. Cover: naslov + lead + 4 ikone.
+CTA: lead + 3 dokaza + dugme.
 
 **`formCover`**: `slice(0, 3)` -> `slice(0, SIZE_H >= 1300 ? 4 : 3)` —
 cover je govorio "cetiri usluge" a prikazivao tri.
-**`formAction`**: sada crta `lead` (accent traka + shrink-loop) i 3 dokaza
-sa ikonom IZNAD dugmeta.
+**`formAction`**: sada crta `lead` (accent traka) i 3 dokaza iznad dugmeta.
 
-### p07 — bez okvira, ikone, kraći naslov
+### p07 — bez okvira, ikone, krací naslov
 
-Prije: `layout: "band"` crtao je `stroke 1.5` okvir oko cijelog bloka
-(korisnik: "izbaci ovaj border, ruzno je"). Sad `layout: "center"` — bez
-okvira, sadrzaj slobodno stoji na podlozi.
+`layout: "band"` -> `"center"` — band je crtao `stroke 1.5` okvir koji je
+korisnik odbio ("ružno je"). Naslov bio odsjecen ("...bez") ->
+**"Sve što vaš projekat treba. Bez doplata."** Lista: 4x `{icon, label, note}`
+(tools/monitor/coin/shield) + subtitle.
 
-Naslov je bio odsjecen: "...ukljuceno u cijenu, bez" (nedostajalo "doplata").
-Sada: **"Sve što vaš projekat treba. Bez doplata."**
+### p08 — ikone u cjenovnim slajdovima (5 slajdova)
 
-Lista 4 stavke sa ikonom + opisom (prije gola lista sa crticama):
+| slajd | dodano |
+|---|---|
+| 1 cover | lead + 3 ikone (web/shop/shield) |
+| 2 Stranice 150 KM | 4 ikone: layers/monitor/chat/tools |
+| 3 Shopovi 600 KM | 4 ikone: shop/coin/monitor/check |
+| 4 Aplikacije Dogovor | 4 ikone: app/tools/ai/rocket |
+| 5 U svakoj cijeni | 4x `{icon,label,note}` + subtitle |
 
-| ikona | label | note |
-|---|---|---|
-| tools | API i integracije | Povezivanje s CRM, ERP i dostavnim službama. |
-| monitor | Admin panel | Sami mijenjate tekstove, slike i proizvode. |
-| coin | Plaćanje karticom | Kartice i PayPal — novac ide direktno vama. |
-| shield | Domena, email i SSL | Postavljamo ih, a plaćate provideru bez naše marže. |
+**`formFigure` sada crta `items`** kao grid 2x2 ispod biljeske
+(`IC` 32/29, `rowH` 56/50, `colW = W_MUT/2`).
+Prije su cjenovni slajdovi imali samo broj + naslov + jednu recenicu.
 
-Dodan `subtitle`: "Stranica nije samo dizajn. Ovo ide uz nju, bez doplate."
+### BUG POPRAVLJEN (vazan)
+**Preklop broj / naslov u `formFigure`.**
+Razmak je bio `h += tall ? 8 : 52` — u 3:4 samo **8px**. Veliki broj
+(150-260px) ima donju ivicu na `h`, a naslov pocinje na `h + ts*0.78`, pa je
+izmedju njih bilo bukvalno nula zraka. "150 KM" se preklapalo sa
+"Landing ili korporativna".
+Sada: `h += tall ? 44 : 52`. Izmjereno ~75-80px razmaka na slici.
 
 ### Verifikacija
-- p07: border nestao, naslov cijeli, 4 ikone, 0 preklapanja, y 1344/1440.
+- p08: 5 slajdova, ikone 3/4/4/4/4, 0 preklapanja, svi y 1344/1440.
+- Geometrija (bounding box): 0 preklapanja na S2/S3/S4.
 - 70 slajdova x 2 formata: 0 van kadra.
 - tsc=0, build OK.
 
 ## Sljedeći korak
-- Pregledati p07 u 3:4 i 1:1.
-- Isti tretman za p08 (cijene) i ostale.
-- `band` layout vise nigdje ne koristi okvir — provjeriti da ga ni jedan
-  drugi post ne koristi (sada: nijedan).
+- Pregledati p08 u 3:4 i 1:1.
+- p09 (cijene) i ostali mogu dobiti isti `{icon,label,note}` tretman.
+- `band` layout vise nigdje ne koristi okvir — kandidat za brisanje iz koda.
 
 ## Napomene / zamke
 - **Python heredoc + `\n` u TS stringu = pokvaren string.** Koristiti `.cjs` skriptu sa
