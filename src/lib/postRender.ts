@@ -482,7 +482,9 @@ function formCover(c: Colors, p: PostSlide, total: number): Block {
   // NAJAVE — najvise 3, sa IKONOM. Ikona se stavlja lijevo od teksta i
   // poravnava se sa prvim redom; svaka najava je svoj mali blok, ne
   // razbijena recenica sa tackama izmedju (to se nije dalo citati).
-  const parts: any[] = Array.isArray(p.items) ? p.items.slice(0, 3) : [];
+  // 4 stavke u 3:4 (ima visine), 3 u 1:1. Prije je bio fiksno 3, pa je na p06
+  // coveru nedostajala cetvrta usluga iako naslov kaze "cetiri usluge".
+  const parts: any[] = Array.isArray(p.items) ? p.items.slice(0, SIZE_H >= 1300 ? 4 : 3) : [];
   if (parts.length) {
     h += 48;
     const IC = SIZE_H >= 1300 ? 40 : 36;
@@ -961,13 +963,60 @@ function formAction(c: Colors, p: PostSlide): Block {
     .join("");
   let h = (tl.length - 1) * lh + ts;
 
-  if (p.subtitle) {
+  // LEAD — recenica koja objasnjava sta se desava kad se jave.
+  //
+  // CTA slajd je zadnji u karuselu i mora sam zatvoriti pricu: sta dobijem,
+  // koliko kosta, sta se desi kad kliknem. Prije je imao samo naslov i dugme,
+  // pa je djelovao prazno.
+  if (p.lead) {
+    const lfs = SIZE_H >= 1300 ? 32 : 30;
+    const lWords = p.lead.trim().split(/\s+/).length;
+    let lfsX = lfs;
+    let ll = wrap(p.lead, lfsX, W_MUT - 30, 4);
+    while (lfsX > 20 && ll.join(" ").trim().split(/\s+/).length < lWords) {
+      lfsX -= 2;
+      ll = wrap(p.lead, lfsX, W_MUT - 30, 6);
+    }
+    h += 46;
+    svg += `<rect x="0" y="${h - 6}" width="6" height="${ll.length * (lfsX + 16)}" fill="${c.accent}"/>`;
+    ll.forEach((l: string, li: number) => {
+      svg += `<text x="30" y="${h + lfsX * 0.86 + li * (lfsX + 16)}" font-family="${FONT}"
+        font-size="${lfsX}" font-weight="500" fill="${c.soft}">${esc(l)}</text>`;
+    });
+    h += (ll.length - 1) * (lfsX + 16) + lfsX;
+  } else if (p.subtitle) {
     h += 46;
     wrap(p.subtitle, 32, W_MUT, 2).forEach((l, i) => {
       svg += `<text x="0" y="${h + 10 + i * 42}" font-family="${FONT}" font-size="32"
         font-weight="600" fill="${c.soft}">${esc(l)}</text>`;
       h += 42;
     });
+  }
+
+  // TRI KRATKA DOKAZA SA IKONOM — iznad dugmeta, ne ispod.
+  //
+  // Dugme je zadnja stvar koju oko vidi; dokazi moraju biti PRIJE njega da
+  // bi ih covjek procitao. Ikona + kratka rijec, u jednom redu, bez kartica.
+  const feats = (p.items ?? []) as any[];
+  if (feats.length) {
+    h += 54;
+    const IC = SIZE_H >= 1300 ? 38 : 34;
+    const ffs = SIZE_H >= 1300 ? 27 : 25;
+    const rowH = SIZE_H >= 1300 ? 62 : 56;
+    feats.slice(0, 3).forEach((it: any, fi: number) => {
+      const isObj = typeof it === "object" && it !== null;
+      const label = isObj ? (it.label ?? "") : String(it);
+      const icon = isObj ? (it.icon ?? "") : "";
+      const ry = h + fi * rowH;
+      if (icon && PX_ICONS[icon]) {
+        svg += pxIcon(icon, 0, ry, c.accent, IC);
+      } else {
+        svg += `<rect x="0" y="${ry + IC * 0.4}" width="22" height="7" fill="${c.accent}"/>`;
+      }
+      svg += `<text x="${IC + 22}" y="${ry + IC * 0.72}" font-family="${FONT}" font-size="${ffs}"
+        font-weight="700" fill="${c.ink}">${esc(label)}</text>`;
+    });
+    h += (feats.slice(0, 3).length - 1) * rowH + IC;
   }
 
   const bh = 116;

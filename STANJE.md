@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (p05: detaljan opis, bez crtica, tekst ne ulazi u sliku)
+Zadnje ažurirano: 2026-11-10 (p06: karusel dobio život — ikone, opisi, lead na CTA)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,63 +12,57 @@ Zadnje ažurirano: 2026-11-10 (p05: detaljan opis, bez crtica, tekst ne ulazi u 
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### p05 — detaljniji opis, bez crtica, tekst ne prelazi na sliku
+### p05 — tekst ne prelazi na sliku (layout `photo`)
 
-**1. Tekst ne prelazi na sliku** (layout `photo`).
-Prije je `build()` radio sa punom sirinom W=944, pa su dugacke stavke
-ulazile u desnu zonu gdje je fotografija. Sada:
+`buildNarrow()` privremeno smanjuje modul-level `W_MUT` na tekst zonu
+(`SIZE - imgW - fadeW - M - 34`), izgradi blok, vrati u `finally`. Sve forme
+su pocele koristiti `W_MUT` umjesto `W` (34 zamjene), pa nijedna nije morala
+dobiti novi parametar sirine. Tekst zavrsava na x=560, slika pocinje na 750.
 
-```ts
-const fadeW = 70;
-const textW = SIZE - imgW - fadeW - M - 34;
-const b = buildNarrow(c, p, total, textW);
-```
+**BUG a)** biljeska se crtala IZNAD drugog reda labela — `noteTop` se sada
+racuna iz `lastLabelBottom = baseline + (lines-1)*(fs+8)` + 14.
+**BUG b)** `wrap(note, nfs, avail, 2)` tiho odbacivao rijeci — shrink-loop
+do 3 reda / font 18px.
+**BUG c)** `minRow` 64 -> 186 (3:4) / 158 (1:1).
+**BUG d)** skript za `W→W_MUT` ostetio komentar u `renderSlideSvg`.
 
-`buildNarrow()` privremeno smanjuje modul-level `W_MUT` (koji su sve forme
-pocele koristiti umjesto `W`), izgradi blok, pa vrati u `finally`. Tako nijedna
-forma nije morala dobiti novi parametar sirine.
+### p06 — karusel dobio život (6 slajdova)
 
-**2. Nema crtica.** Sve stavke p05 imaju `icon` — crtica se crta samo kad
-stavka nema ikonu. Ikone: web, game, app, ai.
+Prije: svaki slajd je bio gola lista od 4 rijeci, bez ikona i bez objasnjenja.
+Sada svaki ima subtitle + 4 stavke kao `{icon, label, note}`:
 
-**3. Detaljniji opis** — svaka stavka sada ima `label` + `note`:
+| slajd | tema | ikone |
+|---|---|---|
+| 1 | cover — "Cetiri usluge. Vecina klijenata uzme dvije." + lead | web, game, app, ai |
+| 2 | Stranice i shopovi | web, monitor, shop, tools |
+| 3 | 2D igrice | bolt, layers, game, check |
+| 4 | Mobilne aplikacije | app, tools, chat, rocket |
+| 5 | AI asistenti | ai, chat, layers, clock |
+| 6 | CTA + lead + 3 dokaza | web, shop, shield |
 
-| label | note |
-|---|---|
-| Web stranice i shopovi | Od predstavljanja do prodaje. Gotovo za 5 dana, od 150 KM. |
-| 2D igrice za web i mobilne | Od jednostavnih do obrazovnih — po vašoj mjeri. |
-| Mobilne aplikacije | Jedan tim, obje platforme. Od ideje do trgovine. |
-| AI chat i recepcionar 24/7 | Prima pozive i bilježi narudžbe — bez vas. |
+### IZMJENE U RENDERU
 
-Dodan i `subtitle`: "Ne radimo sve. Radimo četiri stvari i svaku do kraja."
-(`formBlocks` prije nije crtao subtitle — sada crta.)
+**1. `formCover` — 4 stavke umjesto 3.**
+Bio je `slice(0, 3)` fiksno, pa je cover govorio "cetiri usluge" a prikazivao
+tri. Sada `slice(0, SIZE_H >= 1300 ? 4 : 3)` — 4 u 3:4, 3 u 1:1.
 
-### BUGOVI POPRAVLJENI
-**a) Biljeska se crtala IZNAD drugog reda labela.** y je bio
-`baseline + fs*0.30 + 12`, a drugi red labela je `baseline + (fs+8)` —
-biljeska je ulazila u drugi red. Sada: `lastLabelBottom = baseline +
-(lines.length-1)*(fs+8)`, biljeska 14px ispod.
+**2. `formAction` (CTA) — sada crta `lead` i `items`.**
+Prije samo naslov + dugme, djelovalo prazno. Dodano:
+- `lead` — recenica uz vertikalnu accent traku (shrink-loop za sve rijeci)
+- 3 dokaza sa ikonom iznad dugmeta (`IC` 38/34, `rowH` 62/56)
+- fallback na `subtitle` ako `lead` ne postoji
 
-**b) Biljeske su se odsijecale** — `wrap(note, nfs, avail, 2)` odbacuje
-rijeci preko 2 reda. Sada shrink-loop do 3 reda / font 18px.
-
-**c) minRow je bio 64px** — premalo za ikonu + label + biljesku. Sada 186
-(3:4) / 158 (1:1).
-
-**d) Skript za W→W_MUT ostetio komentar** u `renderSlideSvg` (pojeo
-backtick sadrzaj). Popravljeno rucno.
+Dugme ostaje zadnje — oko ga vidi kao zadnju stvar, dokazi idu PRIJE njega.
 
 ### Verifikacija
-- Vision: sve 4 stavke potpune, nista odsjeceno, tekst ne dira sliku ni domenu.
-- Mjereno: najveci x teksta 560, slika pocinje na 750. Tekst zavrsava 1241,
-  domena na 1312.
-- 41 objava x 2 formata: 0 van kadra, 0 console gresaka.
+- 3:4: 6 slajdova, nula preklapanja, ikone 4/4/4/4/4/3.
+- 1:1: 6 slajdova, svi unutar kadra (y 984 / 1080).
+- Vision: cover 4 stavke, lista 2 sve 4 potpune, CTA pun i balansiran.
 - tsc=0, build OK.
 
 ## Sljedeći korak
-- Pregledati p05 u 3:4.
-- `photo` layout sada ima `buildNarrow` — drugi postovi s tim layoutom
-  automatski dobijaju uzu tekst zonu.
+- Pregledati p06 u 3:4 (6 slajdova).
+- Isti `{icon,label,note}` tretman za p07 i ostale karusele.
 - Opciono: 4:5 format.
 
 ## Napomene / zamke

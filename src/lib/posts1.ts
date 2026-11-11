@@ -203,44 +203,144 @@ export const POSTS_1: AdPost[] = [
     slides: [
       {
         template: "cover",
-        eyebrow: "Usluge",
-        title: "Naše usluge",
-        items: ["Stranice", "Aplikacije", "Igre", "AI"],
+        eyebrow: "Naše usluge",
+        title: "Četiri usluge. Većina klijenata uzme dvije.",
+        accentWords: [],
+        lead: "Radimo stranice, igrice, aplikacije i AI asistente. Bez podugovaranja i bez posrednika — isti tim radi sve, pa se dijelovi poklapaju bez duplih troškova.",
+        items: [
+          { icon: "web", label: "Stranice i shopovi" },
+          { icon: "game", label: "2D igrice" },
+          { icon: "app", label: "Mobilne aplikacije" },
+          { icon: "ai", label: "AI asistenti" },
+        ],
         palette: "dark",
       },
       {
         template: "list",
         eyebrow: "01 · Stranice",
         title: "Stranice i shopovi",
-        items: ["Landing page", "Korporativna stranica", "Web shop", "Web aplikacija"],
+        subtitle: "Od jedne stranice do shopa koji sam prima narudžbe.",
+        items: [
+          {
+            icon: "web",
+            label: "Landing page",
+            note: "Jedna stranica, jedan cilj — da posjetilac ostavi broj.",
+          },
+          {
+            icon: "monitor",
+            label: "Korporativna stranica",
+            note: "Predstavljanje, usluge, galerija i kontakt. Do 5 podstranica.",
+          },
+          {
+            icon: "shop",
+            label: "Web shop",
+            note: "Proizvodi, korpa i plaćanje. Sami dodajete artikle.",
+          },
+          {
+            icon: "tools",
+            label: "Web aplikacija",
+            note: "Prijava, baza podataka i panel — kad sajt treba da radi.",
+          },
+        ],
         palette: "dark",
       },
       {
         template: "list",
         eyebrow: "02 · Igrice",
         title: "2D igrice za web i mobilne",
-        items: ["Marketing igre", "Educational igre", "Casual igre", "S Vašim brendom"],
+        subtitle: "Igra ljude zadrži duže od oglasa — i podijele je sami.",
+        items: [
+          {
+            icon: "bolt",
+            label: "Marketing igre",
+            note: "Nagradna igra uz kampanju. Prikuplja kontakte i širi brend.",
+          },
+          {
+            icon: "layers",
+            label: "Educational igre",
+            note: "Učenje kroz igru — za škole, kurseve i obuke zaposlenih.",
+          },
+          {
+            icon: "game",
+            label: "Casual igre",
+            note: "Kratke igre za pauzu. Rade na webu i na telefonu.",
+          },
+          {
+            icon: "check",
+            label: "S vašim brendom",
+            note: "Boje, logo i likovi prilagođeni vašem brendu.",
+          },
+        ],
         palette: "ink",
       },
       {
         template: "list",
         eyebrow: "03 · Aplikacije",
         title: "Mobilne aplikacije",
-        items: ["iOS i Android", "Flutter i React Native", "Push notifikacije", "App Store i Play"],
+        subtitle: "Jedna aplikacija, obje platforme — bez duplog razvoja.",
+        items: [
+          {
+            icon: "app",
+            label: "iOS i Android",
+            note: "Jedan kod, dvije trgovine. Isti izgled na oba sistema.",
+          },
+          {
+            icon: "tools",
+            label: "Flutter i React Native",
+            note: "Provjerene tehnologije — lakše ih je kasnije održavati.",
+          },
+          {
+            icon: "chat",
+            label: "Push notifikacije",
+            note: "Povratna vijest kupcu: narudžba, termin ili akcija.",
+          },
+          {
+            icon: "rocket",
+            label: "App Store i Play",
+            note: "Objavu u trgovinama radimo mi — vi ne dirate papirologiju.",
+          },
+        ],
         palette: "dark",
       },
       {
         template: "list",
         eyebrow: "04 · AI",
-        title: "AI sistemi",
-        items: ["AI recepcionar", "Chat na sajtu", "Baza znanja", "Radi 24/7"],
+        title: "AI asistenti koji rade dok vi spavate",
+        subtitle: "Ne propuštate pozive noću, vikendom ni za vrijeme ručka.",
+        items: [
+          {
+            icon: "ai",
+            label: "AI recepcionar",
+            note: "Javlja se na poziv, razumije pitanje i zakaže termin.",
+          },
+          {
+            icon: "chat",
+            label: "Chat na sajtu",
+            note: "Odgovara na ista pitanja umjesto vas — bez čekanja.",
+          },
+          {
+            icon: "layers",
+            label: "Baza znanja",
+            note: "Uči iz vaših cjenovnika, usluga i radnog vremena.",
+          },
+          {
+            icon: "clock",
+            label: "Radi 24/7",
+            note: "Bez pauze, bez bolovanja i bez dodatne plate.",
+          },
+        ],
         palette: "ink",
       },
       {
         template: "cta",
         eyebrow: "Počnite",
         title: "Prva verzija je besplatna.",
-        subtitle: "Stranice od 150 KM · Shopovi od 600 KM · 0 KM predujma",
+        lead: "Recite nam šta vam treba. Napravimo prvu verziju, pokažemo je na pravom linku — i tek onda razgovaramo o plaćanju.",
+        items: [
+          { icon: "web", label: "Stranice od 150 KM" },
+          { icon: "shop", label: "Shopovi od 600 KM" },
+          { icon: "shield", label: "0 KM unaprijed" },
+        ],
         palette: "dark",
       },
     ],
