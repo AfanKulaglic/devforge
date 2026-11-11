@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (p03 vracen na 5f985ca)
+Zadnje ažurirano: 2026-11-10 (p04: vise teksta + ikone na svim slajdovima)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,36 +12,50 @@ Zadnje ažurirano: 2026-11-10 (p03 vracen na 5f985ca)
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### p03 vracen na stanje prije ikona (commit 5f985ca)
-Korisnik je rekao da nije mislio ikone/tekst na p03 ("150 KM"), nego na
-"onaj post gdje ide DevLab". Ja sam promjene (ikone, novi tekst, slika 36%)
-NAPRAVIO na p03 — pogresan post. Vraceno komandom:
+### p04 "Zašto firme biraju Dev Lab" — vise teksta + ikone
+Korisnik: "p04 napravi da ima vise teksta i da svaka slika u galeriji
+bude sa vise teksta i ikone dodaj ali na prava mjesta".
 
-```
-git checkout 5f985ca -- src/lib/posts1.ts src/lib/postRender.ts src/lib/postsData.ts
-```
+**p04 ima 5 slajdova (karusel), svi napunjeni:**
 
-**Stanje p03 sada (kao na 5f985ca):**
-- zelena podloga #4DEAE0, crn "150 KM", bijel naslov, crna biljeska
-- slika 46% visine, pocinje na y=778
-- BEZ reda ikona (features uklonjeno)
-- originalni valueNote i title
+1. **COVER** — naslov, lead od 3 recenice (sa akcenat trakom), 3 najave
+   sa ikonama: coin "0 KM unaprijed", clock "Gotovo za 5 radnih dana",
+   shield "Cijene javne".
+2. **0 KM** — prosiren valueNote (objasnjava mehanizam placanja).
+3. **5 dana** — valueNote sa rasporedom po danima (1. dan struktura,
+   3. dan ziva stranica, 5. dan gotova; shop 10 dana).
+4. **LIST** — 4 stavke, svaka sa IKONOM + label + siva biljeska ispod:
+   layers "Dizajn i struktura", monitor "Mobilna verzija",
+   tools "Admin panel", check "4 besplatne revizije".
+5. **COMPARE** — PRIJE/POSLIJE, svaki red sa X ili kvačicom + biljeska:
+   4+4 stavke sa objasnjenjima (npr. "0 KM unaprijed — ništa ne
+   plaćate do kraja").
 
-### VAZNO
-Opcija `features` i ikone su UKLONJENE iz koda vracanjem na 5f985ca.
-Ako ikone trebaju na NEKU DRUGU objavu, treba ponovo dodati `features`
-blok u `formFigure` (bio je u commit c875f8b, moze se vratiti selektivno).
+### Kod — nove stvari
+- `PostItem` tip: string | { icon?, label, note? } u postsData.ts.
+- `formBlocks` (list): podrzava objekte, ikona lijevo + note ispod.
+- `formCover`: lead sa akcenat trakom + najave sa ikonama.
+- `formDuo` (compare): redovi sa X/kvačicom ikonom + note, visi redovi.
+- `PX_ICONS.x` nova ikona (X).
+
+### BUGOVI POPRAVLJENI (gubljenje rijeci)
+- `wrap()` sa maxLines TIHO odbacuje rijeci. Lead, valueNote i najave su
+  se odsijecali na pola recenice. Svuda dodat shrink-loop koji smanjuje
+  font dok BROJ RIJECI nije kompletan (prije se provjeravalo samo `whole`
+  koje gleda prvi red).
+- valueNote: MAXN 6 (3:4) / 5 (1:1), font do 20px.
 
 ### Verifikacija
-- Vision: nema reda ikona, samo logo flask; slika velika (46%).
+- Svih 5 slajdova: 0 odsjecenih tekstova, ikone 3/0/0/4/8, sve u kadru.
+- Vision proverio: cover lead cijeli, 0KM biljeska cijela ("prema nama."),
+  lista ikone+note, compare X/kvačica+note.
 - 41 objava x 2 formata: 0 van kadra, 0 console gresaka.
 - tsc=0, build OK.
 
 ## Sljedeći korak
-- KORISNIK TREBA RECI KOJI JE TACNO POST "gdje ide DevLab" za ikone i
-  vise teksta (p03 je bio pogresan).
-- Kad se zna post: vratiti `features` blok iz commita c875f8b u
-  `formFigure` i dodati `features` polje na tu objavu.
+- Pregledati p04 u 3:4 (otvoriti karusel, svi slajdovi).
+- Ostali karuseli (p06, p07...) mogu dobiti isti tretman: items objekti
+  sa {icon,label,note} - radi automatski.
 - Opciono: 4:5 format.
 
 ## Napomene / zamke

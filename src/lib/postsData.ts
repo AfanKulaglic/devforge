@@ -48,12 +48,18 @@ export type PostPalette =
 // Jedan list karusela. Ako ga nema, objava je jedna slika.
 // Kod karusela (2–10 listova) svaki list dobija isti vizuelni ram, ali
 // drugačiji sadržaj — kao pravi Instagram karusel.
+// Stavka liste: obican string ILI objekat sa ikonom i objasnjenjem.
+//
+// Zasto unija a ne uvijek objekat: stari postovi imaju items: ["a","b"] i
+// ne treba ih sve prepravljati. Novi mogu dati { icon, label, note }.
+export type PostItem = string | { icon?: string; label: string; note?: string };
+
 export type PostSlide = {
   template?: PostTemplate; // ako nije zadato, koristi se template objave
   eyebrow?: string;
   title?: string;
   subtitle?: string;
-  items?: string[];
+  items?: PostItem[];
   value?: string;
   valueNote?: string;
   palette?: PostPalette; // dozvoljeno mijenjati ton unutar karusela
@@ -83,7 +89,7 @@ export type AdPost = {
   eyebrow: string; // mala etiketa gore
   title: string; // glavni naslov
   subtitle?: string; // podnaslov / objasnjenje
-  items?: string[]; // za list / process / compare
+  items?: PostItem[]; // za list / process / compare
   value?: string; // za number / price (veliki broj)
   valueNote?: string; // sitno ispod broja
   includes?: string[]; // kratka lista "sta je ukljuceno u cijenu"

@@ -59,6 +59,8 @@ const PX_ICONS: Record<string, string> = {
   app: "M7 2h10a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Zm3 17h4",
   ai: "M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4M12 8a4 4 0 0 1 4 4c0 1.5-.8 2.7-2 3.4V17h-4v-1.6C8.8 14.7 8 13.5 8 12a4 4 0 0 1 4-4Z",
   check: "M5 12l5 5 9-10",
+  // X — za listu "prije / lose" u compare layoutu.
+  x: "M6 6l12 12M18 6L6 18",
   shield: "M12 3l8 3v6c0 4-3 7-8 9-5-2-8-5-8-9V6l8-3Zm-3 8 2 2 4-4",
   rocket: "M5 19c-1.5 0-3-1-3-3 2 0 3 1 3 3ZM12 5l7 7-4 1-3 3-1-4-4 1-3-3 4-1 4-4ZM5 19c0-2 1-4 3-5",
   clock: "M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z",
@@ -388,7 +390,8 @@ function formCover(c: Colors, p: PostSlide, total: number): Block {
   const title = p.title ?? "";
   let size = fit(title, W, 100);
   let lines = wrap(title, size, W, 3);
-  const budget = CONTENT_H() - 200;
+  // Naslov ne smije pojesti svu visinu — lead i najave dolaze ispod.
+  const budget = CONTENT_H() - (p.lead ? 420 : 300);
   while (lines.length * size * 1.08 > budget && size > 52) {
     size -= 6;
     lines = wrap(title, size, W, 3);
@@ -413,15 +416,70 @@ function formCover(c: Colors, p: PostSlide, total: number): Block {
   svg += `<rect x="0" y="${h}" width="120" height="8" fill="${c.accent}"/>`;
   h += 8;
 
-  // "šta je unutra" — do tri najave, bez brojeva
-  const parts: string[] = Array.isArray(p.items) ? p.items.slice(0, 3) : [];
-  const inside = parts.length ? parts.join("   ·   ") : (p.subtitle ?? "");
-  if (inside) {
+  // PODNASLOV / LEAD — recenica koja objasnjava naslov.
+  //
+  // Prije je cover imao samo naslov + jednu kratku liniju najava. To je za
+  // karusel premalo: prvi slajd mora sam reci o cemu je i zasto da gledas
+  // dalje. Zato lead dobija 2–3 reda, sa akcenat-trakom lijevo.
+  const lead = p.lead ?? "";
+  if (lead) {
+    h += 46;
+    const lfs = SIZE_H >= 1300 ? 32 : 30;
+    // wrap() TIHO ODBACUJE rijeci preko maxLines. Lead ima 3 recenice, pa se
+    // mora provjeriti da su SVE rijeci usle — inace recenica ostane napola.
+    // Zato se font smanjuje dok cijeli lead ne stane.
+    let lfsX = lfs;
+    let ll = wrap(lead, lfsX, W - 30, 4);
+    const leadWords = lead.trim().split(/s+/).length;
+    while (lfsX > 20 && ll.join(" ").trim().split(/s+/).length < leadWords) {
+      lfsX -= 2;
+      ll = wrap(lead, lfsX, W - 30, 6);
+    }
+    svg += `<rect x="0" y="${h}" width="6" height="${ll.length * (lfsX + 16)}" fill="${c.accent}"/>`;
+    ll.forEach((l: string, li: number) => {
+      svg += `<text x="30" y="${h + lfsX * 0.86 + li * (lfsX + 16)}" font-family="${FONT}"
+        font-size="${lfs}" font-weight="500" fill="${c.soft}">${esc(l)}</text>`;
+    });
+    h += (ll.length - 1) * (lfsX + 16) + lfsX;
+  }
+
+  // NAJAVE — najvise 3, sa IKONOM. Ikona se stavlja lijevo od teksta i
+  // poravnava se sa prvim redom; svaka najava je svoj mali blok, ne
+  // razbijena recenica sa tackama izmedju (to se nije dalo citati).
+  const parts: any[] = Array.isArray(p.items) ? p.items.slice(0, 3) : [];
+  if (parts.length) {
+    h += 48;
+    const IC = SIZE_H >= 1300 ? 40 : 36;
+    const pfs = SIZE_H >= 1300 ? 29 : 27;
+    const rowH = SIZE_H >= 1300 ? 56 : 50;
+    parts.forEach((it: any, pi: number) => {
+      const isObj = typeof it === "object" && it !== null;
+      const label = isObj ? (it.label ?? "") : String(it);
+      const icon = isObj ? (it.icon ?? "") : "";
+      const ry = h + pi * rowH;
+      const baseline = ry + pfs * 0.82;
+      if (icon && PX_ICONS[icon]) {
+        svg += pxIcon(icon, 0, baseline - IC * 0.80, c.accent, IC);
+      } else {
+        svg += `<rect x="0" y="${(baseline - pfs * 0.3).toFixed(1)}" width="22" height="6" fill="${c.accent}"/>`;
+      }
+      // wrap sa maxLines=1 TIHO odbacuje ostatak — label mora stati cijeli.
+      let tl2 = wrap(label, pfs, W - IC - 26, 1);
+      let pfsX = pfs;
+      while (pfsX > 18 && (tl2.join(" ").trim().split(/s+/).length < label.trim().split(/s+/).length)) {
+        pfsX -= 1;
+        tl2 = wrap(label, pfsX, W - IC - 26, 1);
+      }
+      svg += `<text x="${IC + 26}" y="${baseline}" font-family="${FONT}" font-size="${pfsX}"
+        font-weight="700" letter-spacing="-0.5" fill="${c.ink}">${esc(tl2[0] ?? label)}</text>`;
+    });
+    h += (parts.length - 1) * rowH + pfs;
+  } else if (p.subtitle) {
     h += 54;
-    const fs2 = fit(inside, W, 36, 28);
-    const jl = wrap(inside, fs2, W, 2);
-    jl.forEach((l, i) => {
-      svg += `<text x="0" y="${h + fs2 * 0.8 + i * (fs2 + 14)}" font-family="${FONT}"
+    const fs2 = fit(p.subtitle, W, 36, 28);
+    const jl = wrap(p.subtitle, fs2, W, 2);
+    jl.forEach((l: string, li: number) => {
+      svg += `<text x="0" y="${h + fs2 * 0.8 + li * (fs2 + 14)}" font-family="${FONT}"
         font-size="${fs2}" font-weight="600" fill="${c.soft}">${esc(l)}</text>`;
     });
     h += jl.length * (fs2 + 14);
@@ -582,14 +640,27 @@ function formFigure(c: Colors, p: PostSlide): Block {
   // Biljeska ispod naslova: 2 reda u 1:1, 3 u 3:4. Tanke akcenat-linije
   // lijevo drze blok na okupu i odvajaju ga od fotografije.
   if (p.valueNote) {
+    // BILJESKA NE SMIJE IZGUBITI RIJECI.
+    //
+    // `wrap()` prihvata `maxLines` i TIHO odbacuje sve preko toga. Prije je
+    // MAXN bio 3 (3:4) / 2 (1:1), a font se smanjivao samo do 26px — dugacka
+    // biljeska na p04 se zato odsjekla na pola recenice ("Tek kad je vidite
+    // gotovu" i nista dalje).
+    //
+    // Sada: 6 redova u 3:4 / 5 u 1:1, font klizi do 20px, i provjera ide na
+    // BROJ RIJECI (ne samo `whole`) — jer `whole` gleda da li su sve rijeci iz
+    // PRVOG reda prisutne, ne iz cijelog teksta.
     const noteFS = tall ? 33 : 30;
-    const MAXN = tall ? 3 : 2;
-    let nl = wrap(p.valueNote, noteFS, W - 30, MAXN);
-    // Ako se ne stane, smanji font — ali nikad ispod 26px.
+    const MAXN = tall ? 6 : 5;
+    const allNoteWords = p.valueNote.trim().split(/\s+/).length;
     let nfs = noteFS;
-    while (nfs > 26 && !whole(nl)) {
+    let nl = wrap(p.valueNote, nfs, W - 30, MAXN);
+    while (
+      nfs > 20 &&
+      nl.join(" ").trim().split(/\s+/).length < allNoteWords
+    ) {
       nfs -= 2;
-      nl = wrap(p.valueNote, nfs, W - 30, MAXN + 1);
+      nl = wrap(p.valueNote, nfs, W - 30, MAXN);
     }
     h += tall ? 48 : 44;
     svg += `<rect x="0" y="${h - 6}" width="5" height="${nl.length * (nfs + 20)}" fill="${onTeal ? "#0A0A0A" : c.accent}"/>`;
@@ -605,7 +676,7 @@ function formFigure(c: Colors, p: PostSlide): Block {
 
 function formBlocks(c: Colors, p: PostSlide): Block {
   // 5 stavki u 3:4 formatu — ima visine, a pet usluga je kompletna ponuda.
-  const items = (p.items ?? []).slice(0, SIZE_H >= 1300 ? 5 : 4);
+  const items = (p.items ?? []).slice(0, SIZE_H >= 1300 ? 4 : 3);
   const ts = fit(p.title ?? "", W, 60);
   const tl = wrap(p.title ?? "", ts, W, 2);
 
@@ -630,25 +701,63 @@ function formBlocks(c: Colors, p: PostSlide): Block {
   // Redovi smiju narasti do 150px — u 3:4 formatu ima 1010px zone, a prije su
   // bili zakljucani na 104px pa je lista zauzimala 416px i ostajalo je 273px
   // praznog iznad naslova (blok je bio centriran u praznini).
-  const rowH = Math.max(64, Math.min(SIZE_H >= 1300 ? 150 : 104, avail / n));
+  const rowH = Math.max(64, Math.min(SIZE_H >= 1300 ? 200 : 140, avail / n));
   const fs = SIZE_H >= 1300 ? (n >= 4 ? 38 : 44) : n >= 4 ? 34 : 38;
 
   // Preostala visina za liste: ako je raspoloziv prostor manji od punog CONTENT_H()
   // (photoTop/photoBot), redovi se pakuju u ono sto stvarno ima.
   y += Math.max(18, Math.min(28, (avail - rowH * n) * 0.28));
-  items.forEach((it, i) => {
+  // IKONE U LISTI.
+  //
+  // Stavka moze biti string ("UI/UX dizajn") ili objekat
+  // ({ icon, label, note }) kad zelimo ikonu i objasnjenje. Bez ikona lista
+  // izgleda kao obican tekst; ikona lijevo od stavke je ono sto oko prvo
+  // uhvati i po cemu se stavke razlikuju medjusobno.
+  //
+  // Raspored: [ikona 44px] [label bold] / [note sivo ispod, u istom redu].
+  // Note NE ide u novi red sa ikonom — ostaje uvučen pod label, da se lista
+  // cita kao jedna cjelina, a ne kao dva stupca.
+  const hasIcons = items.some((it: any) => typeof it === "object" && it !== null);
+  const iconCol = hasIcons ? (SIZE_H >= 1300 ? 66 : 58) : 0;
+  const IC = SIZE_H >= 1300 ? 44 : 38;
+
+  items.forEach((it: any, i: number) => {
     const ry = y + i * rowH;
-    const lines = wrap(it, fs, W - 58, 2);
-    // tekst se vertikalno centrira u svom redu — crtica se poravnava s PRVIM redom teksta
-    const blockH = (lines.length - 1) * (fs + 8) + fs;
+    const isObj = typeof it === "object" && it !== null;
+    const label = isObj ? (it.label ?? "") : String(it);
+    const note = isObj ? (it.note ?? "") : "";
+    const icon = isObj ? (it.icon ?? "") : "";
+    const avail = W - 58 - iconCol;
+    const lines = wrap(label, fs, avail, 2);
+    const nfs = SIZE_H >= 1300 ? 25 : 23;
+    const nlines = note ? wrap(note, nfs, avail, 2) : [];
+    // ukupna visina bloka = label + (razmak + note)
+    const blockH =
+      (lines.length - 1) * (fs + 8) +
+      fs +
+      (nlines.length ? 12 + (nlines.length - 1) * (nfs + 6) + nfs : 0);
     const top = ry + (rowH - blockH) / 2;
     const baseline = top + fs * 0.78;
-    // crtica: debela, vizuelno teža od teksta → centrirana na sredinu malih slova
-    svg += `<rect x="0" y="${(baseline - fs * 0.30).toFixed(1)}" width="30" height="8"
-      rx="0" fill="${c.accent}"/>`;
-    lines.forEach((l, li) => {
-      svg += `<text x="58" y="${(baseline + li * (fs + 8)).toFixed(1)}" font-family="${FONT}"
+
+    if (icon && PX_ICONS[icon]) {
+      // ikona centrirana po VISINI LABELA (ne cijelog bloka) — inace bjezi
+      // prema dolje kad stavka ima note.
+      svg += pxIcon(icon, 0, baseline - IC * 0.78, c.accent, IC);
+    } else {
+      // crtica: debela, vizuelno teza od teksta → centrirana na mala slova
+      svg += `<rect x="0" y="${(baseline - fs * 0.30).toFixed(1)}" width="30" height="8"
+        rx="0" fill="${c.accent}"/>`;
+    }
+
+    lines.forEach((l: string, li: number) => {
+      svg += `<text x="${58 + iconCol}" y="${(baseline + li * (fs + 8)).toFixed(1)}" font-family="${FONT}"
         font-size="${fs}" font-weight="700" letter-spacing="-0.6" fill="${c.ink}">${esc(l)}</text>`;
+    });
+
+    // NOTE — sivo, ispod labela, uvučeno da ne izgleda kao nova stavka.
+    nlines.forEach((l: string, li: number) => {
+      svg += `<text x="${58 + iconCol}" y="${(baseline + fs * 0.30 + 12 + nfs * 0.82 + li * (nfs + 6)).toFixed(1)}"
+        font-family="${FONT}" font-size="${nfs}" font-weight="500" fill="${c.soft}">${esc(l)}</text>`;
     });
   });
   y += rowH * n;
@@ -675,28 +784,51 @@ function formDuo(c: Colors, p: PostSlide): Block {
   const gap = 14;
   const bw = (W - gap) / 2;
   const rows = Math.max(left.length, right.length);
-  const bh = 68 + rows * 58;
+  // Red je visi: 78px (bio 58) jer stavka sad ima label + note u dva reda.
+  const rowH = SIZE_H >= 1300 ? 82 : 70;
+  const bh = 76 + rows * rowH;
 
+  // LIJEVO — PRIJE. Namjerno prigušeno: sivo na tamnom, bez akcenta.
   svg += `<rect x="0" y="${top}" width="${bw}" height="${bh}" fill="${c.card}" stroke="${c.line}" stroke-width="1.5"/>`;
-  svg += `<text x="22" y="${top + 38}" font-family="${FONT}" font-size="26" font-weight="900"
+  svg += `<text x="22" y="${top + 40}" font-family="${FONT}" font-size="26" font-weight="900"
     letter-spacing="2.2" fill="${c.soft}">PRIJE</text>`;
-  left.forEach((it, i) => {
-    const y = top + 86 + i * 58;
-    svg += `<text x="22" y="${y}" font-family="${FONT}" font-size="26" font-weight="900" fill="${c.soft}">&#10005;</text>`;
-    svg += `<text x="52" y="${y}" font-family="${FONT}" font-size="26" font-weight="600" fill="${c.ink}">${esc(
-      wrap(it, 26, bw - 76, 1)[0] ?? it,
-    )}</text>`;
+
+  const drawRow = (item: any, x: number, y: number, colW: number, ok: boolean) => {
+    const isObj = typeof item === "object" && item !== null;
+    const label = isObj ? (item.label ?? "") : String(item);
+    const note = isObj ? (item.note ?? "") : "";
+    const ink = ok ? c.accentInk : c.ink;
+    const sub = ok ? c.accentInk : c.soft;
+    const lfs = SIZE_H >= 1300 ? 27 : 25;
+    const nfs = SIZE_H >= 1300 ? 21 : 20;
+    // Znak X / kvacica je ikona, ne slovo — poravnata sa labelom.
+    const mark = ok ? "check" : "x";
+    if (PX_ICONS[mark]) {
+      svg += pxIcon(mark, x + 22, y - lfs * 0.78, ok ? ink : sub, ok ? 26 : 22);
+    }
+    const textX = x + 60;
+    const tw = colW - 78;
+    svg += `<text x="${textX}" y="${y}" font-family="${FONT}" font-size="${lfs}" font-weight="${ok ? 700 : 600}"
+      fill="${ink}">${esc(wrap(label, lfs, tw, 1)[0] ?? label)}</text>`;
+    if (note) {
+      // NOTE ide ISPOD labela, manjim slovima — objasnjava ZASTO je bolje.
+      // Bez note-a "50% predujma" i "0 KM predujma" su samo dvije brojke.
+      const nl = wrap(note, nfs, tw, 1);
+      svg += `<text x="${textX}" y="${y + nfs + 12}" font-family="${FONT}" font-size="${nfs}"
+        font-weight="500" fill="${sub}" opacity="0.85">${esc(nl[0] ?? note)}</text>`;
+    }
+  };
+
+  left.forEach((it: any, ri: number) => {
+    drawRow(it, 0, top + 86 + ri * rowH, bw, false);
   });
 
+  // DESNO — POSLIJE. Akcentna ploha: ovo je odgovor koji ostaje u glavi.
   svg += `<rect x="${bw + gap}" y="${top}" width="${bw}" height="${bh}" fill="${c.accent}"/>`;
-  svg += `<text x="${bw + gap + 22}" y="${top + 38}" font-family="${FONT}" font-size="26"
+  svg += `<text x="${bw + gap + 22}" y="${top + 40}" font-family="${FONT}" font-size="26"
     font-weight="900" letter-spacing="2.2" fill="${c.accentInk}">POSLIJE</text>`;
-  right.forEach((it, i) => {
-    const y = top + 78 + i * 54;
-    svg += `<text x="${bw + gap + 22}" y="${y}" font-family="${FONT}" font-size="26" font-weight="900" fill="${c.accentInk}">&#10003;</text>`;
-    svg += `<text x="${bw + gap + 52}" y="${y}" font-family="${FONT}" font-size="26" font-weight="700" fill="${c.accentInk}">${esc(
-      wrap(it, 26, bw - 76, 1)[0] ?? it,
-    )}</text>`;
+  right.forEach((it: any, ri: number) => {
+    drawRow(it, bw + gap, top + 86 + ri * rowH, bw, true);
   });
 
   return { svg, h: top + bh };
