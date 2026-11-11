@@ -32,3 +32,5 @@ v.mjs
 r.mjs
 s.mjs
 _*.cjs
+_tmp_render.*
+backups/s*.svg
