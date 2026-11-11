@@ -46,6 +46,42 @@ otvara. Korisnik klikne "Posalji" i vidi "Poruka je poslana".
 - stanja `sent` / `sending` / `sendError` umjesto `mailOpened`
 - uspjeh: "Poruka je poslana" + ponuda da pisu na mejl ako je hitno
 
+### SEO / MAIL — zavrsno stanje (korisnik potvrdio)
+
+**Google Search Console — ZAVRSENO.**
+Korisnik prvo poslao POGGRESNE sitemapove (`/cijene`,
+`/usluge/web-stranice` — to su HTML stranice, ne XML). Google vracao
+"Nije moguće dohvatiti". Nakon ispravke:
+
+```
+/sitemap.xml | Sitemap | Uspješno | 14 stranica
+```
+
+**Request indexing** uradjen prije toga za 6 kljucnih URL-ova.
+
+**Brevo DKIM — SVE `success`:**
+```
+brevo-code (TXT @)              success
+brevo1._domainkey (CNAME)       success -> b1.devlab-cc-cd.dkim.brevo.com
+brevo2._domainkey (CNAME)       success -> b2.devlab-cc-cd.dkim.brevo.com
+_dmarc (TXT)                    success
+send / r.send / img.send        success
+```
+Provjereno DNS-om uzivo — DKIM CNAME-ovi stvarno postoje.
+`POST /api/inquiry` -> `{"ok":true}`.
+
+**Google Business Profile — NAPRAVLJEN, BESPLATAN.**
+Korisnik mislio da se placa ("google business profil se placa zato necu
+raditi to") — **nije tacno**, GBP je 100% besplatan. Samo `Claim your
+€350 credit` je Google Ads (placeno) i to treba preskociti.
+Profil postoji, **u verifikaciji** ("may take up to five days").
+
+Needs: Edit profile (opis/kategorije/telefon/web), Add hours,
+Edit services (6), Photos (5+), Share review link.
+
+**Bing:** sitemap submitovan. "URL Submission" korisnik nije nasao —
+nije obavezan (limit 10/dan).
+
 ### SEO LIVE — verifikacija prosla + soft-404 fix
 
 Korisnik je dao tagove i potvrdio "proslo je oba".
