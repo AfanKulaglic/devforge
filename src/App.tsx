@@ -1241,7 +1241,7 @@ function Preloader() {
       <span className="preloader-panel preloader-panel-left" aria-hidden="true" />
       <span className="preloader-panel preloader-panel-right" aria-hidden="true" />
       <div className="preloader-inner">
-        <p className="preloader-logo">Dev Lab</p>
+        <p className="preloader-logo">DevLab</p>
         <div className="preloader-bar">
           <span className="preloader-bar-fill" style={{ width: `${progress}%` }} />
         </div>
