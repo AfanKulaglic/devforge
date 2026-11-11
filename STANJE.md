@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (p03: slika povecana)
+Zadnje ažurirano: 2026-11-10 (p03: DevLab logo, ikone, vise teksta)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,32 +12,42 @@ Zadnje ažurirano: 2026-11-10 (p03: slika povecana)
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### p03 ("150 KM") — SLIKA POVECANA I PODIGNUTA
-Korisnik: "podigni sliku prema gore da je rasiris, sada je previse mala".
+### p03 — logo, ikone, vise teksta
+Korisnik: "DevLab skupa treba pisati", "vise teksta", "ikone ako ima potrebe".
 
-U `photoBot` layoutu (postRender.ts):
+**1. Logo "DevLab"** — bio je vec jedna `<text>` sa dva `<tspan>`, ali su
+bili RAZLICITE boje na zelenoj ("Dev" bijel, "Lab" crn) pa je izgledalo
+kao dvije rijeci. Sada su OBA CRNA na zelenoj podlozi (`brandMark`).
 
-| | prije | sada |
-|---|---|---|
-| visina slike 3:4 | 38% | **46%** |
-| visina slike 1:1 | 38% | **42%** |
-| slika pocinje na y | ~1130 | **778** |
-| praznina tekst->slika | ~250px | **60px** |
+**2. Tri ikone** u `formFigure` — nova opcija `features` na objavi:
+`{ icon, label }[]`. Crta se jedan red ispod biljeske, bez kartica.
+Za p03: `clock` 5 dana / `monitor` Mobitel i PC / `shield` Bez rizika.
+Ikone i labele su CRNE na zelenoj (bile su bijele — nevidljive).
 
-**Centriranje:** dodat `blend = 60` — zona teksta se skracuje za blend
-posto se slika gore rastvara u zelenu preko gradijenta. Bez toga je tekst
-bio centriran previsoko i ostajalo je 250px prazne zelene.
+**3. Vise teksta:**
+- valueNote: "Sve je uključeno — dizajn, izrada, domena, hosting i
+  postavljanje. Nema sitnih slova ni doplata na kraju. Platite tek kad je
+  stranica gotova i kad vam se svidi; ako ne — ne plaćate ništa."
+- title: "...Plaćate tek kad je vidite gotovu." (dodano "gotovu")
 
-Rezultat: tekst zauzima ~55%, slika ~45%. Vision potvrdio da slika
-"feels large enough as a supporting image".
+**4. Slika 46% -> 36%** da tekst + ikone stanu iznad nje.
+
+### BUG popravljen: ikone padale na sliku
+`photoBot` je centrirao tekst u punu zonu, ne racunajuci 180px gradijent
+kojim se slika gore stapa u zelenu. Ikone su zavrsavale ISPOD stvarne ivice
+slike. Sada: `blend = 150`, a `y` se pomjera gore za `blend/2`.
+Rezultat: ikone zavrsavaju na 865, slika pocinje na 922 (57px cisto).
 
 ### Verifikacija
-- Oba formata: 0 objava van kadra, 0 console gresaka.
+- Vision potvrdio: logo "DevLab" citljiv, 3 crne ikone + crne labele.
+- 41 objava x 2 formata: 0 van kadra, 0 console gresaka.
 - tsc=0, build OK.
 
 ## Sljedeći korak
-- Pregledati p03 — slika 46% visine, tekst iznad nje.
-- Ako treba jos veca/manja slika: mijenjati 0.46 u photoBot.
+- Pregledati p03 — logo, ikone, tekst.
+- `features` se moze dodati na bilo koju cjenovnu objavu (p08, p09, p55,
+  p56) jednom linijom; ikone su iz PX_ICONS (clock, monitor, shield, bolt,
+  chat, coin, layers, tools, rocket, game, web, shop, app, ai, check).
 - Opciono: 4:5 format.
 
 ## Napomene / zamke
