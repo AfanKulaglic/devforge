@@ -163,11 +163,28 @@ export const POSTS_1: AdPost[] = [
     palette: "ink",
     eyebrow: "Naše usluge",
     title: "Četiri stvari koje radimo — i radimo ih dobro.",
+    subtitle: "Ne radimo sve. Radimo četiri stvari i svaku do kraja.",
     items: [
-      "Web stranice i shopovi",
-      "2D igrice za web i mobilne",
-      "Mobilne aplikacije iOS i Android",
-      "AI chat i recepcionar 24/7",
+      {
+        icon: "web",
+        label: "Web stranice i shopovi",
+        note: "Od predstavljanja do prodaje. Gotovo za 5 dana, od 150 KM.",
+      },
+      {
+        icon: "game",
+        label: "2D igrice za web i mobilne",
+        note: "Od jednostavnih do obrazovnih — po vašoj mjeri.",
+      },
+      {
+        icon: "app",
+        label: "Mobilne aplikacije",
+        note: "Jedan tim, obje platforme. Od ideje do trgovine.",
+      },
+      {
+        icon: "ai",
+        label: "AI chat i recepcionar 24/7",
+        note: "Prima pozive i bilježi narudžbe — bez vas.",
+      },
     ],
     caption:
       "🎯 Četiri stvari. Bez filozofije.\n\nRadimo četiri stvari — i svaku dobro.\n\n1. WEB STRANICE I SHOPOVI. Moderne, responzivne stranice koje predstavljaju Vaš brend. Od landing page-a do kompleksnih korporativnih stranica i shopova. Od 150 KM.\n\n2. 2D IGRICE. Engaging igrice za mobilne platforme i web. Od casual do educational — prilagođeno Vašim zahtjevima.\n\n3. MOBILNE APLIKACIJE. Native i cross-platform aplikacije za iOS i Android. Od MVP-a do potpune aplikacije s backend-om.\n\n4. AI SISTEMI. AI recepcionar i chat asistent koji primaju pozive 24/7, odgovaraju kupcima, zakazuju termine i bilježe narudžbe — bez Vašeg učešća.\n\nSve ostalo — ne radimo. Za velike enterprise sisteme preporučimo nekog drugog.",

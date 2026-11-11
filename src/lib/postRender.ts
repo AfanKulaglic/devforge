@@ -367,7 +367,9 @@ const CONTENT_TOP = () => 250;
 const CONTENT_BOTTOM = () => SIZE_H - M - 84;
 const CONTENT_H = () => CONTENT_BOTTOM() - CONTENT_TOP();
 /** Horizontalna sirina sadrzaja — ista za sve formate. */
-const W = SIZE - M * 2;
+const W = SIZE - 2 * M;
+/** Aktivna sirina sadrzaja — `photo` layout je privremeno smanjuje. */
+let W_MUT = W;
 const GAP_TOP = 176; // iznad ovoga ne smije ništa (logo je do ~130)
 
 /**
@@ -388,13 +390,13 @@ const GAP_TOP = 176; // iznad ovoga ne smije ništa (logo je do ~130)
  */
 function formCover(c: Colors, p: PostSlide, total: number): Block {
   const title = p.title ?? "";
-  let size = fit(title, W, 100);
-  let lines = wrap(title, size, W, 3);
+  let size = fit(title, W_MUT, 100);
+  let lines = wrap(title, size, W_MUT, 3);
   // Naslov ne smije pojesti svu visinu — lead i najave dolaze ispod.
   const budget = CONTENT_H() - (p.lead ? 420 : 300);
   while (lines.length * size * 1.08 > budget && size > 52) {
     size -= 6;
-    lines = wrap(title, size, W, 3);
+    lines = wrap(title, size, W_MUT, 3);
   }
   const lh = size * 1.08;
 
@@ -463,11 +465,11 @@ function formCover(c: Colors, p: PostSlide, total: number): Block {
     // mora provjeriti da su SVE rijeci usle — inace recenica ostane napola.
     // Zato se font smanjuje dok cijeli lead ne stane.
     let lfsX = lfs;
-    let ll = wrap(lead, lfsX, W - 30, 4);
+    let ll = wrap(lead, lfsX, W_MUT - 30, 4);
     const leadWords = lead.trim().split(/s+/).length;
     while (lfsX > 20 && ll.join(" ").trim().split(/s+/).length < leadWords) {
       lfsX -= 2;
-      ll = wrap(lead, lfsX, W - 30, 6);
+      ll = wrap(lead, lfsX, W_MUT - 30, 6);
     }
     svg += `<rect x="0" y="${h}" width="6" height="${ll.length * (lfsX + 16)}" fill="${c.accent}"/>`;
     ll.forEach((l: string, li: number) => {
@@ -498,11 +500,11 @@ function formCover(c: Colors, p: PostSlide, total: number): Block {
         svg += `<rect x="0" y="${(baseline - pfs * 0.3).toFixed(1)}" width="22" height="6" fill="${c.accent}"/>`;
       }
       // wrap sa maxLines=1 TIHO odbacuje ostatak — label mora stati cijeli.
-      let tl2 = wrap(label, pfs, W - IC - 26, 1);
+      let tl2 = wrap(label, pfs, W_MUT - IC - 26, 1);
       let pfsX = pfs;
       while (pfsX > 18 && (tl2.join(" ").trim().split(/s+/).length < label.trim().split(/s+/).length)) {
         pfsX -= 1;
-        tl2 = wrap(label, pfsX, W - IC - 26, 1);
+        tl2 = wrap(label, pfsX, W_MUT - IC - 26, 1);
       }
       svg += `<text x="${IC + 26}" y="${baseline}" font-family="${FONT}" font-size="${pfsX}"
         font-weight="700" letter-spacing="-0.5" fill="${c.ink}">${esc(tl2[0] ?? label)}</text>`;
@@ -510,8 +512,8 @@ function formCover(c: Colors, p: PostSlide, total: number): Block {
     h += (parts.length - 1) * rowH + pfs;
   } else if (p.subtitle) {
     h += 54;
-    const fs2 = fit(p.subtitle, W, 36, 28);
-    const jl = wrap(p.subtitle, fs2, W, 2);
+    const fs2 = fit(p.subtitle, W_MUT, 36, 28);
+    const jl = wrap(p.subtitle, fs2, W_MUT, 2);
     jl.forEach((l: string, li: number) => {
       svg += `<text x="0" y="${h + fs2 * 0.8 + li * (fs2 + 14)}" font-family="${FONT}"
         font-size="${fs2}" font-weight="600" fill="${c.soft}">${esc(l)}</text>`;
@@ -524,7 +526,7 @@ function formCover(c: Colors, p: PostSlide, total: number): Block {
 
 function formHero(c: Colors, p: PostSlide): Block {
   const title = p.title ?? "";
-  let size = fit(title, W, 116);
+  let size = fit(title, W_MUT, 116);
   // 4 reda u 3:4 formatu — ima visine za duze naslove (prije 3 reda su
   // odsjekla "sistem — sve na jednom mjestu" iz naslova).
   const MAXL = SIZE_H >= 1300 ? 4 : 3;
@@ -534,15 +536,15 @@ function formHero(c: Colors, p: PostSlide): Block {
   // jos smanjuje dok blok ne udje u budzet.
   const allWords = title.split(/\s+/).filter(Boolean).length;
   const fitsWhole = (ls: string[]) => ls.join(" ").split(/\s+/).filter(Boolean).length === allWords;
-  let lines = wrap(title, size, W, MAXL);
+  let lines = wrap(title, size, W_MUT, MAXL);
   while (size > 54 && (!fitsWhole(lines) || lines.length > MAXL)) {
     size -= 4;
-    lines = wrap(title, size, W, MAXL);
+    lines = wrap(title, size, W_MUT, MAXL);
   }
   const budget = p.subtitle ? CONTENT_H() - 230 : CONTENT_H() - 20;
   while (lines.length * size * 1.2 > budget && size > 54) {
     size -= 4;
-    lines = wrap(title, size, W, MAXL);
+    lines = wrap(title, size, W_MUT, MAXL);
   }
   const lh = size * 1.2;
 
@@ -600,8 +602,8 @@ function formHero(c: Colors, p: PostSlide): Block {
   let h = (lines.length - 1) * lh + size;
 
   if (p.subtitle) {
-    const ss = fit(p.subtitle, W - 40, 38);
-    const sl = wrap(p.subtitle, ss, W - 40, 3);
+    const ss = fit(p.subtitle, W_MUT - 40, 38);
+    const sl = wrap(p.subtitle, ss, W_MUT - 40, 3);
     h += 54;
     svg += `<rect x="0" y="${h}" width="5" height="${sl.length * (ss + 14)}" fill="${c.accent}"/>`;
     sl.forEach((l, i) => {
@@ -643,7 +645,7 @@ function formFigure(c: Colors, p: PostSlide): Block {
   const noteInk = onTeal ? "#0A0A0A" : c.soft;
   const val = p.value ?? "";
   const base = val.length <= 2 ? 260 : val.length <= 4 ? 210 : val.length <= 7 ? 150 : 112;
-  const vsize = Math.max(70, Math.min(fit(val, W, base), tall ? 280 : 250));
+  const vsize = Math.max(70, Math.min(fit(val, W_MUT, base), tall ? 280 : 250));
 
   let svg = `<text x="0" y="${vsize * 0.78}" font-family="${FONT}" font-size="${vsize}"
     font-weight="900" letter-spacing="${(-vsize * 0.03).toFixed(1)}" fill="${onTeal ? "#0A0A0A" : c.accent}">${esc(val)}</text>`;
@@ -651,14 +653,14 @@ function formFigure(c: Colors, p: PostSlide): Block {
 
   // Naslov: 3 reda u 1:1, 4 u 3:4. Prored 1.22 da se redovi ne slijube.
   const MAXT = tall ? 4 : 3;
-  let ts = fit(p.title ?? "", W, tall ? 60 : 54);
+  let ts = fit(p.title ?? "", W_MUT, tall ? 60 : 54);
   const titleText = p.title ?? "";
   const allW = titleText.split(/\s+/).filter(Boolean).length;
   const whole = (ls: string[]) => ls.join(" ").split(/\s+/).filter(Boolean).length === allW;
-  let tl = wrap(titleText, ts, W, MAXT);
+  let tl = wrap(titleText, ts, W_MUT, MAXT);
   while (ts > 34 && (!whole(tl) || tl.length > MAXT)) {
     ts -= 2;
-    tl = wrap(titleText, ts, W, MAXT);
+    tl = wrap(titleText, ts, W_MUT, MAXT);
   }
   // Prored 1.34 — bb visine slova je ~1.33*font, pa 1.24 nije dovoljno.
   const tlh = ts * 1.34;
@@ -688,13 +690,13 @@ function formFigure(c: Colors, p: PostSlide): Block {
     const MAXN = tall ? 6 : 5;
     const allNoteWords = p.valueNote.trim().split(/\s+/).length;
     let nfs = noteFS;
-    let nl = wrap(p.valueNote, nfs, W - 30, MAXN);
+    let nl = wrap(p.valueNote, nfs, W_MUT - 30, MAXN);
     while (
       nfs > 20 &&
       nl.join(" ").trim().split(/\s+/).length < allNoteWords
     ) {
       nfs -= 2;
-      nl = wrap(p.valueNote, nfs, W - 30, MAXN);
+      nl = wrap(p.valueNote, nfs, W_MUT - 30, MAXN);
     }
     h += tall ? 48 : 44;
     svg += `<rect x="0" y="${h - 6}" width="5" height="${nl.length * (nfs + 20)}" fill="${onTeal ? "#0A0A0A" : c.accent}"/>`;
@@ -711,8 +713,8 @@ function formFigure(c: Colors, p: PostSlide): Block {
 function formBlocks(c: Colors, p: PostSlide): Block {
   // 5 stavki u 3:4 formatu — ima visine, a pet usluga je kompletna ponuda.
   const items = (p.items ?? []).slice(0, SIZE_H >= 1300 ? 4 : 3);
-  const ts = fit(p.title ?? "", W, 60);
-  const tl = wrap(p.title ?? "", ts, W, 2);
+  const ts = fit(p.title ?? "", W_MUT, 60);
+  const tl = wrap(p.title ?? "", ts, W_MUT, 2);
 
   let svg = tl
     .map(
@@ -727,6 +729,29 @@ function formBlocks(c: Colors, p: PostSlide): Block {
   svg += `<rect x="0" y="${y}" width="96" height="7" fill="${c.accent}"/>`;
   y += 7;
 
+  // PODNASLOV — recenica koja objasnjava o cemu je lista.
+  //
+  // Bez njega lista od cetiri stavke je samo popis: covjek vidi "web, igrice,
+  // aplikacije, AI" i ne zna zasto bi to bilo bolje od bilo koga drugog.
+  // Podnaslov nosi poentu ("ne radimo sve, radimo cetiri stvari do kraja").
+  if (p.subtitle) {
+    const sfs = SIZE_H >= 1300 ? 29 : 27;
+    // wrap() odbacuje rijeci preko maxLines — provjeri da su SVE usle.
+    const sWords = p.subtitle.trim().split(/\s+/).length;
+    let sfsX = sfs;
+    let sl = wrap(p.subtitle, sfsX, W_MUT - 30, 3);
+    while (sfsX > 20 && sl.join(" ").trim().split(/\s+/).length < sWords) {
+      sfsX -= 2;
+      sl = wrap(p.subtitle, sfsX, W_MUT - 30, 5);
+    }
+    y += 34;
+    sl.forEach((l: string, li: number) => {
+      svg += `<text x="0" y="${y + sfsX * 0.82 + li * (sfsX + 12)}" font-family="${FONT}"
+        font-size="${sfsX}" font-weight="500" fill="${c.soft}">${esc(l)}</text>`;
+    });
+    y += (sl.length - 1) * (sfsX + 12) + sfsX;
+  }
+
   const n = items.length || 1;
   // Visina reda se racuna iz STVARNO raspolozivog prostora. `avail` je ogranicen
   // na preostali dio sadrzajne zone; buildFitting() će ga dodatno skalirati ako
@@ -735,7 +760,12 @@ function formBlocks(c: Colors, p: PostSlide): Block {
   // Redovi smiju narasti do 150px — u 3:4 formatu ima 1010px zone, a prije su
   // bili zakljucani na 104px pa je lista zauzimala 416px i ostajalo je 273px
   // praznog iznad naslova (blok je bio centriran u praznini).
-  const rowH = Math.max(64, Math.min(SIZE_H >= 1300 ? 200 : 140, avail / n));
+  // Minimalna visina reda mora pokriti NAJVECI sadrzaj stavke: ikona + label
+  // + biljeska. Prije je minimum bio 64px i `avail / n` je mogao spustiti red
+  // toliko da se labeli i biljeske preklope (p05 sa subtitleom).
+  // Biljeska sad smije imati 3 reda, pa je red visi: 156 -> 186 (3:4).
+  const minRow = SIZE_H >= 1300 ? 186 : 158;
+  const rowH = Math.max(minRow, Math.min(SIZE_H >= 1300 ? 240 : 180, avail / n));
   const fs = SIZE_H >= 1300 ? (n >= 4 ? 38 : 44) : n >= 4 ? 34 : 38;
 
   // Preostala visina za liste: ako je raspoloziv prostor manji od punog CONTENT_H()
@@ -766,10 +796,21 @@ function formBlocks(c: Colors, p: PostSlide): Block {
     const label = isObj ? (it.label ?? "") : String(it);
     const note = isObj ? (it.note ?? "") : "";
     const icon = isObj ? (it.icon ?? "") : "";
-    const avail = W - 58 - iconCol;
+    const avail = W_MUT - 58 - iconCol;
     const lines = wrap(label, fs, avail, 2);
-    const nfs = SIZE_H >= 1300 ? 25 : 23;
-    const nlines = note ? wrap(note, nfs, avail, 2) : [];
+    // BILJESKA NE SMIJE IZGUBITI RIJECI.
+    //
+    // `wrap()` sa maxLines TIHO odbacuje ostatak. Prije je limit bio 2 reda,
+    // pa su se biljeske na p05 odsijecale ("Od predstavljanja do prodaje.
+    // Gotovo za 5" — bez "radnih dana"). Sada se font smanjuje dok SVE rijeci
+    // ne stanu, a limit je 3 reda.
+    let nfs = SIZE_H >= 1300 ? 25 : 23;
+    const noteWords = note ? note.trim().split(/\s+/).length : 0;
+    let nlines = note ? wrap(note, nfs, avail, 3) : [];
+    while (nfs > 18 && note && nlines.join(" ").trim().split(/\s+/).length < noteWords) {
+      nfs -= 1;
+      nlines = wrap(note, nfs, avail, 4);
+    }
     // ukupna visina bloka = label + (razmak + note)
     const blockH =
       (lines.length - 1) * (fs + 8) +
@@ -798,9 +839,18 @@ function formBlocks(c: Colors, p: PostSlide): Block {
         font-size="${fs}" font-weight="700" letter-spacing="-0.6" fill="${c.ink}">${esc(l)}</text>`;
     });
 
-    // NOTE — sivo, ispod labela, uvučeno da ne izgleda kao nova stavka.
+    // BILJESKA POCINJE ISPOD CIJELOG LABELA, ne ispod prvog reda.
+    //
+    // Prije: y = baseline + fs * 0.30 + 12. Kad label ima DVA reda, drugi red
+    // je na baseline + (fs + 8), a biljeska na baseline + fs * 0.30 + 12 —
+    // dakle IZNAD drugog reda. Zato su se redovi preklapali na p05.
+    //
+    // Sada se racuna stvarna donja ivica zadnjeg reda labela i biljeska ide
+    // 14px ispod toga.
+    const lastLabelBottom = baseline + (lines.length - 1) * (fs + 8);
+    const noteTop = lastLabelBottom + 14;
     nlines.forEach((l: string, li: number) => {
-      svg += `<text x="${58 + iconCol}" y="${(baseline + fs * 0.30 + 12 + nfs * 0.82 + li * (nfs + 6)).toFixed(1)}"
+      svg += `<text x="${58 + iconCol}" y="${(noteTop + nfs * 0.82 + li * (nfs + 6)).toFixed(1)}"
         font-family="${FONT}" font-size="${nfs}" font-weight="500" fill="${c.soft}">${esc(l)}</text>`;
     });
   });
@@ -814,8 +864,8 @@ function formDuo(c: Colors, p: PostSlide): Block {
   const left = items.slice(0, half);
   const right = items.slice(half);
 
-  const ts = fit(p.title ?? "", W, 54);
-  const tl = wrap(p.title ?? "", ts, W, 2);
+  const ts = fit(p.title ?? "", W_MUT, 54);
+  const tl = wrap(p.title ?? "", ts, W_MUT, 2);
   let svg = tl
     .map(
       (l, i) =>
@@ -894,11 +944,11 @@ function formDuo(c: Colors, p: PostSlide): Block {
 
 /** ACTION — poziv. Naslov govori šta se dešava, dugme šta kliknuti. */
 function formAction(c: Colors, p: PostSlide): Block {
-  let ts = fit(p.title ?? "", W, 82);
-  let tl = wrap(p.title ?? "", ts, W, 3);
+  let ts = fit(p.title ?? "", W_MUT, 82);
+  let tl = wrap(p.title ?? "", ts, W_MUT, 3);
   while (tl.length * ts * 1.08 > CONTENT_H() - 230 && ts > 46) {
     ts -= 6;
-    tl = wrap(p.title ?? "", ts, W, 3);
+    tl = wrap(p.title ?? "", ts, W_MUT, 3);
   }
   const lh = ts * 1.08;
 
@@ -913,7 +963,7 @@ function formAction(c: Colors, p: PostSlide): Block {
 
   if (p.subtitle) {
     h += 46;
-    wrap(p.subtitle, 32, W, 2).forEach((l, i) => {
+    wrap(p.subtitle, 32, W_MUT, 2).forEach((l, i) => {
       svg += `<text x="0" y="${h + 10 + i * 42}" font-family="${FONT}" font-size="32"
         font-weight="600" fill="${c.soft}">${esc(l)}</text>`;
       h += 42;
@@ -922,8 +972,8 @@ function formAction(c: Colors, p: PostSlide): Block {
 
   const bh = 116;
   h += 44;
-  svg += `<rect x="0" y="${h}" width="${W}" height="${bh}" fill="${c.accent}"/>`;
-  svg += `<text x="${W / 2}" y="${h + bh / 2 + 15}" text-anchor="middle" font-family="${FONT}"
+  svg += `<rect x="0" y="${h}" width="${W_MUT}" height="${bh}" fill="${c.accent}"/>`;
+  svg += `<text x="${W_MUT / 2}" y="${h + bh / 2 + 15}" text-anchor="middle" font-family="${FONT}"
     font-size="40" font-weight="900" letter-spacing="0.8" fill="${c.accentInk}">JAVITE NAM SE U DM</text>`;
 
   return { svg, h: h + bh };
@@ -937,6 +987,25 @@ function build(c: Colors, p: PostSlide, total = 1): Block {
   if (t === "compare") return formDuo(c, p);
   if (t === "cta") return formAction(c, p);
   return formHero(c, p);
+}
+
+// TEXT ZONA ZA LAYOUT SA SLIKOM DESNO.
+//
+// `W_MUT` je konstanta (944) i sve forme racunaju sirinu iz nje. Za `photo`
+// layout tekst mora stati u uzu zonu (bez desne trecine gdje je slika),
+// ali ne zelimo da svaka forma dobije novi parametar sirine.
+//
+// Zato: `W_MUT` se privremeno smanji, forma se izgradi, pa se vrati. Forme
+// citaju `W` pri izgradnji, pa ovo radi bez ijedne izmjene u njima.
+// `try/finally` garantuje vracanje i ako forma baci gresku.
+function buildNarrow(c: Colors, p: PostSlide, total: number, width: number): Block {
+  const prev = W_MUT;
+  W_MUT = width;
+  try {
+    return build(c, p, total);
+  } finally {
+    W_MUT = prev;
+  }
 }
 
 function buildFitting(c: Colors, p: PostSlide, maxH: number, total = 1): Block {
@@ -1400,11 +1469,22 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide, total: number) => stri
   photo: (c, p, total) => {
     const ph = p.photo ?? "hero";
     const imgW = 330;
-    const b = build(c, p, total);
+    // TEKST NE SMIJE PRECI NA SLIKU.
+    //
+    // Prije je `build()` radio sa punom sirinom W (944px), pa su dugacke
+    // stavke ulazile u desnu zonu gdje je fotografija — tekst je doslovno
+    // nestajao preko slike. Zona se sada racuna od stvarne lijeve ivice
+    // slike minus razmak za fade, i tekst se tu skracuje (`buildNarrow`).
+    //
+    // 70px je sirina `fadeRight` gradijenta: do te ivice tekst smije ici,
+    // dalje ga pocinje prekrivati tama prema fotografiji.
+    const fadeW = 70;
+    const textW = SIZE - imgW - fadeW - M - 34;
+    const b = buildNarrow(c, p, total, textW);
     const y = CONTENT_TOP() + Math.max(0, (CONTENT_H() - b.h) / 2);
     return `<image href="${PHOTOS[ph]}" x="${SIZE - imgW}" y="0" width="${imgW}" height="${SIZE_H}"
         preserveAspectRatio="xMidYMid slice" aria-label="${esc(PHOTO_ALT[ph])}"/>
-      <rect x="${SIZE - imgW - 80}" y="0" width="80" height="${SIZE_H}" fill="url(#fadeRight)"/>
+      <rect x="${SIZE - imgW - fadeW}" y="0" width="${fadeW}" height="${SIZE_H}" fill="url(#fadeRight)"/>
       <g transform="translate(${M}, ${y})">${b.svg}</g>`;
   },
 
@@ -1506,10 +1586,10 @@ export function renderSlideSvg(
   const isCover = (slide.template ?? post.template) === "cover" && slideTotal > 1;
   // POLJA SA NIVOA OBJAVE MORAJU DOCI NA SLIDE.
   //
-  // PLACE[layout] prima , a ne . Ako polje postoji samo na objavi
-  // (npr.  za cjenovne objave), layout ga ne vidi — lista se tiho
+  // PLACE[layout] prima `slide`, a ne `post`. Ako polje postoji samo na objavi
+  // (npr. `includes` za cjenovne objave), layout ga ne vidi — lista se tiho
   // ne nacrta. Zato se ovdje spaja: sta god nedostaje na slideu uzima se s
-  // objave. Isto vazi za , , , .
+  // objave. Isto vazi za `title`, `subtitle`, `value`, `valueNote`, `items`.
   const merged: PostSlide = {
     ...slide,
     title: slide.title ?? post.title,
