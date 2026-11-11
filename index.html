@@ -8,21 +8,22 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Dev Lab" />
-    <meta name="application-name" content="Dev Lab" />
+    <meta name="apple-mobile-web-app-title" content="DevLab" />
+    <meta name="application-name" content="DevLab" />
     <meta name="format-detection" content="telephone=no" />
 
     <!-- Primarni SEO -->
-    <title>Izrada web stranica Sarajevo od 150 KM | Web shopovi i aplikacije — Dev Lab</title>
+    <title>Izrada web stranica Sarajevo od 150 KM | Web shopovi i aplikacije — DevLab</title>
     <meta name="description" content="Izrada web stranica u Sarajevu od 150 KM, web shopova od 600 KM, mobilnih aplikacija i 2D igara. Gotova verzija za 5 dana, bez predujma — plaćate tek kad ste zadovoljni. Admin panel uključen." />
-    <meta name="keywords" content="izrada web stranica sarajevo, web stranice cijena, izrada sajta sarajevo, web shop izrada bih, izrada webshopa cijena, e-commerce bosna, mobilne aplikacije izrada, izrada android aplikacija, izrada ios aplikacija, 2d igre izrada, web dizajn sarajevo, web development bih, izrada sajta bez predujma, admin panel cms, ai recepcionar, ai chat asistent, izrada ai sistema, ai automatizacija bih, glasovni asistent, devlab" />
-    <meta name="author" content="Dev Lab" />
-    <meta name="publisher" content="Dev Lab" />
+    <meta name="keywords" content="izrada web stranica Sarajevo, izrada sajta Sarajevo, web shop izrada BiH, izrada aplikacija Sarajevo, DevLab" />
+    <meta name="author" content="DevLab" />
+    <meta name="publisher" content="DevLab" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="googlebot" content="index, follow" />
     <link rel="canonical" href="https://devlab.cc.cd/" />
 
     <!-- Hreflang: jezici i regije (jedna verzija sajta, ali eksplicitno za pretraživače) -->
+    <link rel="alternate" hreflang="bs" href="https://devlab.cc.cd/" />
     <link rel="alternate" hreflang="bs-BA" href="https://devlab.cc.cd/" />
     <link rel="alternate" hreflang="hr-HR" href="https://devlab.cc.cd/" />
     <link rel="alternate" hreflang="sr-RS" href="https://devlab.cc.cd/" />
@@ -51,21 +52,21 @@
     <link rel="dns-prefetch" href="https://images.pexels.com" />
     <link rel="preconnect" href="https://images.pexels.com" crossorigin />
 
-    <!-- LCP optimizacija: hero slika se učitava odmah (najveći element na stranici) -->
-    <link rel="preload" as="image" href="/og-image.png" fetchpriority="high" />
-
-    <!-- Resource hints: OG slika za drustvene mreze -->
-    <link rel="prefetch" href="/og-image.png" as="image" />
+    <!-- LCP: NE preloaduj og-image (to je slika za drustvene mreze, nije
+         hero). Hero je CSS pozadina, pa ga preload ne bi ni nasao. -->
 
     <!-- Open Graph (Facebook, LinkedIn, Viber, WhatsApp) -->
-    <meta property="og:title" content="Dev Lab — Web stranice, shopovi i aplikacije | Sarajevo, BiH" />
+    <meta property="og:title" content="DevLab — Web stranice, shopovi i aplikacije | Sarajevo, BiH" />
     <meta property="og:description" content="Web stranice od 150 KM, web shopovi od 600 KM, mobilne aplikacije, 2D igre i AI sistemi. Gotova verzija za 5 dana — plaćate tek kad ste zadovoljni." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://devlab.cc.cd/" />
     <meta property="og:image" content="https://devlab.cc.cd/og-image.png" />
-    <meta property="og:image:alt" content="Dev Lab — izrada web stranica, shopova, aplikacija i igara" />
+    <meta property="og:image:secure_url" content="https://devlab.cc.cd/og-image.png" />
+    <meta property="og:image:alt" content="DevLab — izrada web stranica, shopova, aplikacija i igara" />
     <meta property="og:locale" content="bs_BA" />
-    <meta property="og:site_name" content="Dev Lab" />
+    <meta property="og:locale:alternate" content="hr_HR" />
+    <meta property="og:locale:alternate" content="sr_RS" />
+    <meta property="og:site_name" content="DevLab" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:type" content="image/png" />
@@ -74,12 +75,10 @@
 
     <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Dev Lab — Web stranice, shopovi i aplikacije" />
+    <meta name="twitter:title" content="DevLab — Web stranice, shopovi i aplikacije" />
     <meta name="twitter:description" content="Web stranice od 150 KM, web shopovi od 600 KM, mobilne aplikacije, 2D igre i AI sistemi. Gotova verzija za 5 dana — plaćate tek kad ste zadovoljni." />
     <meta name="twitter:image" content="https://devlab.cc.cd/og-image.png" />
-    <meta name="twitter:image:alt" content="Dev Lab — digitalna agencija iz Sarajeva" />
-    <meta name="twitter:site" content="@devlab" />
-    <meta name="twitter:creator" content="@devlab" />
+    <meta name="twitter:image:alt" content="DevLab — digitalna agencija iz Sarajeva" />
 
     <!-- Structured data: agencija (LocalBusiness/ProfessionalService) + ponuda usluga -->
     <script type="application/ld+json">
@@ -87,19 +86,31 @@
         "@context": "https://schema.org",
         "@type": "ProfessionalService",
         "@id": "https://devlab.cc.cd/#organization",
-        "name": "Dev Lab",
-        "alternateName": "Dev Lab Digital Solutions",
+        "name": "DevLab",
+        "alternateName": ["DevLab Digital Solutions", "DevLab Sarajevo", "Dev Lab"],
         "url": "https://devlab.cc.cd/",
         "logo": "https://devlab.cc.cd/images/logo-icon.png",
         "image": "https://devlab.cc.cd/og-image.png",
-        "description": "Dev Lab je digitalna agencija iz Sarajeva specijalizovana za izradu web stranica, e-commerce shopova, mobilnih aplikacija i 2D igara. Gotova verzija za 5 dana, bez predujma — plaćate tek kad ste zadovoljni.",
+        "description": "DevLab je digitalna agencija iz Sarajeva specijalizovana za izradu web stranica, e-commerce shopova, mobilnih aplikacija i 2D igara. Gotova verzija za 5 dana, bez predujma — plaćate tek kad ste zadovoljni.",
         "slogan": "Plaćate tek kad ste zadovoljni — bez predujma.",
         "address": {
           "@type": "PostalAddress",
+          "streetAddress": "Maršala Tita 28",
           "addressLocality": "Sarajevo",
+          "postalCode": "71000",
           "addressRegion": "Kanton Sarajevo",
           "addressCountry": "BA"
         },
+        "telephone": "+38762576456",
+        "contactPoint": [
+          {
+            "@type": "ContactPoint",
+            "telephone": "+38762576456",
+            "contactType": "sales",
+            "availableLanguage": ["bs", "hr", "sr"],
+            "areaServed": "BA"
+          }
+        ],
         "geo": {
           "@type": "GeoCoordinates",
           "latitude": 43.8563,
@@ -111,10 +122,28 @@
         "paymentAccepted": "Bankovni transfer",
         "foundingDate": "2023",
         "availableLanguage": ["bs", "hr", "sr"],
-        "areaServed": {
-          "@type": "Country",
-          "name": "Bosna i Hercegovina"
-        },
+        "areaServed": [
+          { "@type": "Country", "name": "Bosna i Hercegovina" },
+          { "@type": "City", "name": "Sarajevo" },
+          { "@type": "City", "name": "Tuzla" },
+          { "@type": "City", "name": "Zenica" },
+          { "@type": "City", "name": "Mostar" },
+          { "@type": "City", "name": "Banja Luka" },
+          { "@type": "City", "name": "Bihać" }
+        ],
+        "knowsAbout": [
+          "Izrada web stranica",
+          "Izrada web shopova",
+          "E-commerce",
+          "Mobilne aplikacije",
+          "React Native",
+          "Flutter",
+          "2D igre",
+          "AI chat asistent",
+          "AI telefonski recepcionar",
+          "SEO optimizacija",
+          "Web dizajn"
+        ],
         "openingHoursSpecification": [
           {
             "@type": "OpeningHoursSpecification",
@@ -164,13 +193,56 @@
       }
     </script>
 
+    <!-- Structured data: kako ide proces (HowTo rich result) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "name": "Kako dobiti web stranicu za 5 dana bez plaćanja unaprijed",
+        "description": "DevLab izrađuje besplatnu gotovu verziju vaše web stranice za 5 dana, a plaćate samo ako ste zadovoljni.",
+        "totalTime": "P5D",
+        "estimatedCost": {
+          "@type": "MonetaryAmount",
+          "currency": "BAM",
+          "value": "0"
+        },
+        "step": [
+          {
+            "@type": "HowToStep",
+            "position": 1,
+            "name": "Javite se",
+            "text": "Pošaljite nam poruku preko forme, Vibera, WhatsAppa ili Instagrama. Recite nam šta radite i šta vam treba.",
+            "url": "https://devlab.cc.cd/kontakt"
+          },
+          {
+            "@type": "HowToStep",
+            "position": 2,
+            "name": "Dogovaramo detalje",
+            "text": "U kratkom razgovoru definišemo strukturu stranice, sadržaj i funkcionalnosti. Bez ugovora i bez plaćanja."
+          },
+          {
+            "@type": "HowToStep",
+            "position": 3,
+            "name": "Dobijate gotovu verziju",
+            "text": "Za 5 radnih dana izrađujemo funkcionalnu verziju vaše web stranice na našoj domeni. Vidite tačno kako izgleda."
+          },
+          {
+            "@type": "HowToStep",
+            "position": 4,
+            "name": "Vi odlučujete",
+            "text": "Ako ste zadovoljni, plaćate tek tada i prebacujemo stranicu na vašu domenu. Ako niste, nema nikakve obaveze."
+          }
+        ]
+      }
+    </script>
+
     <!-- Structured data: web sajt -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "WebSite",
         "@id": "https://devlab.cc.cd/#website",
-        "name": "Dev Lab",
+        "name": "DevLab",
         "url": "https://devlab.cc.cd/",
         "inLanguage": "bs-BA",
         "publisher": { "@id": "https://devlab.cc.cd/#organization" }
@@ -321,7 +393,7 @@
         "@context": "https://schema.org",
         "@type": "CollectionPage",
         "@id": "https://devlab.cc.cd/projekti#page",
-        "name": "Projekti — Dev Lab portfolio",
+        "name": "Projekti — DevLab portfolio",
         "url": "https://devlab.cc.cd/projekti",
         "isPartOf": { "@id": "https://devlab.cc.cd/#website" },
         "about": { "@id": "https://devlab.cc.cd/#organization" },
@@ -333,9 +405,9 @@
     <div id="root"></div>
     <!-- Fallback za pretraživače/čitače bez JavaScripta (SPA se renderira JS-om) -->
     <noscript>
-      <h1>Izrada web stranica, web shopova, mobilnih aplikacija, 2D igara i AI sistema — Dev Lab Sarajevo</h1>
+      <h1>Izrada web stranica, web shopova, mobilnih aplikacija, 2D igara i AI sistema — DevLab Sarajevo</h1>
       <p>
-        Dev Lab je digitalna agencija iz Sarajeva. Izrađujemo web stranice od 150 KM,
+        DevLab je digitalna agencija iz Sarajeva. Izrađujemo web stranice od 150 KM,
         web shopove od 600 KM, mobilne aplikacije (Android i iOS), 2D igrice i AI sisteme po dogovoru.
         Gotova verzija za 5 dana, bez predujma — plaćate tek kad ste zadovoljni.
         Uz svaki projekat dobijate admin panel za samostalno uređivanje sadržaja.

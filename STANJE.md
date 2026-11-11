@@ -46,6 +46,70 @@ otvara. Korisnik klikne "Posalji" i vidi "Poruka je poslana".
 - stanja `sent` / `sending` / `sendError` umjesto `mailOpened`
 - uspjeh: "Poruka je poslana" + ponuda da pisu na mejl ako je hitno
 
+### SEO — stanje i sta je popravljeno
+
+Korisnik: "daj mi najbolji moguci seo da ljudi brzo cuju za mene".
+
+**Sto je VEC bilo dobro (ne diraj):**
+- Dinamicki SEO po ruti (`useEffect` oko linije 5490 u `App.tsx`):
+  `document.title`, description, og:*, canonical, robots, JSON-LD po ruti.
+- `index.html`: 7 JSON-LD blokova (ProfessionalService, HowTo, WebSite,
+  FAQPage, BreadcrumbList, Service graph, CollectionPage).
+- `robots.txt` sa AI crawlerima, `sitemap.xml`, `vercel.json` SPA rewrites.
+- Provjereno uzivo: sve rute vracaju **200** i imaju **svoj** title/h1.
+
+**POPRAVLJENO (9 stvari u `index.html`):**
+
+| # | problem | fix |
+|---|---|---|
+| 1 | `address` bez `streetAddress` — Google ne prikaze adresu ni mapu | dodan `Maršala Tita 28`, `postalCode 71000` |
+| 2 | nema `telephone` na organizaciji | dodan `+38762576456` + `contactPoint` |
+| 3 | `knowsAbout` prazan — slabije tematsko rangiranje | 11 oblasti (web, shop, React Native, AI…) |
+| 4 | `areaServed` samo drzava | + 6 gradova (Sarajevo, Tuzla, Zenica, Mostar, Banja Luka, Bihać) |
+| 5 | `preload as="image"` na og-image.png — **gubilo LCP** | maknut (og slika nije hero) |
+| 6 | `prefetch` og-image trosio bandwidth | maknut |
+| 7 | `twitter:site @devlab` vjerojatno pogresan racun | maknut |
+| 8 | `og:locale` bez alternative | + `hr_HR`, `sr_RS` |
+| 9 | `keywords` meta bila 20 termina (spam signal) | skracena na 5 |
+
+**DODANO:**
+- **HowTo schema** — koraci "kako dobiti sajt za 5 dana bez placanja".
+  Google ovo prikazuje kao listu u rezultatima.
+- **`public/llms.txt`** — NOVO. Standard za AI pretrage (ChatGPT,
+  Perplexity, Claude). Cijeli sajt opisan na jednom mjestu. AI citira
+  ovo umjesto da gleda 1.4 MB JS-a.
+- `alternateName`: `["DevLab Digital Solutions","DevLab Sarajevo","Dev Lab"]`
+- `hreflang="bs"` (bez regije) + postojeca 4.
+- `robots.txt`: `CCBot`, `Applebot-Extended` + pokazivac na llms.txt.
+- `og:image:secure_url` (WhatsApp ga trazi).
+
+**Sitemap:** regenerisan, 14 URL-ova, `lastmod` = danas.
+Provjereno da svih 14 ruta stvarno postoji.
+
+**BREAND:** `Dev Lab` -> `DevLab` na **44 mjesta** u `App.tsx`.
+Google i ljudi sada vide isto ime svuda.
+
+**Verifikacija:**
+| provjera | rezultat |
+|---|---|
+| JSON-LD | **7/7 validnih** |
+| schema tipova na stranici | ProfessionalService, HowTo, WebSite, FAQPage, BreadcrumbList, graph x2, CollectionPage |
+| `npx tsc --noEmit` | 0 |
+| `npm run build` | OK |
+
+**SEMANTICKI HTML je odlican**: 1 h1 po stranici, 3240 rijeci na pocetnoj,
+224 na kontaktu, 8-9 h2. Nema potrebe za SSR.
+
+### SLJEDECE ZA KORISNIKA (izvan koda — najveci efekat)
+
+1. **Google Business Profile** — google.com/business. Ovo je **#1** za
+   "izrada sajta sarajevo". Bez njega nema lokalne pretrage ni mape.
+2. **Google Search Console** — search.google.com/search-console.
+   Submit sitemap, pa pratiti upite. Nema verifikacijskog taga u
+   `index.html` — dodati kad korisnik da kod.
+3. **Recenzije na GBP** — 5+ recenzija diže lokalni ranking drasticno.
+4. **Bing Webmaster Tools** — submit sitemap (manji, ali besplatno).
+
 ### FOOTER FORMA I CTA — bili POTPUNO NEISPRAVNI
 
 Korisnik: "mora i u cta kod footera raditi kontakt forma ako ne radi".

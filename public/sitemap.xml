@@ -3,89 +3,89 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://devlab.cc.cd/</loc>
-    <lastmod>2025-11-08</lastmod>
+    <lastmod>2026-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
       <image:loc>https://devlab.cc.cd/og-image.png</image:loc>
-      <image:title>Dev Lab — izrada web stranica, shopova i aplikacija u Sarajevu</image:title>
+      <image:title>DevLab — izrada web stranica, shopova i aplikacija u Sarajevu</image:title>
     </image:image>
   </url>
   <url>
     <loc>https://devlab.cc.cd/usluge</loc>
-    <lastmod>2025-11-08</lastmod>
+    <lastmod>2026-11-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://devlab.cc.cd/usluge/web-stranice</loc>
-    <lastmod>2025-11-08</lastmod>
+    <lastmod>2026-11-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://devlab.cc.cd/usluge/2d-igrice</loc>
-    <lastmod>2025-11-08</lastmod>
+    <lastmod>2026-11-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://devlab.cc.cd/usluge/mobilne-aplikacije</loc>
-    <lastmod>2025-11-08</lastmod>
+    <lastmod>2026-11-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://devlab.cc.cd/usluge/ai-sistemi</loc>
-    <lastmod>2025-11-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://devlab.cc.cd/cijene</loc>
-    <lastmod>2025-11-08</lastmod>
+    <lastmod>2026-11-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://devlab.cc.cd/cijene</loc>
+    <lastmod>2026-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://devlab.cc.cd/o-nama</loc>
-    <lastmod>2025-11-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <lastmod>2026-11-11</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
   </url>
   <url>
     <loc>https://devlab.cc.cd/projekti</loc>
-    <lastmod>2025-11-08</lastmod>
+    <lastmod>2026-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://devlab.cc.cd/cesta-pitanja</loc>
-    <lastmod>2025-11-08</lastmod>
+    <lastmod>2026-11-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://devlab.cc.cd/kontakt</loc>
-    <lastmod>2025-11-08</lastmod>
+    <lastmod>2026-11-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://devlab.cc.cd/privatnost</loc>
-    <lastmod>2025-11-08</lastmod>
+    <lastmod>2026-11-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://devlab.cc.cd/uslovi</loc>
-    <lastmod>2025-11-08</lastmod>
+    <lastmod>2026-11-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://devlab.cc.cd/kolacici</loc>
-    <lastmod>2025-11-08</lastmod>
+    <lastmod>2026-11-11</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

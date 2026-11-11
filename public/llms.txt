@@ -1,0 +1,72 @@
+# DevLab — izrada web stranica, shopova i aplikacija
+
+> DevLab je digitalna agencija iz Sarajeva (Bosna i Hercegovina). Izrađujemo
+> web stranice od 150 KM, web shopove od 600 KM, mobilne aplikacije (Android i
+> iOS), 2D igre i AI sisteme. Gotovu i funkcionalnu verziju izrađujemo za 5
+> radnih dana bez plaćanja unaprijed — plaćate tek kad ste zadovoljni. Svaki
+> projekat uključuje admin panel pa sami mijenjate tekst, slike i cijene.
+
+Kontakt: kontakt@devlab.cc.cd · +387 62 576 456 · Maršala Tita 28, 71000 Sarajevo
+Web: https://devlab.cc.cd
+
+## Usluge i cijene
+
+- [Izrada web stranica](https://devlab.cc.cd/usluge/web-stranice): od 150 KM.
+  Responzivne, brze, sa admin panelom (CMS), SEO podešen, vlastita domena.
+  Rok: 5 dana za gotovu verziju.
+- [Izrada web shopova](https://devlab.cc.cd/cijene): od 600 KM. Korpora,
+  online plaćanje (Stripe / PayPal / kartice), upravljanje proizvodima i
+  zalihama, admin panel.
+- [Mobilne aplikacije](https://devlab.cc.cd/usluge/mobilne-aplikacije):
+  Android i iOS (React Native / Flutter), sa backendom i admin panelom.
+- [2D igre](https://devlab.cc.cd/usluge/2d-igrice): za web i mobilne uređaje,
+  sa admin panelom za nivoe i rezultate.
+- [AI sistemi](https://devlab.cc.cd/usluge/ai-sistemi): AI telefonski
+  recepcionar i AI chat asistent koji odgovaraju kupcima 24/7, zakazuju
+  termine i bilježe narudžbe.
+
+Sve cijene: https://devlab.cc.cd/cijene
+
+## Kako funkcioniše
+
+1. Javite se (forma, Viber, WhatsApp, Instagram).
+2. Definišemo strukturu i funkcionalnosti — bez ugovora, bez plaćanja.
+3. Za 5 radnih dana dobijate funkcionalnu gotovu verziju na našoj domeni.
+4. Ako ste zadovoljni, plaćate tek tada. Ako niste, nema obaveze.
+
+Nemamo predujam. Sav rizik je na nama.
+
+## Zašto DevLab
+
+- Nema plaćanja unaprijed — prvo vidite gotov proizvod.
+- Gotova verzija za 5 radnih dana.
+- Admin panel uz svaki projekat — mijenjate sadržaj sami, bez programera.
+- Kod i sva prava pripadaju vama nakon isporuke.
+- Izrada u Sarajevu, radimo za klijente u cijeloj Bosni i Hercegovini.
+
+## Česta pitanja
+
+- Da li je gotova verzija besplatna? Da, potpuno, bez obaveza.
+- Koliko traje? Web stranica 5 dana do gotove verzije, puna izrada 1–2
+  sedmice. Web shop 3–4 sedmice. Aplikacija 4–8 sedmica.
+- Ko je vlasnik koda? Vi, nakon isporuke i plaćanja.
+- Ima li skrivenih troškova? Ne. Hosting i domena se plaćaju direktno
+  provideru (50–100 KM godišnje), bez naše marže.
+
+Detalji: https://devlab.cc.cd/cesta-pitanja
+
+## Stranice
+
+- [Početna](https://devlab.cc.cd/)
+- [Usluge](https://devlab.cc.cd/usluge)
+- [Cijene](https://devlab.cc.cd/cijene)
+- [Projekti](https://devlab.cc.cd/projekti)
+- [O nama](https://devlab.cc.cd/o-nama)
+- [Česta pitanja](https://devlab.cc.cd/cesta-pitanja)
+- [Kontakt](https://devlab.cc.cd/kontakt)
+
+## Optional
+
+- Instagram: https://www.instagram.com/devlab.cc.cd
+- WhatsApp: https://wa.me/38762576456
+- LinkedIn: https://www.linkedin.com/company/devlab
