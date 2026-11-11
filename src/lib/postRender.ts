@@ -30,10 +30,13 @@ import { PHOTOS, PHOTO_ALT } from "./postPhotos";
 import { BRAND, BRAND_INK } from "./postBrand";
 
 /** Format objave. Instagram: 1:1 (feed) i 3:4 (novi visoki format). */
-export type PostFormat = "1:1" | "3:4";
+export type PostFormat = "1:1" | "3:4" | "16:9";
 export const FORMATS: Record<PostFormat, { w: number; h: number; label: string }> = {
   "1:1": { w: 1080, h: 1080, label: "1:1 · 1080×1080" },
   "3:4": { w: 1080, h: 1440, label: "3:4 · 1080×1440" },
+  // Facebook cover: 1640x856 je preporucena velicina, ali 1080x608 je isti
+  // odnos (1.91:1) i lakse se skalira. Koristi se SAMO za cover objavu.
+  "16:9": { w: 1200, h: 628, label: "16:9 · 1200×628 (FB cover)" },
 };
 
 /** Aktivni format — mijenja ga `setFormat()` prije rendera. */
@@ -301,7 +304,12 @@ function brandMark(x: number, y: number, devColor: string, forgeColor: string = 
         <stop offset="0" stop-color="${forgeColor}"/>
         <stop offset="1" stop-color="${forgeColor}"/>
       </linearGradient>
-    </defs>
+      <radialGradient id="coverGlow" cx="0.18" cy="0.5" r="0.75">
+    <stop offset="0" stop-color="#4DEAE0" stop-opacity="0.13"/>
+    <stop offset="0.55" stop-color="#4DEAE0" stop-opacity="0.03"/>
+    <stop offset="1" stop-color="#4DEAE0" stop-opacity="0"/>
+  </radialGradient>
+</defs>
     <rect x="${x}" y="${y}" width="${LOGO_BOX}" height="${LOGO_BOX}" rx="${LOGO_RADIUS}"
       fill="#0A0A0A" stroke="#FFFFFF" stroke-opacity="0.15" stroke-width="${LOGO_STROKE}"/>
     <image href="${DF_LOGO_DATA_URI}" x="${iconX}" y="${iconY}"
@@ -1512,9 +1520,91 @@ function premiumLayout(c: Colors, p: PostSlide): string {
 }
 
 // ── Pozicioniranje ────────────────────────────────────────────────────────
+// ── FACEBOOK COVER (16:9) ─────────────────────────────────────────────────
+//
+// Namenjen ISKLJUCIVO naslovnoj fotografiji za FB stranicu (1200x628).
+//
+// Zasto poseban layout: `premium` je gradjen za VISOKE formate (1080x1080 i
+// 1080x1440) i ima previse sekcija — u 16:9 se sve sto je ispod dugmadi
+// (kartice sa ikonama) odsjeklo van kadra. Cover je drugacija stvar: gleda se
+// 2 sekunde sa strane i mora reci TRI stvari — ko smo, sta radimo, koliko
+// kosta. Zato je horizontalan: wordmark lijevo, dokazi desno.
+//
+// Nema headera ni footera iz `header()` — sve sto treba stane u jedan kadar,
+// a FB profilna slika prekriva lijevi donji ugao, pa je taj ugao prazan.
+function coverLayout(c: Colors): string {
+  const M_C = 76;
+  const H = SIZE_H;
+  let svg = "";
+
+  // Pozadina: tamna baza + tirkizni sjaj s lijeve strane.
+  svg += `<rect x="0" y="0" width="${SIZE}" height="${H}" fill="${c.bg}"/>`;
+  svg += `<rect x="0" y="0" width="${SIZE}" height="${H}" fill="url(#coverGlow)"/>`;
+
+  // 1) WORDMARK gore lijevo — bez okvira oko logotipa (cover nije oglas).
+  const mark = brandMark(M_C, M_C - 18, "#FFFFFF", BRAND);
+  svg += mark.svg;
+
+  // 2) NASLOV — lijevo, tri reda, zadnji red u akcent boji.
+  const titleLines = [
+    "Web stranice. Shopovi.",
+    "Aplikacije. AI sistemi.",
+    "Za 5 dana.",
+  ];
+  // Naslov krece nize od logotipa, ali cijeli blok ostaje u gornjih ~75% visine:
+  // donji lijevi ugao (x<360, y>490) je REZERVISAN za FB profilnu sliku.
+  let ty = M_C + 86;
+  const tfs = 66;
+  titleLines.forEach((l, i) => {
+    const last = i === titleLines.length - 1;
+    svg += `<text x="${M_C}" y="${ty}" font-family="${FONT}" font-size="${tfs}"
+      font-weight="900" letter-spacing="-2.6" fill="${last ? BRAND : c.ink}">${esc(l)}</text>`;
+    ty += tfs * 1.16;
+  });
+
+  // 3) LEAD — jedna recenica ispod naslova, s vertikalnom trakom.
+  ty += 6;
+  // Kratko namjerno: mora stati u 2 reda da ne udje u zonu FB profilne slike.
+  const lead = "Iz Sarajeva, za firme iz cijele BiH. Prvo vidite — pa platite.";
+  const lfs = 27;
+  const ll = wrap(lead, lfs, 620, 2);
+  svg += `<rect x="${M_C}" y="${ty - 4}" width="5" height="${ll.length * (lfs + 12)}" fill="${BRAND}"/>`;
+  ll.forEach((l: string, i: number) => {
+    svg += `<text x="${M_C + 24}" y="${ty + lfs * 0.86 + i * (lfs + 12)}" font-family="${FONT}"
+      font-size="${lfs}" font-weight="500" fill="${c.soft}">${esc(l)}</text>`;
+  });
+
+  // 4) DOKAZI — desno, tri broja u stupcu. Ovo je ono sto cover prodaje.
+  const rx = SIZE - M_C;
+  const proof = [
+    { v: "0 KM", l: "unaprijed", i: "shield" },
+    { v: "5 dana", l: "gotova verzija", i: "clock" },
+    { v: "150 KM", l: "stranica od", i: "coin" },
+  ];
+  const pvfs = 52;
+  const pRow = 108;
+  let py = M_C + 96;
+  proof.forEach((pf) => {
+    svg += `<text x="${rx}" y="${py}" text-anchor="end" font-family="${FONT}" font-size="${pvfs}"
+      font-weight="900" letter-spacing="-1.6" fill="${BRAND}">${esc(pf.v)}</text>`;
+    svg += `<text x="${rx}" y="${py + 28}" text-anchor="end" font-family="${FONT}" font-size="23"
+      font-weight="600" fill="${c.soft}">${esc(pf.l)}</text>`;
+    py += pRow;
+  });
+
+  // 5) DOMENA — donji desni ugao, jedini kontakt na coveru.
+  svg += `<text x="${rx}" y="${H - M_C + 6}" text-anchor="end" font-family="${FONT}"
+    font-size="30" font-weight="800" letter-spacing="-0.4" fill="${c.ink}">www.devlab.cc.cd</text>`;
+
+  // Lijevi donji ugao NAMJERNO prazan — tu sjeda FB profilna slika.
+  return svg;
+}
+
 const PLACE: Record<PostLayout, (c: Colors, p: PostSlide, total: number) => string> = {
   // PREMIUM — nema header/footer iz `header()`; vlastiti ram i vlastita hijerarhija.
   premium: (c, p) => premiumLayout(c, p),
+  // COVER — naslovna fotografija za FB (16:9). Vidi coverLayout().
+  cover16x9: (c) => coverLayout(c),
   center: (c, p, total) => {
     const b = build(c, p, total);
     const y = b.h >= CONTENT_H() ? CONTENT_TOP() : CONTENT_TOP() + (CONTENT_H() - b.h) / 2;
@@ -1747,6 +1837,10 @@ export function renderSlideSvg(
   // PREMIUM ima vlastiti ram i vlastito zaglavlje (logo je dio `premiumLayout`),
   // pa se opći `header()` preskače — inače bi se logo i eyebrow crtali dvaput.
   const isPremium = layout === "premium";
+  // COVER layout crta SVE sam (wordmark, naslov, dokaze, domenu). Ako bi mu se
+  // dodao header() i coverFrame(), domena bi se pojavila DVAPUT i cover bi
+  // dobio okvir koji FB ne trazi.
+  const isBare = layout === "cover16x9";
 
   if (layout === "photoBg") {
     content = `<g style="filter:drop-shadow(0 3px 16px rgba(0,0,0,0.9)) drop-shadow(0 1px 3px rgba(0,0,0,0.95))">${content}</g>`;
@@ -1804,11 +1898,12 @@ export function renderSlideSvg(
   </defs>
   ${isCover ? coverChrome(c) : `<rect width="${SIZE}" height="${SIZE_H}" fill="${c.bg}"/>`}
   ${isPremium ? premiumBackdrop(slide.photo ?? "ai") : ""}
+  ${isBare ? "" : ""}
   ${isCover || isPremium ? "" : decor(c, slideIndex + post.id.length)}
   ${content}
   <!-- Zaglavlje se crta POSLIJE sadržaja: foto-pozadine inače prekriju logo. -->
-  ${isPremium ? "" : header(c, slide.eyebrow ?? post.eyebrow, post.category, slideIndex, slideTotal)}
-  ${isCover ? coverFrame(c) : ""}
+  ${isPremium || isBare ? "" : header(c, slide.eyebrow ?? post.eyebrow, post.category, slideIndex, slideTotal)}
+  ${isCover || isBare ? "" : coverFrame(c)}
   ${isPremium ? "" : ""}
   <!-- Gornja traka: umjesto tvrde linije, kratki gradijent koji se stopi u pozadinu
        (na zelenim paletama crna traka je izgledala kao strana linija).

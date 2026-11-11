@@ -88,6 +88,17 @@ export type AdPost = {
   /** Fotografija — koristi se u photo/photoTop/photoBg layoutima. */
   photo?: PhotoKey;
   layout?: PostLayout; // varijanta kompozicije (razlicitost bez lomljenja stila)
+  /**
+   * Fiksni format — objava se UVIJEK renderuje u ovom formatu, bez obzira
+   * na prekidac 1:1 / 3:4 na /objave.
+   *
+   * Koristi se za cover objave (Facebook 16:9) koje nemaju smisla u
+   * Instagram formatima. Kartica tada prikazuje svoj format i dugme za
+   * preuzimanje skida upravo te dimenzije.
+   */
+  // Inline union (ne PostFormat) da se izbjegne cirkularni import —
+  // postRender.ts vec uvozi tipove iz ovog fajla.
+  fixedFormat?: "1:1" | "3:4" | "16:9";
   eyebrow: string; // mala etiketa gore
   title: string; // glavni naslov
   subtitle?: string; // podnaslov / objasnjenje
@@ -130,6 +141,7 @@ export type PostLayout =
   | "photoTop" // fotografija gore, tekst dolje
   | "photoBot" // fotografija dolje, tekst gore (zrcalo photoTop)
   | "photoBg" // fotografija preko cijele pozadine
+  | "cover16x9" // naslovna fotografija za Facebook (16:9)
   | "premium"; // PREMIUM oglas — potpuno drugaciji ram, tip i hijerarhija
 
 /** Fotografije dostupne za postove (vidi postPhotos.ts). */

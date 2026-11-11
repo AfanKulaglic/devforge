@@ -8,9 +8,10 @@ import type { AdPost } from "./postsData";
 import { POSTS_1 } from "./posts1";
 import { POSTS_2 } from "./posts2";
 import { POSTS_3 } from "./posts3";
-import { POST_PREMIUM } from "./postsPremium";
+import { POST_PREMIUM, POST_FB_COVER } from "./postsPremium";
 
-export const ALL_POSTS: AdPost[] = [POST_PREMIUM, ...POSTS_1, ...POSTS_2, ...POSTS_3];
+// COVER ide PRVI — to je naslovna slika, ne dio serije objava.
+export const ALL_POSTS: AdPost[] = [POST_FB_COVER, POST_PREMIUM, ...POSTS_1, ...POSTS_2, ...POSTS_3];
 
 export const CATEGORY_LABEL: Record<string, string> = {
   edukacija: "Edukacija",

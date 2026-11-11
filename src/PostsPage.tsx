@@ -25,6 +25,7 @@ import {
   renderPostSlides,
   svgToPngBlob,
   setFormat,
+  getFormat,
   FORMATS,
   type PostFormat,
 } from "./lib/postRender";
@@ -44,7 +45,15 @@ const FILTERS: PostFilter[] = [
 
 // ── Preuzimanje SVG-a kao fajl ────────────────────────────────────────────
 async function downloadPng(post: AdPost, slideIdx = 0) {
-  const slides = renderPostSlides(post);
+  // Cover objava (fixedFormat) mora se skinuti u SVOM formatu — inace bi
+  // FB cover izasao kao 1080x1080 i ne bi odgovarao naslovnoj.
+  const prev = setFormat(post.fixedFormat ?? getFormat());
+  let slides: string[];
+  try {
+    slides = renderPostSlides(post);
+  } finally {
+    setFormat(prev);
+  }
   const svg = slides[slideIdx] ?? slides[0];
   const total = slides.length;
   const name =
@@ -73,7 +82,17 @@ function copyCaption(post: AdPost) {
 
 // ── Kartica jedne objave ──────────────────────────────────────────────────
 function PostCard({ post, format, onOpen }: { post: AdPost; format: PostFormat; onOpen: () => void }) {
-  const slides = useMemo(() => renderPostSlides(post), [post, format]);
+  // Objava sa fixedFormat (FB cover, 16:9) uvijek se renderuje u SVOM formatu,
+  // bez obzira na prekidac gore. Zato se format postavlja po kartici, ne globalno.
+  const eff = post.fixedFormat ?? format;
+  const slides = useMemo(() => {
+    const prev = setFormat(eff);
+    try {
+      return renderPostSlides(post);
+    } finally {
+      setFormat(prev);
+    }
+  }, [post, eff]);
   const src = useMemo(() => postSvgDataUri(slides[0]), [slides]);
   const total = slides.length;
   const isPremium = post.layout === "premium";
@@ -99,8 +118,8 @@ function PostCard({ post, format, onOpen }: { post: AdPost; format: PostFormat; 
         <img
           src={src}
           alt={post.title}
-          width={FORMATS[format].w}
-          height={FORMATS[format].h}
+          width={FORMATS[eff].w}
+          height={FORMATS[eff].h}
           loading="lazy"
           className="block w-full transition group-hover:opacity-85"
         />
@@ -199,7 +218,15 @@ function PostModal({ post, format, onClose }: { post: AdPost; format: PostFormat
   const [copied, setCopied] = useState(false);
   const [slide, setSlide] = useState(0);
   const [full, setFull] = useState(false);
-  const slides = useMemo(() => renderPostSlides(post), [post, format]);
+  const eff = post.fixedFormat ?? format;
+  const slides = useMemo(() => {
+    const prev = setFormat(eff);
+    try {
+      return renderPostSlides(post);
+    } finally {
+      setFormat(prev);
+    }
+  }, [post, eff]);
   const src = useMemo(() => postSvgDataUri(slides[slide] ?? slides[0]), [slides, slide]);
   const total = slides.length;
 

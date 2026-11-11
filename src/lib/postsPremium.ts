@@ -127,3 +127,48 @@ export const POST_PREMIUM: AdPost = {
     "posaobih",
   ],
 };
+
+// ───────────────────────────────────────────────────────────────────────────
+// FACEBOOK COVER — naslovna fotografija za FB stranicu.
+//
+// Nije Instagram objava: 16:9 format (1200x628) i `fixedFormat`, pa se na
+// /objave uvijek renderuje u tom formatu bez obzira na prekidac 1:1 / 3:4.
+// Skida se istim dugmetom kao i sve ostale objave.
+//
+// Sadrzaj je namjerno kratak: cover se gleda 2 sekunde i mora reci tri
+// stvari — ko smo, sta radimo, koliko kosta. Nema karusela i nema mreze.
+// ───────────────────────────────────────────────────────────────────────────
+export const POST_FB_COVER: AdPost = {
+  id: "fbc01",
+  template: "title",
+  category: "brend",
+  layout: "cover16x9",
+  palette: "dark",
+  photo: "ai",
+  fixedFormat: "16:9",
+  eyebrow: "DevLab",
+  title: "Web stranice. Za 5 dana. Bez plaćanja unaprijed.",
+  lead: "Stranice, shopovi, aplikacije i AI sistemi — iz Sarajeva, za firme iz cijele BiH.",
+  site: "www.devlab.cc.cd",
+  stats: [
+    { value: "0 KM", label: "unaprijed", icon: "shield" },
+    { value: "5 dana", label: "gotova verzija", icon: "clock" },
+    { value: "150 KM", label: "web od", icon: "coin" },
+  ],
+  features: [
+    { icon: "web", label: "Web stranice" },
+    { icon: "shop", label: "Shopovi" },
+    { icon: "app", label: "Aplikacije" },
+    { icon: "game", label: "Igrice" },
+    { icon: "ai", label: "AI" },
+  ],
+  terms: [
+    "Gotova verzija za 5 dana, ne za 5 sedmica",
+    "Stranice od 150 KM, shopovi od 600 KM",
+    "Sav sadržaj mijenjate sami, u par klikova",
+  ],
+  cta: "Javite nam se na Instagramu",
+  caption:
+    "🖼️ Naslovna fotografija za Facebook stranicu — DevLab.\n\nDimenzije: 1200×628 (16:9), preporučena veličina za FB cover.\n\nŠta stoji na njoj:\n— DevLab wordmark i tagline (web stranice, shopovi, aplikacije, AI)\n— tri broja: 0 KM unaprijed, 5 dana do gotove verzije, od 150 KM\n— domena i poziv na kontakt\n\nPostavi je kao cover na FB stranici tako što je preuzmeš ovdje i uploaduješ direktno.",
+  tags: ["devlab", "facebookcover", "sarajevo", "webstranica", "webshop", "digitalnaagencija"],
+};
