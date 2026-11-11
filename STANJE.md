@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (p03: boje po elementima)
+Zadnje ažurirano: 2026-11-10 (p03: konacne boje)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,37 +12,35 @@ Zadnje ažurirano: 2026-11-10 (p03: boje po elementima)
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### p03 ("150 KM") — boje po elementima
-Korisnik je tacno odredio boju za svaki element. Stanje:
+### p03 ("150 KM") — KONACNE BOJE
 
 | element | boja | hex |
 |---|---|---|
 | podloga | zelena | #4DEAE0 |
-| "150 KM" (broj) | ZELENA (tamnija) | #0E7A72 |
-| "Kompletna stranica..." (naslov) | BIJELA | #FFFFFF |
-| "Dizajn, kod, domena..." (biljeska) | CRNA | #0A0A0A |
-| linija uz biljesku | CRNA | #0A0A0A |
+| "150 KM" (broj) | **CRNA** | #0A0A0A |
+| "Kompletna stranica..." (naslov) | **BIJELA** | #FFFFFF |
+| "Dizajn, kod, domena..." (biljeska) | **CRNA** | #0A0A0A |
+| linija uz biljesku | **CRNA** | #0A0A0A |
 | slogan gore + domena | BIJELA | #FFFFFF |
 
-**Zasto #0E7A72 a ne BRAND #4DEAE0 za broj:** BRAND je ista boja kao
-podloga, pa bi broj bio nevidljiv. #0E7A72 je tamnija zelena iste porodice
-— kontrast 3.5:1, vidljivo ali jos uvijek "zeleno".
+Prvo sam broj stavio u tamnozelenu #0E7A72, jer sam mislio da korisnik
+zeli zelenu. Korisnik je rekao "10 km nije crne boje?" -> broj mora biti
+CRN. Sada je #0A0A0A, potvrdjeno mjerenjem piksela: (10,10,10).
 
-### Napomena o kontrastu (ne rijeseno)
-Bijeli naslov na teal podlozi ima kontrast samo **1.48:1**. Cita se jer je
-font 54px bold, ali je ispod WCAG minimuma (4.5:1). Ako korisnik zeli jaci
-kontrast, opcije su: (a) tamnija podloga, (b) tamniji naslov, (c) debeli
-tamni obrub slova. Nije mijenjano jer korisnik nije trazio.
+### Napomena o kontrastu
+Bijeli naslov na teal podlozi ima kontrast **1.48:1** (WCAG min 4.5:1).
+Cita se jer je 54px bold, ali je slabo. Ako korisnik trazi jace: tamnija
+podloga, tamni naslov, ili obrub slova.
 
 ### Verifikacija
-- Oba formata: 0 objava van kadra, 0 console gresaka.
-- Vision potvrdio sve 4 boje i crnu liniju.
+- Vision potvrdio sve 4: broj crn, naslov bijel, biljeska crna, linija crna.
+- Piksel-mjerenje: "150 KM" zona dominantna #0A0A0A.
+- 41 objava x 2 formata: 0 van kadra, 0 console gresaka.
 - tsc=0, build OK.
 
 ## Sljedeći korak
-- Pregledati p03 — zeleni broj, bijeli naslov, crna biljeska + crna linija.
-- Ako bijeli naslov djeluje preslabo na zelenom, reci pa pojacam kontrast
-  (tamnija podloga ili obrub slova).
+- Pregledati p03 — crn broj, bijel naslov, crna biljeska + crna linija.
+- Ako je bijeli naslov preslab na zelenom, reci pa pojacam kontrast.
 - Opciono: 4:5 format.
 
 ## Napomene / zamke

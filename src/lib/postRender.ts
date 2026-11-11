@@ -546,7 +546,7 @@ function formFigure(c: Colors, p: PostSlide): Block {
   const onTeal = c.bg.toUpperCase() === "#4DEAE0" || c.bg.toUpperCase() === "#6FEFE6";
   // Na zelenoj podlozi tekst ide u CRNO (korisnik zeli vecinu crnog teksta).
   // Na crnoj podlozi naslov je BIJEL, a akcent (broj, linija) je ZELEN.
-  // Naslov na zelenoj podlozi je BIJELI, biljeska CRNA, broj ZELEN.
+  // Naslov na zelenoj podlozi je BIJELI, biljeska i broj CRNI.
   const headInk = onTeal ? "#FFFFFF" : c.ink;
   const noteInk = onTeal ? "#0A0A0A" : c.soft;
   const val = p.value ?? "";
@@ -554,7 +554,7 @@ function formFigure(c: Colors, p: PostSlide): Block {
   const vsize = Math.max(70, Math.min(fit(val, W, base), tall ? 280 : 250));
 
   let svg = `<text x="0" y="${vsize * 0.78}" font-family="${FONT}" font-size="${vsize}"
-    font-weight="900" letter-spacing="${(-vsize * 0.03).toFixed(1)}" fill="${onTeal ? "#0E7A72" : c.accent}">${esc(val)}</text>`;
+    font-weight="900" letter-spacing="${(-vsize * 0.03).toFixed(1)}" fill="${onTeal ? "#0A0A0A" : c.accent}">${esc(val)}</text>`;
   let h = vsize;
 
   // Naslov: 3 reda u 1:1, 4 u 3:4. Prored 1.22 da se redovi ne slijube.
