@@ -496,10 +496,23 @@ export const POSTS_1: AdPost[] = [
     layout: "split",
     palette: "light",
     eyebrow: "Cijene",
+    subtitle: "Izaberite paket — ili nas pitajte šta vam treba.",
     items: [
-      "Web stranica — od 150 KM",
-      "Web shop — od 600 KM",
-      "Aplikacije i igrice — po dogovoru",
+      {
+        icon: "web",
+        label: "Web stranica — od 150 KM",
+        note: "Dizajn, mobilna verzija, kontakt forma i admin panel.",
+      },
+      {
+        icon: "shop",
+        label: "Web shop — od 600 KM",
+        note: "Katalog, korpa, plaćanje karticom i upravljanje narudžbama.",
+      },
+      {
+        icon: "app",
+        label: "Aplikacije i igrice — dogovor",
+        note: "iOS i Android, ili igrica za web. Cijena zavisi od obima.",
+      },
     ],
     caption:
       "💰 Tri paketa. Tri cijene. Nula iznenađenja.\n\nWeb Stranice — 150 KM\nLanding page ili jednostavna web stranica, UI/UX dizajn uključen, responzivni dizajn, kontakt forma, demo se ne plaća, postavljanje hostinga i domene.\n\nWeb Shopovi — 600 KM\nKompletan e-commerce sistem, UI/UX dizajn uključen, online plaćanje (Stripe, PayPal), admin panel, inventory management, demo se ne plaća.\n\nMobilne Aplikacije — po dogovoru\niOS i/ili Android development, UI/UX dizajn, backend API integracija, push notifications, user authentication, App Store deployment, dokumentacija.\n\nTačnu ponudu dajemo nakon besplatne konsultacije — bez skrivenih troškova.",

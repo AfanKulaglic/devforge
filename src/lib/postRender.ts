@@ -1156,7 +1156,16 @@ function premiumLayout(c: Colors, p: PostSlide): string {
   let svg = "";
 
   // 0) LOGOTIP gore lijevo — reklama se odmah predstavlja.
-  svg += brandMark(left, M_L - 12, c.ink, c.accent).svg;
+  //
+  // ISTA onGreen DETEKCIJA KAO U header().
+  //
+  // Prije je ovdje bio `c.accent` za boju "Lab". U paleti `light`
+  // (bg #6FEFE6, accent #0A0A0A) to znaci da "Lab" postaje CRN na tirkiznoj
+  // podlozi — a "Dev" ostaje crn takodjer — pa se cijeli wordmark stapa s
+  // podlogom. Na zelenoj podlozi "Lab" mora biti CRN a "Dev" BIJEL, isto kao
+  // u header-u, da logo bude citljiv.
+  const richOnGreen = c.bg.toUpperCase() === "#4DEAE0" || c.bg.toUpperCase() === "#6FEFE6";
+  svg += brandMark(left, M_L - 12, richOnGreen ? "#FFFFFF" : c.ink, richOnGreen ? "#0A0A0A" : c.accent).svg;
 
   // Razmak logo → naslov. Prije 92px: u 3:4 formatu naslov je sjedio
   // zalijepljen uz logo i ostajao prazan pojas ispod. Sada se razmak
