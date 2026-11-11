@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (p09: ikone + opisi, popravljen logo na zelenoj podlozi)
+Zadnje ažurirano: 2026-11-10 (p10: 5 slajdova — ikone, opisi, lead; p11 NE POSTOJI)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,72 +12,49 @@ Zadnje ažurirano: 2026-11-10 (p09: ikone + opisi, popravljen logo na zelenoj po
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### p05 — tekst ne prelazi na sliku (layout `photo`)
+### p05–p09 — sređeni (detalji u gitu)
 
-`buildNarrow()` privremeno smanjuje modul-level `W_MUT` na tekst zonu,
-izgradi blok, vrati u `finally`. Sve forme koriste `W_MUT` umjesto `W`.
+`buildNarrow` (p05), `formCover` 4 stavke + `formAction` lead/dokazi (p06),
+`band`->`center` bez okvira (p07), `formFigure` grid ikona (p08),
+logo na zelenoj podlozi (p09).
 
-**BUG a)** biljeska ispod drugog reda labela.  **BUG b)** `wrap(note,...,2)`
-odbacivao rijeci.  **BUG c)** `minRow` 64 -> 186/158.  **BUG d)** skript
-ostetio komentar u `renderSlideSvg`.
+**Dva vazna buga popravljena globalno:**
+1. `formFigure`: razmak broj->naslov bio `tall ? 8 : 52` — u 3:4 samo 8px,
+   pa su se broj i naslov preklapali. Sada `tall ? 44 : 52`.
+2. `richLayer` logo: `brandMark(..., c.accent)` je na `light` paleti
+   (`accent #0A0A0A`) pravio „Lab" CRN na tirkiznoj — nevidljiv. Sada
+   `richOnGreen` detekcija kao u `header()`.
 
-### p06 — karusel dobio život (6 slajdova)
+### p10 — „Kako radimo", 5 slajdova
 
-Svih 6: subtitle + 4 stavke `{icon, label, note}`. Cover: naslov + lead + 4
-ikone. CTA: lead + 3 dokaza.
+Template `process` koristi `formBlocks`, pa `{icon, label, note}` radi bez
+ikakve promjene u renderu.
 
-**`formCover`**: `slice(0, 3)` -> `slice(0, SIZE_H >= 1300 ? 4 : 3)`.
-**`formAction`**: crta `lead` (accent traka) i 3 dokaza iznad dugmeta.
-
-### p07 — bez okvira, ikone, kraći naslov
-
-`layout: "band"` -> `"center"` (band je crtao `stroke 1.5` okvir).
-Naslov bio odsjecen -> **"Sve što vaš projekat treba. Bez doplata."**
-Lista: 4x `{icon, label, note}` + subtitle.
-
-### p08 — ikone u cjenovnim slajdovima (5 slajdova)
-
-Svih 5: cover (lead + 3 ikone), tri cjenovna slajda (4 ikone grid 2x2),
-zadnji (4x `{icon,label,note}` + subtitle).
-
-**`formFigure` sada crta `items`** kao grid 2x2 ispod biljeske.
-
-### BUG (vazan, rijesen) — preklop broj / naslov u `formFigure`
-
-Razmak je bio `h += tall ? 8 : 52` — u 3:4 samo **8px**. Veliki broj
-(150-260px) ima donju ivicu na `h`, naslov pocinje na `h + ts*0.78`, pa je
-izmedju bilo nula zraka. Sada `tall ? 44 : 52` -> ~75-80px.
-**Vrijedi za sve cjenovne slajdove u svim postovima.**
-
-### p09 — ikone + opisi, popravljen logo na zelenoj podlozi
-
-Post je `layout: "split"`, `palette: "light"` (tirkizna podloga `#6FEFE6`).
-
-**BUG: logo „Lab" je bio CRN na tirkiznoj — nevidljiv.**
-`richLayer` je zvao `brandMark(left, ..., c.ink, c.accent)`, a u `light`
-paleti je `c.accent = "#0A0A0A"`. Dakle i „Dev" i „Lab" crni na tirkiznoj.
-`header()` je to vec rjesavao preko `onGreen`, ali `richLayer` nije.
-Sada i `richLayer` ima istu detekciju: `richOnGreen` -> „Dev" BIJEL,
-„Lab" CRN. **Popravak vrijedi za sve postove na `light`/`tealwhite` paleti.**
-
-Lista 3 stavke sa ikonom + opisom (prije gole stavke sa crticama):
-
-| ikona | label | note |
+| slajd | tema | ikone |
 |---|---|---|
-| web | Web stranica — od 150 KM | Dizajn, mobilna verzija, kontakt forma i admin panel. |
-| shop | Web shop — od 600 KM | Katalog, korpa, plaćanje karticom i upravljanje narudžbama. |
-| app | Aplikacije i igrice — dogovor | iOS i Android, ili igrica za web. Cijena zavisi od obima. |
+| 1 | cover — „Četiri koraka. Prvi je razgovor." + lead | chat/rocket/tools/check |
+| 2 | 01 · Razgovor — Inicijalna konsultacija | chat/bolt/layers/clock |
+| 3 | 02 · Bez plaćanja — Besplatna gotova verzija | clock/web/rocket/shield |
+| 4 | 03 · Razvoj — Razvoj i implementacija | tools/layers/check/chat |
+| 5 | 04 · Isporuka — Testiranje i isporuka | check/rocket/layers/monitor |
 
-Dodan `subtitle`: "Izaberite paket — ili nas pitajte šta vam treba."
+Svaki slajd 2-5 dobio i `subtitle` (npr. „Dvadeset minuta razgovora — bez
+prezentacija i bez ugovora.").
+
+### p11 NE POSTOJI
+
+ID-evi u projektu: **p01–p10**, pa skok na **p21–p30**, pa **p41–p60**.
+Nema p11–p20 ni p31–p40. `posts1.ts` zavrsava na p10.
 
 ### Verifikacija
-- p09: 3 ikone, 0 preklapanja, y 1344/1440, „Lab" vidljiv (vision potvrdio).
+- p10: 5 slajdova, ikone 4/4/4/4/4, svi y 1344/1440.
+- Vision: S1, S2, S3 potvrdjeni — sve stavke potpune, bez preklapanja.
 - 70 slajdova x 2 formata: 0 van kadra.
 - tsc=0, build OK.
 
 ## Sljedeći korak
-- Pregledati p09 u 3:4 i 1:1.
-- p10 (kako radimo) je karusel — kandidat za isti tretman.
+- Pregledati p10 (5 slajdova) u 3:4 i 1:1.
+- Sljedeci po redu: **p21** (nastavlja niz nakon p10).
 - `band` layout vise nigdje ne koristi okvir — kandidat za brisanje.
 
 ## Napomene / zamke
