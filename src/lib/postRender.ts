@@ -614,6 +614,54 @@ function formHero(c: Colors, p: PostSlide): Block {
     });
     h += sl.length * (ss + 14);
   }
+
+  // KRATKE STAVKE SA IKONOM — ispod podnaslova.
+  //
+  // `formHero` je nosio samo naslov + podnaslov. Postovi koji su htjeli
+  // listu (npr. p24 sa cetiri dokaza) nisu imali gdje da je predaju, pa su
+  // ostajali na dvije recenice. Sada `items` ide u dva stupca, isto kao u
+  // `formFigure`.
+  const heroItems = (p.items ?? []) as any[];
+  if (heroItems.length) {
+    h += SIZE_H >= 1300 ? 60 : 50;
+    const hIC = SIZE_H >= 1300 ? 40 : 36;
+    const hfs = SIZE_H >= 1300 ? 28 : 26;
+    const hRow = SIZE_H >= 1300 ? 62 : 56;
+    const half = Math.ceil(heroItems.length / 2);
+    const colW = W_MUT / 2;
+    const nfs = SIZE_H >= 1300 ? 22 : 20;
+    // Ima li ijedna stavka biljesku? Ako ima, red je visi i ikona se
+    // centrira po CIJELOM bloku (label + biljeska), ne po labelu.
+    const anyNote = heroItems.some((it: any) => typeof it === "object" && it && it.note);
+    const rowStep = anyNote ? hRow + nfs + 10 : hRow;
+    heroItems.forEach((it: any, i: number) => {
+      const isObj = typeof it === "object" && it !== null;
+      const label = isObj ? (it.label ?? "") : String(it);
+      const icon = isObj ? (it.icon ?? "") : "";
+      const note = isObj ? (it.note ?? "") : "";
+      const col = i < half ? 0 : 1;
+      const row = i < half ? i : i - half;
+      const ix = col * colW;
+      const iy = h + row * rowStep;
+      const blockH = note ? hIC * 0.74 + 8 + nfs : hIC;
+      const iyIcon = note ? iy + (blockH - hIC) / 2 : iy;
+      if (icon && PX_ICONS[icon]) {
+        svg += pxIcon(icon, ix, Math.max(iy, iyIcon), c.accent, hIC);
+      } else {
+        svg += `<rect x="${ix}" y="${iy + hIC * 0.4}" width="20" height="6" fill="${c.accent}"/>`;
+      }
+      svg += `<text x="${ix + hIC + 18}" y="${iy + hIC * 0.74}" font-family="${FONT}"
+        font-size="${hfs}" font-weight="700" fill="${c.ink}">${esc(label)}</text>`;
+      if (note) {
+        const nl = wrap(note, nfs, colW - hIC - 30, 2);
+        nl.forEach((l: string, li: number) => {
+          svg += `<text x="${ix + hIC + 18}" y="${iy + hIC * 0.74 + 8 + nfs + li * (nfs + 6)}"
+            font-family="${FONT}" font-size="${nfs}" font-weight="500" fill="${c.soft}">${esc(l)}</text>`;
+        });
+      }
+    });
+    h += (half - 1) * rowStep + (anyNote ? hIC * 0.74 + 8 + nfs : hIC);
+  }
   return { svg, h };
 }
 

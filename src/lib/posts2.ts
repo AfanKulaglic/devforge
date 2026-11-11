@@ -197,7 +197,29 @@ export const POSTS_2: AdPost[] = [
     palette: "teal",
     eyebrow: "Sarajevo",
     title: "Izrada sajtova u Sarajevu, bez cijene kancelarije u centru.",
-    subtitle: "Radimo iz malog ureda bez režija, pa je cijena niža od agencijske. Isti kvalitet, manje troškova.",
+    subtitle: "Radimo iz malog ureda bez režija, pa ne plaćate tuđu kiriju kroz cijenu projekta.",
+    items: [
+      {
+        icon: "web",
+        label: "Stranica od 150 KM",
+        note: "Shop od 600 KM — bez skrivenih stavki.",
+      },
+      {
+        icon: "check",
+        label: "Ista cijena svugdje",
+        note: "Jednako za firmu iz Sarajeva i iz Bihaća.",
+      },
+      {
+        icon: "chat",
+        label: "Sve ide online",
+        note: "Razgovor, pregledi i izmjene — bez dolaska.",
+      },
+      {
+        icon: "shield",
+        label: "Bez kirije u cijeni",
+        note: "Ne plaćate naš najam ni naše režije.",
+      },
+    ],
     caption:
       "📍 Sarajevo. Bez kancelarije u centru, bez Vaše kirije u cijeni.\n\nRadimo iz Sarajeva, za firme iz cijele BiH.\n\nBez kancelarije u centru i bez velikih režija. Zato ne plaćate tuđu kiriju kroz cijenu projekta.\n\nŠta to znači praktično:\n— ✅ web stranica od 150 KM, shop od 600 KM\n— 🔥 cijena je ista za firmu iz Sarajeva i iz Bihaća\n— 💡 sve ide online: razgovor, pregledi, izmjene\n— ⚡ ne morate dolaziti nigdje\n\nRadimo s klijentima iz cijele Bosne i Hercegovine i regiona.\n\nAko Vam je neko rekao da stranica košta 2000 KM — javite nam se.",
     tags: ["sarajevo", "webstranice", "lokalni", "cijene", "devlab"],
