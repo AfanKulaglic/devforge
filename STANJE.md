@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (FB naslovna: planeta Zemlja + kratak slogan)
+Zadnje ažurirano: 2026-11-10 (FB naslovna: PRAVA slika zemlje + novi slogan)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,6 +12,77 @@ Zadnje ažurirano: 2026-11-10 (FB naslovna: planeta Zemlja + kratak slogan)
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
+### PREMIUM objava — svi okviri uklonjeni
+
+Korisnik: "ne svidja mi se okvir na postu ekskluzivnog sadrzaja".
+
+**BUG: invertovana logika okvira.** U `renderSlideSvg` je stajalo:
+
+```ts
+${isCover || isBare ? "" : coverFrame(c)}   // POGREGSNO
+```
+
+To znaci: okvir se crta SVUDA OSIM na coveru — dakle bas na premium objavi
+(koja nije cover) je uvijek bio. Ispravno:
+
+```ts
+${isCover && !isBare ? coverFrame(c) : ""}
+```
+
+**Chip kartice bez okvira** — u `premiumLayout` su imale `stroke` 1.5
+(`stroke-opacity 0.22`). Uklonjen; ostala je samo svjetlija podloga
+(`fill #ffffff opacity 0.075`).
+
+Ostala su namjerno samo 2 stroke recta: okvir logo-kutije i outline dugme.
+Karuseli (p04, p06...) zadrzali su svoj okvir — provjereno.
+
+### FB NASLOVNA — prava fotografija Zemlje
+
+Korisnik: "planeta koju sam ti trazio umjesto kruga mora biti PRAVA slika
+planete", i slogan "Digitalna agencija" mu se ne svidja — trazi nesto sto
+vise predstavlja nas i sto je za reklamu.
+
+**Slogan promijenjen** u: `Za 5 dana. Bez plaćanja unaprijed.` —
+dvije konkretne koristi (brzina + nula rizika), iste dvije cifre koje se
+ponavljaju svuda u projektu. "Digitalna agencija" je samo opis kategorije.
+
+**Prava slika**: `PHOTOS.earth` — fotorealisticna Zemlja iz svemira,
+1200x675, base64 u `postPhotos.ts` (101 kB, q72). Dodana kao `PhotoKey`
+"earth" + `PHOTO_ALT.earth` + u `PHOTO_KEYS`.
+
+Slika je generisana (nema pristupa internetu za stock). Izmjereno:
+horizont na ~43% visine (y≈290 od 675), gornji dio cist crni svemir
+(luminance 0-2) — logo i tekst sigurno stanu iznad horizonta.
+
+| sloj | sadrzaj |
+|---|---|
+| baza | `#04060A` + `<image>` Zemlja (`preserveAspectRatio="xMidYMid slice"`) |
+| zavjesa | `#covVeil` linearni gradijent gore (0.55 -> 0) — tekst citljiv |
+| sjaj | `#covGlow` tirkizni radial iza logotipa |
+| logo | **DevLab** 118px, "Dev" bijel, "Lab" `#4DEAE0` |
+| slogan | **Za 5 dana. Bez plaćanja unaprijed.** 40px, `#C8D2D6` |
+| ispod | `@devlab.cc.cd` (teal 800, 30px) |
+| dno | `www.devlab.cc.cd` (sivo 600, 25px) |
+
+Crtani krugovi, kontinenti-pathovi i atmosferski prstenovi su UKLONJENI —
+zamijenila ih je fotografija. Ostao je samo `#covGlow` za brend boju.
+
+**Bug fix:** slogan je preklapao logo (DevLab box y 145-313, slogan y
+299-350) — `<text>` nosi veliki line-height. Pomjereno na `cy+52`, domena
+na `cy+124` / `cy+162`. Sada 0 preklapanja.
+
+### PREMIUM objava — svi okviri uklonjeni
+
+Korisnik: "ne svidja mi se okvir na postu ekskluzivnog sadrzaja".
+
+**BUG: invertovana logika okvira.** U `renderSlideSvg` je stajalo
+`${isCover || isBare ? "" : coverFrame(c)}` — okvir se crtao SVUDA OSIM
+na coveru, dakle bas na premium objavi uvijek. Ispravno:
+`${isCover && !isBare ? coverFrame(c) : ""}`.
+
+**Chip kartice bez okvira** — imale `stroke` 1.5. Uklonjen. Karuseli
+(p04, p06...) zadrzali svoj okvir — provjereno.
+
 ### PREMIUM objava — svi okviri uklonjeni
 
 Korisnik: "ne svidja mi se okvir na postu ekskluzivnog sadrzaja".
@@ -133,7 +204,9 @@ http://localhost:5173/
 ### Verifikacija
 - px01: okvir 8px = false, tanak 0.30 = false, chip 0.22 = false.
 - p04/p06 (karuseli): okvir 8px = true (zadrzan).
-- FB naslovna: sve centrirano na cx=540, 0 preklapanja, unutar kadra.
+- FB naslovna: sve centrirano na cx=540, 0 preklapanja, max text y 476/628.
+- Zemlja: fotorealisticna, horizont ~43% visine, gornji dio crn za logo.
+- Preuzimanje: fbc01 -> PNG 1080x628.
 - Planeta: kontinenti vidljivi, terminator lijevo/desno razlika potvrdjena.
 - Preuzimanje: fbc01 -> PNG 1080x628.
 - 71 slajd x 2 formata: 0 van kadra. tsc=0, build OK.
