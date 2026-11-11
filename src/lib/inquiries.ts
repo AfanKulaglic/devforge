@@ -20,8 +20,10 @@ export type Inquiry = {
   /** Kad je poruka poslana (ISO string). */
   at: string;
   name: string;
-  /** Telefon ili email — šta god je čovjek ostavio. */
+  /** TELEFON — obavezan, jedini kanal kojim stvarno dobijemo čovjeka. */
   contact: string;
+  /** Email — opcionalan. Ako postoji, "Odgovori" u adminu ide na njega. */
+  email?: string;
   service: string;
   budget: string;
   message: string;

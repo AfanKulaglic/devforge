@@ -53,7 +53,8 @@ function InquiryCard({ item, onChange }: { item: Inquiry; onChange: () => void }
       await navigator.clipboard.writeText(
         [
           `Ime: ${item.name || "(nije upisano)"}`,
-          `Kontakt: ${item.contact || "(nije ostavljen)"}`,
+          `Telefon: ${item.contact}`,
+          ...(item.email ? [`Email: ${item.email}`] : []),
           `Usluga: ${item.service}`,
           `Budžet: ${item.budget}`,
           "",
@@ -67,9 +68,10 @@ function InquiryCard({ item, onChange }: { item: Inquiry; onChange: () => void }
     }
   };
 
-  const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(item.contact);
+  // Email je OPCIONALAN — dugme za mejl postoji samo ako ga je čovjek ostavio.
+  const isEmail = !!item.email && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(item.email);
   const mailTo = isEmail
-    ? `mailto:${item.contact}?subject=${encodeURIComponent(`Odgovor na vaš upit — ${item.service}`)}`
+    ? `mailto:${item.email}?subject=${encodeURIComponent(`Odgovor na vaš upit — ${item.service}`)}`
     : undefined;
 
   return (
@@ -136,9 +138,15 @@ function InquiryCard({ item, onChange }: { item: Inquiry; onChange: () => void }
       {/* Podaci u redovima — brže se čita od pasusa. */}
       <dl className="mt-3 grid gap-x-5 gap-y-1.5 text-[0.72rem] sm:grid-cols-2">
         <div className="flex gap-2">
-          <dt className="shrink-0 font-bold text-white/30">Kontakt</dt>
-          <dd className="min-w-0 truncate text-white/70">{item.contact || "—"}</dd>
+          <dt className="shrink-0 font-bold text-white/30">Telefon</dt>
+          <dd className="min-w-0 truncate text-white/70">{item.contact}</dd>
         </div>
+        {item.email && (
+          <div className="flex gap-2">
+            <dt className="shrink-0 font-bold text-white/30">Email</dt>
+            <dd className="min-w-0 truncate text-white/70">{item.email}</dd>
+          </div>
+        )}
         <div className="flex gap-2">
           <dt className="shrink-0 font-bold text-white/30">Usluga</dt>
           <dd className="min-w-0 truncate text-white/70">{item.service}</dd>
@@ -153,7 +161,7 @@ function InquiryCard({ item, onChange }: { item: Inquiry; onChange: () => void }
         {item.message}
       </p>
 
-      {(mailTo || item.contact) && (
+      {(mailTo || item.contact || item.email) && (
         <div className="mt-3 flex flex-wrap gap-2">
           {mailTo && (
             <a

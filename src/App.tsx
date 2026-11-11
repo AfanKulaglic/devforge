@@ -2505,6 +2505,9 @@ type ContactChannel = "viber" | "whatsapp" | "instagram" | "call";
 function ContactModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  // Email je OPCIONALAN — telefon je obavezan, jer je to jedini kanal s
+  // kojim stvarno dobijemo čovjeka isti dan. Email služi samo ako ga ostavi.
+  const [email, setEmail] = useState("");
   const [service, setService] = useState("Web stranica");
   const [budget, setBudget] = useState("Do 500 KM");
   const [message, setMessage] = useState("");
@@ -2557,9 +2560,23 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
     setSendError("");
     setSending(true);
 
+    // TELEFON JE OBAVEZAN — i mora biti BROJ, ne tekst.
+    //
+    // Zašto baš telefon: to je jedini kanal na koji stvarno dobijemo
+    // čovjeka isti dan. Email ljudi često ne provjere danima, a mi
+    // obećavamo odgovor u toku dana. Zato forma ne prolazi bez broja.
+    const tel = phone.trim();
+    const digits = tel.replace(/[^0-9]/g, "");
+    if (digits.length < 6) {
+      setSending(false);
+      setSendError("Unesite ispravan broj telefona — bez njega vas ne možemo nazvati.");
+      return;
+    }
+
     const payload = {
       name: name.trim(),
-      contact: phone.trim(),
+      contact: tel,
+      email: email.trim(),
       service,
       budget,
       message: message.trim(),
@@ -2696,7 +2713,7 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
             2. Napišite nam ovdje
           </p>
           <p className="mt-1.5 text-[0.72rem] leading-5 text-white/35">
-            Popunite i kliknite „Pošalji" — poruka ide direktno nama, bez otvaranja mejla. Odgovaramo isti dan.
+            Popunite i kliknite „Pošalji" — poruka ide direktno nama, bez otvaranja mejla. Telefon je obavezan jer vas zovemo isti dan.
           </p>
 
           <form className="mt-3.5 space-y-3" onSubmit={submitInquiry}>
@@ -2706,6 +2723,9 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
               tabIndex={-1}
               autoComplete="off"
               aria-hidden="true"
+              // Bez ovoga browser trazi da se popuni skriveno polje
+              // i blokira slanje cijele forme.
+              required={false}
               value={trap}
               onChange={(e) => setTrap(e.target.value)}
               name="website"
@@ -2723,12 +2743,29 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
                 />
               </label>
               <label className="block">
-                <span className="mb-1.5 block text-[0.68rem] font-bold text-white/50">Telefon ili email *</span>
+                <span className="mb-1.5 block text-[0.68rem] font-bold text-white/50">Telefon *</span>
                 <input
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   required
-                  placeholder="+387 6X XXX XXX ili @email"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  placeholder="+387 6X XXX XXX"
+                  className="w-full border border-white/12 bg-white/[0.03] px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:border-teal-300/60 focus:outline-none"
+                />
+              </label>
+              <label className="block">
+                <span className="mb-1.5 block text-[0.68rem] font-bold text-white/50">
+                  Email <span className="font-normal text-white/25">(opcionalno)</span>
+                </span>
+                <input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  placeholder="ime@firma.ba"
                   className="w-full border border-white/12 bg-white/[0.03] px-3 py-2.5 text-sm text-white placeholder:text-white/25 focus:border-teal-300/60 focus:outline-none"
                 />
               </label>

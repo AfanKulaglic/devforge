@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-11 (kontakt forma salje direktno + admin tab Poruke)
+Zadnje ažurirano: 2026-11-11 (telefon OBAVEZAN u formi, email opcionalan)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -29,7 +29,7 @@ otvara. Korisnik klikne "Posalji" i vidi "Poruka je poslana".
 | fajl | sta radi |
 |---|---|
 | `api/inquiry.ts` | NOVO — prima poruku, salje mail na `kontakt@devlab.cc.cd` |
-| `src/lib/inquiries.ts` | NOVO — tip `Inquiry` + localStorage + fetch |
+| `src/lib/inquiries.ts` | NOVO — tip `Inquiry` (`email?` opcionalan) + localStorage + fetch |
 | `src/AdminMessagesTab.tsx` | NOVO — tab "Poruke" u adminu |
 | `src/App.tsx` | `submitMail` -> `submitInquiry`, honeypot, stanja |
 | `src/AdminPanel.tsx` | tab "Poruke" + badge neodgovorenih |
@@ -41,11 +41,42 @@ otvara. Korisnik klikne "Posalji" i vidi "Poruka je poslana".
 - bez `BREVO_API_KEY` vraca 404 -> klijent samo sacuva lokalno, bez greske
 
 **Forma izmjene (`App.tsx`):**
-- polje "Telefon" -> **"Telefon ili email *"** (obavezno, jedno ili drugo)
+- polje "Telefon *" — **OBAVEZNO**, mora biti broj (min 6 cifara)
 - honeypot input `name="website"` (skriven, botovi ga popune)
 - stanja `sent` / `sending` / `sendError` umjesto `mailOpened`
 - uspjeh: "Poruka je poslana" + ponuda da pisu na mejl ako je hitno
 
+### TELEFON JE OBAVEZAN (korisnikov zahtjev)
+
+Korisnik: "oni moraju unjeti broj telefona jako bitno!!! bez toga ne moze
+posalti".
+
+**Tri sloja zastite** — forma ne prolazi bez ispravnog broja:
+
+| sloj | gdje | sta provjerava |
+|---|---|---|
+| HTML | `App.tsx` | `required` + `type="tel"` na polju |
+| JS | `submitInquiry` | `digits.length < 6` -> greska ispod forme |
+| SERVER | `api/inquiry.ts` | ista provjera — POST se moze poslati i rucno |
+
+Polja sada: Ime * · **Telefon *** · Email (opcionalno) · Usluga · Budzet ·
+Poruka. Email je odvojen od telefona (`email?` u tipu `Inquiry`).
+
+**Zasto telefon, a ne email:** to je jedini kanal na koji stvarno dobijemo
+covjeka isti dan. Email ljudi ne provjere danima, a obecavamo odgovor u
+toku dana.
+
+**Bug uhvacen testom:** honeypot polje je bilo `required` i browser je
+traziо da se popuni skriveno polje — blokiralo je CIJELU formu. Popravljeno
+sa `required={false}`.
+
+**Bug uhvacen testom 2:** prvi pokusaj izmjene je ubacio DUPLIKAT honeypot
+inputa unutar dugmeta "Zatvori". Uklopljen rucno; sada je tacno jedan
+`name="website"` u formi.
+
+**Admin kartica:** `email` se prikazuje kao zaseban red. Dugme "Odgovori
+mejlom" postoji SAMO ako je covjek ostavio email; "Pozovi" i "WhatsApp"
+uvijek (telefon je obavezan).
 ### ADMIN TAB "PORUKE"
 
 - Lista upita, najnoviji prvi. Kartica: ime, kontakt, usluga, budzet,

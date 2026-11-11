@@ -68,6 +68,7 @@ function row(label: string, value: string): string {
 function buildHtml(f: {
   name: string;
   contact: string;
+  email: string;
   service: string;
   budget: string;
   message: string;
@@ -93,7 +94,8 @@ function buildHtml(f: {
 
       <tr><td style="padding:0 0 20px;">
         <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;width:100%;">
-          ${row("Kontakt", f.contact || "(nije ostavljen)")}
+          ${row("Telefon", f.contact)}
+          ${f.email ? row("Email", f.email) : ""}
           ${row("Usluga", f.service)}
           ${row("Budžet", f.budget)}
           ${row("Vrijeme", f.at)}
@@ -155,7 +157,8 @@ export default async function handler(req: any, res: any) {
   }
 
   const name = clip(body.name, 120);
-  const contact = clip(body.contact, 200);
+  const contact = clip(body.contact, 40);
+  const email = clip(body.email, 200);
   const service = clip(body.service, 120) || "Nije navedeno";
   const budget = clip(body.budget, 120) || "Nije naveden";
   const message = clip(body.message, 4000);
@@ -164,9 +167,11 @@ export default async function handler(req: any, res: any) {
     res.status(400).json({ ok: false, error: "Poruka je prekratka." });
     return;
   }
-  // Mora ostaviti BILO KOJI kontakt, inače ne možemo odgovoriti.
-  if (contact.length < 3) {
-    res.status(400).json({ ok: false, error: "Ostavite telefon ili email da vas možemo kontaktirati." });
+  // TELEFON JE OBAVEZAN i mora biti BROJ. Server ne vjeruje klijentu,
+  // pa provjerava i ovdje — inače bi se POST mogao poslati direktno.
+  const telDigits = contact.replace(/[^0-9]/g, "");
+  if (telDigits.length < 6) {
+    res.status(400).json({ ok: false, error: "Broj telefona je obavezan." });
     return;
   }
   if (rateLimited(ip)) {
@@ -185,7 +190,7 @@ export default async function handler(req: any, res: any) {
 
   // Ako je ostavio email, "Odgovori" ide njemu; ako je telefon — nama
   // (i tada je telefon jedini način da ga dobijemo, a vidi se u mailu).
-  const replyTo = isEmail(contact) ? { email: contact, name: name || "Kupac" } : undefined;
+  const replyTo = isEmail(email) ? { email, name: name || "Kupac" } : undefined;
 
   const subject = `Nova poruka: ${name || "bez imena"} — ${service}`.slice(0, 190);
 
@@ -206,15 +211,16 @@ export default async function handler(req: any, res: any) {
           `Nova poruka sa sajta`,
           ``,
           `Ime: ${name || "(nije upisano)"}`,
-          `Kontakt: ${contact || "(nije ostavljen)"}`,
+          `Telefon: ${contact}`,
+          email ? `Email: ${email}` : "",
           `Usluga: ${service}`,
           `Budžet: ${budget}`,
           `Vrijeme: ${at}`,
           ``,
           `Poruka:`,
           message,
-        ].join("\n"),
-        htmlContent: buildHtml({ name, contact, service, budget, message, at }),
+        ].filter(Boolean).join("\n"),
+        htmlContent: buildHtml({ name, contact, email, service, budget, message, at }),
         headers: { "X-Mailin-custom": "devlab-inquiry" },
       }),
     });
