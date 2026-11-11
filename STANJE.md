@@ -1,6 +1,6 @@
 # Dev Lab — TRENUTNO STANJE
 > Prepisuje se na kraju svake sesije. Kratko i aktualno.
-Zadnje ažurirano: 2026-11-10 (p03: crno/bijelo, bez nabrajanja)
+Zadnje ažurirano: 2026-11-10 (p03: vecina teksta CRNA, bijelo samo akcent)
 
 ## Projekt
 - React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
@@ -12,39 +12,38 @@ Zadnje ažurirano: 2026-11-10 (p03: crno/bijelo, bez nabrajanja)
 - Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
 
 ## Gotovo (ova sesija)
-### p03 ("150 KM") — mijesane boje, nabrajanje uklonjeno
-Korisnik: "rekao sam da nesto bude crno nesto bijelog fonta, ali izbrisi
-nabrajanje ispod teksta i daj bolji tekst".
+### p03 — boje okrenute: VISE crnog teksta
+Korisnik: "ne svidja mi se, zelim da vise teksta bude crno a nesto bijelo".
 
-**1. Boje izmijesane** (formFigure):
-- `150 KM` -> **crno** (#0A0A0A) u 3:4 formatu, kao sidro.
-- Naslov i biljeska -> **bijelo** / bijelo 82%.
-- Kontrast je jak: crn broj na teal podlozi, bijeli tekst oko njega.
+U `formFigure` dodane dvije boje koje vaze SAMO na zelenoj podlozi:
 
-**2. Nabrajanje uklonjeno** — cijeli `includes` blok iz `formFigure`
-(i polje `includes` iz p03). Lista sa crticama je djelovala kao formular
-i gusila je oglas.
+| element | prije | sada |
+|---|---|---|
+| 150 KM (broj) | crno | **BIJELO** |
+| naslov | bijelo | **CRNO** #0A0A0A |
+| biljeska | bijelo 82% | **CRNO** rgba(10,10,10,0.72) |
 
-**3. Tekst bolji i marketinski:**
-- valueNote: "Dizajn, kod, domena i hosting — jedan trošak, bez dodataka.
-  Gotova za 5 radnih dana, a platiti je trebate tek kad je vidite i kad vam
-  se svidi."
-- title: "Kompletna stranica za 150 KM. Plaćate tek kad je vidite."
-  (prije: "Bez skrivenih stavki")
+Bijelo ostaje samo kao akcent: broj, eyebrow slogan i domena.
+Time je vecina teksta crna (sto korisnik trazi), a bijelo nosi kontrast.
 
-### BUG popravljen
-Prored biljeske nije bio isti na sva tri mjesta: linija je racunala
-(nfs+20), a tekst (nfs+16) — zadnja rijec je izlazila i gubila se
-("svid" umjesto "svidi"). Sada svuda `(nfs + 20)` -> `NLH`.
+```ts
+const onTeal = c.bg === "#4DEAE0" || c.bg === "#6FEFE6";
+const headInk = onTeal ? "#0A0A0A" : c.ink;
+const noteInk = onTeal ? "rgba(10,10,10,0.72)" : c.soft;
+```
+
+Na tamnoj paleti (dark/ink) nista se ne mijenja — tamo bi crni tekst bio
+nevidljiv, pa naslov ostaje `c.ink` i biljeska `c.soft`.
 
 ### Verifikacija
-- p03: 150 KM crno (#0A0A0A), naslov bijeli, bez liste, tekst cijeli.
+- p03: naslov i biljeska crni, broj/slogan/domena bijeli (vision potvrdio).
 - 41 objava x 2 formata: 0 van kadra, 0 console gresaka.
 - tsc=0, build OK (1.822 kB).
 
 ## Sljedeći korak
-- Pregledati p03 — crno "150 KM" + bijeli tekst.
-- Ostali cjenovni postovi (p08, p09, p55, p56) mogu dobiti isti tretman.
+- Pregledati p03 — vecina crno, bijeli akcent na broju.
+- Ako neki drugi post ide na zelenu podlogu, koristiti paletu `tealwhite`
+  i automatski dobija isti tretman (crni tekst, bijeli broj).
 - Opciono: 4:5 format.
 
 ## Napomene / zamke

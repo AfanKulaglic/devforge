@@ -520,12 +520,23 @@ function formFigure(c: Colors, p: PostSlide): Block {
   // Sada: razmaci se racunaju iz visine formata, a naslov i biljeska dobijaju
   // po jedan red vise. Tekst se NE rasteze — samo se ravnomjernije rasporedi.
   const tall = SIZE_H >= 1300;
+  // BOJE ZA ZELENU PODLOGU.
+  //
+  // Korisnik zeli VISE CRNOG teksta, a manje bijelog. Na teal podlozi se
+  // zato naslov i biljeska pisu CRNO, a broj ostaje BIJELI kao jedini
+  // svijetli element — on nosi kontrast, ostalo je citljiv tekst.
+  //
+  // Na tamnoj paleti (dark/ink) ovo se ne primjenjuje: tamo crni tekst ne
+  // bi bio vidljiv, pa naslov ostaje `c.ink` a biljeska `c.soft`.
+  const onTeal = c.bg.toUpperCase() === "#4DEAE0" || c.bg.toUpperCase() === "#6FEFE6";
+  const headInk = onTeal ? "#0A0A0A" : c.ink;
+  const noteInk = onTeal ? "rgba(10,10,10,0.72)" : c.soft;
   const val = p.value ?? "";
   const base = val.length <= 2 ? 260 : val.length <= 4 ? 210 : val.length <= 7 ? 150 : 112;
   const vsize = Math.max(70, Math.min(fit(val, W, base), tall ? 280 : 250));
 
   let svg = `<text x="0" y="${vsize * 0.78}" font-family="${FONT}" font-size="${vsize}"
-    font-weight="900" letter-spacing="${(-vsize * 0.03).toFixed(1)}" fill="${tall ? "#0A0A0A" : c.accent}">${esc(val)}</text>`;
+    font-weight="900" letter-spacing="${(-vsize * 0.03).toFixed(1)}" fill="${tall ? "#FFFFFF" : c.accent}">${esc(val)}</text>`;
   let h = vsize;
 
   // Naslov: 3 reda u 1:1, 4 u 3:4. Prored 1.22 da se redovi ne slijube.
@@ -546,7 +557,7 @@ function formFigure(c: Colors, p: PostSlide): Block {
   h += tall ? 8 : 52;
   tl.forEach((l, i) => {
     svg += `<text x="0" y="${h + ts * 0.78 + i * tlh}" font-family="${FONT}"
-      font-size="${ts}" font-weight="800" letter-spacing="-1.4" fill="${c.ink}">${esc(l)}</text>`;
+      font-size="${ts}" font-weight="800" letter-spacing="-1.4" fill="${headInk}">${esc(l)}</text>`;
   });
   h += (tl.length - 1) * tlh + ts;
 
@@ -566,7 +577,7 @@ function formFigure(c: Colors, p: PostSlide): Block {
     svg += `<rect x="0" y="${h - 6}" width="5" height="${nl.length * (nfs + 20)}" fill="${c.accent}"/>`;
     nl.forEach((l: string, i: number) => {
       svg += `<text x="30" y="${h + nfs * 0.86 + i * (nfs + 20)}" font-family="${FONT}"
-        font-size="${nfs}" font-weight="500" fill="${c.soft}">${esc(l)}</text>`;
+        font-size="${nfs}" font-weight="500" fill="${noteInk}">${esc(l)}</text>`;
     });
     h += (nl.length - 1) * (nfs + 20) + nfs;
   }
