@@ -524,7 +524,7 @@ function formFigure(c: Colors, p: PostSlide): Block {
   const tlh = ts * 1.34;
 
   // Razmak broj -> naslov. U 3:4 veci — broj je ogroman pa mu treba zraka.
-  h += tall ? 104 : 52;
+  h += tall ? 62 : 52;
   tl.forEach((l, i) => {
     svg += `<text x="0" y="${h + ts * 0.78 + i * tlh}" font-family="${FONT}"
       font-size="${ts}" font-weight="800" letter-spacing="-1.4" fill="${c.ink}">${esc(l)}</text>`;
@@ -543,7 +543,7 @@ function formFigure(c: Colors, p: PostSlide): Block {
       nfs -= 2;
       nl = wrap(p.valueNote, nfs, W - 30, MAXN + 1);
     }
-    h += tall ? 90 : 44;
+    h += tall ? 48 : 44;
     svg += `<rect x="0" y="${h - 6}" width="5" height="${nl.length * (nfs + 20)}" fill="${c.accent}"/>`;
     nl.forEach((l: string, i: number) => {
       svg += `<text x="30" y="${h + nfs * 0.86 + i * (nfs + 16)}" font-family="${FONT}"
