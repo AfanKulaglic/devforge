@@ -206,6 +206,43 @@ function detectCountry(): { country: string; countryCode: string; timezone: stri
 }
 
 // ── Storage ───────────────────────────────────────────────────────────────
+
+// ── ZASTITA BAZE OD TESTNIH POSJETA ─────────────────────────────────────
+//
+// Uslovi pod kojima posjeta NE ide u Firebase. Lokalni kes je i dalje pun
+// (da dev radi normalno), ali baza ostaje cista pa admin Analitika
+// pokazuje stvarne brojke.
+function jeTestnaPosjeta(v: Visit): boolean {
+  // 1) Lokalni razvoj — nikad u bazu.
+  try {
+    const h = window.location.hostname;
+    if (h === "localhost" || h === "127.0.0.1" || h === "0.0.0.0" || h.endsWith(".local")) {
+      return true;
+    }
+  } catch {
+    return true;
+  }
+
+  // 2) Automatizovani pretrazivac (Playwright, Selenium, headless Chrome).
+  try {
+    if ((navigator as { webdriver?: boolean }).webdriver) return true;
+    if (/HeadlessChrome|PhantomJS|Puppeteer/i.test(navigator.userAgent)) return true;
+  } catch {
+    /* ignore */
+  }
+
+  // 3) Nema nijedne zabiljezene stranice — covjek uvijek otvori barem jednu.
+  if (!v.pages || v.pages.length === 0) return true;
+
+  // 4) Krace od 3 sekunde I bez ijedne akcije — bot ili slucajan otvarac
+  //    koji je odmah zatvorio tab. Covjek koji je stvarno gledao ostane
+  //    duze ili barem klikne nesto.
+  const kratko = (v.totalMs ?? 0) < 3000;
+  const bezAkcije = !v.events || v.events.length === 0;
+  if (kratko && bezAkcije) return true;
+
+  return false;
+}
 function readVisits(): Visit[] {
   try {
     const raw = window.localStorage.getItem(VISITS_KEY);
@@ -237,7 +274,9 @@ function writeVisits(visits: Visit[]) {
   // SADA: update() po kljucu — svako pise samo svoje, nista se ne brise.
   if (firebaseReady && activeVisitId) {
     const mine = capped.find((v) => v.id === activeVisitId);
-    if (mine) {
+    // Testne posjete (localhost, bot, prekratke) ostaju samo u lokalnom
+    // kesu — baza sluzi za stvarne brojke u admin panelu.
+    if (mine && !jeTestnaPosjeta(mine)) {
       void (async () => {
         try {
           await update(ref(getDb(), VISITS_DB_PATH), { [mine.id]: mine });
