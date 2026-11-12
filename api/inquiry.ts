@@ -23,10 +23,22 @@ export const config = { runtime: "nodejs" };
 
 const BREVO_ENDPOINT = "https://api.brevo.com/v3/smtp/email";
 
-/** Poruka UVIJEK ide nama — korisnik ne bira primaoca. */
-const INBOX = "kontakt@devlab.cc.cd";
-/** Brevo pošiljalac (mora biti verifikovan u Brevo). */
-const FROM = "kontakt@devlab.cc.cd";
+/**
+ * Primaoc poruke — UVIJEK mi, korisnik ne bira.
+ *
+ * PRIJE: hardkodirano na "kontakt@devlab.cc.cd". Taj alias zivi na
+ * ImprovMX-u, koji SAMO forwarduje na neku drugu adresu. Ako taj forward
+ * nije podesen (ili vodi na adresu koja ne postoji), Brevo kaze "ok",
+ * ali mail se izgubi i NIKAD ne dode. Tano to se desavalo.
+ *
+ * SADA: primaoc se cita iz MAIL_INBOX env varijable na Vercelu. Upisi
+ * tamo svoj stvarni mailbox (npr. tvoj Hotmail) i mail ide DIREKTNO —
+ * nema forwarda, nema gubljenja. Ako varijabla nije postavljena, pada
+ * nazad na staru adresu (da nista ne pukne).
+ */
+const INBOX = process.env.MAIL_INBOX || "kontakt@devlab.cc.cd";
+/** Brevo posiljalac (mora biti verifikovan u Brevo). */
+const FROM = process.env.MAIL_FROM || "kontakt@devlab.cc.cd";
 
 const RATE_LIMIT = 6;
 const RATE_WINDOW_MS = 10 * 60 * 1000;
