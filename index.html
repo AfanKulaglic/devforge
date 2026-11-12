@@ -25,7 +25,13 @@
           "/o-nama", "/cesta-pitanja", "/kontakt", "/privatnost", "/uslovi",
           "/kolacici"
         ];
-        var path = location.pathname.replace(/\/$/, "") || "/";
+        // Trim trailing slash BEZ regexa — regex se dva puta pokvario pri
+        // zapisu (// umjesto /\//) i ubijao cijelu skriptu.
+        var path = location.pathname;
+        while (path.length > 1 && path.charAt(path.length - 1) === "/") {
+          path = path.slice(0, -1);
+        }
+        if (!path) path = "/";
         // Interne stranice: nikad u Googleu.
         var interni = ["/admin", "/reklama", "/objave", "/logo", "/mail", "/test"];
         if (interni.indexOf(path) !== -1 || known.indexOf(path) === -1) {
