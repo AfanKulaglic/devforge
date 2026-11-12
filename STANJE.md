@@ -46,6 +46,43 @@ otvara. Korisnik klikne "Posalji" i vidi "Poruka je poslana".
 - stanja `sent` / `sending` / `sendError` umjesto `mailOpened`
 - uspjeh: "Poruka je poslana" + ponuda da pisu na mejl ako je hitno
 
+### MAIL: kontakt@ -> info@ (korisnik potvrdio da info@ ima forward)
+
+Korisnik: "treba mail da ide na info@devlab.cc.cd a on je preusmjeren na
+moj gmail tako smo i uradili bili".
+
+**Zasto je kontakt@ propadao:** nije imao forward u ImprovMX-u, pa je
+Brevo rekao `{"ok":true}` a mail se izgubio nakon predaje. `info@`
+ima forward na Gmail — zato sada ide tamo.
+
+**Zamijenjeno `kontakt@devlab.cc.cd` -> `info@devlab.cc.cd` — 28 mjesta:**
+
+| fajl | broj |
+|---|---|
+| `api/inquiry.ts` | 3 (INBOX, FROM, komentar) |
+| `api/send-mail.ts` | 1 (ALLOWED_SENDERS) |
+| `src/App.tsx` | 15 (`CONTACT.email`, mailto linkovi, footer) |
+| `index.html` | 4 (og:email, JSON-LD) |
+| `src/lib/inquiries.ts` | 1 |
+| `src/AdminMessagesTab.tsx` | 1 |
+| `src/lib/posts2/3.ts`, `postsPremium.ts` | 4 |
+| `src/MailSignaturePage.tsx` | 1 |
+| `public/llms.txt` | 1 |
+
+Provjereno: `grep -rc "kontakt@devlab"` -> **0 ostataka** u svim fajlovima.
+
+**INBOX/FROM i dalje citaju env** (`MAIL_INBOX` / `MAIL_FROM`), pa se
+primaoc moze promijeniti i bez koda.
+
+**Test na produkciji nakon deploya:**
+`POST /api/inquiry` -> `{"ok":true}` HTTP 200.
+Stranica prikazuje `info@devlab.cc.cd`.
+
+**Ako mail i dalje ne dode na Gmail, provjeriti (korisnik):**
+1. ImprovMX -> aliases: postoji li `info@` i gdje ide
+2. Je li Gmail potvrdio forward verification mail
+3. Brevo -> Transactional -> Logs: `delivered` ili `bounced`
+
 ### SEO / MAIL — zavrsno stanje (korisnik potvrdio)
 
 **Google Search Console — ZAVRSENO.**
