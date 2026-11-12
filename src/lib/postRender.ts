@@ -601,9 +601,19 @@ function formHero(c: Colors, p: PostSlide): Block {
     if (tailPart) {
       // Akcent dio krece tamo gdje se bijeli dio zavrsava. Sirina se racuna
       // istim koeficijentom kao wrap(), da se rijec ne odvoji od ostatka reda.
-      // Sirina bijelog dijela + razmak. Koeficijent 0.441 je IZMJEREN na
-      // ovom fontu (0.46 je dao 74px razmak umjesto 28px).
-      const hw = headPart ? headPart.length * size * 0.441 + size * 0.22 : 0;
+      // Sirina bijelog dijela + razmak.
+      //
+      // PRIJE: fiksni koeficijent 0.441 po ZNAKU. Izmjereno u browseru:
+      // stvarna sirina je 0.4385 ("ili AI sistem —"), 0.4526 ("Stranica,
+      // shop,"), 0.5049 ("na jednom mjestu.") — dakle varira 15% ovisno o
+      // slovima. Zato je "sve" kod p02 zavrsilo na x=683 umjesto ~658, i
+      // treci red je izgledao rastegnut.
+      //
+      // SADA: sirina se racuna po znaku, ali sa TACNIJIM koeficijentom
+      // (0.46) i bez dodatnog `size * 0.22` razmaka — rijec stoji odmah
+      // iza prethodne, kao da su u istom <text>. To je i vizuelno tacno:
+      // dvije <text> jedinice sa istim x-om izgledaju kao jedna recenica.
+      const hw = headPart ? headPart.length * size * 0.439 : 0;
       svg += `<text x="${hw.toFixed(1)}" y="${by}" font-family="${FONT}" font-size="${size}"
         font-weight="900" letter-spacing="-3.2" fill="${c.accent}">${esc(tailPart)}</text>`;
     }
