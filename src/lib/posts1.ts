@@ -72,12 +72,12 @@ export const POSTS_1: AdPost[] = [
     photo: "zasto",
     palette: "dark",
     eyebrow: "Zašto baš mi",
-    title: "Zašto firme biraju DevLab umjesto agencije.",
+    title: "Zašto firme biraju DevLab.",
     slides: [
       {
         template: "cover",
         eyebrow: "Zašto baš DevLab",
-        title: "Zašto firme biraju DevLab, ne agenciju.",
+        title: "Zašto firme biraju baš DevLab.",
         accentWords: ["DevLab"],
         lead: "Agencija traži 50% unaprijed, prije nego što vidite ijedan piksel. Mi radimo obrnuto — prvo napravimo stranicu i pokažemo vam je na pravom linku. Ako vam se ne svidi, ne plaćate ništa.",
         items: [
