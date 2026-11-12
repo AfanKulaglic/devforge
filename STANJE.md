@@ -46,6 +46,137 @@ otvara. Korisnik klikne "Posalji" i vidi "Poruka je poslana".
 - stanja `sent` / `sending` / `sendError` umjesto `mailOpened`
 - uspjeh: "Poruka je poslana" + ponuda da pisu na mejl ako je hitno
 
+### ⚠️ BLOKIRANO: VERCEL NE DEPLOYA (korisnik mora redeployati)
+
+Od commita **`fbfaa5a`** (info@) Vercel **ne builda nove commitove**.
+Provjereno sadrzajem produkcije:
+
+| commit | marker | na produkciji? |
+|---|---|---|
+| `fbfaa5a` info@ | `info@devlab.cc.cd` | ✅ DA |
+| `2d0af23` GSC tag | `msvalidate` | ✅ DA |
+| `084f9e0` regex fix | `replace(/$/` | ❌ NE |
+| `ab8134b` bez regexa | `charAt(path.length` | ❌ NE |
+| `d660e80` heap | — | ❌ NE |
+
+**Kritican bug koji Ceka deploy:**
+Soft-404 guard skripta je imala pokvaren regex `replace(//$/, "")`.
+`//` je u JS-u **komentar**, pa skripta puca
+`SyntaxError: Unexpected token 'var'` **pri svakom ucitavanju sajta**.
+Izmjereno: 1 pageerror na svakoj posjeti, FCP ~2560ms.
+
+**Fix:** regex **potpuno uklonjen**, zamijenjen petljom:
+```js
+var path = location.pathname;
+while (path.length > 1 && path.charAt(path.length - 1) === "/") path = path.slice(0, -1);
+if (!path) path = "/";
+```
+Provjereno: `new Function(kod)` prolazi, build exit 0.
+
+**Zasto se regex kvario:** pisan kroz `node -e` u bash-u, escape
+`/# Dev Lab — TRENUTNO STANJE
+> Prepisuje se na kraju svake sesije. Kratko i aktualno.
+Zadnje ažuriranо: 2026-11-11 (poruke u Firebase — vidljive sa svih uredjaja)
+
+## Projekt
+- React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
+- Brend: **Dev Lab** (wordmark **DevLab**), teal `#4DEAE0`. Valuta KM.
+- Produkcija: `https://devlab.cc.cd` (zaštićeni identifikator — ne mijenjati).
+- Kontakt: `kontakt@devlab.cc.cd`, `@devlab.cc.cd`, `+387 62 576 456`.
+- Admin: `/admin`, login `afan` / `080513` (sessionStorage `devforge-admin-session`).
+- Dev server: `npm run dev` → http://localhost:5173/
+- Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
+
+## Gotovo (ova sesija)
+
+### KONTAKT FORMA — salje direktno, bez otvaranja mejla
+
+Korisnik: "zatrazi gotovu verziju ukuca se poruka onda se korisnik
+preusmjeri na mail — mozes li da on posalje meni tu poruku bez da mu
+otvara mail".
+
+**Problem prije:** `submitMail` je radio `window.location.href = mailto:`.
+To otvara korisnikov mejl klijent. Na telefonu pola ljudi nema podesen
+mail klijent — poruka se NIKAD ne posalje, a korisnik misli da jeste.
+
+**Sada:** `submitInquiry` salje na `/api/inquiry` (Brevo), nista se ne
+otvara. Korisnik klikne "Posalji" i vidi "Poruka je poslana".
+
+| fajl | sta radi |
+|---|---|
+| `api/inquiry.ts` | NOVO — prima poruku, salje mail na `kontakt@devlab.cc.cd` |
+| `src/lib/inquiries.ts` | NOVO — tip `Inquiry` (`email?` opcionalan) + localStorage + fetch |
+| `src/AdminMessagesTab.tsx` | NOVO — tab "Poruke" u adminu |
+| `src/App.tsx` | `submitMail` -> `submitInquiry`, honeypot, stanja |
+| `src/AdminPanel.tsx` | tab "Poruke" + badge neodgovorenih |
+
+**`api/inquiry.ts` sigurnost:**
+- primalac FIKSNI (`kontakt@devlab.cc.cd`) — ne moze se poslati nikome drugom
+- `replyTo` = korisnikov email (ako ga ostavi), pa "Odgovori" ide njemu
+- rate limit 6/10min po IP, honeypot `website`, duzine se sijeku, HTML escape
+- bez `BREVO_API_KEY` vraca 404 -> klijent samo sacuva lokalno, bez greske
+
+**Forma izmjene (`App.tsx`):**
+- polje "Telefon *" — **OBAVEZNO**, mora biti broj (min 6 cifara)
+- honeypot input `name="website"` (skriven, botovi ga popune)
+- stanja `sent` / `sending` / `sendError` umjesto `mailOpened`
+- uspjeh: "Poruka je poslana" + ponuda da pisu na mejl ako je hitno
+
+ se gubio — dva puta se zapisalo `//# Dev Lab — TRENUTNO STANJE
+> Prepisuje se na kraju svake sesije. Kratko i aktualno.
+Zadnje ažuriranо: 2026-11-11 (poruke u Firebase — vidljive sa svih uredjaja)
+
+## Projekt
+- React + Vite + TypeScript + Tailwind. Skoro sav kod u `src/App.tsx`, stilovi `src/index.css`.
+- Brend: **Dev Lab** (wordmark **DevLab**), teal `#4DEAE0`. Valuta KM.
+- Produkcija: `https://devlab.cc.cd` (zaštićeni identifikator — ne mijenjati).
+- Kontakt: `kontakt@devlab.cc.cd`, `@devlab.cc.cd`, `+387 62 576 456`.
+- Admin: `/admin`, login `afan` / `080513` (sessionStorage `devforge-admin-session`).
+- Dev server: `npm run dev` → http://localhost:5173/
+- Build ponekad padne na OOM → `NODE_OPTIONS=--max-old-space-size=4096 npm run build`.
+
+## Gotovo (ova sesija)
+
+### KONTAKT FORMA — salje direktno, bez otvaranja mejla
+
+Korisnik: "zatrazi gotovu verziju ukuca se poruka onda se korisnik
+preusmjeri na mail — mozes li da on posalje meni tu poruku bez da mu
+otvara mail".
+
+**Problem prije:** `submitMail` je radio `window.location.href = mailto:`.
+To otvara korisnikov mejl klijent. Na telefonu pola ljudi nema podesen
+mail klijent — poruka se NIKAD ne posalje, a korisnik misli da jeste.
+
+**Sada:** `submitInquiry` salje na `/api/inquiry` (Brevo), nista se ne
+otvara. Korisnik klikne "Posalji" i vidi "Poruka je poslana".
+
+| fajl | sta radi |
+|---|---|
+| `api/inquiry.ts` | NOVO — prima poruku, salje mail na `kontakt@devlab.cc.cd` |
+| `src/lib/inquiries.ts` | NOVO — tip `Inquiry` (`email?` opcionalan) + localStorage + fetch |
+| `src/AdminMessagesTab.tsx` | NOVO — tab "Poruke" u adminu |
+| `src/App.tsx` | `submitMail` -> `submitInquiry`, honeypot, stanja |
+| `src/AdminPanel.tsx` | tab "Poruke" + badge neodgovorenih |
+
+**`api/inquiry.ts` sigurnost:**
+- primalac FIKSNI (`kontakt@devlab.cc.cd`) — ne moze se poslati nikome drugom
+- `replyTo` = korisnikov email (ako ga ostavi), pa "Odgovori" ide njemu
+- rate limit 6/10min po IP, honeypot `website`, duzine se sijeku, HTML escape
+- bez `BREVO_API_KEY` vraca 404 -> klijent samo sacuva lokalno, bez greske
+
+**Forma izmjene (`App.tsx`):**
+- polje "Telefon *" — **OBAVEZNO**, mora biti broj (min 6 cifara)
+- honeypot input `name="website"` (skriven, botovi ga popune)
+- stanja `sent` / `sending` / `sendError` umjesto `mailOpened`
+- uspjeh: "Poruka je poslana" + ponuda da pisu na mejl ako je hitno
+
+. **POUKA: nikad ne pisati
+regex kroz shell heredoc/node -e; koristiti `write` tool.**
+
+**Korisnik treba:** Vercel -> Deployments -> Redeploy (ili provjeriti zasto
+deploy nije krenuo). Nakon toga provjeriti:
+`curl -s https://devlab.cc.cd/ | grep -c 'charAt(path.length'` -> mora biti 1.
+
 ### MAIL: kontakt@ -> info@ (korisnik potvrdio da info@ ima forward)
 
 Korisnik: "treba mail da ide na info@devlab.cc.cd a on je preusmjeren na
