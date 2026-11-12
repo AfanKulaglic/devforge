@@ -34,7 +34,7 @@ const TEAL_BRIGHT = "#14b8a6";
 const INK = "#111827";
 const SOFT = "#6b7280";
 
-const SENDERS = ["kontakt@devlab.cc.cd", "info@devlab.cc.cd"] as const;
+const SENDERS = ["info@devlab.cc.cd", "info@devlab.cc.cd"] as const;
 
 /** Gotove teme — da ne počinješ od praznog polja. */
 const SUBJECT_PRESETS = [

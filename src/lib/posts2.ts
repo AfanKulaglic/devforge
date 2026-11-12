@@ -356,9 +356,9 @@ export const POSTS_2: AdPost[] = [
     palette: "ink",
     eyebrow: "Kontakt",
     title: "Recite čime se bavite. Ostalo je naš posao.",
-    subtitle: "Instagram: @devlab.cc.cd · Email: kontakt@devlab.cc.cd · Sarajevo, cijela BiH",
+    subtitle: "Instagram: @devlab.cc.cd · Email: info@devlab.cc.cd · Sarajevo, cijela BiH",
     caption:
-      "👋 Ne morate imati ni ideju. Ozbiljno.\n\nNe morate imati:\n— ✅ gotov tekst\n— 🔥 logo u vektoru\n— 💡 ideju kako stranica treba izgledati\n— ⚡ ni odluku da li Vam uopšte treba stranica\n\nDovoljno je da se javite i kažete čime se bavite.\n\nKako nas kontaktirate:\n— 🎯 Instagram DM: @devlab.cc.cd\n— 💰 e-mail: kontakt@devlab.cc.cd\n— 📈 ili pozovite: +387 62 576 456\n\nOdgovaramo u roku od 10 minuta. Bez obaveze i bez predujma.\n\nJavite nam se u DM.",
+      "👋 Ne morate imati ni ideju. Ozbiljno.\n\nNe morate imati:\n— ✅ gotov tekst\n— 🔥 logo u vektoru\n— 💡 ideju kako stranica treba izgledati\n— ⚡ ni odluku da li Vam uopšte treba stranica\n\nDovoljno je da se javite i kažete čime se bavite.\n\nKako nas kontaktirate:\n— 🎯 Instagram DM: @devlab.cc.cd\n— 💰 e-mail: info@devlab.cc.cd\n— 📈 ili pozovite: +387 62 576 456\n\nOdgovaramo u roku od 10 minuta. Bez obaveze i bez predujma.\n\nJavite nam se u DM.",
     tags: ["kontakt", "pocetak", "bezobaveze", "sarajevo", "devlab"],
   },
 ];

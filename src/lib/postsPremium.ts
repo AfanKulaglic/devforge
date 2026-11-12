@@ -92,7 +92,7 @@ export const POST_PREMIUM: AdPost = {
     "Odgovaramo u roku od 10 minuta.\n" +
     "\n" +
     "🌐 www.devlab.cc.cd\n" +
-    "📧 kontakt@devlab.cc.cd\n" +
+    "📧 info@devlab.cc.cd\n" +
     "📱 +387 62 576 456\n" +
     "📸 @devlab.cc.cd\n" +
     "\n" +

@@ -389,7 +389,7 @@ export const POSTS_3: AdPost[] = [
     title: "Ne morate imati ni ideju. Dovoljno je da kažete čime se bavite.",
     subtitle: "Strukturu, tekstove i dizajn predlažemo mi. Vi kažete šta vam se sviđa.",
     caption:
-      "👋 Ne morate imati ni ideju, samo se javite.\n\nVećina razgovora počne ovako: „Radim to i to, ne znam šta mi treba.“\n\nTo je sasvim dovoljno.\n\nNe morate imati:\n— ✅ gotov tekst\n— 🔥 logo\n— 💡 ideju kako stranica treba izgledati\n— ⚡ budžet na papiru\n\nMi pitamo dalje i kažemo šta ima smisla.\n\nInstagram DM: @devlab.cc.cd\nE-mail: kontakt@devlab.cc.cd\nSarajevo · cijela BiH\n\nOdgovaramo u roku od 10 minuta. Bez obaveze i bez predujma.",
+      "👋 Ne morate imati ni ideju, samo se javite.\n\nVećina razgovora počne ovako: „Radim to i to, ne znam šta mi treba.“\n\nTo je sasvim dovoljno.\n\nNe morate imati:\n— ✅ gotov tekst\n— 🔥 logo\n— 💡 ideju kako stranica treba izgledati\n— ⚡ budžet na papiru\n\nMi pitamo dalje i kažemo šta ima smisla.\n\nInstagram DM: @devlab.cc.cd\nE-mail: info@devlab.cc.cd\nSarajevo · cijela BiH\n\nOdgovaramo u roku od 10 minuta. Bez obaveze i bez predujma.",
     tags: ["kontakt", "pocetak", "bezobaveze", "sarajevo", "devlab"],
   },
 ];

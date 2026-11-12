@@ -16,7 +16,7 @@ export const config = { runtime: "nodejs" };
 const BREVO_ENDPOINT = "https://api.brevo.com/v3/smtp/email";
 
 /** Dozvoljeni pošiljaoci — moraju biti verifikovani u Brevo. */
-const ALLOWED_SENDERS = ["kontakt@devlab.cc.cd", "info@devlab.cc.cd"] as const;
+const ALLOWED_SENDERS = ["info@devlab.cc.cd", "info@devlab.cc.cd"] as const;
 
 /** Maksimalan broj poslanih mailova po IP adresi u 10 minuta. */
 const RATE_LIMIT = 5;

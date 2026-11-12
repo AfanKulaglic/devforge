@@ -3,7 +3,7 @@
 //
 // Kako radi:
 //   1. Korisnik popuni formu i klikne "Pošalji".
-//   2. `POST /api/inquiry` šalje mail na kontakt@devlab.cc.cd preko Brevoa
+//   2. `POST /api/inquiry` šalje mail na info@devlab.cc.cd preko Brevoa
 //      — korisnik NE mora imati mail klijent, ništa se ne otvara.
 //   3. Ista poruka se upiše u Firebase (`devforge/inquiries`), pa je vidiš
 //      u admin panelu sa BILO KOJEG uređaja.

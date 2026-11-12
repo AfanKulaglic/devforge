@@ -26,7 +26,7 @@ const BREVO_ENDPOINT = "https://api.brevo.com/v3/smtp/email";
 /**
  * Primaoc poruke — UVIJEK mi, korisnik ne bira.
  *
- * PRIJE: hardkodirano na "kontakt@devlab.cc.cd". Taj alias zivi na
+ * PRIJE: hardkodirano na "info@devlab.cc.cd". Taj alias zivi na
  * ImprovMX-u, koji SAMO forwarduje na neku drugu adresu. Ako taj forward
  * nije podesen (ili vodi na adresu koja ne postoji), Brevo kaze "ok",
  * ali mail se izgubi i NIKAD ne dode. Tano to se desavalo.
@@ -36,9 +36,9 @@ const BREVO_ENDPOINT = "https://api.brevo.com/v3/smtp/email";
  * nema forwarda, nema gubljenja. Ako varijabla nije postavljena, pada
  * nazad na staru adresu (da nista ne pukne).
  */
-const INBOX = process.env.MAIL_INBOX || "kontakt@devlab.cc.cd";
+const INBOX = process.env.MAIL_INBOX || "info@devlab.cc.cd";
 /** Brevo posiljalac (mora biti verifikovan u Brevo). */
-const FROM = process.env.MAIL_FROM || "kontakt@devlab.cc.cd";
+const FROM = process.env.MAIL_FROM || "info@devlab.cc.cd";
 
 const RATE_LIMIT = 6;
 const RATE_WINDOW_MS = 10 * 60 * 1000;

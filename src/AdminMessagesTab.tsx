@@ -19,7 +19,7 @@ import {
 // ───────────────────────────────────────────────────────────────────────────
 // Tab "Poruke" — upiti koje su ljudi poslali kroz kontakt formu.
 //
-// Zašto postoji: mail na kontakt@devlab.cc.cd stiže odmah, ali se u sandučetu
+// Zašto postoji: mail na info@devlab.cc.cd stiže odmah, ali se u sandučetu
 // utopi među ostalim. Ovdje su SAMO upiti sa sajta, najnoviji prvi, sa jasnom
 // oznakom "novo" dok se ne označe kao odgovoreni.
 //

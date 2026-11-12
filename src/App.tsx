@@ -112,7 +112,7 @@ const CONTACT = {
   // Javno se broj NE prikazuje. Linkovi (tel:, viber:, wa.me) i dalje rade.
   phoneLabel: "Pozovite nas", // stoji umjesto broja na sajtu
   phoneRaw: "+38762576456", // koristi se SAMO unutar href, nikad kao tekst
-  email: "kontakt@devlab.cc.cd",
+  email: "info@devlab.cc.cd",
   // Instagram DM — najbrzi kanal za mnoge klijente.
   instagramHandle: "@devlab.cc.cd",
   instagramUrl: "https://ig.me/m/devlab.cc.cd", // ig.me/m/ = direktno otvara DM
@@ -1184,8 +1184,8 @@ function Header() {
                 <HiOutlineRocketLaunch className="text-base" aria-hidden="true" />
               </CtaButton>
               <div className="mt-4 flex items-center justify-between px-1">
-                <a className="text-sm font-medium text-white/55 transition hover:text-white" href="mailto:kontakt@devlab.cc.cd">
-                  kontakt@devlab.cc.cd
+                <a className="text-sm font-medium text-white/55 transition hover:text-white" href="mailto:info@devlab.cc.cd">
+                  info@devlab.cc.cd
                 </a>
                 <div className="flex gap-2">
                   <a className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-white/70 transition hover:border-teal-300 hover:bg-white hover:text-black" href="https://www.linkedin.com/company/devlab" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
@@ -2472,7 +2472,7 @@ const footerColumns: { title: string; links: { label: string; href?: string; soo
     title: "Kontakt",
     links: [
       { label: "Pozovite nas", href: "tel:+38762576456" },
-      { label: "kontakt@devlab.cc.cd", href: "mailto:kontakt@devlab.cc.cd" },
+      { label: "info@devlab.cc.cd", href: "mailto:info@devlab.cc.cd" },
       { label: "WhatsApp", href: "https://wa.me/38762576456" },
       { label: "Instagram DM", href: "https://ig.me/m/devlab.cc.cd" },
       { label: "Viber", href: "viber://chat?number=%2B38762576456" },
@@ -2559,7 +2559,7 @@ function ContactModal({ open, onClose }: { open: boolean; onClose: () => void })
   // Prije: otvarao se korisnikov mejl klijent (mailto:). Problem — pola
   // ljudi na telefonu nema podešen mail klijent, pa se poruka nikad ne
   // pošalje, a korisnik misli da jeste. Sada poruka ide DIREKTNO sa sajta:
-  //   • `/api/inquiry` šalje je na kontakt@devlab.cc.cd preko Brevoa
+  //   • `/api/inquiry` šalje je na info@devlab.cc.cd preko Brevoa
   //   • ista poruka se upiše lokalno, pa admin vidi i u tabu "Poruke"
   // Ništa se ne otvara, korisnik samo klikne "Pošalji".
   // ── USPJEH: pokaži potvrdu, pa ZATVORI MODAL ─────────────────────────
@@ -3030,7 +3030,7 @@ function ContactAndFooter() {
           </button>
           <div className="mt-10 space-y-3 text-[#A7AABB]">
             <p className="flex items-center gap-3"><HiOutlinePhone className="text-lg text-teal-300" aria-hidden="true" /><span className="font-bold text-white">Telefon:</span> <a className="text-teal-300 underline-offset-4 hover:underline" href={`tel:${CONTACT.phoneRaw}`}>Pozovite nas</a></p>
-            <p className="flex items-center gap-3"><HiOutlineEnvelope className="text-lg text-teal-300" aria-hidden="true" /><span className="font-bold text-white">Email:</span> kontakt@devlab.cc.cd</p>
+            <p className="flex items-center gap-3"><HiOutlineEnvelope className="text-lg text-teal-300" aria-hidden="true" /><span className="font-bold text-white">Email:</span> info@devlab.cc.cd</p>
             <p className="flex items-center gap-3"><HiOutlineMapPin className="text-lg text-teal-300" aria-hidden="true" /><span className="font-bold text-white">Lokacija:</span> Marsala Tita 28, Sarajevo, BiH</p>
           </div>
           <div className="mt-6 flex gap-3">
@@ -3165,7 +3165,7 @@ function ContactAndFooter() {
               <p className="mt-4 max-w-xs text-sm leading-6 text-[#A7AABB]">DevLab — web stranice, shopovi i mobilne aplikacije iz Sarajeva. Bez predujma, uz besplatnu gotovu verziju.</p>
               <div className="mt-5 space-y-2 text-sm text-[#A7AABB]">
                 <a className="flex items-center gap-2.5 transition hover:text-white" href={`tel:${CONTACT.phoneRaw}`}><HiOutlinePhone className="text-teal-300" aria-hidden="true" /> Pozovite nas</a>
-                <a className="flex items-center gap-2.5 transition hover:text-white" href="mailto:kontakt@devlab.cc.cd"><HiOutlineEnvelope className="text-teal-300" aria-hidden="true" /> kontakt@devlab.cc.cd</a>
+                <a className="flex items-center gap-2.5 transition hover:text-white" href="mailto:info@devlab.cc.cd"><HiOutlineEnvelope className="text-teal-300" aria-hidden="true" /> info@devlab.cc.cd</a>
                 <p className="flex items-center gap-2.5"><HiOutlineMapPin className="text-teal-300" aria-hidden="true" /> Maršala Tita 28, Sarajevo, BiH</p>
               </div>
               <div className="mt-5 flex gap-3">
@@ -4081,7 +4081,7 @@ function FaqPage() {
 // koja se ionako prikazuje ispod). Svaka kartica je klikabilna (tel/mailto/maps).
 const contactMethods: { icon: IconType; label: string; value: string; href: string; note: string }[] = [
   { icon: HiOutlinePhone, label: "Telefon", value: "Pozovite nas", href: `tel:${CONTACT.phoneRaw}`, note: "Pon–Pet, 09–17h" },
-  { icon: HiOutlineEnvelope, label: "Email", value: "kontakt@devlab.cc.cd", href: "mailto:kontakt@devlab.cc.cd", note: "Odgovaramo isti dan" },
+  { icon: HiOutlineEnvelope, label: "Email", value: "info@devlab.cc.cd", href: "mailto:info@devlab.cc.cd", note: "Odgovaramo isti dan" },
   { icon: HiOutlineMapPin, label: "Lokacija", value: "Maršala Tita 28, Sarajevo", href: "https://maps.google.com/?q=Marsala+Tita+28+Sarajevo", note: "BiH + cijela regija" },
 ];
 
@@ -4483,8 +4483,8 @@ const legalDocs: Record<"privatnost" | "uslovi" | "kolacici", LegalDoc> = {
       { heading: "2. Svrha obrade", body: ["Podatke koristimo isključivo da odgovorimo na vaš upit, pripremimo ponudu, isporučimo dogovorene usluge i, ako ste se pretplatili, šaljemo povremene novosti."] },
       { heading: "3. Pravni osnov", body: ["Obrada se temelji na vašem pristanku i na legitimnom interesu pružanja usluga koje ste zatražili. Pristanak možete povući u svakom trenutku."] },
       { heading: "4. Dijeljenje podataka", body: ["Vaše podatke ne prodajemo niti iznajmljujemo trećim stranama. Možemo ih dijeliti s pouzdanim obrađivačima (npr. hosting i email servisi) isključivo radi pružanja usluge."] },
-      { heading: "5. Vaša prava", body: ["Imate pravo na pristup, ispravku i brisanje svojih podataka, kao i na prigovor na obradu. Za ostvarivanje prava javite se na kontakt@devlab.cc.cd."] },
-      { heading: "6. Kontakt", body: ["Za sva pitanja o privatnosti kontaktirajte nas na kontakt@devlab.cc.cd."] },
+      { heading: "5. Vaša prava", body: ["Imate pravo na pristup, ispravku i brisanje svojih podataka, kao i na prigovor na obradu. Za ostvarivanje prava javite se na info@devlab.cc.cd."] },
+      { heading: "6. Kontakt", body: ["Za sva pitanja o privatnosti kontaktirajte nas na info@devlab.cc.cd."] },
     ],
   },
   uslovi: {
@@ -4500,7 +4500,7 @@ const legalDocs: Record<"privatnost" | "uslovi" | "kolacici", LegalDoc> = {
       { heading: "4. Intelektualno vlasništvo", body: ["Nakon isporuke i izmirenja dogovorene cijene, kompletan kod, dizajn i prava nad projektom pripadaju klijentu."] },
       { heading: "5. Odgovornost", body: ["Demo verzija projekta je besplatna i za nju se ne plaća ništa. Ne odgovaramo za štetu nastalu nepravilnim korištenjem ili izmjenama izvršenim od strane trećih lica nakon isporuke."] },
       { heading: "6. Izmjene uslova", body: ["Zadržavamo pravo izmjene ovih uslova. Aktuelna verzija uvijek je dostupna na ovoj stranici."] },
-      { heading: "7. Kontakt", body: ["Za pitanja o uslovima korištenja javite se na kontakt@devlab.cc.cd."] },
+      { heading: "7. Kontakt", body: ["Za pitanja o uslovima korištenja javite se na info@devlab.cc.cd."] },
     ],
   },
   kolacici: {
@@ -4514,7 +4514,7 @@ const legalDocs: Record<"privatnost" | "uslovi" | "kolacici", LegalDoc> = {
       { heading: "2. Koje kolačiće koristimo", body: ["Neophodni kolačići omogućavaju osnovno funkcionisanje stranice (npr. pamćenje vašeg pristanka na kolačiće).", "Analitički kolačići pomažu nam da razumijemo kako se stranica koristi, isključivo u zbirnom i anonimnom obliku."] },
       { heading: "3. Upravljanje kolačićima", body: ["Kolačiće možete u svakom trenutku obrisati ili blokirati u postavkama svog preglednika. Imajte na umu da bez nekih kolačića dijelovi stranice možda neće raditi ispravno."] },
       { heading: "4. Pristanak", body: ["Nastavkom korištenja stranice i klikom na „Prihvatam” na baneru o kolačićima dajete pristanak na korištenje kolačića opisanih ovdje."] },
-      { heading: "5. Kontakt", body: ["Za pitanja o kolačićima kontaktirajte nas na kontakt@devlab.cc.cd."] },
+      { heading: "5. Kontakt", body: ["Za pitanja o kolačićima kontaktirajte nas na info@devlab.cc.cd."] },
     ],
   },
 };
