@@ -760,8 +760,15 @@ function formFigure(c: Colors, p: PostSlide): Block {
       nfs -= 2;
       nl = wrap(p.valueNote, nfs, W_MUT - 30, MAXN);
     }
-    h += tall ? 48 : 44;
-    svg += `<rect x="0" y="${h - 6}" width="5" height="${nl.length * (nfs + 20)}" fill="${onTeal ? "#0A0A0A" : c.accent}"/>`;
+    // Razmak naslov -> crtica.
+    //
+    // Prije 48/44, ali se na to naslozilo jos `nfs * 0.86` iz same
+    // <text> linije, pa je zrak izmedju zadnjeg reda naslova i crtice
+    // ispao ~55px u 3:4 — prevelika praznina koja je odvajala naslov od
+    // objašnjenja. Sada 22/20: dovoljno da se blokovi vizuelno razdvoje,
+    // ali ostaju na okupu.
+    h += tall ? 22 : 20;
+    svg += `<rect x="0" y="${h - 4}" width="5" height="${nl.length * (nfs + 20)}" fill="${onTeal ? "#0A0A0A" : c.accent}"/>`;
     nl.forEach((l: string, i: number) => {
       svg += `<text x="30" y="${h + nfs * 0.86 + i * (nfs + 20)}" font-family="${FONT}"
         font-size="${nfs}" font-weight="500" fill="${noteInk}">${esc(l)}</text>`;
