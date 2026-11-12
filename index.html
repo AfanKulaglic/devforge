@@ -25,7 +25,7 @@
           "/o-nama", "/cesta-pitanja", "/kontakt", "/privatnost", "/uslovi",
           "/kolacici"
         ];
-        var path = location.pathname.replace(//$/, "") || "/";
+        var path = location.pathname.replace(/\/$/, "") || "/";
         // Interne stranice: nikad u Googleu.
         var interni = ["/admin", "/reklama", "/objave", "/logo", "/mail", "/test"];
         if (interni.indexOf(path) !== -1 || known.indexOf(path) === -1) {
