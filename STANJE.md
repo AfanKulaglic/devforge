@@ -46,6 +46,40 @@ otvara. Korisnik klikne "Posalji" i vidi "Poruka je poslana".
 - stanja `sent` / `sending` / `sendError` umjesto `mailOpened`
 - uspjeh: "Poruka je poslana" + ponuda da pisu na mejl ako je hitno
 
+### p03: RAZMAK NASLOV -> CRTICA (korisnikov zahtjev)
+
+Korisnik: "na p03 pogledaj kako ima razmaka izmedju crtive i naslova —
+nemoj da bude toliki razmak".
+
+**Izmjereno u generisanom SVG-u (3:4):**
+| | y |
+|---|---|
+| naslov zadnji red ("Plaćate tek kad je vidite.") | 321.2 |
+| crtica (accent rect) | 376.4 |
+| **zrak** | **55.2 px** |
+
+**Uzrok:** `formFigure` je imao `h += tall ? 48 : 44`, a na to se
+nasložilo jos `nfs * 0.86` iz same `<text>` linije.
+
+**Fix:** `src/lib/postRender.ts` oko linije 763:
+```
+h += tall ? 48 : 44;   ->   h += tall ? 22 : 20;
+rect y = h - 6          ->   rect y = h - 4
+```
+
+**Rezultat:** zrak **55.2 -> 31.2 px**. Naslov i objasnjenje ostaju
+vizuelno odvojeni ali na okupu.
+
+**Regresija testirana (svi slajdovi, svi formati):**
+| format | slajdova | van okvira | crtica preblizu |
+|---|---|---|---|
+| 3:4 | 71 | 0 | 0 |
+| 1:1 | 71 | 0 | 0 |
+
+**16:9 ima 31 tekst van okvira — POSTOJI I PRIJE moje izmjene (bilo 32).**
+Nije regresija; 16:9 je samo za `fbc01` koji koristi `coverLayout`, a ne
+`formFigure`.
+
 ### ⚠️ BLOKIRANO: VERCEL NE DEPLOYA (korisnik mora redeployati)
 
 Od commita **`fbfaa5a`** (info@) Vercel **ne builda nove commitove**.
