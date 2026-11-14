@@ -18,7 +18,7 @@ import {
   HiOutlineArrowsPointingOut,
   HiOutlineSparkles,
   HiOutlineCheckCircle,
-  HiOutlineCircleStack,
+
 } from "react-icons/hi2";
 import { CATEGORY_LABEL, TEMPLATE_LABEL, ALL_POSTS } from "./lib/postsIndex";
 import type { AdPost, PostCategory } from "./lib/postsData";
@@ -158,24 +158,31 @@ function PostCard({
       <figcaption className="flex items-center justify-between gap-2 border-t border-white/10 px-3 py-2">
         {/* KVAČICA "OBJAVLJENO" — glavna kontrola. */}
         <label
-          className={`inline-flex cursor-pointer select-none items-center gap-1.5 text-[0.66rem] font-extrabold uppercase tracking-[0.1em] transition ${
-            published ? "text-teal-300" : "text-white/35 hover:text-white/70"
-          }`}
+          className="inline-flex cursor-pointer select-none items-center gap-1.5"
           title={published ? "Objavljeno — klikni da poništiš" : "Označi kao objavljeno"}
         >
+          {/* SITNI PRAVI CHECKBOX (16px). Ne ikona — kvadratić koji se
+              ponaša kao checkbox, kao u svakoj listi zadataka. */}
           <input
             type="checkbox"
             checked={published}
             onChange={(e) => onTogglePublished(e.target.checked)}
-            className="peer sr-only"
             aria-label={`Objavljeno: ${post.title}`}
+            className="h-4 w-4 shrink-0 cursor-pointer appearance-none border border-white/25 bg-transparent transition checked:border-teal-300 checked:bg-teal-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-300/60"
+            style={{
+              backgroundImage: published
+                ? "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M3.5 8.5l3 3 6-6.5' fill='none' stroke='%23062a28' stroke-width='2.2' stroke-linecap='square'/></svg>\")"
+                : "none",
+              backgroundSize: "100% 100%",
+            }}
           />
-          {published ? (
-            <HiOutlineCheckCircle className="text-base" aria-hidden="true" />
-          ) : (
-            <HiOutlineCircleStack className="text-base" aria-hidden="true" />
-          )}
-          <span className="hidden sm:inline">{published ? "Objavljeno" : "Objavi"}</span>
+          <span
+            className={`hidden text-[0.62rem] font-bold uppercase tracking-[0.1em] sm:inline ${
+              published ? "text-teal-300" : "text-white/30"
+            }`}
+          >
+            {published ? "Objavljeno" : ""}
+          </span>
         </label>
         <span className="truncate text-[0.68rem] font-bold uppercase tracking-[0.12em] text-white/45">
           {CATEGORY_LABEL[post.category]}

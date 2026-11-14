@@ -215,22 +215,21 @@ export const POSTS_1: AdPost[] = [
     layout: "center",
     palette: "dark",
     eyebrow: "Naše usluge",
-    title: "Uzmite jednu uslugu. Ili sve — cijena je javna.",
+    title: "Stranice, shopovi, aplikacije, igrice i AI.",
     slides: [
       {
         template: "cover",
-        eyebrow: "Kako se plaća",
-        title: "Uzmite jednu uslugu. Ili sve — cijena je javna.",
-        accentWords: ["javna"],
-        // Ne ponavlja listu usluga (to p05 već radi) — objašnjava kako se
-        // plaća i zašto kombinacija ne poskupljuje. Nova informacija, pa
-        // dvije objave stoje kao niz: p05 = šta radimo, p06 = kako i koliko.
-        lead: "Ne morate sve odjednom. Jedna stranica 150 KM, shop 600 KM, aplikaciju i AI dogovaramo po projektu. Cijena je javna, bez skrivenih doplata.",
+        eyebrow: "Naše usluge",
+        title: "Stranice, shopovi, aplikacije, igrice i AI.",
+        // Podnaslov nosi POSLJEDICU za klijenta, ne ponavlja listu ispod.
+        subtitle: "Pet usluga. Sve od istog tima. Sve po javnoj cijeni.",
+        accentWords: [],
+        lead: "Radimo stranice, igrice, aplikacije i AI asistente. Bez podugovaranja i bez posrednika — isti tim radi sve, pa se dijelovi poklapaju bez duplih troškova.",
         items: [
-          { icon: "coin", label: "Web stranica — od 150 KM" },
-          { icon: "shop", label: "Web shop — od 600 KM" },
-          { icon: "app", label: "Aplikacija — po projektu" },
-          { icon: "ai", label: "AI sistem — po projektu" },
+          { icon: "web", label: "Stranice i shopovi" },
+          { icon: "game", label: "2D igrice" },
+          { icon: "app", label: "Mobilne aplikacije" },
+          { icon: "ai", label: "AI asistenti" },
         ],
         palette: "dark",
       },

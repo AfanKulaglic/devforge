@@ -460,6 +460,28 @@ function formCover(c: Colors, p: PostSlide, total: number): Block {
   svg += `<rect x="0" y="${h}" width="120" height="8" fill="${c.accent}"/>`;
   h += 8;
 
+  // PODNASLOV — kratka recenica odmah ispod naslova (prije leada).
+  //
+  // formCover ga prije nije crtao (samo lead), pa je subtitle na p06 bio
+  // napisan a nevidljiv. Sada ide: naslov -> traka -> subtitle -> lead.
+  const sub = p.subtitle ?? "";
+  if (sub) {
+    h += 38;
+    const sfsB = SIZE_H >= 1300 ? 38 : 34;
+    let sfsX = sfsB;
+    const subWords = sub.trim().split(/s+/).length;
+    let sl = wrap(sub, sfsX, W_MUT, 2);
+    while (sfsX > 22 && sl.join(" ").trim().split(/s+/).length < subWords) {
+      sfsX -= 2;
+      sl = wrap(sub, sfsX, W_MUT, 3);
+    }
+    sl.forEach((l: string, li: number) => {
+      svg += '<text x="0" y="' + (h + sfsX * 0.82 + li * (sfsX + 10)) + '" font-family="' + FONT +
+        '" font-size="' + sfsX + '" font-weight="700" fill="' + c.ink + '">' + esc(l) + '</text>';
+    });
+    h += (sl.length - 1) * (sfsX + 10) + sfsX;
+  }
+
   // PODNASLOV / LEAD — recenica koja objasnjava naslov.
   //
   // Prije je cover imao samo naslov + jednu kratku liniju najava. To je za
@@ -492,7 +514,10 @@ function formCover(c: Colors, p: PostSlide, total: number): Block {
   // razbijena recenica sa tackama izmedju (to se nije dalo citati).
   // 4 stavke u 3:4 (ima visine), 3 u 1:1. Prije je bio fiksno 3, pa je na p06
   // coveru nedostajala cetvrta usluga iako naslov kaze "cetiri usluge".
-  const parts: any[] = Array.isArray(p.items) ? p.items.slice(0, SIZE_H >= 1300 ? 4 : 3) : [];
+  // 4 stavke staju i u 1:1 kad nema mnogo teksta iznad (p06 cover ima
+  // naslov + subtitle + lead, pa je 4-ta stavka prije ispadala).
+  // Pravilo: uzmi sve (do 4), a ako se ne uklapa, `buildFitting` skali.
+  const parts: any[] = Array.isArray(p.items) ? p.items.slice(0, SIZE_H >= 1300 ? 4 : 4) : [];
   if (parts.length) {
     h += 48;
     const IC = SIZE_H >= 1300 ? 40 : 36;
