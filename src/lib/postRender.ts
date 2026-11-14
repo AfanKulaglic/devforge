@@ -877,7 +877,10 @@ function formBlocks(c: Colors, p: PostSlide): Block {
   // Biljeska sad smije imati 3 reda, pa je red visi: 156 -> 186 (3:4).
   const minRow = SIZE_H >= 1300 ? 186 : 158;
   const rowH = Math.max(minRow, Math.min(SIZE_H >= 1300 ? 240 : 180, avail / n));
-  const fs = SIZE_H >= 1300 ? (n >= 4 ? 38 : 44) : n >= 4 ? 34 : 38;
+  // Label u listi — smanjen da ne dominira nad biljeskom (p05).
+  // Prije: 38/44 (3:4), 34/38 (1:1). Ikone se NE diraju (IC ostaje 80/70),
+  // pa se ikona i dalje centrira po cijelom bloku — samo je tekst manji.
+  const fs = SIZE_H >= 1300 ? (n >= 4 ? 33 : 38) : n >= 4 ? 30 : 34;
 
   // Preostala visina za liste: ako je raspoloziv prostor manji od punog CONTENT_H()
   // (photoTop/photoBot), redovi se pakuju u ono sto stvarno ima.
@@ -915,7 +918,7 @@ function formBlocks(c: Colors, p: PostSlide): Block {
     // pa su se biljeske na p05 odsijecale ("Od predstavljanja do prodaje.
     // Gotovo za 5" — bez "radnih dana"). Sada se font smanjuje dok SVE rijeci
     // ne stanu, a limit je 3 reda.
-    let nfs = SIZE_H >= 1300 ? 25 : 23;
+    let nfs = SIZE_H >= 1300 ? 22 : 21;
     const noteWords = note ? note.trim().split(/\s+/).length : 0;
     let nlines = note ? wrap(note, nfs, avail, 3) : [];
     while (nfs > 18 && note && nlines.join(" ").trim().split(/\s+/).length < noteWords) {
