@@ -163,7 +163,13 @@ export const POSTS_1: AdPost[] = [
     palette: "ink",
     eyebrow: "Naše usluge",
     title: "Sve što vaš biznis treba.",
-    subtitle: "Web stranice, shopovi, aplikacije, igrice i AI sistemi.",
+    // Manji font labela/biljeske u listi — samo za p05. Globalne velicine
+    // u formBlocks() ostaju iste za 26 ostalih "list"/"process" objava.
+    tightList: true,
+    // Podnaslov NE nabraja usluge — to lista vec radi ispod, pa se
+    // ponavljalo ("web, shop, app, igrice, AI" gore i onda opet u listi).
+    // Umjesto toga nosi RAZLOG: zasto jedan tim, a ne pet firmi.
+    subtitle: "Jedan tim. Jedan dogovor. Ništa između.",
     items: [
       {
         icon: "web",

@@ -821,7 +821,9 @@ function formFigure(c: Colors, p: PostSlide): Block {
   return { svg, h };
 }
 
-function formBlocks(c: Colors, p: PostSlide): Block {
+function formBlocks(c: Colors, p: PostSlide, tight = false): Block {
+  // `tight` — manji label/biljeska u listi. Postavlja ga SAMO objava koja
+  // to trazi (p05), preko `post.tightList`, da se ne dira 26 ostalih.
   // 5 stavki u 3:4 formatu — ima visine, a pet usluga je kompletna ponuda.
   const items = (p.items ?? []).slice(0, SIZE_H >= 1300 ? 4 : 3);
   const ts = fit(p.title ?? "", W_MUT, 60);
@@ -863,6 +865,7 @@ function formBlocks(c: Colors, p: PostSlide): Block {
     y += (sl.length - 1) * (sfsX + 12) + sfsX;
   }
 
+  const hasIcons = items.some((it: any) => typeof it === "object" && it !== null);
   const n = items.length || 1;
   // Visina reda se racuna iz STVARNO raspolozivog prostora. `avail` je ogranicen
   // na preostali dio sadrzajne zone; buildFitting() će ga dodatno skalirati ako
@@ -876,15 +879,59 @@ function formBlocks(c: Colors, p: PostSlide): Block {
   // toliko da se labeli i biljeske preklope (p05 sa subtitleom).
   // Biljeska sad smije imati 3 reda, pa je red visi: 156 -> 186 (3:4).
   const minRow = SIZE_H >= 1300 ? 186 : 158;
-  const rowH = Math.max(minRow, Math.min(SIZE_H >= 1300 ? 240 : 180, avail / n));
-  // Label u listi — smanjen da ne dominira nad biljeskom (p05).
-  // Prije: 38/44 (3:4), 34/38 (1:1). Ikone se NE diraju (IC ostaje 80/70),
-  // pa se ikona i dalje centrira po cijelom bloku — samo je tekst manji.
-  const fs = SIZE_H >= 1300 ? (n >= 4 ? 33 : 38) : n >= 4 ? 30 : 34;
+  // Tight: redovi su zbijeniji da cijela lista stane vise gore i da
+  // zadnja stavka ne dodiruje domenu u podnozju.
+  const maxRow = SIZE_H >= 1300 ? (tight ? 210 : 240) : tight ? 165 : 180;
+  //
+  // `tight` (samo p05): red se ne rasteze do `avail/n`, nego se racuna iz
+  // stvarne visine sadrzaja stavke — label (1–2 reda) + biljeska (1–4
+  // reda) + razmaci. Tako lista ostaje zbijena pri vrhu, a visak prostora
+  // ide ISPOD nje (prema podnozju), pa se ne lijepe za domenu.
+  const rowHCalc = (() => {
+    if (!tight) return Math.max(minRow, Math.min(maxRow, avail / n));
+    const fsPre = SIZE_H >= 1300 ? (n >= 4 ? 33 : 38) : n >= 4 ? 30 : 34;
+    const nfsPre = SIZE_H >= 1300 ? 22 : 21;
+    const availPre = W_MUT - 58 - (hasIcons ? (SIZE_H >= 1300 ? 108 : 96) : 0);
+    let maxH = 0;
+    items.forEach((it: any) => {
+      const isObj = typeof it === "object" && it !== null;
+      const label = isObj ? (it.label ?? "") : String(it);
+      const note = isObj ? (it.note ?? "") : "";
+      const l = wrap(label, fsPre, availPre, 2);
+      const nl = note ? wrap(note, nfsPre, availPre, 4) : [];
+      const hh =
+        (l.length - 1) * (fsPre + 8) + fsPre +
+        (nl.length ? 12 + (nl.length - 1) * (nfsPre + 6) + nfsPre : 0);
+      if (hh > maxH) maxH = hh;
+    });
+    // Redovi popune CIJELU preostalu zonu do CONTENT_BOTTOM.
+    // maxH je minimum (da se label i biljeska ne preklope), avail/n je
+    // cilj. Bez gornje granice — `avail` je vec stvarni ostatak zone.
+    const cilj = Math.floor(avail / n);
+    return Math.max(maxH + 26, cilj);
+  })();
+  const rowH = rowHCalc;
+  // Label u listi.
+  //
+  // VELICINE SU GLOBALNE — mijenjaju SVE "list"/"process" objave (26).
+  // Ne spustaj ih zbog jedne objave: ako p05 treba manji font, koristi
+  // `tight` parametar ispod (vidi `post.tightList`), ne ovu liniju.
+  const baseFs = SIZE_H >= 1300 ? (n >= 4 ? 38 : 44) : n >= 4 ? 34 : 38;
+  const fs = tight ? Math.round(baseFs * 0.87) : baseFs;
 
   // Preostala visina za liste: ako je raspoloziv prostor manji od punog CONTENT_H()
   // (photoTop/photoBot), redovi se pakuju u ono sto stvarno ima.
-  y += Math.max(18, Math.min(28, (avail - rowH * n) * 0.28));
+  // Razmak izmedju podnaslova i prve stavke.
+  //
+  // Prije: uvijek 18–28px iz viska prostora — lista je na p05 zavrsavala
+  // na y=1046 a domena je na 1338, pa je 292px praznine izgledalo kao
+  // da je zadnja stavka "pobjegla" do same adrese.
+  //
+  // Sada: najmanji razmak (12px) kad je `tight`, da lista krece odmah
+  // ispod naslova i da sve cetiri stavke odu vizuelno gore.
+  // Razmak podnaslov -> prva stavka. Kod `tight` mali (lista krece odmah),
+  // jer se ravnomjerno rasteze prema dolje.
+  y += tight ? 16 : Math.max(18, Math.min(28, (avail - rowH * n) * 0.28));
   // IKONE U LISTI.
   //
   // Stavka moze biti string ("UI/UX dizajn") ili objekat
@@ -895,7 +942,6 @@ function formBlocks(c: Colors, p: PostSlide): Block {
   // Raspored: [ikona 44px] [label bold] / [note sivo ispod, u istom redu].
   // Note NE ide u novi red sa ikonom — ostaje uvučen pod label, da se lista
   // cita kao jedna cjelina, a ne kao dva stupca.
-  const hasIcons = items.some((it: any) => typeof it === "object" && it !== null);
   // IKONE MORAJU BITI VELIKE.
   //
   // Prije su bile 44px (3:4) / 38px (1:1) — u listi od cetiri stavke djelovale
@@ -918,7 +964,8 @@ function formBlocks(c: Colors, p: PostSlide): Block {
     // pa su se biljeske na p05 odsijecale ("Od predstavljanja do prodaje.
     // Gotovo za 5" — bez "radnih dana"). Sada se font smanjuje dok SVE rijeci
     // ne stanu, a limit je 3 reda.
-    let nfs = SIZE_H >= 1300 ? 22 : 21;
+    const baseNfs = SIZE_H >= 1300 ? 25 : 23;
+    let nfs = tight ? Math.round(baseNfs * 0.88) : baseNfs;
     const noteWords = note ? note.trim().split(/\s+/).length : 0;
     let nlines = note ? wrap(note, nfs, avail, 3) : [];
     while (nfs > 18 && note && nlines.join(" ").trim().split(/\s+/).length < noteWords) {
@@ -1144,7 +1191,7 @@ function build(c: Colors, p: PostSlide, total = 1): Block {
   const t = p.template ?? "title";
   if (t === "cover") return formCover(c, p, total);
   if (t === "price" || t === "number") return formFigure(c, p);
-  if (t === "list" || t === "process") return formBlocks(c, p);
+  if (t === "list" || t === "process") return formBlocks(c, p, !!p.tightList);
   if (t === "compare") return formDuo(c, p);
   if (t === "cta") return formAction(c, p);
   return formHero(c, p);
@@ -1735,7 +1782,9 @@ const PLACE: Record<PostLayout, (c: Colors, p: PostSlide, total: number) => stri
     const fadeW = 70;
     const textW = SIZE - imgW - fadeW - M - 34;
     const b = buildNarrow(c, p, total, textW);
-    const y = CONTENT_TOP() + Math.max(0, (CONTENT_H() - b.h) / 2);
+    // `tight` (p05): blok krece odmah uz vrh zone, bez vertikalnog
+    // centriranja — inace lista visi u sredini i domena izgleda predaleko.
+    const y = p.tightList ? CONTENT_TOP() : CONTENT_TOP() + Math.max(0, (CONTENT_H() - b.h) / 2);
     return `<image href="${PHOTOS[ph]}" x="${SIZE - imgW}" y="0" width="${imgW}" height="${SIZE_H}"
         preserveAspectRatio="xMidYMid slice" aria-label="${esc(PHOTO_ALT[ph])}"/>
       <rect x="${SIZE - imgW - fadeW}" y="0" width="${fadeW}" height="${SIZE_H}" fill="url(#fadeRight)"/>
@@ -2010,6 +2059,9 @@ export function renderPostSlides(post: AdPost): string[] {
       features: post.features,
       cta: post.cta,
       site: post.site,
+      // `tightList` je na nivou OBJAVE (AdPost), a forma ga cita sa slajda —
+      // bez ovog prenosa se gubi i p05 bi ostao na globalnom fontu.
+      tightList: post.tightList,
     };
     return [renderSlideSvg(post, single, 0, 1)];
   }

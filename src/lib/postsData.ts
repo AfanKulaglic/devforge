@@ -78,6 +78,14 @@ export type PostSlide = {
   cta?: string;
   /** Kratka lista "sta je ukljuceno u cijenu" (cjenovne objave). */
   includes?: string[];
+  /**
+   * Manji font labela i biljeske u listi, zbijeniji redovi.
+   *
+   * Postavlja ga SAMO objava koja to trazi (p05). Bez ovoga bi svaka
+   * izmjena velicine fonta u formBlocks() pogodila SVE "list"/"process"
+   * objave (26), sto korisnik nije trazio.
+   */
+  tightList?: boolean;
 };
 
 export type AdPost = {
@@ -106,6 +114,8 @@ export type AdPost = {
   value?: string; // za number / price (veliki broj)
   valueNote?: string; // sitno ispod broja
   includes?: string[]; // kratka lista "sta je ukljuceno u cijenu"
+  /** Manji font i zbijeniji redovi u listi — samo za ovu objavu (p05). */
+  tightList?: boolean;
   caption: string; // tekst objave za Instagram
   tags: string[]; // hashtagovi
   slides?: PostSlide[]; // ako postoji → karusel
