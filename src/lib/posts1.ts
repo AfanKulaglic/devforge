@@ -162,8 +162,8 @@ export const POSTS_1: AdPost[] = [
     photo: "stvari",
     palette: "ink",
     eyebrow: "Naše usluge",
-    title: "Četiri stvari koje radimo — i radimo ih dobro.",
-    subtitle: "Ne radimo sve. Radimo četiri stvari i svaku do kraja.",
+    title: "Sve što vaš biznis treba.",
+    subtitle: "Web stranice, shopovi, aplikacije, igrice i AI sistemi.",
     items: [
       {
         icon: "web",
@@ -182,12 +182,19 @@ export const POSTS_1: AdPost[] = [
       },
       {
         icon: "ai",
-        label: "AI chat i recepcionar 24/7",
-        note: "Prima pozive i bilježi narudžbe — bez vas.",
+        label: "AI sistemi",
+        note: "Chat asistenti, automatizacija i AI rješenja — po mjeri projekta.",
       },
     ],
     caption:
-      "🎯 Četiri stvari. Bez filozofije.\n\nRadimo četiri stvari — i svaku dobro.\n\n1. WEB STRANICE I SHOPOVI. Moderne, responzivne stranice koje predstavljaju Vaš brend. Od landing page-a do kompleksnih korporativnih stranica i shopova. Od 150 KM.\n\n2. 2D IGRICE. Engaging igrice za mobilne platforme i web. Od casual do educational — prilagođeno Vašim zahtjevima.\n\n3. MOBILNE APLIKACIJE. Native i cross-platform aplikacije za iOS i Android. Od MVP-a do potpune aplikacije s backend-om.\n\n4. AI SISTEMI. AI recepcionar i chat asistent koji primaju pozive 24/7, odgovaraju kupcima, zakazuju termine i bilježe narudžbe — bez Vašeg učešća.\n\nSve ostalo — ne radimo. Za velike enterprise sisteme preporučimo nekog drugog.",
+      "🎯 Sve što vaš biznis treba. Na jednom mjestu.\n\n" +
+      "Ne radimo sve na svijetu — radimo ono što biznisu treba da bude na internetu.\n\n" +
+      "1. WEB STRANICE I SHOPOVI. Moderne stranice koje predstavljaju Vaš brend i prodaju. Gotovo za 5 dana, od 150 KM.\n\n" +
+      "2. 2D IGRICE. Za web i mobilne — marketing, edukacija ili zabava. Sa Vašim brendom.\n\n" +
+      "3. MOBILNE APLIKACIJE. iOS i Android. Od ideje do objave u trgovinama.\n\n" +
+      "4. AI SISTEMI. Chat asistenti, automatizacija i AI rješenja po mjeri projekta.\n\n" +
+      "Jedan od AI projekata koje smo radili je Recello — AI recepcionist za zakazivanje termina.\n\n" +
+      "Jedan tim, jedan dogovor. Sve na jednom mjestu.",
     tags: ["usluge", "webstranice", "igrice", "aplikacije", "sarajevo", "devlab"],
   },
 
