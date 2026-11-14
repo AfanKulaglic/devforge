@@ -166,10 +166,9 @@ export const POSTS_1: AdPost[] = [
     // Manji font labela/biljeske u listi — samo za p05. Globalne velicine
     // u formBlocks() ostaju iste za 26 ostalih "list"/"process" objava.
     tightList: true,
-    // Podnaslov NE nabraja usluge — to lista vec radi ispod, pa se
-    // ponavljalo ("web, shop, app, igrice, AI" gore i onda opet u listi).
-    // Umjesto toga nosi RAZLOG: zasto jedan tim, a ne pet firmi.
-    subtitle: "Jedan tim. Jedan dogovor. Ništa između.",
+    // Podnaslov NE nabraja usluge — to lista vec radi ispod. Nosi RAZLOG
+    // zasto jedan tim: nema podugovaranja, nema cekanja na treceg.
+    subtitle: "Ne prepuštamo dio posla dalje. Radimo ga mi.",
     items: [
       {
         icon: "web",
@@ -193,14 +192,18 @@ export const POSTS_1: AdPost[] = [
       },
     ],
     caption:
-      "🎯 Sve što vaš biznis treba. Na jednom mjestu.\n\n" +
-      "Ne radimo sve na svijetu — radimo ono što biznisu treba da bude na internetu.\n\n" +
-      "1. WEB STRANICE I SHOPOVI. Moderne stranice koje predstavljaju Vaš brend i prodaju. Gotovo za 5 dana, od 150 KM.\n\n" +
-      "2. 2D IGRICE. Za web i mobilne — marketing, edukacija ili zabava. Sa Vašim brendom.\n\n" +
-      "3. MOBILNE APLIKACIJE. iOS i Android. Od ideje do objave u trgovinama.\n\n" +
-      "4. AI SISTEMI. Chat asistenti, automatizacija i AI rješenja po mjeri projekta.\n\n" +
+      "🎯 Sve što vaš biznis treba.\n\n" +
+      "Ne prepuštamo dio posla dalje. Radimo ga mi — od prve skice do dana kad stranica krene raditi.\n\n" +
+      "Zašto je to važnije nego što izgleda:\n" +
+      "Kad firma radi samo jedan dio, a ostalo daje dalje, vi na kraju razgovarate s tri osobe koje ne znaju šta je druga uradila. Rok se produži, cijena naraste, a vi ne znate kome se javiti kad nešto ne radi.\n\n" +
+      "Kod nas je drugačije: jedna osoba vodi vaš projekat od početka do kraja i odgovara vam na svako pitanje.\n\n" +
+      "Šta dobijete:\n" +
+      "1. WEB STRANICE I SHOPOVI — od predstavljanja do prodaje. Gotovo za 5 dana, od 150 KM.\n" +
+      "2. 2D IGRICE — za web i mobilne, sa vašim brendom.\n" +
+      "3. MOBILNE APLIKACIJE — iOS i Android, od ideje do objave u trgovinama.\n" +
+      "4. AI SISTEMI — chat asistenti, automatizacija i AI rješenja po mjeri.\n\n" +
       "Jedan od AI projekata koje smo radili je Recello — AI recepcionist za zakazivanje termina.\n\n" +
-      "Jedan tim, jedan dogovor. Sve na jednom mjestu.",
+      "Ne morate tražiti pet firmi i spajati ih sami. Javite se u DM i recite šta vam treba — ostatak je naš posao.",
     tags: ["usluge", "webstranice", "igrice", "aplikacije", "sarajevo", "devlab"],
   },
 
@@ -212,19 +215,22 @@ export const POSTS_1: AdPost[] = [
     layout: "center",
     palette: "dark",
     eyebrow: "Naše usluge",
-    title: "Pet usluga. Jedan tim. Cijene javne.",
+    title: "Uzmite jednu uslugu. Ili sve — cijena je javna.",
     slides: [
       {
         template: "cover",
-        eyebrow: "Naše usluge",
-        title: "Četiri usluge. Većina klijenata uzme dvije.",
-        accentWords: [],
-        lead: "Radimo stranice, igrice, aplikacije i AI asistente. Bez podugovaranja i bez posrednika — isti tim radi sve, pa se dijelovi poklapaju bez duplih troškova.",
+        eyebrow: "Kako se plaća",
+        title: "Uzmite jednu uslugu. Ili sve — cijena je javna.",
+        accentWords: ["javna"],
+        // Ne ponavlja listu usluga (to p05 već radi) — objašnjava kako se
+        // plaća i zašto kombinacija ne poskupljuje. Nova informacija, pa
+        // dvije objave stoje kao niz: p05 = šta radimo, p06 = kako i koliko.
+        lead: "Ne morate sve odjednom. Jedna stranica 150 KM, shop 600 KM, aplikaciju i AI dogovaramo po projektu. Cijena je javna, bez skrivenih doplata.",
         items: [
-          { icon: "web", label: "Stranice i shopovi" },
-          { icon: "game", label: "2D igrice" },
-          { icon: "app", label: "Mobilne aplikacije" },
-          { icon: "ai", label: "AI asistenti" },
+          { icon: "coin", label: "Web stranica — od 150 KM" },
+          { icon: "shop", label: "Web shop — od 600 KM" },
+          { icon: "app", label: "Aplikacija — po projektu" },
+          { icon: "ai", label: "AI sistem — po projektu" },
         ],
         palette: "dark",
       },

@@ -17,9 +17,12 @@ import {
   HiOutlineXMark,
   HiOutlineArrowsPointingOut,
   HiOutlineSparkles,
+  HiOutlineCheckCircle,
+  HiOutlineCircleStack,
 } from "react-icons/hi2";
 import { CATEGORY_LABEL, TEMPLATE_LABEL, ALL_POSTS } from "./lib/postsIndex";
 import type { AdPost, PostCategory } from "./lib/postsData";
+import { loadPublished, setPublished, subscribePublished } from "./lib/published";
 import {
   postSvgDataUri,
   renderPostSlides,
@@ -81,7 +84,19 @@ function copyCaption(post: AdPost) {
 }
 
 // ── Kartica jedne objave ──────────────────────────────────────────────────
-function PostCard({ post, format, onOpen }: { post: AdPost; format: PostFormat; onOpen: () => void }) {
+function PostCard({
+  post,
+  format,
+  onOpen,
+  published,
+  onTogglePublished,
+}: {
+  post: AdPost;
+  format: PostFormat;
+  onOpen: () => void;
+  published: boolean;
+  onTogglePublished: (next: boolean) => void;
+}) {
   // Objava sa fixedFormat (FB cover, 16:9) uvijek se renderuje u SVOM formatu,
   // bez obzira na prekidac gore. Zato se format postavlja po kartici, ne globalno.
   const eff = post.fixedFormat ?? format;
@@ -103,8 +118,16 @@ function PostCard({ post, format, onOpen }: { post: AdPost; format: PostFormat; 
         isPremium ? "border-teal-300/60" : "border-white/10"
       }`}
     >
+      {/* Objavljeno — zelena traka preko vrha kartice. Vidi se iz galerije
+          bez otvaranja, pa se odmah zna sta je vec pusteno. */}
+      {published && (
+        <span className="pointer-events-none absolute inset-x-0 top-0 z-20 inline-flex items-center justify-center gap-1.5 bg-teal-400/95 px-2 py-1 text-[0.6rem] font-extrabold uppercase tracking-[0.14em] text-[#062a28]">
+          <HiOutlineCheckCircle className="text-[0.8rem]" aria-hidden="true" />
+          Objavljeno
+        </span>
+      )}
       {isPremium && (
-        <span className="pointer-events-none absolute left-0 top-0 z-10 inline-flex items-center gap-1.5 bg-teal-300 px-2.5 py-1.5 text-[0.6rem] font-extrabold uppercase tracking-[0.14em] text-[#062a28]">
+        <span className={`pointer-events-none absolute left-0 z-10 inline-flex items-center gap-1.5 bg-teal-300 px-2.5 py-1.5 text-[0.6rem] font-extrabold uppercase tracking-[0.14em] text-[#062a28] ${published ? "top-7" : "top-0"}`}>
           <HiOutlineSparkles className="text-[0.8rem]" aria-hidden="true" />
           Premium
         </span>
@@ -133,6 +156,27 @@ function PostCard({ post, format, onOpen }: { post: AdPost; format: PostFormat; 
         )}
       </button>
       <figcaption className="flex items-center justify-between gap-2 border-t border-white/10 px-3 py-2">
+        {/* KVAČICA "OBJAVLJENO" — glavna kontrola. */}
+        <label
+          className={`inline-flex cursor-pointer select-none items-center gap-1.5 text-[0.66rem] font-extrabold uppercase tracking-[0.1em] transition ${
+            published ? "text-teal-300" : "text-white/35 hover:text-white/70"
+          }`}
+          title={published ? "Objavljeno — klikni da poništiš" : "Označi kao objavljeno"}
+        >
+          <input
+            type="checkbox"
+            checked={published}
+            onChange={(e) => onTogglePublished(e.target.checked)}
+            className="peer sr-only"
+            aria-label={`Objavljeno: ${post.title}`}
+          />
+          {published ? (
+            <HiOutlineCheckCircle className="text-base" aria-hidden="true" />
+          ) : (
+            <HiOutlineCircleStack className="text-base" aria-hidden="true" />
+          )}
+          <span className="hidden sm:inline">{published ? "Objavljeno" : "Objavi"}</span>
+        </label>
         <span className="truncate text-[0.68rem] font-bold uppercase tracking-[0.12em] text-white/45">
           {CATEGORY_LABEL[post.category]}
         </span>
@@ -383,6 +427,38 @@ export default function PostsPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [format, setFmt] = useState<PostFormat>("1:1");
 
+  // ── ŠTA JE OBJAVLJENO ─────────────────────────────────────────────────
+  // Stanje živi u Firebase-u (devforge/published), pa se vidi s telefona
+  // i s računara jednako. localStorage bi bio samo na jednom uređaju.
+  const [published, setPublishedMap] = useState<Record<string, number>>({});
+  const [onlyUnpublished, setOnlyUnpublished] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    // Prvo jednokratno čitanje (brz prvi prikaz), pa realtime pretplata.
+    void loadPublished().then((m) => {
+      if (alive) setPublishedMap(m);
+    });
+    const stop = subscribePublished((m) => {
+      if (alive) setPublishedMap(m);
+    });
+    return () => {
+      alive = false;
+      stop();
+    };
+  }, []);
+
+  const togglePublished = (id: string, next: boolean) => {
+    // Optimistično — kvačica se mijenja odmah, baza potvrđuje u pozadini.
+    setPublishedMap((prev) => {
+      const copy = { ...prev };
+      if (next) copy[id] = Date.now();
+      else delete copy[id];
+      return copy;
+    });
+    void setPublished(id, next);
+  };
+
   // Format zivi kao modul-nivo stanje u postRender.ts, pa ga moramo postaviti
   // prije nego sto se bilo koji SVG izracuna. `format` je zato u dependencies
   // svih useMemo blokova ispod.
@@ -390,14 +466,17 @@ export default function PostsPage() {
 
   const visible = useMemo(
     () =>
-      ALL_POSTS.map((p, i) => ({ post: p, index: i })).filter((x) =>
-        filter === "sve"
-          ? true
-          : filter === "premium"
-            ? x.post.layout === "premium"
-            : x.post.category === filter,
-      ),
-    [filter],
+      ALL_POSTS.map((p, i) => ({ post: p, index: i }))
+        .filter((x) =>
+          filter === "sve"
+            ? true
+            : filter === "premium"
+              ? x.post.layout === "premium"
+              : x.post.category === filter,
+        )
+        // "Samo neobjavljene" — da se ne skrola kroz ono što je već pušteno.
+        .filter((x) => (onlyUnpublished ? !published[x.post.id] : true)),
+    [filter, onlyUnpublished, published],
   );
 
   return (
@@ -445,6 +524,26 @@ export default function PostsPage() {
           </div>
         </div>
 
+        {/* SAMO NEOBJAVLJENE — praktično kad se objavljuje u nizu. */}
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <label className="inline-flex cursor-pointer select-none items-center gap-2 border border-white/12 px-3.5 py-2 text-xs font-bold text-white/60 transition hover:border-white/30 hover:text-white/90">
+            <input
+              type="checkbox"
+              checked={onlyUnpublished}
+              onChange={(e) => setOnlyUnpublished(e.target.checked)}
+              className="peer sr-only"
+            />
+            <span
+              className={`inline-block h-3 w-3 border ${onlyUnpublished ? "border-teal-300 bg-teal-400" : "border-white/40"}`}
+              aria-hidden="true"
+            />
+            Samo neobjavljene
+          </label>
+          <span className="text-[0.68rem] font-bold uppercase tracking-[0.1em] text-white/35">
+            {ALL_POSTS.length - Object.keys(published).length} preostalo
+          </span>
+        </div>
+
         {/* Filter po kategoriji */}
         <div className="mt-6 flex flex-wrap gap-2">
           {FILTERS.map((f) => {
@@ -477,12 +576,20 @@ export default function PostsPage() {
         {/* Galerija */}
         <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5">
           {visible.map(({ post, index }) => (
-            <PostCard key={post.id} post={post} format={format} onOpen={() => setOpenIndex(index)} />
+            <PostCard
+              key={post.id}
+              post={post}
+              format={format}
+              onOpen={() => setOpenIndex(index)}
+              published={Boolean(published[post.id])}
+              onTogglePublished={(next) => togglePublished(post.id, next)}
+            />
           ))}
         </div>
 
         <p className="mt-10 text-center text-xs text-white/30">
-          Prikazano {visible.length} od {ALL_POSTS.length} objava
+          Prikazano {visible.length} od {ALL_POSTS.length} objava · objavljeno 
+          {Object.keys(published).length}
         </p>
       </div>
 

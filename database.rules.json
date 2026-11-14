@@ -23,6 +23,10 @@
         ".indexOn": [
           "at"
         ]
+      },
+      "published": {
+        ".read": true,
+        ".write": true
       }
     },
     "devforge_test": {
